@@ -16,10 +16,9 @@ RUN rm -rf pt_linux_amd64
 
 FROM stayradiated/base as dotfiles
 WORKDIR /usr/local/src
-RUN git clone --depth 1 https://github.com/stayradiated/dotfiles
+RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch --depth 1 origin tag v1.2.0
-RUN git reset --hard v1.2.0
+RUN git reset --hard v1.2.1
 RUN make apps
 RUN nvim +qall || :
 
