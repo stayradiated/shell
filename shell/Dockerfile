@@ -18,8 +18,8 @@ FROM stayradiated/base as dotfiles
 WORKDIR /usr/local/src
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch --depth 1 origin tag v1.1.1
-RUN git reset --hard v1.1.1
+RUN git fetch --depth 1 origin tag v1.2.0
+RUN git reset --hard v1.2.0
 RUN make apps
 RUN nvim +qall || :
 
@@ -75,17 +75,6 @@ RUN git config --global push.default 'simple'
 RUN git config --global url.git@github.com:.insteadOf 'https://github.com/'
 RUN git config --global url.git@bitbucket.org:.insteadOf 'https://bitbucket.org/'
 
-# copy files
-COPY --chown=admin:admin ./files ./
-
-# dotfiles
-COPY --chown=admin:admin --from=dotfiles /usr/local/src/dotfiles /home/admin/dotfiles
-COPY --chown=admin:admin --from=dotfiles /root/.zprezto /home/admin/.zprezto
-COPY --chown=admin:admin --from=dotfiles /root/.tmux /home/admin/.tmux
-WORKDIR /home/admin/dotfiles
-RUN make apps
-WORKDIR /home/admin
-
 # pt
 COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
 
@@ -103,5 +92,16 @@ ENV PATH /usr/local/lib/node/bin:$PATH
 ENV GOPATH /home/admin
 RUN mkdir -p /home/admin/bin
 ENV PATH /home/admin/bin:$PATH
+
+# copy files
+COPY --chown=admin:admin ./files ./
+
+# dotfiles
+COPY --chown=admin:admin --from=dotfiles /usr/local/src/dotfiles /home/admin/dotfiles
+COPY --chown=admin:admin --from=dotfiles /root/.zprezto /home/admin/.zprezto
+COPY --chown=admin:admin --from=dotfiles /root/.tmux /home/admin/.tmux
+WORKDIR /home/admin/dotfiles
+RUN make apps
+WORKDIR /home/admin
 
 CMD /usr/bin/zsh
