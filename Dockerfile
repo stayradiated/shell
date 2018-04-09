@@ -27,6 +27,8 @@ RUN apt-get install -y libncurses5-dev
 RUN apt-get install -y locales 
 RUN apt-get install -y net-tools
 RUN apt-get install -y netcat-openbsd
+RUN apt-get install -y python-pip
+RUN apt-get install -y python3-pip
 RUN apt-get install -y socat
 RUN apt-get install -y tzdata
 RUN apt-get install -y wget
@@ -100,11 +102,21 @@ RUN make CMAKE_BUILD_TYPE=Release
 RUN make install
 RUN rm -rf /usr/local/src/neovim
 
+# NEOVIM >> DOTFILES
+FROM neovim as dotfiles
+WORKDIR /usr/local/src
+RUN git clone https://github.com/stayradiated/dotfiles
+WORKDIR /usr/local/src/dotfiles
+RUN git reset --hard v1.2.1
+RUN make apps
+RUN nvim +qall || :
+
 # FZF
 FROM base as fzf
-WORKDIR /usr/local/src
-RUN git clone --depth=1 https://github.com/junegunn/fzf
-WORKDIR /usr/local/src/fzf
+RUN mkdir -p /home/admin
+WORKDIR /home/admin
+RUN git clone --depth=1 https://github.com/junegunn/fzf .fzf
+WORKDIR /home/admin/.fzf
 RUN git fetch  --depth 1 origin tag 0.17.0
 RUN git reset --hard 0.17.0
 RUN ./install --all
@@ -117,15 +129,6 @@ RUN tar xzvf pt_linux_amd64.tar.gz
 RUN rm -rf pt_linux_amd64.tar.gz
 RUN mv pt_linux_amd64/pt /usr/local/bin
 RUN rm -rf pt_linux_amd64
-
-# DOTFILES
-FROM base as dotfiles
-WORKDIR /usr/local/src
-RUN git clone https://github.com/stayradiated/dotfiles
-WORKDIR /usr/local/src/dotfiles
-RUN git reset --hard v1.2.1
-RUN make apps
-RUN nvim +qall || :
 
 # NVM
 FROM base as nvm
@@ -171,12 +174,26 @@ RUN chown -R admin:admin /usr/local/src
 USER admin
 WORKDIR /home/admin
 
+# install neovim
+RUN pip install --user neovim
+RUN pip3 install --user neovim
+
 # git
 RUN git config --global user.email 'george@mish.guru'
-RUN git config --global user.name 'stayradiated'
+RUN git config --global user.name 'George Czabania'
 RUN git config --global push.default 'simple'
 RUN git config --global url.git@github.com:.insteadOf 'https://github.com/'
 RUN git config --global url.git@bitbucket.org:.insteadOf 'https://bitbucket.org/'
+
+# nvm
+COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v8.11.1 /usr/local/lib/node
+ENV PATH /usr/local/lib/node/bin:$PATH
+
+# go
+COPY --from=go /usr/lib/go-1.10 /usr/lib/go
+RUN mkdir -p /home/admin/bin
+ENV GOPATH /home/admin
+ENV PATH /usr/lib/go/bin:/home/admin/bin:$PATH
 
 # docker-compose
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
@@ -186,26 +203,17 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 
 # neovim
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
+COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
 
 # pt
 COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
 
 # fzf
-COPY --from=fzf --chown=admin:admin /usr/local/src/fzf /home/admin/.fzf
+COPY --from=fzf --chown=admin:admin /home/admin/.fzf /home/admin/.fzf
 COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 
 # clone
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
-
-# npm
-COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v8.11.1 /usr/local/lib/node
-ENV PATH /usr/local/lib/node/bin:$PATH
-
-# go
-COPY --from=go /usr/lib/go-1.10 /usr/lib/go
-RUN mkdir -p /home/admin/bin
-ENV GOPATH /home/admin
-ENV PATH /usr/lib/go/bin:/home/admin/bin:$PATH
 
 # copy files
 COPY --chown=admin:admin ./files ./
