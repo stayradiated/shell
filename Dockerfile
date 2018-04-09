@@ -204,6 +204,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 # neovim
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
+RUN nvim +UpdateRemotePlugins\|qall || :
 
 # pt
 COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
