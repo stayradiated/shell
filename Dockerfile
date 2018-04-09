@@ -190,10 +190,12 @@ COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v8.11.1 /us
 ENV PATH /usr/local/lib/node/bin:$PATH
 
 # go
-COPY --from=go /usr/lib/go-1.10 /usr/lib/go
+COPY --from=go /usr/lib/go-1.10 /usr/lib/go-1.10
+COPY --from=go /usr/share/go-1.10 /usr/share/go-1.10
 RUN mkdir -p /home/admin/bin
+ENV GOROOT /usr/lib/go-1.10
 ENV GOPATH /home/admin
-ENV PATH /usr/lib/go/bin:/home/admin/bin:$PATH
+ENV PATH /usr/lib/go-1.10/bin:/home/admin/bin:$PATH
 
 # docker-compose
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
