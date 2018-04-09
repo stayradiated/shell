@@ -137,15 +137,15 @@ RUN git clone --depth 1 https://github.com/creationix/nvm
 WORKDIR /usr/local/src/nvm
 RUN git fetch --depth 1 origin tag v0.33.8
 RUN git reset --hard v0.33.8
-RUN bash -c 'source nvm.sh && nvm install v8.11.1'
+RUN bash -c "source nvm.sh && nvm install v8.11.1"
 ENV PATH /usr/local/src/nvm/versions/node/v8.11.1/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
 RUN npm install -g 1password
 RUN npm install -g tagrelease
 RUN npm install -g npm-check-updates
+RUN npm install -g diff-so-fancy
 RUN npm install -g @mishguru/passwd
 RUN npm install -g @mishguru/migrate
-
 
 ###
 ### the real deal
@@ -164,6 +164,8 @@ RUN apt-get install -y tig
 RUN apt-get install -y man
 RUN apt-get install -y xsel
 RUN apt-get install -y xxd
+RUN apt-get install -y unzip
+RUN apt-get install -y mediainfo
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
@@ -179,11 +181,23 @@ RUN pip install --user neovim
 RUN pip3 install --user neovim
 
 # git
-RUN git config --global user.email 'george@mish.guru'
-RUN git config --global user.name 'George Czabania'
-RUN git config --global push.default 'simple'
-RUN git config --global url.git@github.com:.insteadOf 'https://github.com/'
-RUN git config --global url.git@bitbucket.org:.insteadOf 'https://bitbucket.org/'
+RUN git config --global user.email "george@mish.guru"
+RUN git config --global user.name "George Czabania"
+RUN git config --global push.default "simple"
+RUN git config --global url.git@github.com:.insteadOf "https://github.com/"
+RUN git config --global url.git@bitbucket.org:.insteadOf "https://bitbucket.org/"
+RUN git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+RUN git config --global color.ui true
+RUN git config --global color.diff-highlight.oldNormal    "red bold"
+RUN git config --global color.diff-highlight.oldHighlight "red bold 52"
+RUN git config --global color.diff-highlight.newNormal    "green bold"
+RUN git config --global color.diff-highlight.newHighlight "green bold 22"
+RUN git config --global color.diff.meta       "yellow"
+RUN git config --global color.diff.frag       "magenta bold"
+RUN git config --global color.diff.commit     "yellow bold"
+RUN git config --global color.diff.old        "red bold"
+RUN git config --global color.diff.new        "green bold"
+RUN git config --global color.diff.whitespace "red reverse"
 
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v8.11.1 /usr/local/lib/node
