@@ -166,6 +166,7 @@ RUN apt-get install -y xsel
 RUN apt-get install -y xxd
 RUN apt-get install -y unzip
 RUN apt-get install -y mediainfo
+RUN apt-get install -y adb
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
@@ -245,6 +246,8 @@ COPY --chown=admin:admin --from=dotfiles /root/.zprezto /home/admin/.zprezto
 COPY --chown=admin:admin --from=dotfiles /root/.tmux /home/admin/.tmux
 WORKDIR /home/admin/dotfiles
 RUN make apps
+WORKDIR /home/admin/.zprezto
+RUN git pull --rebase
 WORKDIR /home/admin
 
 CMD /usr/bin/zsh
