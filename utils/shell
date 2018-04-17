@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+if [[ "`docker ps | grep shell | head -c1 | wc -c`" -eq 0 ]]
+then
+docker run \
+  -d \
+  --name shell \
+  --network=host \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v ~/src:/home/admin/src \
+  -v ~/Dropbox:/home/admin/dropbox \
+  -v ~/shared:/home/admin/shared \
+  -v ~/Downloads:/home/admin/downloads \
+  -v /mnt/data/music:/home/admin/music \
+  --privileged \
+  stayradiated/shell \
+  tail -f /dev/null \
+  > /dev/null
+fi
+
+docker exec \
+  -it \
+  shell \
+  env COLUMNS=`tput cols` LINES=`tput lines` TERM=xterm \
+  /bin/bash -c 'stty cols $COLUMNS; stty rows $LINES; exec zsh'

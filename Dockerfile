@@ -49,6 +49,14 @@ WORKDIR /root
 ### apps
 ###
 
+# Rust
+FROM base as rust
+RUN curl https://sh.rustup.rs -sSf > /usr/local/src/rust.sh
+RUN sh /usr/local/src/rust.sh -y
+ENV PATH /root/.cargo/bin:$PATH
+RUN rustup override set stable
+RUN rustup update stable
+
 # Docker Compose
 FROM base as docker-compose
 RUN curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.20.1/docker-compose-$(uname -s)-$(uname -m)"
@@ -167,6 +175,8 @@ RUN apt-get install -y xxd
 RUN apt-get install -y unzip
 RUN apt-get install -y mediainfo
 RUN apt-get install -y adb
+RUN apt-get install -y eyed3
+RUN apt-get install -y bs1770gain
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
@@ -180,6 +190,11 @@ WORKDIR /home/admin
 # install neovim
 RUN pip install --user neovim
 RUN pip3 install --user neovim
+
+# beets
+RUN pip install --user beets requests pylast
+RUN mkdir -p /home/admin/.config/beets
+RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/admin/.config/beets/config.yaml
 
 # git
 RUN git config --global user.email "george@mish.guru"
@@ -211,6 +226,13 @@ RUN mkdir -p /home/admin/bin
 ENV GOROOT /usr/lib/go-1.10
 ENV GOPATH /home/admin
 ENV PATH /usr/lib/go-1.10/bin:/home/admin/bin:$PATH
+
+# rust
+copy --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
+ENV PATH /home/admin/.cargo/bin:$PATH
+
+# python
+ENV PATH /home/admin/.local/bin:$PATH
 
 # docker-compose
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
