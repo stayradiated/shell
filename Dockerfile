@@ -145,8 +145,8 @@ RUN git clone --depth 1 https://github.com/creationix/nvm
 WORKDIR /usr/local/src/nvm
 RUN git fetch --depth 1 origin tag v0.33.8
 RUN git reset --hard v0.33.8
-RUN bash -c "source nvm.sh && nvm install v8.11.1"
-ENV PATH /usr/local/src/nvm/versions/node/v8.11.1/bin:$PATH
+RUN bash -c "source nvm.sh && nvm install v10.0.0"
+ENV PATH /usr/local/src/nvm/versions/node/v10.0.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
 RUN npm install -g 1password
 RUN npm install -g tagrelease
@@ -216,7 +216,7 @@ RUN git config --global color.diff.new        "green bold"
 RUN git config --global color.diff.whitespace "red reverse"
 
 # nvm
-COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v8.11.1 /usr/local/lib/node
+COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
 ENV PATH /usr/local/lib/node/bin:$PATH
 
 # go
