@@ -148,6 +148,7 @@ RUN git reset --hard v0.33.8
 RUN bash -c "source nvm.sh && nvm install v10.0.0"
 ENV PATH /usr/local/src/nvm/versions/node/v10.0.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
+RUN npm install -g npm
 RUN npm install -g 1password
 RUN npm install -g tagrelease
 RUN npm install -g npm-check-updates
