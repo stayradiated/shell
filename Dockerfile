@@ -156,6 +156,13 @@ RUN npm install -g diff-so-fancy
 RUN npm install -g @mishguru/passwd
 RUN npm install -g @mishguru/migrate
 
+# Hub
+FROM go as hub
+WORKDIR /usr/local/src
+RUN git clone --depth=1 https://github.com/github/hub
+WORKDIR /usr/local/src/hub
+RUN ./script/build
+
 ###
 ### the real deal
 ###
@@ -163,21 +170,24 @@ RUN npm install -g @mishguru/migrate
 FROM base as shell
 
 # install apps
-RUN apt-get update
-RUN apt-get install -y tree
-RUN apt-get install -y safe-rm
-RUN apt-get install -y ranger
-RUN apt-get install -y sudo
-RUN apt-get install -y fasd
-RUN apt-get install -y tig
-RUN apt-get install -y man
-RUN apt-get install -y xsel
-RUN apt-get install -y xxd
-RUN apt-get install -y unzip
-RUN apt-get install -y mediainfo
-RUN apt-get install -y adb
-RUN apt-get install -y eyed3
-RUN apt-get install -y bs1770gain
+RUN apt-get update && apt-get install -y \
+  tree \
+  safe-rm \
+  ranger \
+  sudo \
+  fasd \
+  tig \
+  man \
+  xsel \
+  xxd \
+  unzip \
+  mediainfo \
+  adb \
+  eyed3 \
+  bs1770gain \
+  moreutils \
+  htop \
+  weechat
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
@@ -215,6 +225,12 @@ RUN git config --global color.diff.commit     "yellow bold"
 RUN git config --global color.diff.old        "red bold"
 RUN git config --global color.diff.new        "green bold"
 RUN git config --global color.diff.whitespace "red reverse"
+
+# weechat
+RUN pip install --user websocket-client
+RUN mkdir -p /home/admin/.weechat/python/autoload
+RUN wget https://raw.githubusercontent.com/wee-slack/wee-slack/master/wee_slack.py
+RUN mv wee_slack.py /home/admin/.weechat/python/autoload
 
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
@@ -255,6 +271,9 @@ COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 
 # clone
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
+
+# hub
+COPY --from=hub --chown=admin:admin /usr/local/src/hub/bin/hub /home/admin/bin/hub
 
 # copy files
 COPY --chown=admin:admin ./files ./
