@@ -229,8 +229,9 @@ RUN git config --global color.diff.whitespace "red reverse"
 # weechat
 RUN pip install --user websocket-client
 RUN mkdir -p /home/admin/.weechat/python/autoload
-RUN wget https://raw.githubusercontent.com/wee-slack/wee-slack/master/wee_slack.py
-RUN mv wee_slack.py /home/admin/.weechat/python/autoload
+RUN wget https://raw.githubusercontent.com/wee-slack/wee-slack/master/wee_slack.py -O /home/admin/.weechat/python/autoload/wee_slack.py
+RUN wget https://raw.githubusercontent.com/de-vri-es/weechat-autosort/master/autosort.py -O /home/admin/.weechat/python/autoload/autosort.py
+RUN wget https://raw.githubusercontent.com/keith/edit-weechat/master/edit.py -O /home/admin/.weechat/python/autoload/edit.py
 
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
