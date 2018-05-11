@@ -115,7 +115,7 @@ FROM neovim as dotfiles
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.2.4
+RUN git fetch && git reset --hard v1.2.5
 RUN make apps
 RUN nvim +qall || :
 
