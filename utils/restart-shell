@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-docker stop -t 0 shell > /dev/null
-docker rm shell > /dev/null
-./shell

@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+if [[ $@ == *--restart* ]]
+then
+  docker stop -t 0 shell
+  docker rm shell
+fi
+
 if [[ "`docker ps | grep shell | head -c1 | wc -c`" -eq 0 ]]
 then
-docker run \
+  docker run \
   -d \
   --name shell \
   --network=host \
@@ -20,6 +26,7 @@ fi
 
 docker exec \
   -it \
+  -e DISPLAY=$DISPLAY \
   shell \
   env COLUMNS=`tput cols` LINES=`tput lines` TERM=xterm \
   /bin/bash -c 'stty cols $COLUMNS; stty rows $LINES; exec zsh'
