@@ -110,12 +110,13 @@ RUN make CMAKE_BUILD_TYPE=Release
 RUN make install
 RUN rm -rf /usr/local/src/neovim
 
-# NEOVIM >> DOTFILES
-FROM neovim as dotfiles
+# NEOVIM + TMUX >> DOTFILES
+FROM base as dotfiles
+COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.2.7
+RUN git fetch && git reset --hard v1.2.8
 RUN make apps
 RUN nvim +qall || :
 
@@ -211,10 +212,11 @@ RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/adm
 RUN git config --global user.email "george@mish.guru"
 RUN git config --global user.name "George Czabania"
 RUN git config --global push.default "simple"
+RUN git config --global push.followTags "true"
 RUN git config --global url.git@github.com:.insteadOf "https://github.com/"
 RUN git config --global url.git@bitbucket.org:.insteadOf "https://bitbucket.org/"
 RUN git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
-RUN git config --global color.ui true
+RUN git config --global color.ui "true"
 RUN git config --global color.diff-highlight.oldNormal    "red bold"
 RUN git config --global color.diff-highlight.oldHighlight "red bold 52"
 RUN git config --global color.diff-highlight.newNormal    "green bold"
