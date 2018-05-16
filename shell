@@ -20,7 +20,9 @@ then
   -v /mnt/data/music:/home/admin/music \
   --privileged \
   stayradiated/shell \
-  /sbin/my_init --enable-insecure-key
+  /sbin/my_init
+
+  docker cp ~/.Xauthority shell:/home/admin/.Xauthority
 fi
 
 docker exec \
