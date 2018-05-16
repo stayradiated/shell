@@ -20,12 +20,12 @@ then
   -v /mnt/data/music:/home/admin/music \
   --privileged \
   stayradiated/shell \
-  tail -f /dev/null \
-  > /dev/null
+  /sbin/my_init --enable-insecure-key
 fi
 
 docker exec \
   -it \
+  -u admin \
   -e DISPLAY=$DISPLAY \
   shell \
   env COLUMNS=`tput cols` LINES=`tput lines` TERM=xterm \

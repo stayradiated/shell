@@ -1,38 +1,37 @@
-FROM ubuntu:17.10 as base
+FROM phusion/baseimage:0.10.0 as base
 
 # TERM environment
 ENV TERM=xterm-256color
 
+# Requirements for building dependencies
+RUN apt-get update && apt-get install -y \
+  apt-transport-https \
+  build-essential \
+  ca-certificates \
+  curl \
+  git \
+  iputils-ping \
+  jq \
+  libevent-dev \
+  libncurses5-dev \
+  locales  \
+  net-tools \
+  netcat-openbsd \
+  python-pip \
+  python3-pip \
+  socat \
+  software-properties-common \
+  tzdata \
+  wget \
+  zsh
+
 # Install Docker-CE
-RUN apt-get update
-RUN apt-get install -y apt-transport-https
-RUN apt-get install -y ca-certificates
-RUN apt-get install -y curl
-RUN apt-get install -y software-properties-common
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 RUN add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
-RUN apt-get update
-RUN apt-get install -y docker-ce
-
-# Common packages
-RUN apt-get install -y build-essential
-RUN apt-get install -y git
-RUN apt-get install -y iputils-ping
-RUN apt-get install -y jq
-RUN apt-get install -y libevent-dev
-RUN apt-get install -y libncurses5-dev
-RUN apt-get install -y locales 
-RUN apt-get install -y net-tools
-RUN apt-get install -y netcat-openbsd
-RUN apt-get install -y python-pip
-RUN apt-get install -y python3-pip
-RUN apt-get install -y socat
-RUN apt-get install -y tzdata
-RUN apt-get install -y wget
-RUN apt-get install -y zsh
+RUN apt-get update && apt-get install -y docker-ce
 
 # Locales
 ENV LANGUAGE=en_NZ.UTF-8
@@ -116,7 +115,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.2.8
+RUN git fetch && git reset --hard v1.3.1
 RUN make apps
 RUN nvim +qall || :
 
@@ -170,25 +169,26 @@ RUN ./script/build
 
 FROM base as shell
 
+RUN add-apt-repository ppa:aacebedo/fasd
+
 # install apps
 RUN apt-get update && apt-get install -y \
-  tree \
-  safe-rm \
-  ranger \
-  sudo \
-  fasd \
-  tig \
-  man \
-  xsel \
-  xxd \
-  unzip \
-  mediainfo \
   adb \
-  eyed3 \
   bs1770gain \
-  moreutils \
+  eyed3 \
+  fasd \
   htop \
-  weechat
+  man \
+  mediainfo \
+  moreutils \
+  ranger \
+  safe-rm \
+  sudo \
+  tig \
+  tree \
+  unzip \
+  weechat \
+  xsel
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
@@ -208,47 +208,19 @@ RUN pip install --user beets requests pylast
 RUN mkdir -p /home/admin/.config/beets
 RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/admin/.config/beets/config.yaml
 
-# git
-RUN git config --global user.email "george@mish.guru"
-RUN git config --global user.name "George Czabania"
-RUN git config --global push.default "simple"
-RUN git config --global push.followTags "true"
-RUN git config --global url.git@github.com:.insteadOf "https://github.com/"
-RUN git config --global url.git@bitbucket.org:.insteadOf "https://bitbucket.org/"
-RUN git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
-RUN git config --global color.ui "true"
-RUN git config --global color.diff-highlight.oldNormal    "red bold"
-RUN git config --global color.diff-highlight.oldHighlight "red bold 52"
-RUN git config --global color.diff-highlight.newNormal    "green bold"
-RUN git config --global color.diff-highlight.newHighlight "green bold 22"
-RUN git config --global color.diff.meta       "yellow"
-RUN git config --global color.diff.frag       "magenta bold"
-RUN git config --global color.diff.commit     "yellow bold"
-RUN git config --global color.diff.old        "red bold"
-RUN git config --global color.diff.new        "green bold"
-RUN git config --global color.diff.whitespace "red reverse"
-
 # weechat
 RUN pip install --user websocket-client
 
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
-ENV PATH /usr/local/lib/node/bin:$PATH
 
 # go
 COPY --from=go /usr/lib/go-1.10 /usr/lib/go-1.10
 COPY --from=go /usr/share/go-1.10 /usr/share/go-1.10
 RUN mkdir -p /home/admin/bin
-ENV GOROOT /usr/lib/go-1.10
-ENV GOPATH /home/admin
-ENV PATH /usr/lib/go-1.10/bin:/home/admin/bin:$PATH
 
 # rust
 copy --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
-ENV PATH /home/admin/.cargo/bin:$PATH
-
-# python
-ENV PATH /home/admin/.local/bin:$PATH
 
 # docker-compose
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
@@ -291,4 +263,10 @@ WORKDIR /home/admin/.zprezto
 RUN git pull --rebase
 WORKDIR /home/admin
 
-CMD /usr/bin/zsh
+RUN echo 'GOPATH=/home/admin' >> /home/admin/.zshrc
+RUN echo 'GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc
+RUN echo 'PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
+
+CMD ["/sbin/my_init"]
+USER root
+
