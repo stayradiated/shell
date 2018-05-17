@@ -11,7 +11,7 @@ then
   docker run \
   -d \
   --name shell \
-  --network=host \
+  --network host \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v ~/src:/home/admin/src \
   -v ~/Dropbox:/home/admin/dropbox \
