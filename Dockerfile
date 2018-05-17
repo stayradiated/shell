@@ -3,6 +3,9 @@ FROM phusion/baseimage:0.10.0 as base
 # TERM environment
 ENV TERM=xterm-256color
 
+# use latest version of git
+RUN add-apt-repository ppa:git-core/ppa
+
 # Requirements for building dependencies
 RUN apt-get update && apt-get install -y \
   apt-transport-https \
