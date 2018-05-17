@@ -169,25 +169,40 @@ RUN ./script/build
 
 FROM base as shell
 
+# fasd
 RUN add-apt-repository ppa:aacebedo/fasd
+
+# weechat
+RUN add-apt-repository \
+  "deb [arch=amd64] https://weechat.org/ubuntu \
+  $(lsb_release -cs) \
+  main"
+RUN apt-key adv \
+  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
+  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E
 
 # install apps
 RUN apt-get update && apt-get install -y \
   adb \
   bs1770gain \
+  dnsutils \
   eyed3 \
   fasd \
   htop \
   man \
   mediainfo \
   moreutils \
+  mysql-client \
   ranger \
   safe-rm \
   sudo \
   tig \
   tree \
   unzip \
-  weechat \
+  weechat-curses \
+  weechat-perl \
+  weechat-plugins \
+  weechat-python \
   xsel
 
 # setup admin user
