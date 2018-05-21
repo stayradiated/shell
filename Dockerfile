@@ -118,9 +118,9 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.3.1
+RUN git fetch && git reset --hard v1.4.0
 RUN make apps
-RUN nvim +qall || :
+RUN nvim +'call dein#install() | quit' || :
 
 # FZF
 FROM base as fzf
@@ -189,8 +189,8 @@ RUN apt-get update && apt-get install -y \
   adb \
   bs1770gain \
   dnsutils \
-  eyed3 \
   fasd \
+  ffmpeg \
   htop \
   man \
   mediainfo \
@@ -229,6 +229,9 @@ RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/adm
 # weechat
 RUN pip install --user websocket-client
 
+# eyeD3
+RUN pip install --user eyeD3
+
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
 
@@ -249,7 +252,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 # neovim
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
-RUN nvim +UpdateRemotePlugins\|qall || :
+RUN nvim +'UpdateRemotePlugins | quit' || :
 
 # pt
 COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
