@@ -206,7 +206,8 @@ RUN apt-get update && apt-get install -y \
   weechat-perl \
   weechat-plugins \
   weechat-python \
-  xsel
+  xsel \
+  zip
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin
