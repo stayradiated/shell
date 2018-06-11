@@ -94,16 +94,17 @@ RUN rm -rf /usr/local/src/tmux*
 FROM base as neovim
 WORKDIR /usr/local/src
 RUN apt-get install -y \
-  ninja-build \
-  libtool \
-  libtool-bin \
   autoconf \
   automake \
   cmake \
   g++ \
+  gettext \
+  libtool \
+  libtool-bin \
+  ninja-build \
   pkg-config \
-  unzip \
-  texinfo
+  texinfo \
+  unzip
 RUN git clone --depth 1 https://github.com/neovim/neovim
 WORKDIR /usr/local/src/neovim
 RUN git fetch --depth 1 origin tag nightly
@@ -161,10 +162,17 @@ RUN npm install -g @mishguru/migrate
 
 # Hub
 FROM go as hub
-WORKDIR /usr/local/src
-RUN git clone --depth=1 https://github.com/github/hub
-WORKDIR /usr/local/src/hub
-RUN ./script/build
+RUN apt-get update && apt-get install -y \
+  bsdmainutils \
+  groff \
+  ruby-dev
+RUN gem install bundler
+ENV GOPATH /usr/local
+RUN mkdir -p /usr/local/src/github.com/github
+RUN git clone --depth=1 https://github.com/github/hub /usr/local/src/github.com/github/hub
+WORKDIR /usr/local/src/github.com/github/hub
+RUN go get
+RUN make install prefix=/usr/local
 
 ###
 ### the real deal
@@ -266,7 +274,7 @@ COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
 
 # hub
-COPY --from=hub --chown=admin:admin /usr/local/src/hub/bin/hub /home/admin/bin/hub
+COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
 
 # copy files
 COPY --chown=admin:admin ./files ./
