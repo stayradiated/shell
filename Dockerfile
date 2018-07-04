@@ -119,7 +119,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.4.0
+RUN git fetch && git reset --hard v1.4.1
 RUN make apps
 RUN nvim +'call dein#install() | quit' || :
 
@@ -153,12 +153,13 @@ RUN bash -c "source nvm.sh && nvm install v10.0.0"
 ENV PATH /usr/local/src/nvm/versions/node/v10.0.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
 RUN npm install -g npm
-RUN npm install -g 1password
-RUN npm install -g tagrelease
-RUN npm install -g npm-check-updates
-RUN npm install -g diff-so-fancy
-RUN npm install -g @mishguru/passwd
+RUN npm install -g @mishguru/jack
 RUN npm install -g @mishguru/migrate
+RUN npm install -g @mishguru/mish
+RUN npm install -g @mishguru/passwd
+RUN npm install -g diff-so-fancy
+RUN npm install -g npm-check-updates
+RUN npm install -g tagrelease
 
 # Hub
 FROM go as hub
@@ -180,6 +181,9 @@ RUN make install prefix=/usr/local
 
 FROM base as shell
 
+# build args
+ARG DOCKER_GID
+
 # fasd
 RUN add-apt-repository ppa:aacebedo/fasd
 
@@ -200,8 +204,10 @@ RUN apt-get update && apt-get install -y \
   fasd \
   ffmpeg \
   htop \
+  httpie \
   man \
   mediainfo \
+  mitmproxy \
   moreutils \
   mysql-client \
   ranger \
@@ -218,6 +224,7 @@ RUN apt-get update && apt-get install -y \
   zip
 
 # setup admin user
+RUN groupmod -g $DOCKER_GID docker
 RUN useradd -s /usr/bin/zsh --create-home admin
 RUN echo "admin:admin" | chpasswd
 RUN adduser admin sudo
@@ -240,6 +247,10 @@ RUN pip install --user websocket-client
 
 # eyeD3
 RUN pip install --user eyeD3
+
+# awscli
+RUN pip install --user awscli
+RUN pip install --user awsebcli
 
 # nvm
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
@@ -293,9 +304,9 @@ WORKDIR /home/admin/.zprezto
 RUN git pull --rebase
 WORKDIR /home/admin
 
-RUN echo 'GOPATH=/home/admin' >> /home/admin/.zshrc
-RUN echo 'GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc
-RUN echo 'PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
+RUN echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc
+RUN echo 'export GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc
+RUN echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
 
 CMD ["/sbin/my_init"]
 USER root
