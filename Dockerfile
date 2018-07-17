@@ -149,10 +149,9 @@ RUN git clone --depth 1 https://github.com/creationix/nvm
 WORKDIR /usr/local/src/nvm
 RUN git fetch --depth 1 origin tag v0.33.8
 RUN git reset --hard v0.33.8
-RUN bash -c "source nvm.sh && nvm install v10.0.0"
-ENV PATH /usr/local/src/nvm/versions/node/v10.0.0/bin:$PATH
+RUN bash -c "source nvm.sh && nvm install v10.6.0"
+ENV PATH /usr/local/src/nvm/versions/node/v10.6.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
-RUN npm install -g npm
 RUN npm install -g @mishguru/jack
 RUN npm install -g @mishguru/migrate
 RUN npm install -g @mishguru/mish
@@ -253,7 +252,7 @@ RUN pip install --user awscli
 RUN pip install --user awsebcli
 
 # nvm
-COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.0.0 /usr/local/lib/node
+COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.6.0 /usr/local/lib/node
 
 # go
 COPY --from=go /usr/lib/go-1.10 /usr/lib/go-1.10
