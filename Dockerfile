@@ -152,6 +152,7 @@ RUN git reset --hard v0.33.8
 RUN bash -c "source nvm.sh && nvm install v10.6.0"
 ENV PATH /usr/local/src/nvm/versions/node/v10.6.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
+RUN npm config set save-exact true
 RUN npm install -g @mishguru/jack
 RUN npm install -g @mishguru/migrate
 RUN npm install -g @mishguru/mish
