@@ -161,6 +161,17 @@ RUN npm install -g diff-so-fancy
 RUN npm install -g npm-check-updates
 RUN npm install -g tagrelease
 
+# MILLER
+FROM base as miller
+RUN wget https://github.com/johnkerl/miller/releases/download/v5.3.0/mlr.linux.x86_64 -O mlr
+RUN chmod +x ./mlr
+
+# MIGRATE
+FROM base as migrate
+RUN wget https://github.com/golang-migrate/migrate/releases/download/v3.3.1/migrate.linux-amd64.tar.gz
+RUN tar xzvf migrate.linux-amd64.tar.gz && \
+  mv migrate.linux-amd64 migrate
+
 # Hub
 FROM go as hub
 RUN apt-get update && apt-get install -y \
@@ -280,6 +291,12 @@ COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
 # fzf
 COPY --from=fzf --chown=admin:admin /home/admin/.fzf /home/admin/.fzf
 COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
+
+# miller
+COPY --from=miller --chown=admin:admin /root/mlr /usr/local/bin/mlr
+
+# migrate
+COPY --from=migrate --chown=admin:admin /root/migrate /usr/local/bin/migrate
 
 # clone
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
