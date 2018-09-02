@@ -119,7 +119,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.4.1
+RUN git fetch && git reset --hard v1.4.2
 RUN make apps
 RUN nvim +'call dein#install() | quit' || :
 
@@ -185,6 +185,11 @@ RUN git clone --depth=1 https://github.com/github/hub /usr/local/src/github.com/
 WORKDIR /usr/local/src/github.com/github/hub
 RUN go get
 RUN make install prefix=/usr/local
+
+# PrettyPing
+FROM base as prettyping
+RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
+RUN chmod +x prettyping
 
 ###
 ### the real deal
@@ -303,6 +308,9 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
 
 # hub
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
+
+# prettyping
+COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
 
 # copy files
 COPY --chown=admin:admin ./files ./
