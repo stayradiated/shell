@@ -191,6 +191,10 @@ FROM base as prettyping
 RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
 RUN chmod +x prettyping
 
+# Bat
+FROM base as bat
+RUN wget https://github.com/sharkdp/bat/releases/download/v0.6.1/bat_0.6.1_amd64.deb -O bat.deb
+
 ###
 ### the real deal
 ###
@@ -238,6 +242,10 @@ RUN apt-get update && apt-get install -y \
   weechat-python \
   xsel \
   zip
+
+# bat
+COPY --from=bat /root/bat.deb /tmp/bat.deb
+RUN sudo dpkg -i /tmp/bat.deb && rm -rf /tmp/bat.deb
 
 # setup admin user
 RUN groupmod -g $DOCKER_GID docker
