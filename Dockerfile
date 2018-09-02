@@ -186,6 +186,11 @@ WORKDIR /usr/local/src/github.com/github/hub
 RUN go get
 RUN make install prefix=/usr/local
 
+# usql
+FROM base as usql
+RUN wget https://github.com/xo/usql/releases/download/v0.7.0/usql-0.7.0-linux-amd64.tar.bz2 -O usql.tar && \
+  tar xvf usql.tar
+
 # PrettyPing
 FROM base as prettyping
 RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
@@ -316,6 +321,9 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
 
 # hub
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
+
+# prettyping
+COPY --from=usql --chown=admin:admin /root/usql /usr/local/bin/usql
 
 # prettyping
 COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
