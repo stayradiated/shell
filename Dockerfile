@@ -160,6 +160,8 @@ RUN npm install -g @mishguru/passwd
 RUN npm install -g diff-so-fancy
 RUN npm install -g npm-check-updates
 RUN npm install -g tagrelease
+RUN npm install -g release-it
+RUN npm install -g resin
 
 # MILLER
 FROM base as miller
