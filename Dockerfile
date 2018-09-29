@@ -51,6 +51,18 @@ WORKDIR /root
 ### apps
 ###
 
+# Kubernetes
+FROM base as kubernetes
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    touch /etc/apt/sources.list.d/kubernetes.list && \
+    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
+     apt-get update && \
+     apt-get install -y kubectl
+RUN curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.29.0/minikube-linux-amd64 && \
+    chmod +x minikube && \
+    cp minikube /usr/local/bin/ && \
+    rm minikube
+
 # Rust
 FROM base as rust
 RUN curl https://sh.rustup.rs -sSf > /usr/local/src/rust.sh
@@ -161,7 +173,6 @@ RUN npm install -g diff-so-fancy
 RUN npm install -g npm-check-updates
 RUN npm install -g tagrelease
 RUN npm install -g release-it
-RUN npm install -g resin-cli
 
 # MILLER
 FROM base as miller
@@ -324,11 +335,15 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
 # hub
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
 
-# prettyping
+# usql
 COPY --from=usql --chown=admin:admin /root/usql /usr/local/bin/usql
 
 # prettyping
 COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
+
+# kubernetes
+COPY --from=kubernetes --chown=admin:admin /usr/bin/kubectl /usr/local/bin/kubectl
+COPY --from=kubernetes --chown=admin:admin /usr/local/bin/minikube /usr/local/bin/minikube
 
 # copy files
 COPY --chown=admin:admin ./files ./
