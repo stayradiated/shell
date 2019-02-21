@@ -131,7 +131,7 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 WORKDIR /usr/local/src
 RUN git clone https://github.com/stayradiated/dotfiles
 WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.4.2
+RUN git fetch && git reset --hard v1.4.3
 RUN make apps
 RUN nvim +'call dein#install() | quit' || :
 
@@ -159,8 +159,8 @@ FROM base as nvm
 WORKDIR /usr/local/src
 RUN git clone --depth 1 https://github.com/creationix/nvm
 WORKDIR /usr/local/src/nvm
-RUN git fetch --depth 1 origin tag v0.33.8
-RUN git reset --hard v0.33.8
+RUN git fetch --depth 1 origin tag v0.34.0
+RUN git reset --hard v0.34.0
 RUN bash -c "source nvm.sh && nvm install v10.9.0"
 ENV PATH /usr/local/src/nvm/versions/node/v10.9.0/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
@@ -185,7 +185,7 @@ RUN wget https://github.com/golang-migrate/migrate/releases/download/v3.3.1/migr
 RUN tar xzvf migrate.linux-amd64.tar.gz && \
   mv migrate.linux-amd64 migrate
 
-# Hub
+# HUB
 FROM go as hub
 RUN apt-get update && apt-get install -y \
   bsdmainutils \
@@ -196,8 +196,14 @@ ENV GOPATH /usr/local
 RUN mkdir -p /usr/local/src/github.com/github
 RUN git clone --depth=1 https://github.com/github/hub /usr/local/src/github.com/github/hub
 WORKDIR /usr/local/src/github.com/github/hub
+RUN git fetch --depth 1 origin tag v2.9.0
+RUN git reset --hard v2.9.0
 RUN go get
 RUN make install prefix=/usr/local
+
+# Z.LUA
+FROM base as zlua
+RUN wget https://raw.githubusercontent.com/skywind3000/z.lua/v1.5.6/z.lua
 
 # usql
 FROM base as usql
@@ -243,6 +249,7 @@ RUN apt-get update && apt-get install -y \
   ffmpeg \
   htop \
   httpie \
+  lua5.3 \
   man \
   mediainfo \
   mitmproxy \
@@ -338,6 +345,9 @@ COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
 # usql
 COPY --from=usql --chown=admin:admin /root/usql /usr/local/bin/usql
 
+# z.lua
+copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
+
 # prettyping
 COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
 
@@ -362,9 +372,11 @@ WORKDIR /home/admin/.zprezto
 RUN git pull --rebase
 WORKDIR /home/admin
 
-RUN echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc
-RUN echo 'export GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc
-RUN echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
+RUN \
+  echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc && \
+  echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc && \
+  echo 'export GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc && \
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
 
 CMD ["/sbin/my_init"]
 USER root
