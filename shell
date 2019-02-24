@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
-if [[ $@ == *--restart* ]]
+if [[ $@ == *--rm* ]]
 then
   docker stop -t 0 shell > /dev/null
   docker rm shell > /dev/null
+  exit 0
+fi
+
+if [[ $@ == *--restart* ]]
+then
+  docker stop -t 0 shell > /dev/null
+  docker start shell > /dev/null
 fi
 
 if [[ "`docker ps | grep shell | head -c1 | wc -c`" -eq 0 ]]

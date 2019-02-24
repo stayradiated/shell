@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.10.0 as base
+FROM phusion/baseimage:0.11 as base
 
 # TERM environment
 ENV TERM=xterm-256color
@@ -79,9 +79,8 @@ RUN chmod +x /usr/local/bin/docker-compose
 # GO
 FROM base as go
 RUN add-apt-repository ppa:gophers/archive
-RUN apt-get update
-RUN apt-get install -y golang-1.10-go
-ENV PATH /usr/lib/go-1.10/bin:$PATH
+RUN apt-get update && apt-get install -y golang-1.11-go
+ENV PATH /usr/lib/go-1.11/bin:$PATH
 
 # GO >> CLONE
 FROM go as clone
@@ -228,24 +227,21 @@ FROM base as shell
 # build args
 ARG DOCKER_GID
 
-# fasd
-RUN add-apt-repository ppa:aacebedo/fasd
-
 # weechat
+RUN apt-key adv \
+  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
+  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E
+
 RUN add-apt-repository \
   "deb [arch=amd64] https://weechat.org/ubuntu \
   $(lsb_release -cs) \
   main"
-RUN apt-key adv \
-  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
-  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E
 
 # install apps
 RUN apt-get update && apt-get install -y \
   adb \
   bs1770gain \
   dnsutils \
-  fasd \
   ffmpeg \
   htop \
   httpie \
@@ -305,8 +301,8 @@ RUN pip install --user awsebcli
 COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.9.0 /usr/local/lib/node
 
 # go
-COPY --from=go /usr/lib/go-1.10 /usr/lib/go-1.10
-COPY --from=go /usr/share/go-1.10 /usr/share/go-1.10
+COPY --from=go /usr/lib/go-1.11 /usr/lib/go-1.11
+COPY --from=go /usr/share/go-1.11 /usr/share/go-1.11
 RUN mkdir -p /home/admin/bin
 
 # rust
@@ -373,10 +369,9 @@ RUN git pull --rebase
 WORKDIR /home/admin
 
 RUN \
-  echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc && \
-  echo 'export GOPATH=/home/admin' >> /home/admin/.zshrc && \
-  echo 'export GOROOT=/usr/lib/go-1.10' >> /home/admin/.zshrc && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.10/bin:$PATH' >> /home/admin/.zshrc
+  echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
+  echo 'export GOROOT=/usr/lib/go-1.11' >> /home/admin/.zpath && \
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.11/bin:$PATH' >> /home/admin/.zpath
 
 CMD ["/sbin/my_init"]
 USER root
