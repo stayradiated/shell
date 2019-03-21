@@ -155,23 +155,28 @@ RUN rm -rf pt_linux_amd64
 
 # NVM
 FROM base as nvm
-WORKDIR /usr/local/src
-RUN git clone --depth 1 https://github.com/creationix/nvm
+ARG NVM_VERSION=v0.34.0
+RUN git clone --depth 1 https://github.com/creationix/nvm /usr/local/src/nvm
 WORKDIR /usr/local/src/nvm
-RUN git fetch --depth 1 origin tag v0.34.0
-RUN git reset --hard v0.34.0
-RUN bash -c "source nvm.sh && nvm install v10.9.0"
-ENV PATH /usr/local/src/nvm/versions/node/v10.9.0/bin:$PATH
+RUN git fetch --depth 1 origin tag $NVM_VERSION && git reset --hard $NVM_VERSION
+ARG NODE_VERSION=v11.11.0
+RUN bash -c "source nvm.sh && nvm install $NODE_VERSION"
+ENV PATH /usr/local/src/nvm/versions/node/$NODE_VERSION/bin:$PATH
 COPY ./files/.npmrc /root/.npmrc
-RUN npm config set save-exact true
-RUN npm install -g @mishguru/jack
-RUN npm install -g @mishguru/migrate
-RUN npm install -g @mishguru/mish
-RUN npm install -g @mishguru/passwd
-RUN npm install -g diff-so-fancy
-RUN npm install -g npm-check-updates
-RUN npm install -g tagrelease
-RUN npm install -g release-it
+RUN npm config set save-exact true && npm install -g \
+  @mishguru/admincli \
+  @mishguru/fandex \
+  @mishguru/jack \
+  @mishguru/logview-cli \
+  @mishguru/migrate \
+  @mishguru/mish \
+  @mishguru/passwd \
+  diff-so-fancy \
+  lerna \
+  npm-check-updates \
+  release-it \
+  tagrelease
+RUN mv /usr/local/src/nvm/versions/node/$NODE_VERSION /root/node
 
 # MILLER
 FROM base as miller
@@ -218,6 +223,11 @@ RUN chmod +x prettyping
 FROM base as bat
 RUN wget https://github.com/sharkdp/bat/releases/download/v0.6.1/bat_0.6.1_amd64.deb -O bat.deb
 
+## hugo
+FROM base as hugo
+RUN wget https://github.com/gohugoio/hugo/releases/download/v0.54.0/hugo_0.54.0_Linux-64bit.tar.gz -O hugo.tgz && \
+  tar xvf hugo.tgz
+
 ###
 ### the real deal
 ###
@@ -240,6 +250,7 @@ RUN add-apt-repository \
 # install apps
 RUN apt-get update && apt-get install -y \
   adb \
+  aria2 \
   bs1770gain \
   dnsutils \
   ffmpeg \
@@ -248,11 +259,12 @@ RUN apt-get update && apt-get install -y \
   lua5.3 \
   man \
   mediainfo \
-  mitmproxy \
   moreutils \
   mysql-client \
+  nmap \
   ranger \
   safe-rm \
+  scrot \
   sudo \
   tig \
   tree \
@@ -261,7 +273,7 @@ RUN apt-get update && apt-get install -y \
   weechat-perl \
   weechat-plugins \
   weechat-python \
-  xsel \
+  xclip \
   zip
 
 # bat
@@ -298,7 +310,7 @@ RUN pip install --user awscli
 RUN pip install --user awsebcli
 
 # nvm
-COPY --from=nvm --chown=admin:admin /usr/local/src/nvm/versions/node/v10.9.0 /usr/local/lib/node
+COPY --from=nvm --chown=admin:admin /root/node /usr/local/lib/node
 
 # go
 COPY --from=go /usr/lib/go-1.11 /usr/lib/go-1.11
@@ -346,6 +358,9 @@ copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
 
 # prettyping
 COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
+
+# prettyping
+COPY --from=hugo --chown=admin:admin /root/hugo /usr/local/bin/hugo
 
 # kubernetes
 COPY --from=kubernetes --chown=admin:admin /usr/bin/kubectl /usr/local/bin/kubectl

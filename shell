@@ -1,23 +1,31 @@
 #!/usr/bin/env bash
 
+INSTANCE_NAME="${INSTANCE_NAME:-shell}"
+
 if [[ $@ == *--rm* ]]
 then
-  docker stop -t 0 shell > /dev/null
-  docker rm shell > /dev/null
+  docker stop -t 0 $INSTANCE_NAME > /dev/null
+  docker rm $INSTANCE_NAME > /dev/null
+  exit 0
+fi
+
+if [[ $@ == *--stop* ]]
+then
+  docker stop -t 0 $INSTANCE_NAME > /dev/null
   exit 0
 fi
 
 if [[ $@ == *--restart* ]]
 then
-  docker stop -t 0 shell > /dev/null
-  docker start shell > /dev/null
+  docker stop -t 0 $INSTANCE_NAME > /dev/null
+  docker start $INSTANCE_NAME > /dev/null
 fi
 
-if [[ "`docker ps | grep shell | head -c1 | wc -c`" -eq 0 ]]
+if [[ "`docker ps | grep $INSTANCE_NAME | head -c1 | wc -c`" -eq 0 ]]
 then
   docker run \
   -d \
-  --name shell \
+  --name $INSTANCE_NAME \
   --network host \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v ~/src:/home/admin/src \
@@ -29,13 +37,13 @@ then
   stayradiated/shell \
   /sbin/my_init
 
-  docker cp ~/.Xauthority shell:/home/admin/.Xauthority
+  docker cp ~/.Xauthority $INSTANCE_NAME:/home/admin/.Xauthority
 fi
 
 docker exec \
   -it \
   -u admin \
   -e DISPLAY=$DISPLAY \
-  shell \
+  $INSTANCE_NAME \
   env COLUMNS=`tput cols` LINES=`tput lines` TERM=xterm \
   /bin/bash -c 'stty cols $COLUMNS; stty rows $LINES; exec zsh'
