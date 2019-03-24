@@ -231,7 +231,8 @@ RUN wget https://github.com/gohugoio/hugo/releases/download/v0.54.0/hugo_0.54.0_
 ## mbt
 FROM base as mbt
 ARG MBT_VERSION=0.21.0
-RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x86_64%2F${MBT_VERSION}%2F${MBT_VERSION}%2Fmbt_linux_x86_64" -O mbt
+RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x86_64%2F${MBT_VERSION}%2F${MBT_VERSION}%2Fmbt_linux_x86_64" -O mbt && \
+  chmod +x mbt
 
 ###
 ### the real deal
