@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
   software-properties-common \
   tzdata \
   wget \
+  unzip \
   zsh
 
 # Install Docker-CE
@@ -70,6 +71,8 @@ RUN sh /usr/local/src/rust.sh -y
 ENV PATH /root/.cargo/bin:$PATH
 RUN rustup override set stable
 RUN rustup update stable
+RUN cargo install sd
+RUN cargo install fd-find
 
 # Docker Compose
 FROM base as docker-compose
@@ -104,7 +107,7 @@ RUN rm -rf /usr/local/src/tmux*
 # NEOVIM
 FROM base as neovim
 WORKDIR /usr/local/src
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
   autoconf \
   automake \
   cmake \
@@ -114,12 +117,12 @@ RUN apt-get install -y \
   libtool-bin \
   ninja-build \
   pkg-config \
-  texinfo \
-  unzip
+  texinfo
+ARG NEOVIM_VERSION=v0.3.4
 RUN git clone --depth 1 https://github.com/neovim/neovim
 WORKDIR /usr/local/src/neovim
-RUN git fetch --depth 1 origin tag v0.3.1
-RUN git reset --hard v0.3.1
+RUN git fetch --depth 1 origin tag "${NEOVIM_VERSION}"
+RUN git reset --hard "${NEOVIM_VERSION}"
 RUN make CMAKE_BUILD_TYPE=Release
 RUN make install
 RUN rm -rf /usr/local/src/neovim
@@ -168,7 +171,6 @@ RUN npm config set save-exact true && npm install -g \
   @mishguru/fandex \
   @mishguru/jack \
   @mishguru/logview-cli \
-  @mishguru/migrate \
   @mishguru/mish \
   @mishguru/passwd \
   diff-so-fancy \
@@ -274,7 +276,6 @@ RUN apt-get update && apt-get install -y \
   sudo \
   tig \
   tree \
-  unzip \
   weechat-curses \
   weechat-perl \
   weechat-plugins \
@@ -296,12 +297,15 @@ RUN chown -R admin:admin /usr/local/src
 USER admin
 WORKDIR /home/admin
 
+# rust
+COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
+
 # install neovim
 RUN pip install --user neovim
 RUN pip3 install --user neovim
 
 # beets
-RUN pip install --user beets requests pylast
+RUN pip3 install --user beets requests pylast
 RUN mkdir -p /home/admin/.config/beets
 RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/admin/.config/beets/config.yaml
 
@@ -322,9 +326,6 @@ COPY --from=nvm --chown=admin:admin /root/node /usr/local/lib/node
 COPY --from=go /usr/lib/go-1.11 /usr/lib/go-1.11
 COPY --from=go /usr/share/go-1.11 /usr/share/go-1.11
 RUN mkdir -p /home/admin/bin
-
-# rust
-copy --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 
 # docker-compose
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
