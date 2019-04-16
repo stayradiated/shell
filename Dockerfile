@@ -385,7 +385,7 @@ RUN cd dotfiles && \
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go/bin:$PATH' >> /home/admin/.zpath
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
 
 CMD ["/sbin/my_init"]
 USER root
