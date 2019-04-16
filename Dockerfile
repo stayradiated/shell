@@ -52,57 +52,53 @@ WORKDIR /root
 ### apps
 ###
 
-# Kubernetes
-FROM base as kubernetes
-RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    touch /etc/apt/sources.list.d/kubernetes.list && \
-    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
-     apt-get update && \
-     apt-get install -y kubectl
-RUN curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.29.0/minikube-linux-amd64 && \
-    chmod +x minikube && \
-    cp minikube /usr/local/bin/ && \
-    rm minikube
-
 # Rust
 FROM base as rust
-RUN curl https://sh.rustup.rs -sSf > /usr/local/src/rust.sh
-RUN sh /usr/local/src/rust.sh -y
+ARG RUST_VERSION=1.34.0
+RUN wget -O rust.sh "https://sh.rustup.rs" && \
+  sh rust.sh -y --default-toolchain "${RUST_VERSION}" && \
+  rm rust.sh
 ENV PATH /root/.cargo/bin:$PATH
-RUN rustup override set stable
-RUN rustup update stable
-RUN cargo install sd
-RUN cargo install fd-find
+RUN cargo install --version 0.5.0 sd
+RUN cargo install --version 7.3.0 fd-find
+RUN cargo install --version 11.0.0 ripgrep
 
 # Docker Compose
 FROM base as docker-compose
-RUN curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.20.1/docker-compose-$(uname -s)-$(uname -m)"
-RUN chmod +x /usr/local/bin/docker-compose
+ARG DOCKER_COMPOSE_VERSION=1.24.0
+RUN wget -O docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64" && \
+  chmod +x docker-compose && \
+  mv docker-compose /usr/local/bin/docker-compose
 
 # GO
 FROM base as go
-RUN add-apt-repository ppa:gophers/archive
-RUN apt-get update && apt-get install -y golang-1.11-go
-ENV PATH /usr/lib/go-1.11/bin:$PATH
+ARG GO_VERSION=1.12.4
+RUN wget -O go.tgz "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" && \
+  tar xzvf go.tgz && \
+  mv go /usr/local/go && \
+  rm -rf go.tgz
+ENV PATH "/usr/local/go/bin:${PATH}"
 
 # GO >> CLONE
 FROM go as clone
-WORKDIR /usr/local/src
-RUN git clone https://github.com/stayradiated/clone
-WORKDIR /usr/local/src/clone
 ENV GOPATH /usr/local
-RUN go install
+WORKDIR /usr/local/src
+RUN git clone https://github.com/stayradiated/clone && \
+  cd clone && \
+  go install && \
+  rm -rf /usr/local/src/github.com
 
 # TMUX
 FROM base as tmux
-WORKDIR /usr/local/src
-RUN wget https://github.com/tmux/tmux/releases/download/2.6/tmux-2.6.tar.gz
-RUN tar xzvf tmux-2.6.tar.gz
-WORKDIR /usr/local/src/tmux-2.6
-RUN ./configure
-RUN make
-RUN make install
-RUN rm -rf /usr/local/src/tmux*
+ARG TMUX_VERSION=2.8
+RUN wget -O tmux.tgz "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz" && \
+  tar xzvf tmux.tgz && \
+  cd "tmux-${TMUX_VERSION}" && \
+  ./configure && \
+  make && \
+  make install && \
+  cd .. && \
+  rm -rf tmux tmux.tgz
 
 # NEOVIM
 FROM base as neovim
@@ -119,52 +115,43 @@ RUN apt-get update && apt-get install -y \
   pkg-config \
   texinfo
 ARG NEOVIM_VERSION=v0.3.4
-RUN git clone --depth 1 https://github.com/neovim/neovim
-WORKDIR /usr/local/src/neovim
-RUN git fetch --depth 1 origin tag "${NEOVIM_VERSION}"
-RUN git reset --hard "${NEOVIM_VERSION}"
-RUN make CMAKE_BUILD_TYPE=Release
-RUN make install
-RUN rm -rf /usr/local/src/neovim
+RUN git clone --depth 1 https://github.com/neovim/neovim && \
+  cd neovim && \
+  git fetch --depth 1 origin tag "${NEOVIM_VERSION}" && \
+  git reset --hard "${NEOVIM_VERSION}" && \
+  make CMAKE_BUILD_TYPE=Release && \
+  make install && \
+  cd .. && \
+  rm -rf neovim
 
-# NEOVIM + TMUX >> DOTFILES
+# DOTFILES
 FROM base as dotfiles
-COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
-WORKDIR /usr/local/src
-RUN git clone https://github.com/stayradiated/dotfiles
-WORKDIR /usr/local/src/dotfiles
-RUN git fetch && git reset --hard v1.4.3
-RUN make apps
-RUN nvim +'call dein#install() | quit' || :
+ARG DOTFILES_VERSION=v1.4.4
+RUN git clone https://github.com/stayradiated/dotfiles && \
+  cd dotfiles && \
+  git fetch && \
+  git reset --hard "${DOTFILES_VERSION}"
 
 # FZF
 FROM base as fzf
-RUN mkdir -p /home/admin
-WORKDIR /home/admin
-RUN git clone --depth=1 https://github.com/junegunn/fzf .fzf
-WORKDIR /home/admin/.fzf
-RUN git fetch  --depth 1 origin tag 0.17.0
-RUN git reset --hard 0.17.0
-RUN ./install --all
-
-# PT
-FROM base as pt
-WORKDIR /usr/local/src
-RUN wget https://github.com/monochromegane/the_platinum_searcher/releases/download/v2.1.5/pt_linux_amd64.tar.gz
-RUN tar xzvf pt_linux_amd64.tar.gz
-RUN rm -rf pt_linux_amd64.tar.gz
-RUN mv pt_linux_amd64/pt /usr/local/bin
-RUN rm -rf pt_linux_amd64
+ARG FZF_VERSION=0.17.0
+RUN git clone --depth=1 https://github.com/junegunn/fzf .fzf && \
+  cd .fzf && \
+  git fetch --depth 1 origin tag "${FZF_VERSION}" && \
+  git reset --hard "${FZF_VERSION}" && \
+  ./install --all
 
 # NVM
 FROM base as nvm
 ARG NVM_VERSION=v0.34.0
-RUN git clone --depth 1 https://github.com/creationix/nvm /usr/local/src/nvm
-WORKDIR /usr/local/src/nvm
-RUN git fetch --depth 1 origin tag $NVM_VERSION && git reset --hard $NVM_VERSION
 ARG NODE_VERSION=v11.11.0
-RUN bash -c "source nvm.sh && nvm install $NODE_VERSION"
-ENV PATH /usr/local/src/nvm/versions/node/$NODE_VERSION/bin:$PATH
+RUN git clone --depth 1 https://github.com/creationix/nvm && \
+  cd nvm && \
+  git fetch --depth 1 origin tag $NVM_VERSION && \
+  git reset --hard $NVM_VERSION && \
+  bash -c "source nvm.sh && nvm install ${NODE_VERSION}" && \
+  mv "versions/node/${NODE_VERSION}" /usr/local/lib/node
+ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN npm config set save-exact true && npm install -g \
   @mishguru/admincli \
@@ -178,63 +165,82 @@ RUN npm config set save-exact true && npm install -g \
   npm-check-updates \
   release-it \
   tagrelease
-RUN mv /usr/local/src/nvm/versions/node/$NODE_VERSION /root/node
 
 # MILLER
 FROM base as miller
-RUN wget https://github.com/johnkerl/miller/releases/download/v5.3.0/mlr.linux.x86_64 -O mlr
-RUN chmod +x ./mlr
+ARG MILLER_VERSION=5.4.0
+RUN wget -O mlr "https://github.com/johnkerl/miller/releases/download/${MILLER_VERSION}/mlr.linux.x86_64" && \
+  chmod +x ./mlr && \
+  mv mlr /usr/local/bin/mlr
 
-# MIGRATE
-FROM base as migrate
-RUN wget https://github.com/golang-migrate/migrate/releases/download/v3.3.1/migrate.linux-amd64.tar.gz
-RUN tar xzvf migrate.linux-amd64.tar.gz && \
-  mv migrate.linux-amd64 migrate
+# RANCHER
+FROM base as rancher
+ARG RANCHER_VERSION=v2.2.0
+RUN wget -O rancher.tgz "https://github.com/rancher/cli/releases/download/${RANCHER_VERSION}/rancher-linux-amd64-${RANCHER_VERSION}.tar.gz" && \
+  tar xzvf rancher.tgz && \
+  mv "rancher-${RANCHER_VERSION}/rancher" /usr/local/bin/rancher && \
+  chmod +x /usr/local/bin/rancher && \
+  rm -rf "rancher-${RANCHER_VERSION}"
 
 # HUB
-FROM go as hub
-RUN apt-get update && apt-get install -y \
-  bsdmainutils \
-  groff \
-  ruby-dev
-RUN gem install bundler
-ENV GOPATH /usr/local
-RUN mkdir -p /usr/local/src/github.com/github
-RUN git clone --depth=1 https://github.com/github/hub /usr/local/src/github.com/github/hub
-WORKDIR /usr/local/src/github.com/github/hub
-RUN git fetch --depth 1 origin tag v2.9.0
-RUN git reset --hard v2.9.0
-RUN go get
-RUN make install prefix=/usr/local
+FROM base as hub
+ARG HUB_VERSION=2.11.2
+RUN wget -O hub.tgz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-arm64-${HUB_VERSION}.tgz" && \
+  tar xzvf hub.tgz && \
+  cd "hub-linux-arm64-${HUB_VERSION}" && \
+  mv bin/hub /usr/local/bin/hub && \
+  cd .. && \
+  rm -rf "hub-linux-arm64-${HUB_VERSION}" hub.tgz
 
 # Z.LUA
 FROM base as zlua
-RUN wget https://raw.githubusercontent.com/skywind3000/z.lua/v1.5.6/z.lua
+ARG ZLUA_VERSION=1.7.0
+RUN wget "https://raw.githubusercontent.com/skywind3000/z.lua/v${ZLUA_VERSION}/z.lua"
 
-# usql
+# USQL
 FROM base as usql
-RUN wget https://github.com/xo/usql/releases/download/v0.7.0/usql-0.7.0-linux-amd64.tar.bz2 -O usql.tar && \
-  tar xvf usql.tar
+ARG USQL_VERSION=0.7.1
+RUN wget -O usql.tar.bz2 "https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-${USQL_VERSION}-linux-amd64.tar.bz2" && \
+  tar xvf usql.tar.bz2 && \
+  mv usql /usr/local/bin/usql && \
+  rm -rf usql.tar.bz2
 
-# PrettyPing
+# PRETTYPING
 FROM base as prettyping
-RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
-RUN chmod +x prettyping
+RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping && \
+  chmod +x prettyping && \
+  mv prettyping /usr/local/bin/prettyping
 
-# Bat
+# BAT
 FROM base as bat
-RUN wget https://github.com/sharkdp/bat/releases/download/v0.6.1/bat_0.6.1_amd64.deb -O bat.deb
+ARG BAT_VERSION=0.10.0
+RUN wget -O bat.tgz "https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz" && \
+  tar xzvf bat.tgz && \
+  mv "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu/bat" /usr/local/bin/bat && \
+  rm -rf "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu" bat.tgz
 
-## hugo
+## HUGO
 FROM base as hugo
-RUN wget https://github.com/gohugoio/hugo/releases/download/v0.54.0/hugo_0.54.0_Linux-64bit.tar.gz -O hugo.tgz && \
-  tar xvf hugo.tgz
+ARG HUGO_VERSION=0.54.0
+RUN wget -O hugo.tgz "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" && \
+  tar xvf hugo.tgz && \
+  mv hugo /usr/local/bin/hugo && \
+  rm -rf hugo.tgz
 
-## mbt
+## MBT
 FROM base as mbt
 ARG MBT_VERSION=0.21.0
 RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x86_64%2F${MBT_VERSION}%2F${MBT_VERSION}%2Fmbt_linux_x86_64" -O mbt && \
-  chmod +x mbt
+  chmod +x mbt && \
+  mv mbt /usr/local/bin/mbt
+
+### ADB
+FROM base as adb
+RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools-latest-linux.zip" && \
+  unzip tools.zip && \
+  mv platform-tools/adb /usr/local/bin/adb && \
+  mv platform-tools/fastboot /usr/local/bin/fastboot && \
+  rm -rf platform-tools
 
 ###
 ### the real deal
@@ -245,23 +251,24 @@ FROM base as shell
 # build args
 ARG DOCKER_GID
 
-# weechat
+# weechat ppa
 RUN apt-key adv \
   --keyserver hkp://p80.pool.sks-keyservers.net:80 \
-  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E
-
-RUN add-apt-repository \
-  "deb [arch=amd64] https://weechat.org/ubuntu \
-  $(lsb_release -cs) \
-  main"
+  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && \
+  add-apt-repository \
+    "deb [arch=amd64] https://weechat.org/ubuntu \
+    $(lsb_release -cs) \
+    main"
 
 # install apps
 RUN apt-get update && apt-get install -y \
-  adb \
+  aria2 \
   aria2 \
   bs1770gain \
+  ddgr \
   dnsutils \
   ffmpeg \
+  firefox \
   htop \
   httpie \
   lua5.3 \
@@ -270,7 +277,11 @@ RUN apt-get update && apt-get install -y \
   moreutils \
   mysql-client \
   nmap \
+  nnn \
+  pdd \
+  pv \
   ranger \
+  rsync \
   safe-rm \
   scrot \
   sudo \
@@ -283,120 +294,98 @@ RUN apt-get update && apt-get install -y \
   xclip \
   zip
 
-# bat
-COPY --from=bat /root/bat.deb /tmp/bat.deb
-RUN sudo dpkg -i /tmp/bat.deb && rm -rf /tmp/bat.deb
-
 # setup admin user
-RUN groupmod -g $DOCKER_GID docker
-RUN useradd -s /usr/bin/zsh --create-home admin
-RUN echo "admin:admin" | chpasswd
-RUN adduser admin sudo
-RUN adduser admin docker
-RUN chown -R admin:admin /usr/local/src
+RUN groupmod -g $DOCKER_GID docker && \
+  useradd -s /usr/bin/zsh --create-home admin && \
+  echo "admin:admin" | chpasswd && \
+  adduser admin sudo && \
+  adduser admin docker && \
+  mkdir -p /home/admin/bin
+
+# switch to admin
 USER admin
 WORKDIR /home/admin
 
-# rust
+# beets
+RUN pip3 install --user beets requests pylast eyeD3
+
+# ADB
+COPY --from=adb /usr/local/bin/fastboot /usr/local/bin/adb /usr/local/bin/
+
+# BAT
+COPY --from=bat /usr/local/bin/bat /usr/local/bin/bat
+
+# RUST
 COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 
-# install neovim
-RUN pip install --user neovim
-RUN pip3 install --user neovim
+# NVM
+COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
 
-# beets
-RUN pip3 install --user beets requests pylast
-RUN mkdir -p /home/admin/.config/beets
-RUN ln -s /home/admin/src/bitbucket.org/stayradiated/beets/config.yaml /home/admin/.config/beets/config.yaml
+# GO
+COPY --from=go /usr/local/go /usr/local/go
 
-# weechat
-RUN pip install --user websocket-client
-
-# eyeD3
-RUN pip install --user eyeD3
-
-# awscli
-RUN pip install --user awscli
-RUN pip install --user awsebcli
-
-# nvm
-COPY --from=nvm --chown=admin:admin /root/node /usr/local/lib/node
-
-# go
-COPY --from=go /usr/lib/go-1.11 /usr/lib/go-1.11
-COPY --from=go /usr/share/go-1.11 /usr/share/go-1.11
-RUN mkdir -p /home/admin/bin
-
-# docker-compose
+# DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
-# tmux
+# TMUX
 COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 
-# neovim
+# NEOVIM
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
-RUN nvim +'UpdateRemotePlugins | quit' || :
+RUN pip install --user neovim && \
+  pip3 install --user neovim && \
+  nvim +'UpdateRemotePlugins | quit' || :
 
-# pt
-COPY --from=pt /usr/local/bin/pt /usr/local/bin/pt
+# FZF
+COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /root/.fzf /home/admin/
 
-# fzf
-COPY --from=fzf --chown=admin:admin /home/admin/.fzf /home/admin/.fzf
-COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
+# MILLER
+COPY --from=miller --chown=admin:admin /usr/local/bin/mlr /usr/local/bin/mlr
 
-# miller
-COPY --from=miller --chown=admin:admin /root/mlr /usr/local/bin/mlr
-
-# migrate
-COPY --from=migrate --chown=admin:admin /root/migrate /usr/local/bin/migrate
-
-# clone
+# CLONE
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
 
-# hub
+# HUB
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
 
-# usql
-COPY --from=usql --chown=admin:admin /root/usql /usr/local/bin/usql
+# USQL
+COPY --from=usql --chown=admin:admin /usr/local/bin/usql /usr/local/bin/usql
 
-# z.lua
+# Z.LUA
 copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
 
-# prettyping
-COPY --from=prettyping --chown=admin:admin /root/prettyping /usr/local/bin/prettyping
+# PRETTYPING
+COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
 
-# hugo
-COPY --from=hugo --chown=admin:admin /root/hugo /usr/local/bin/hugo
+# HUGO
+COPY --from=hugo --chown=admin:admin /usr/local/bin/hugo /usr/local/bin/hugo
 
 # mbt
-COPY --from=mbt --chown=admin:admin /root/mbt /usr/local/bin/mbt
+COPY --from=mbt --chown=admin:admin /usr/local/bin/mbt /usr/local/bin/mbt
 
-# kubernetes
-COPY --from=kubernetes --chown=admin:admin /usr/bin/kubectl /usr/local/bin/kubectl
-COPY --from=kubernetes --chown=admin:admin /usr/local/bin/minikube /usr/local/bin/minikube
+# rancher
+COPY --from=rancher --chown=admin:admin /usr/local/bin/rancher /usr/local/bin/rancher
 
 # copy files
 COPY --chown=admin:admin ./files ./
 
 # allow certain ssh hosts
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-RUN ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
+RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts && \
+  ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
 
 # dotfiles
-COPY --chown=admin:admin --from=dotfiles /usr/local/src/dotfiles /home/admin/dotfiles
-COPY --chown=admin:admin --from=dotfiles /root/.zprezto /home/admin/.zprezto
-COPY --chown=admin:admin --from=dotfiles /root/.tmux /home/admin/.tmux
-WORKDIR /home/admin/dotfiles
-RUN make apps
-WORKDIR /home/admin/.zprezto
-RUN git pull --rebase
-WORKDIR /home/admin
+COPY --chown=admin:admin --from=dotfiles /root/dotfiles /home/admin/dotfiles
+RUN cd dotfiles && \
+  make apps && \
+  cd ../.zprezto && \
+  git pull --rebase && \
+  nvim +':silent | call dein#update() | quit' || :
 
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
-  echo 'export GOROOT=/usr/lib/go-1.11' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go-1.11/bin:$PATH' >> /home/admin/.zpath
+  echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/lib/go/bin:$PATH' >> /home/admin/.zpath
 
 CMD ["/sbin/my_init"]
 USER root
