@@ -341,7 +341,8 @@ RUN pip install --user neovim && \
   nvim +'UpdateRemotePlugins | quit' || :
 
 # FZF
-COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /root/.fzf/ /home/admin/
+COPY --from=fzf --chown=admin:admin /root/.fzf /home/admin/.fzf
+COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 
 # MILLER
 COPY --from=miller --chown=admin:admin /usr/local/bin/mlr /usr/local/bin/mlr
