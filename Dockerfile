@@ -135,16 +135,19 @@ RUN git clone https://github.com/stayradiated/dotfiles && \
 # FZF
 FROM base as fzf
 ARG FZF_VERSION=0.17.0
-RUN git clone --depth=1 https://github.com/junegunn/fzf .fzf && \
-  cd .fzf && \
+RUN mkdir -p /home/admin && \
+  git clone --depth=1 https://github.com/junegunn/fzf /home/admin/.fzf && \
+  cd /home/admin/.fzf && \
   git fetch --depth 1 origin tag "${FZF_VERSION}" && \
   git reset --hard "${FZF_VERSION}" && \
-  ./install --all
+  ./install --all && \
+  cd && \
+  mv /home/admin/.fzf /root/.fzf
 
 # NVM
 FROM base as nvm
 ARG NVM_VERSION=v0.34.0
-ARG NODE_VERSION=v11.11.0
+ARG NODE_VERSION=v11.14.0
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -154,17 +157,17 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN npm config set save-exact true && npm install -g \
-  @mishguru/admincli \
-  @mishguru/fandex \
-  @mishguru/jack \
-  @mishguru/logview-cli \
-  @mishguru/mish \
-  @mishguru/passwd \
-  diff-so-fancy \
-  lerna \
-  npm-check-updates \
-  release-it \
-  tagrelease
+  @mishguru/admincli@0.5.0 \
+  @mishguru/fandex@0.1.0 \
+  @mishguru/jack@4.9.0 \
+  @mishguru/logview-cli@1.7.0 \
+  @mishguru/mish@3.2.0 \
+  @mishguru/passwd@3.0.0 \
+  diff-so-fancy@1.2.5 \
+  lerna@3.13.2 \
+  npm-check-updates@3.1.8 \
+  release-it@10.4.2 \
+  tagrelease@1.0.1
 
 # MILLER
 FROM base as miller
@@ -338,7 +341,7 @@ RUN pip install --user neovim && \
   nvim +'UpdateRemotePlugins | quit' || :
 
 # FZF
-COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /root/.fzf /home/admin/
+COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /root/.fzf/ /home/admin/
 
 # MILLER
 COPY --from=miller --chown=admin:admin /usr/local/bin/mlr /usr/local/bin/mlr
