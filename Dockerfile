@@ -30,12 +30,13 @@ RUN apt-get update && apt-get install -y \
   zsh
 
 # Install Docker-CE
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-RUN add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-RUN apt-get update && apt-get install -y docker-ce
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+  add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable" && \
+  apt-get update && \
+  apt-get install -y docker-ce
 
 # Locales
 ENV LANGUAGE=en_NZ.UTF-8
@@ -144,7 +145,7 @@ RUN mkdir -p /home/admin && \
   cd && \
   mv /home/admin/.fzf /root/.fzf
 
-# NVM
+# NODE
 FROM base as nvm
 ARG NVM_VERSION=v0.34.0
 ARG NODE_VERSION=v11.14.0
@@ -188,12 +189,12 @@ RUN wget -O rancher.tgz "https://github.com/rancher/cli/releases/download/${RANC
 # HUB
 FROM base as hub
 ARG HUB_VERSION=2.11.2
-RUN wget -O hub.tgz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-arm64-${HUB_VERSION}.tgz" && \
+RUN wget -O hub.tgz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz" && \
   tar xzvf hub.tgz && \
-  cd "hub-linux-arm64-${HUB_VERSION}" && \
+  cd "hub-linux-amd64-${HUB_VERSION}" && \
   mv bin/hub /usr/local/bin/hub && \
   cd .. && \
-  rm -rf "hub-linux-arm64-${HUB_VERSION}" hub.tgz
+  rm -rf "hub-linux-amd64-${HUB_VERSION}" hub.tgz
 
 # Z.LUA
 FROM base as zlua
@@ -312,26 +313,18 @@ WORKDIR /home/admin
 # beets
 RUN pip3 install --user beets requests pylast eyeD3
 
-# ADB
-COPY --from=adb /usr/local/bin/fastboot /usr/local/bin/adb /usr/local/bin/
-
-# BAT
-COPY --from=bat /usr/local/bin/bat /usr/local/bin/bat
+###
+### COPY LARGE DIRECTORIES
+###
 
 # RUST
 COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 
-# NVM
-COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
-
 # GO
 COPY --from=go /usr/local/go /usr/local/go
 
-# DOCKER-COMPOSE
-COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
-
-# TMUX
-COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
+# NODE
+COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
 
 # NEOVIM
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
@@ -339,6 +332,22 @@ COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
 RUN pip install --user neovim && \
   pip3 install --user neovim && \
   nvim +'UpdateRemotePlugins | quit' || :
+
+###
+### COPY SINGLE BINARIES
+###
+
+# DOCKER-COMPOSE
+COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
+
+# ADB
+COPY --from=adb /usr/local/bin/fastboot /usr/local/bin/adb /usr/local/bin/
+
+# BAT
+COPY --from=bat /usr/local/bin/bat /usr/local/bin/bat
+
+# TMUX
+COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 
 # FZF
 COPY --from=fzf --chown=admin:admin /root/.fzf /home/admin/.fzf
@@ -348,10 +357,10 @@ COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 COPY --from=miller --chown=admin:admin /usr/local/bin/mlr /usr/local/bin/mlr
 
 # CLONE
-COPY --from=clone --chown=admin:admin /usr/local/bin/clone /home/admin/bin/clone
+COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
 
 # HUB
-COPY --from=hub --chown=admin:admin /usr/local/bin/hub /home/admin/bin/hub
+COPY --from=hub --chown=admin:admin /usr/local/bin/hub /usr/local/bin/hub
 
 # USQL
 COPY --from=usql --chown=admin:admin /usr/local/bin/usql /usr/local/bin/usql
@@ -370,6 +379,10 @@ COPY --from=mbt --chown=admin:admin /usr/local/bin/mbt /usr/local/bin/mbt
 
 # rancher
 COPY --from=rancher --chown=admin:admin /usr/local/bin/rancher /usr/local/bin/rancher
+
+###
+### FINISHING UP
+###
 
 # copy files
 COPY --chown=admin:admin ./files ./
