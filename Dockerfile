@@ -64,6 +64,15 @@ RUN cargo install --version 0.5.0 sd
 RUN cargo install --version 7.3.0 fd-find
 RUN cargo install --version 11.0.0 ripgrep
 
+# ALACRITTY
+FROM rust as alacritty
+RUN apt-get update && apt-get install -y \
+  cmake \
+  pkg-config \
+  libfreetype6-dev \
+  libfontconfig1-dev \
+  xclip
+RUN cargo install --git https://github.com/jwilm/alacritty
 # Docker Compose
 FROM base as docker-compose
 ARG DOCKER_COMPOSE_VERSION=1.24.0
@@ -317,8 +326,6 @@ RUN pip3 install --user beets requests pylast eyeD3
 ### COPY LARGE DIRECTORIES
 ###
 
-# RUST
-COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 
 # GO
 COPY --from=go /usr/local/go /usr/local/go
@@ -337,6 +344,16 @@ RUN pip install --user neovim && \
 ### COPY SINGLE BINARIES
 ###
 
+# RIPGREP
+COPY --from=rust --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin/rg
+
+# FD-FIND
+COPY --from=rust --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin/fd
+
+# SD
+COPY --from=rust --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin/sd
+# ALACRITTY
+COPY --from=alacritty --chown=admin:admin /root/.cargo/bin/alacritty /usr/local/bin/alacritty
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
