@@ -177,7 +177,8 @@ RUN npm config set save-exact true && npm install -g \
   lerna@3.13.2 \
   npm-check-updates@3.1.8 \
   release-it@10.4.2 \
-  tagrelease@1.0.1
+  tagrelease@1.0.1 \
+  yarn@1.15.2
 
 # MILLER
 FROM base as miller
