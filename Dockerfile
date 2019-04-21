@@ -73,6 +73,7 @@ RUN apt-get update && apt-get install -y \
   libfontconfig1-dev \
   xclip
 RUN cargo install --git https://github.com/jwilm/alacritty
+
 # Docker Compose
 FROM base as docker-compose
 ARG DOCKER_COMPOSE_VERSION=1.24.0
@@ -262,9 +263,6 @@ RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools-l
 
 FROM base as shell
 
-# build args
-ARG DOCKER_GID
-
 # weechat ppa
 RUN apt-key adv \
   --keyserver hkp://p80.pool.sks-keyservers.net:80 \
@@ -309,11 +307,9 @@ RUN apt-get update && apt-get install -y \
   zip
 
 # setup admin user
-RUN groupmod -g $DOCKER_GID docker && \
-  useradd -s /usr/bin/zsh --create-home admin && \
+RUN useradd -s /usr/bin/zsh --create-home admin && \
   echo "admin:admin" | chpasswd && \
   adduser admin sudo && \
-  adduser admin docker && \
   mkdir -p /home/admin/bin
 
 # switch to admin
@@ -326,7 +322,6 @@ RUN pip3 install --user beets requests pylast eyeD3
 ###
 ### COPY LARGE DIRECTORIES
 ###
-
 
 # GO
 COPY --from=go /usr/local/go /usr/local/go
@@ -353,8 +348,10 @@ COPY --from=rust --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin/fd
 
 # SD
 COPY --from=rust --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin/sd
+
 # ALACRITTY
 COPY --from=alacritty --chown=admin:admin /root/.cargo/bin/alacritty /usr/local/bin/alacritty
+
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
@@ -424,4 +421,3 @@ RUN \
 
 CMD ["/sbin/my_init"]
 USER root
-
