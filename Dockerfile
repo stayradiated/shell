@@ -212,14 +212,6 @@ FROM base as zlua
 ARG ZLUA_VERSION=1.7.0
 RUN wget "https://raw.githubusercontent.com/skywind3000/z.lua/v${ZLUA_VERSION}/z.lua"
 
-# USQL
-FROM base as usql
-ARG USQL_VERSION=0.7.1
-RUN wget -O usql.tar.bz2 "https://github.com/xo/usql/releases/download/v${USQL_VERSION}/usql-${USQL_VERSION}-linux-amd64.tar.bz2" && \
-  tar xvf usql.tar.bz2 && \
-  mv usql /usr/local/bin/usql && \
-  rm -rf usql.tar.bz2
-
 # PRETTYPING
 FROM base as prettyping
 RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping && \
@@ -249,13 +241,25 @@ RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x
   chmod +x mbt && \
   mv mbt /usr/local/bin/mbt
 
-### ADB
+## ADB
 FROM base as adb
 RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools-latest-linux.zip" && \
   unzip tools.zip && \
   mv platform-tools/adb /usr/local/bin/adb && \
   mv platform-tools/fastboot /usr/local/bin/fastboot && \
   rm -rf platform-tools
+
+## NGROK
+FROM base as ngrok
+RUN wget -O ngrok.zip "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" && \
+  unzip ngrok.zip && \
+  mv ngrok /usr/local/bin/ngrok && \
+  rm ngrok.zip
+
+## BROWSH
+FROM base as browsh
+RUN wget -O browsh https://github.com/browsh-org/browsh/releases/download/v1.5.0/browsh_1.5.0_linux_amd64 && \
+  mv browsh /usr/local/bin/browsh
 
 ###
 ### the real deal
@@ -319,6 +323,9 @@ WORKDIR /home/admin
 # beets
 RUN pip3 install --user beets requests pylast eyeD3
 
+# mycli
+RUN pip3 install --user mycli
+
 ###
 ### COPY LARGE DIRECTORIES
 ###
@@ -377,9 +384,6 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
 # HUB
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /usr/local/bin/hub
 
-# USQL
-COPY --from=usql --chown=admin:admin /usr/local/bin/usql /usr/local/bin/usql
-
 # Z.LUA
 copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
 
@@ -394,6 +398,12 @@ COPY --from=mbt --chown=admin:admin /usr/local/bin/mbt /usr/local/bin/mbt
 
 # rancher
 COPY --from=rancher --chown=admin:admin /usr/local/bin/rancher /usr/local/bin/rancher
+
+# ngrok
+COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
+
+# browsh
+COPY --from=browsh --chown=admin:admin /usr/local/bin/browsh /usr/local/bin/browsh
 
 ###
 ### FINISHING UP

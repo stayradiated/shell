@@ -12,6 +12,7 @@ cp -r \
   ~/.flynn \
   ~/.ssh \
   ~/.aws \
+  ~/.ngrok2 \
   \
   files
 

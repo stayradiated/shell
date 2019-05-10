@@ -36,10 +36,17 @@ RUN apt-get update && \
     dbus-x11 \
     exfat-fuse \
     libxv1 \
+    libgl1-mesa-dri \
+    libgl1-mesa-glx \
+    fonts-noto \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    libpulse0 \
     mesa-utils \
     mesa-utils-extra \
     psmisc \
     pulseaudio \
+    qpdfview \
     redshift \
     rofi \
     sxhkd \
