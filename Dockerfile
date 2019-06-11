@@ -168,10 +168,10 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN npm config set save-exact true && npm install -g \
-  @mishguru/admincli@0.5.0 \
+  @mishguru/admincli@1.4.0 \
   @mishguru/fandex@0.1.0 \
   @mishguru/jack@4.9.0 \
-  @mishguru/logview-cli@1.7.0 \
+  @mishguru/logview-cli@2.0.0 \
   @mishguru/mish@3.2.0 \
   @mishguru/passwd@3.0.0 \
   diff-so-fancy@1.2.5 \
@@ -422,7 +422,7 @@ RUN cd dotfiles && \
   make apps && \
   cd ../.zprezto && \
   git pull --rebase && \
-  nvim +':silent | call dein#update() | quit' || :
+  nvim +':silent|call dein#update()|quit' || :
 
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \

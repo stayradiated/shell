@@ -2,4 +2,3 @@
 
 build:
 	docker build -t stayradiated/shell . 
-		.

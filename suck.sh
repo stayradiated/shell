@@ -3,7 +3,7 @@
 set -ex
 
 cp -r \
-  ~/.usqlpass \
+  ~/.mylogin.cnf \
   ~/.npmrc \
   ~/.mish_production \
   ~/.mish_internal \
