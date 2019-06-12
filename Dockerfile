@@ -137,7 +137,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.5
+ARG DOTFILES_VERSION=v1.4.6
 RUN git clone https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch && \
@@ -168,8 +168,8 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN npm config set save-exact true && npm install -g \
-  @mishguru/admincli@1.4.0 \
-  @mishguru/fandex@0.1.0 \
+  @mishguru/admincli@1.6.0 \
+  @mishguru/fandex@0.4.0 \
   @mishguru/jack@4.9.0 \
   @mishguru/logview-cli@2.0.0 \
   @mishguru/mish@3.2.0 \
@@ -341,6 +341,7 @@ COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
 RUN pip install --user neovim && \
   pip3 install --user neovim && \
+  pip install --user pynvim && \
   nvim +'UpdateRemotePlugins | quit' || :
 
 ###

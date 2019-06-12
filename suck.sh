@@ -3,7 +3,7 @@
 set -ex
 
 cp -r \
-  ~/.mylogin.cnf \
+  ~/.myclirc \
   ~/.npmrc \
   ~/.mish_production \
   ~/.mish_internal \
