@@ -71,8 +71,11 @@ RUN apt-get update && apt-get install -y \
   pkg-config \
   libfreetype6-dev \
   libfontconfig1-dev \
+  libxcb-xfixes0-dev \
   xclip
-RUN cargo install --git https://github.com/jwilm/alacritty
+RUN git clone https://github.com/jwilm/alacritty && \
+  cd alacritty && \
+  cargo build --release
 
 # Docker Compose
 FROM base as docker-compose
@@ -168,7 +171,7 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN npm config set save-exact true && npm install -g \
-  @mishguru/admincli@1.6.0 \
+  @mishguru/admincli@1.8.2 \
   @mishguru/fandex@0.4.0 \
   @mishguru/jack@4.9.0 \
   @mishguru/logview-cli@2.0.0 \
@@ -261,6 +264,31 @@ FROM base as browsh
 RUN wget -O browsh https://github.com/browsh-org/browsh/releases/download/v1.5.0/browsh_1.5.0_linux_amd64 && \
   mv browsh /usr/local/bin/browsh
 
+## FONTS:SEGOUI
+FROM base as segoeui
+RUN mkdir -p segoeui/ && cd segoeui/ && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeui.ttf?raw=true" -O segoeui.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuib.ttf?raw=true" -O segoeuib.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuib.ttf?raw=true" -O segoeuii.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuiz.ttf?raw=true" -O segoeuiz.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuil.ttf?raw=true" -O segoeuil.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguili.ttf?raw=true" -O seguili.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuisl.ttf?raw=true" -O segoeuisl.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisli.ttf?raw=true" -O seguisli.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisb.ttf?raw=true" -O seguisb.ttf && \
+  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisbi.ttf?raw=true" -O seguisbi.ttf
+
+## FONTS:GOMME
+FROM base as gomme
+RUN mkdir -p gomme/ && cd gomme/ && \
+  wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf"
+
+# LIGHT
+FROM base as light
+RUN wget -O light.deb "https://github.com/haikarainen/light/releases/download/v1.2/light_1.2_amd64.deb" && \
+  dpkg -i light.deb && \
+  rm light.deb
+
 ###
 ### the real deal
 ###
@@ -278,37 +306,64 @@ RUN apt-key adv \
 
 # install apps
 RUN apt-get update && apt-get install -y \
-  aria2 \
-  aria2 \
-  bs1770gain \
+  acpi \
+  aria2=1.33.\* \
+  audacity \
+  bs1770gain=0.4.\* \
+  bspwm \
+  dbus-x11 \
   ddgr \
   dnsutils \
-  ffmpeg \
-  firefox \
+  exfat-fuse \
+  ffmpeg=7:3\* \
+  firefox=67.\* \
+  fonts-noto \
+  fonts-noto-cjk \
+  fonts-noto-color-emoji \
   htop \
   httpie \
+  libgl1-mesa-dri \
+  libgl1-mesa-glx \
+  libpulse0 \
+  libxv1 \
   lua5.3 \
   man \
   mediainfo \
+  mesa-utils \
+  mesa-utils-extra \
   moreutils \
   mysql-client \
   nmap \
   nnn \
   pdd \
+  psmisc \
+  pulseaudio \
   pv \
+  qpdfview \
   ranger \
+  redshift \
+  rofi \
   rsync \
   safe-rm \
   scrot \
   sudo \
+  sxhkd \
   tig \
   tree \
+  ttf-ubuntu-font-family \
   weechat-curses \
   weechat-perl \
   weechat-plugins \
   weechat-python \
+  x11-utils \
+  x11-xkb-utils \
+  x11-xserver-utils \
   xclip \
-  zip
+  xdg-utils \
+  xdo \
+  xfonts-utils \
+  zip && \
+  apt-get clean
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin && \
@@ -342,7 +397,7 @@ COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
 RUN pip install --user neovim && \
   pip3 install --user neovim && \
   pip install --user pynvim && \
-  nvim +'UpdateRemotePlugins | quit' || :
+  nvim +UpdateRemotePlugins +qall
 
 ###
 ### COPY SINGLE BINARIES
@@ -358,7 +413,7 @@ COPY --from=rust --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin/fd
 COPY --from=rust --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin/sd
 
 # ALACRITTY
-COPY --from=alacritty --chown=admin:admin /root/.cargo/bin/alacritty /usr/local/bin/alacritty
+COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
 
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
@@ -423,12 +478,37 @@ RUN cd dotfiles && \
   make apps && \
   cd ../.zprezto && \
   git pull --rebase && \
-  nvim +':silent|call dein#update()|quit' || :
+  nvim +'call dein#update()' +GoInstallBinaries +UpdateRemotePlugins +qall 
 
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
   echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
 
-CMD ["/sbin/my_init"]
+COPY --from=segoeui /root/segoeui /usr/share/fonts/truetype/segoeui
+COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
+
+COPY --from=light /usr/bin/light /usr/local/bin/light
+
+# copy config files
+COPY --chown=admin:admin ./configs/alacritty.yml .config/alacritty/alacritty.yml
+COPY --chown=admin:admin ./configs/bspwmrc .config/bspwm/bspwmrc
+COPY --chown=admin:admin ./configs/sxhkdrc .config/sxhkd/sxhkdrc
+COPY --chown=admin:admin ./configs/xinitrc .xinitrc
+
+ENV PULSE_SERVER /run/pulse/native
+
+# CMD ["/sbin/my_init"]
+CMD /home/admin/.xinitrc
+
 USER root
+
+RUN cd /etc/fonts/conf.d && \
+  rm 10* 70-no-bitmaps.conf && \
+  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
+  dpkg-reconfigure fontconfig && \
+  fc-cache -fv
+
+RUN echo enable-shm=no >> /etc/pulse/client.conf
+
+USER admin
