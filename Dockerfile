@@ -8,26 +8,49 @@ RUN add-apt-repository ppa:git-core/ppa
 
 # Requirements for building dependencies
 RUN apt-get update && apt-get install -y \
+  acpi \
   apt-transport-https \
   build-essential \
   ca-certificates \
   curl \
+  dbus-x11 \
+  dnsutils \
+  exfat-fuse \
+  fontconfig \
   git \
   iputils-ping \
   jq \
   libevent-dev \
+  libgl1-mesa-dri \
+  libgl1-mesa-glx \
   libncurses5-dev \
+  libpulse0 \
+  libxv1 \
   locales  \
+  man \
+  mesa-utils \
+  mesa-utils-extra \
   net-tools \
   netcat-openbsd \
+  psmisc \
+  pulseaudio \
   python-pip \
   python3-pip \
   socat \
   software-properties-common \
   tzdata \
-  wget \
   unzip \
+  wget \
+  x11-utils \
+  x11-xkb-utils \
+  x11-xserver-utils \
+  xclip \
+  xdg-utils \
+  xdo \
+  xfonts-utils \
+  zip \
   zsh
+
 
 # Install Docker-CE
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
@@ -37,6 +60,13 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     stable" && \
   apt-get update && \
   apt-get install -y docker-ce
+
+# configure fonts
+RUN cd /etc/fonts/conf.d && \
+  rm 10* 70-no-bitmaps.conf && \
+  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
+  dpkg-reconfigure fontconfig && \
+  fc-cache -fv
 
 # Locales
 ENV LANGUAGE=en_NZ.UTF-8
@@ -161,7 +191,7 @@ RUN mkdir -p /home/admin && \
 # NODE
 FROM base as nvm
 ARG NVM_VERSION=v0.34.0
-ARG NODE_VERSION=v11.14.0
+ARG NODE_VERSION=v12.6.0
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -170,12 +200,12 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
   mv "versions/node/${NODE_VERSION}" /usr/local/lib/node
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
-RUN npm config set save-exact true && npm install -g \
-  @mishguru/admincli@1.8.2 \
-  @mishguru/fandex@0.4.0 \
-  @mishguru/jack@4.9.0 \
-  @mishguru/logview-cli@2.0.0 \
-  @mishguru/mish@3.2.0 \
+RUN apt-get install -y libsecret-1-dev
+RUN npm config set user root && npm config set save-exact true && npm install -g \
+  @mishguru/admincli@1.17.0 \
+  @mishguru/fandex@0.5.2 \
+  @mishguru/logview-cli@4.2.0 \
+  @mishguru/mish@3.4.0 \
   @mishguru/passwd@3.0.0 \
   diff-so-fancy@1.2.5 \
   lerna@3.13.2 \
@@ -246,7 +276,8 @@ RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x
 
 ## ADB
 FROM base as adb
-RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools-latest-linux.zip" && \
+ARG TOOLS_VESRION=29.0.2
+RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools_r${TOOLS_VESRION}-linux.zip" && \
   unzip tools.zip && \
   mv platform-tools/adb /usr/local/bin/adb && \
   mv platform-tools/fastboot /usr/local/bin/fastboot && \
@@ -306,38 +337,29 @@ RUN apt-key adv \
 
 # install apps
 RUN apt-get update && apt-get install -y \
-  acpi \
   aria2=1.33.\* \
   audacity \
   bs1770gain=0.4.\* \
   bspwm \
-  dbus-x11 \
   ddgr \
-  dnsutils \
-  exfat-fuse \
   ffmpeg=7:3\* \
-  firefox=67.\* \
+  firefox=68.0.2\* \
   fonts-noto \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
+  gnome-keyring \
+  gthumb \
   htop \
   httpie \
-  libgl1-mesa-dri \
-  libgl1-mesa-glx \
-  libpulse0 \
-  libxv1 \
+  libsecret-1-dev \
   lua5.3 \
-  man \
   mediainfo \
-  mesa-utils \
-  mesa-utils-extra \
   moreutils \
   mysql-client \
   nmap \
   nnn \
+  pandoc \
   pdd \
-  psmisc \
-  pulseaudio \
   pv \
   qpdfview \
   ranger \
@@ -351,18 +373,11 @@ RUN apt-get update && apt-get install -y \
   tig \
   tree \
   ttf-ubuntu-font-family \
+  vlc \
   weechat-curses \
   weechat-perl \
   weechat-plugins \
-  weechat-python \
-  x11-utils \
-  x11-xkb-utils \
-  x11-xserver-utils \
-  xclip \
-  xdg-utils \
-  xdo \
-  xfonts-utils \
-  zip && \
+  weechat-python && \
   apt-get clean
 
 # setup admin user
@@ -375,11 +390,8 @@ RUN useradd -s /usr/bin/zsh --create-home admin && \
 USER admin
 WORKDIR /home/admin
 
-# beets
-RUN pip3 install --user beets requests pylast eyeD3
-
-# mycli
-RUN pip3 install --user mycli
+# beets, mycli, awsli
+RUN pip3 install --user beets requests pylast eyeD3 mycli awscli
 
 ###
 ### COPY LARGE DIRECTORIES
@@ -402,6 +414,13 @@ RUN pip install --user neovim && \
 ###
 ### COPY SINGLE BINARIES
 ###
+
+# FONTS
+COPY --from=segoeui /root/segoeui /usr/share/fonts/truetype/segoeui
+COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
+
+# LIGHT
+COPY --from=light /usr/bin/light /usr/local/bin/light
 
 # RIPGREP
 COPY --from=rust --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin/rg
@@ -485,30 +504,7 @@ RUN \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
   echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
 
-COPY --from=segoeui /root/segoeui /usr/share/fonts/truetype/segoeui
-COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
-
-COPY --from=light /usr/bin/light /usr/local/bin/light
-
-# copy config files
-COPY --chown=admin:admin ./configs/alacritty.yml .config/alacritty/alacritty.yml
-COPY --chown=admin:admin ./configs/bspwmrc .config/bspwm/bspwmrc
-COPY --chown=admin:admin ./configs/sxhkdrc .config/sxhkd/sxhkdrc
-COPY --chown=admin:admin ./configs/xinitrc .xinitrc
-
 ENV PULSE_SERVER /run/pulse/native
+# RUN echo enable-shm=no >> /etc/pulse/client.conf
 
-# CMD ["/sbin/my_init"]
 CMD /home/admin/.xinitrc
-
-USER root
-
-RUN cd /etc/fonts/conf.d && \
-  rm 10* 70-no-bitmaps.conf && \
-  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
-  dpkg-reconfigure fontconfig && \
-  fc-cache -fv
-
-RUN echo enable-shm=no >> /etc/pulse/client.conf
-
-USER admin

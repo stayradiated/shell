@@ -13,10 +13,14 @@ cp -r \
   ~/.ssh \
   ~/.aws \
   ~/.ngrok2 \
+  ~/.xinitrc \
   \
   files
 
 cp -r \
+  ~/.config/alacritty \
+  ~/.config/bspwm \
+  ~/.config/sxhkd \
   ~/.config/logview \
   ~/.config/ranger \
   ~/.config/hub \
