@@ -348,12 +348,14 @@ RUN apt-get update && apt-get install -y \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
   gnome-keyring \
+  graphicsmagick \
   gthumb \
   htop \
   httpie \
   libsecret-1-dev \
   lua5.3 \
   mediainfo \
+  mkvtoolnix \
   moreutils \
   mysql-client \
   nmap \
