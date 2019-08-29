@@ -204,6 +204,7 @@ RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   @mishguru/admincli@1.17.0 \
   @mishguru/fandex@0.5.2 \
+  @mishguru/ghostphone@3.12.0 \
   @mishguru/logview-cli@4.2.0 \
   @mishguru/mish@3.4.0 \
   @mishguru/passwd@3.0.0 \
