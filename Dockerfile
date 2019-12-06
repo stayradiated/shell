@@ -6,6 +6,14 @@ ENV TERM=xterm-256color
 # use latest version of git
 RUN add-apt-repository ppa:git-core/ppa
 
+# Do not exclude man pages & other documentation
+RUN rm /etc/dpkg/dpkg.cfg.d/excludes
+
+# Reinstall all currently installed packages in order to get the man pages back
+RUN apt-get update && \
+    dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
+    rm -r /var/lib/apt/lists/*
+
 # Requirements for building dependencies
 RUN apt-get update && apt-get install -y \
   acpi \
@@ -25,6 +33,7 @@ RUN apt-get update && apt-get install -y \
   libgl1-mesa-glx \
   libncurses5-dev \
   libpulse0 \
+  libssl-dev \
   libxv1 \
   locales  \
   man \
@@ -32,6 +41,7 @@ RUN apt-get update && apt-get install -y \
   mesa-utils-extra \
   net-tools \
   netcat-openbsd \
+  pkg-config \
   psmisc \
   pulseaudio \
   python-pip \
@@ -50,7 +60,6 @@ RUN apt-get update && apt-get install -y \
   xfonts-utils \
   zip \
   zsh
-
 
 # Install Docker-CE
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
@@ -85,17 +94,21 @@ WORKDIR /root
 
 # Rust
 FROM base as rust
-ARG RUST_VERSION=1.34.0
-RUN wget -O rust.sh "https://sh.rustup.rs" && \
+ARG RUST_VERSION=1.38.0
+RUN \
+  wget -O rust.sh "https://sh.rustup.rs" && \
   sh rust.sh -y --default-toolchain "${RUST_VERSION}" && \
   rm rust.sh
 ENV PATH /root/.cargo/bin:$PATH
-RUN cargo install --version 0.5.0 sd
-RUN cargo install --version 7.3.0 fd-find
-RUN cargo install --version 11.0.0 ripgrep
+RUN \
+  cargo install --version 0.6.5 sd && \
+  cargo install --version 7.4.0 fd-find && \
+  cargo install --version 11.0.2 ripgrep && \
+  cargo install --version 0.1.15 chit
 
 # ALACRITTY
 FROM rust as alacritty
+ARG ALACRITTY_VERSION=v0.3.3
 RUN apt-get update && apt-get install -y \
   cmake \
   pkg-config \
@@ -103,8 +116,10 @@ RUN apt-get update && apt-get install -y \
   libfontconfig1-dev \
   libxcb-xfixes0-dev \
   xclip
-RUN git clone https://github.com/jwilm/alacritty && \
+RUN git clone --depth 1 https://github.com/jwilm/alacritty && \
   cd alacritty && \
+  git fetch --depth 1 origin tag "${ALACRITTY_VERSION}" && \
+  git reset --hard "${ALACRITTY_VERSION}" && \
   cargo build --release
 
 # Docker Compose
@@ -116,7 +131,7 @@ RUN wget -O docker-compose "https://github.com/docker/compose/releases/download/
 
 # GO
 FROM base as go
-ARG GO_VERSION=1.12.4
+ARG GO_VERSION=1.13.4
 RUN wget -O go.tgz "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" && \
   tar xzvf go.tgz && \
   mv go /usr/local/go && \
@@ -158,7 +173,7 @@ RUN apt-get update && apt-get install -y \
   ninja-build \
   pkg-config \
   texinfo
-ARG NEOVIM_VERSION=v0.3.4
+ARG NEOVIM_VERSION=v0.4.2
 RUN git clone --depth 1 https://github.com/neovim/neovim && \
   cd neovim && \
   git fetch --depth 1 origin tag "${NEOVIM_VERSION}" && \
@@ -170,7 +185,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.6
+ARG DOTFILES_VERSION=v1.4.10
 RUN git clone https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch && \
@@ -190,8 +205,8 @@ RUN mkdir -p /home/admin && \
 
 # NODE
 FROM base as nvm
-ARG NVM_VERSION=v0.34.0
-ARG NODE_VERSION=v12.6.0
+ARG NVM_VERSION=v0.35.1
+ARG NODE_VERSION=v13.0.1
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -202,25 +217,19 @@ ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
-  @mishguru/admincli@1.17.0 \
+  @mishguru/admincli@1.19.0 \
   @mishguru/fandex@0.5.2 \
-  @mishguru/ghostphone@3.12.0 \
-  @mishguru/logview-cli@4.2.0 \
+  @mishguru/ghostphone@4.0.0 \
+  @mishguru/jadx-node@2.0.0 \
+  @mishguru/logview-cli@4.6.0 \
   @mishguru/mish@3.4.0 \
-  @mishguru/passwd@3.0.0 \
-  diff-so-fancy@1.2.5 \
-  lerna@3.13.2 \
-  npm-check-updates@3.1.8 \
-  release-it@10.4.2 \
+  @mishguru/passwd@3.2.0 \
+  diff-so-fancy@1.2.7 \
+  lerna@3.18.3 \
+  npm-check-updates@3.2.0 \
+  release-it@12.4.3 \
   tagrelease@1.0.1 \
-  yarn@1.15.2
-
-# MILLER
-FROM base as miller
-ARG MILLER_VERSION=5.4.0
-RUN wget -O mlr "https://github.com/johnkerl/miller/releases/download/${MILLER_VERSION}/mlr.linux.x86_64" && \
-  chmod +x ./mlr && \
-  mv mlr /usr/local/bin/mlr
+  yarn@1.19.1
 
 # RANCHER
 FROM base as rancher
@@ -260,57 +269,24 @@ RUN wget -O bat.tgz "https://github.com/sharkdp/bat/releases/download/v${BAT_VER
   mv "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu/bat" /usr/local/bin/bat && \
   rm -rf "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu" bat.tgz
 
-## HUGO
-FROM base as hugo
-ARG HUGO_VERSION=0.54.0
-RUN wget -O hugo.tgz "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" && \
-  tar xvf hugo.tgz && \
-  mv hugo /usr/local/bin/hugo && \
-  rm -rf hugo.tgz
-
-## MBT
-FROM base as mbt
-ARG MBT_VERSION=0.21.0
-RUN wget "https://bintray.com/buddyspike/bin/download_file?file_path=mbt_linux_x86_64%2F${MBT_VERSION}%2F${MBT_VERSION}%2Fmbt_linux_x86_64" -O mbt && \
-  chmod +x mbt && \
-  mv mbt /usr/local/bin/mbt
-
-## ADB
+# ADB
+# https://developer.android.com/studio/releases/platform-tools
 FROM base as adb
-ARG TOOLS_VESRION=29.0.2
+ARG TOOLS_VESRION=29.0.5
 RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools_r${TOOLS_VESRION}-linux.zip" && \
   unzip tools.zip && \
   mv platform-tools/adb /usr/local/bin/adb && \
   mv platform-tools/fastboot /usr/local/bin/fastboot && \
   rm -rf platform-tools
 
-## NGROK
+# NGROK
 FROM base as ngrok
 RUN wget -O ngrok.zip "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" && \
   unzip ngrok.zip && \
   mv ngrok /usr/local/bin/ngrok && \
   rm ngrok.zip
 
-## BROWSH
-FROM base as browsh
-RUN wget -O browsh https://github.com/browsh-org/browsh/releases/download/v1.5.0/browsh_1.5.0_linux_amd64 && \
-  mv browsh /usr/local/bin/browsh
-
-## FONTS:SEGOUI
-FROM base as segoeui
-RUN mkdir -p segoeui/ && cd segoeui/ && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeui.ttf?raw=true" -O segoeui.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuib.ttf?raw=true" -O segoeuib.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuib.ttf?raw=true" -O segoeuii.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuiz.ttf?raw=true" -O segoeuiz.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuil.ttf?raw=true" -O segoeuil.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguili.ttf?raw=true" -O seguili.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/segoeuisl.ttf?raw=true" -O segoeuisl.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisli.ttf?raw=true" -O seguisli.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisb.ttf?raw=true" -O seguisb.ttf && \
-  wget "https://github.com/martinring/clide/blob/master/doc/fonts/seguisbi.ttf?raw=true" -O seguisbi.ttf
-
-## FONTS:GOMME
+# FONTS:GOMME
 FROM base as gomme
 RUN mkdir -p gomme/ && cd gomme/ && \
   wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf"
@@ -320,6 +296,14 @@ FROM base as light
 RUN wget -O light.deb "https://github.com/haikarainen/light/releases/download/v1.2/light_1.2_amd64.deb" && \
   dpkg -i light.deb && \
   rm light.deb
+
+# ETCHER
+FROM base as etcher
+ARG ETCHER_VERSION=1.5.63
+RUN wget -O etcher.zip "https://github.com/balena-io/etcher/releases/download/v${ETCHER_VERSION}/balena-etcher-electron-${ETCHER_VERSION}-linux-ia32.zip" && \
+  unzip etcher.zip && \
+  mv balenaEtcher-*.AppImage etcher && \
+  rm etcher.zip
 
 ###
 ### the real deal
@@ -344,7 +328,7 @@ RUN apt-get update && apt-get install -y \
   bspwm \
   ddgr \
   ffmpeg=7:3\* \
-  firefox=68.0.2\* \
+  firefox=70.0+* \
   fonts-noto \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
@@ -361,6 +345,7 @@ RUN apt-get update && apt-get install -y \
   mysql-client \
   nmap \
   nnn \
+  openjdk-11-jre \
   pandoc \
   pdd \
   pv \
@@ -376,6 +361,7 @@ RUN apt-get update && apt-get install -y \
   tig \
   tree \
   ttf-ubuntu-font-family \
+  urlview=0.9-20\* \
   vlc \
   weechat-curses \
   weechat-perl \
@@ -394,7 +380,7 @@ USER admin
 WORKDIR /home/admin
 
 # beets, mycli, awsli
-RUN pip3 install --user beets requests pylast eyeD3 mycli awscli
+RUN pip3 install --user beets requests pylast eyeD3 mycli awscli td-watson
 
 ###
 ### COPY LARGE DIRECTORIES
@@ -419,20 +405,16 @@ RUN pip install --user neovim && \
 ###
 
 # FONTS
-COPY --from=segoeui /root/segoeui /usr/share/fonts/truetype/segoeui
 COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
+
+# ETCHER
+COPY --from=etcher /root/etcher /usr/local/bin/etcher
 
 # LIGHT
 COPY --from=light /usr/bin/light /usr/local/bin/light
 
-# RIPGREP
-COPY --from=rust --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin/rg
-
-# FD-FIND
-COPY --from=rust --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin/fd
-
-# SD
-COPY --from=rust --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin/sd
+# RUST TOOLS 
+COPY --from=rust --chown=admin:admin /root/.cargo/bin/* /usr/local/bin/
 
 # ALACRITTY
 COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
@@ -453,9 +435,6 @@ COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
 COPY --from=fzf --chown=admin:admin /root/.fzf /home/admin/.fzf
 COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 
-# MILLER
-COPY --from=miller --chown=admin:admin /usr/local/bin/mlr /usr/local/bin/mlr
-
 # CLONE
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
 
@@ -468,20 +447,11 @@ copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
 # PRETTYPING
 COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
 
-# HUGO
-COPY --from=hugo --chown=admin:admin /usr/local/bin/hugo /usr/local/bin/hugo
-
-# mbt
-COPY --from=mbt --chown=admin:admin /usr/local/bin/mbt /usr/local/bin/mbt
-
 # rancher
 COPY --from=rancher --chown=admin:admin /usr/local/bin/rancher /usr/local/bin/rancher
 
 # ngrok
 COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
-
-# browsh
-COPY --from=browsh --chown=admin:admin /usr/local/bin/browsh /usr/local/bin/browsh
 
 ###
 ### FINISHING UP
@@ -505,9 +475,8 @@ RUN cd dotfiles && \
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
 
 ENV PULSE_SERVER /run/pulse/native
-# RUN echo enable-shm=no >> /etc/pulse/client.conf
 
 CMD /home/admin/.xinitrc

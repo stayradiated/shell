@@ -26,3 +26,5 @@ cp -r \
   ~/.config/hub \
   \
   files/.config
+
+cp -r ~/bin/* files/bin/
