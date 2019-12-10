@@ -326,9 +326,10 @@ RUN apt-get update && apt-get install -y \
   audacity \
   bs1770gain=0.4.\* \
   bspwm \
+  chromium-browser=78.0* \
   ddgr \
   ffmpeg=7:3\* \
-  firefox=70.0+* \
+  firefox=71.0+* \
   fonts-noto \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
