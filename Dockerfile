@@ -185,7 +185,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.10
+ARG DOTFILES_VERSION=v1.4.11
 RUN git clone https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch && \
@@ -320,13 +320,16 @@ RUN apt-key adv \
     $(lsb_release -cs) \
     main"
 
+# prolog ppa
+RUN apt-add-repository ppa:swi-prolog/stable
+
 # install apps
 RUN apt-get update && apt-get install -y \
   aria2=1.33.\* \
   audacity \
   bs1770gain=0.4.\* \
   bspwm \
-  chromium-browser=78.0* \
+  chromium-browser=79.0* \
   ddgr \
   ffmpeg=7:3\* \
   firefox=71.0+* \
@@ -358,6 +361,7 @@ RUN apt-get update && apt-get install -y \
   safe-rm \
   scrot \
   sudo \
+  swi-prolog \
   sxhkd \
   tig \
   tree \
