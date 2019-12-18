@@ -185,7 +185,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.11
+ARG DOTFILES_VERSION=v1.4.12
 RUN git clone https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch && \
