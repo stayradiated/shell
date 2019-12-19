@@ -218,18 +218,18 @@ COPY ./files/.npmrc /root/.npmrc
 RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   @mishguru/admincli@1.19.0 \
-  @mishguru/fandex@0.5.2 \
-  @mishguru/ghostphone@4.0.0 \
-  @mishguru/jadx-node@2.0.0 \
+  @mishguru/fandex@0.6.0 \
+  @mishguru/ghostphone@5.0.0 \
+  @mishguru/jadx-node@3.0.0 \
   @mishguru/logview-cli@4.6.0 \
   @mishguru/mish@3.4.0 \
   @mishguru/passwd@3.2.0 \
   diff-so-fancy@1.2.7 \
-  lerna@3.18.3 \
-  npm-check-updates@3.2.0 \
+  lerna@3.19.0 \
+  npm-check-updates@4.0.1 \
   release-it@12.4.3 \
   tagrelease@1.0.1 \
-  yarn@1.19.1
+  yarn@1.21.1
 
 # RANCHER
 FROM base as rancher
@@ -305,6 +305,39 @@ RUN wget -O etcher.zip "https://github.com/balena-io/etcher/releases/download/v$
   mv balenaEtcher-*.AppImage etcher && \
   rm etcher.zip
 
+# BSPWM
+FROM base as bspwm
+ARG BSPWM_VERSION=0.9.9
+RUN \
+  apt-get install -y \
+    libxcb-ewmh-dev \
+    libxcb-icccm4-dev \
+    libxcb-keysyms1-dev \
+    libxcb-randr0-dev \
+    libxcb-shape0-dev \
+    libxcb-util-dev \
+    libxcb-xinerama0-dev \
+    && \
+  git clone --depth 1 https://github.com/baskerville/bspwm && \
+  cd bspwm && \
+  git fetch --depth 1 origin tag "${BSPWM_VERSION}" && \
+  git reset --hard "${BSPWM_VERSION}" && \
+  make all
+
+# SXHKD
+FROM base as sxhkd
+ARG SXHKD_VERSION=0.6.1
+RUN \
+  apt-get install -y \
+    libxcb-util-dev \
+    libxcb-keysyms1-dev \
+    && \
+  git clone --depth 1 https://github.com/baskerville/sxhkd && \
+  cd sxhkd && \
+  git fetch --depth 1 origin tag "${SXHKD_VERSION}" && \
+  git reset --hard "${SXHKD_VERSION}" && \
+  make all
+
 ###
 ### the real deal
 ###
@@ -328,7 +361,6 @@ RUN apt-get update && apt-get install -y \
   aria2=1.33.\* \
   audacity \
   bs1770gain=0.4.\* \
-  bspwm \
   chromium-browser=79.0* \
   ddgr \
   ffmpeg=7:3\* \
@@ -362,7 +394,6 @@ RUN apt-get update && apt-get install -y \
   scrot \
   sudo \
   swi-prolog \
-  sxhkd \
   tig \
   tree \
   ttf-ubuntu-font-family \
@@ -414,6 +445,12 @@ COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
 
 # ETCHER
 COPY --from=etcher /root/etcher /usr/local/bin/etcher
+
+# BSPWM
+COPY --from=bspwm /root/bspwm/bspwm /usr/local/bin/bspwm
+
+# SXHKD
+COPY --from=sxhkd /root/sxhkd/sxhkd /usr/local/bin/sxhkd
 
 # LIGHT
 COPY --from=light /usr/bin/light /usr/local/bin/light
