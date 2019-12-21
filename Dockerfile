@@ -286,10 +286,11 @@ RUN wget -O ngrok.zip "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-a
   mv ngrok /usr/local/bin/ngrok && \
   rm ngrok.zip
 
-# FONTS:GOMME
-FROM base as gomme
-RUN mkdir -p gomme/ && cd gomme/ && \
-  wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf"
+# FONTS:bitmapfonts
+FROM base as fonts
+RUN mkdir -p bitmap/ && cd bitmap/ && \
+  wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf" && \
+  wget -O terminal.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf"
 
 # LIGHT
 FROM base as light
@@ -441,13 +442,13 @@ RUN pip install --user neovim && \
 ###
 
 # FONTS
-COPY --from=gomme /root/gomme /usr/share/fonts/X11/gomme
+COPY --from=fonts /root/bitmap /usr/share/fonts/X11/bitmap
 
 # ETCHER
 COPY --from=etcher /root/etcher /usr/local/bin/etcher
 
 # BSPWM
-COPY --from=bspwm /root/bspwm/bspwm /usr/local/bin/bspwm
+COPY --from=bspwm /root/bspwm/bspc /root/bspwm/bspwm /usr/local/bin/
 
 # SXHKD
 COPY --from=sxhkd /root/sxhkd/sxhkd /usr/local/bin/sxhkd
