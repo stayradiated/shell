@@ -108,7 +108,7 @@ RUN \
 
 # ALACRITTY
 FROM rust as alacritty
-ARG ALACRITTY_VERSION=v0.3.3
+ARG ALACRITTY_VERSION=v0.4.0
 RUN apt-get update && apt-get install -y \
   cmake \
   pkg-config \
@@ -146,6 +146,14 @@ RUN git clone https://github.com/stayradiated/clone && \
   cd clone && \
   go install && \
   rm -rf /usr/local/src/github.com
+
+# GCLOUD
+FROM base as gcloud
+ARG GCLOUD_VERSION=274.0.0
+RUN wget -O gcloud.tgz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz" && \
+  tar xzvf gcloud.tgz && \
+  mv google-cloud-sdk /usr/local/ && \
+  rm -rf gcloud.tgz
 
 # TMUX
 FROM base as tmux
@@ -185,7 +193,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.12
+ARG DOTFILES_VERSION=v1.4.13
 RUN git clone https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch && \
@@ -206,7 +214,7 @@ RUN mkdir -p /home/admin && \
 # NODE
 FROM base as nvm
 ARG NVM_VERSION=v0.35.1
-ARG NODE_VERSION=v13.0.1
+ARG NODE_VERSION=v12.14.0
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -217,28 +225,11 @@ ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
-  @mishguru/admincli@1.19.0 \
-  @mishguru/fandex@0.6.0 \
-  @mishguru/ghostphone@5.0.0 \
-  @mishguru/jadx-node@3.0.0 \
-  @mishguru/logview-cli@4.6.0 \
-  @mishguru/mish@3.4.0 \
-  @mishguru/passwd@3.2.0 \
   diff-so-fancy@1.2.7 \
   lerna@3.19.0 \
   npm-check-updates@4.0.1 \
   release-it@12.4.3 \
-  tagrelease@1.0.1 \
   yarn@1.21.1
-
-# RANCHER
-FROM base as rancher
-ARG RANCHER_VERSION=v2.2.0
-RUN wget -O rancher.tgz "https://github.com/rancher/cli/releases/download/${RANCHER_VERSION}/rancher-linux-amd64-${RANCHER_VERSION}.tar.gz" && \
-  tar xzvf rancher.tgz && \
-  mv "rancher-${RANCHER_VERSION}/rancher" /usr/local/bin/rancher && \
-  chmod +x /usr/local/bin/rancher && \
-  rm -rf "rancher-${RANCHER_VERSION}"
 
 # HUB
 FROM base as hub
@@ -462,6 +453,9 @@ COPY --from=rust --chown=admin:admin /root/.cargo/bin/* /usr/local/bin/
 # ALACRITTY
 COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
 
+# GCLOUD
+COPY --from=gcloud --chown=admin:admin /usr/local/google-cloud-sdk /usr/local/google-cloud-sdk
+
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
@@ -490,9 +484,6 @@ copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
 # PRETTYPING
 COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
 
-# rancher
-COPY --from=rancher --chown=admin:admin /usr/local/bin/rancher /usr/local/bin/rancher
-
 # ngrok
 COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
 
@@ -518,7 +509,7 @@ RUN cd dotfiles && \
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:$PATH' >> /home/admin/.zpath
+  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:/usr/local/google-cloud-sdk/bin:$PATH' >> /home/admin/.zpath
 
 ENV PULSE_SERVER /run/pulse/native
 
