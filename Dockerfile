@@ -92,9 +92,31 @@ WORKDIR /root
 ### apps
 ###
 
+# Crystal Lang
+FROM base as crystal
+ARG CRYSTAL_VERSION=0.32.1
+RUN \
+  wget -O crystal.tgz "https://github.com/crystal-lang/crystal/releases/download/${CRYSTAL_VERSION}/crystal-${CRYSTAL_VERSION}-1-linux-x86_64.tar.gz" && \
+  tar xzvf crystal.tgz && \
+  mv "crystal-${CRYSTAL_VERSION}-1" crystal
+
+# Git Crypt
+FROM base as git-crypt
+ARG GIT_CRYPT_VERSION=0.6.0
+RUN \
+  # xsltproc is required to build the man files
+  apt-get install -y xsltproc && \
+  wget -O git-crypt.tgz "https://www.agwa.name/projects/git-crypt/downloads/git-crypt-${GIT_CRYPT_VERSION}.tar.gz" && \
+  tar xzvf git-crypt.tgz && \
+  rm -rf git-crypt.tgz && \
+  mv "git-crypt-${GIT_CRYPT_VERSION}" git-crypt && \
+  cd git-crypt && \
+  ENABLE_MAN=yes make && \
+  make install
+
 # Rust
 FROM base as rust
-ARG RUST_VERSION=1.38.0
+ARG RUST_VERSION=1.40.0
 RUN \
   wget -O rust.sh "https://sh.rustup.rs" && \
   sh rust.sh -y --default-toolchain "${RUST_VERSION}" && \
@@ -104,7 +126,8 @@ RUN \
   cargo install --version 0.6.5 sd && \
   cargo install --version 7.4.0 fd-find && \
   cargo install --version 11.0.2 ripgrep && \
-  cargo install --version 0.1.15 chit
+  cargo install --version 0.1.15 chit && \
+  cargo install --version 0.5.1 what
 
 # ALACRITTY
 FROM rust as alacritty
@@ -192,12 +215,14 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
   rm -rf neovim
 
 # DOTFILES
-FROM base as dotfiles
-ARG DOTFILES_VERSION=v1.4.13
-RUN git clone https://github.com/stayradiated/dotfiles && \
+FROM git-crypt as dotfiles
+ARG DOTFILES_VERSION=v1.5.2
+COPY ./files/secret-key /root/secret-key
+RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
-  git fetch && \
-  git reset --hard "${DOTFILES_VERSION}"
+  git fetch --depth 1 origin tag "${DOTFILES_VERSION}" && \
+  git reset --hard "${DOTFILES_VERSION}" && \
+  git-crypt unlock ~/secret-key
 
 # FZF
 FROM base as fzf
@@ -225,6 +250,7 @@ ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
 RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
+  castnow@0.6.0 \
   diff-so-fancy@1.2.7 \
   lerna@3.19.0 \
   npm-check-updates@4.0.1 \
@@ -345,8 +371,12 @@ RUN apt-key adv \
     $(lsb_release -cs) \
     main"
 
-# prolog ppa
-RUN apt-add-repository ppa:swi-prolog/stable
+# PPAs
+RUN \
+  # PROLOG
+  apt-add-repository ppa:swi-prolog/stable && \
+  # OLIVER EDITOR
+  add-apt-repository ppa:olive-editor/olive-editor
 
 # install apps
 RUN apt-get update && apt-get install -y \
@@ -373,6 +403,7 @@ RUN apt-get update && apt-get install -y \
   mysql-client \
   nmap \
   nnn \
+  olive-editor \
   openjdk-11-jre \
   pandoc \
   pdd \
@@ -440,6 +471,7 @@ COPY --from=etcher /root/etcher /usr/local/bin/etcher
 
 # BSPWM
 COPY --from=bspwm /root/bspwm/bspc /root/bspwm/bspwm /usr/local/bin/
+COPY --from=bspwm /root/bspwm/doc/bspwm.1 /root/bspwm/doc/bspc.1 /usr/local/share/man1/
 
 # SXHKD
 COPY --from=sxhkd /root/sxhkd/sxhkd /usr/local/bin/sxhkd
@@ -448,16 +480,23 @@ COPY --from=sxhkd /root/sxhkd/sxhkd /usr/local/bin/sxhkd
 COPY --from=light /usr/bin/light /usr/local/bin/light
 
 # RUST TOOLS 
-COPY --from=rust --chown=admin:admin /root/.cargo/bin/* /usr/local/bin/
+COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 
 # ALACRITTY
 COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
+
+# CRYSTAL
+COPY --from=crystal --chown=admin:admin /root/crystal/ /usr/local/
 
 # GCLOUD
 COPY --from=gcloud --chown=admin:admin /usr/local/google-cloud-sdk /usr/local/google-cloud-sdk
 
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
+
+# GIT CRYPT
+COPY --from=git-crypt /root/git-crypt/git-crypt /usr/local/bin/git-crypt
+COPY --from=git-crypt /root/git-crypt/man/man1/git-crypt.1 /usr/local/share/man/man1
 
 # ADB
 COPY --from=adb /usr/local/bin/fastboot /usr/local/bin/adb /usr/local/bin/
@@ -490,13 +529,6 @@ COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
 ###
 ### FINISHING UP
 ###
-
-# copy files
-COPY --chown=admin:admin ./files ./
-
-# allow certain ssh hosts
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts && \
-  ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
 
 # dotfiles
 COPY --chown=admin:admin --from=dotfiles /root/dotfiles /home/admin/dotfiles
