@@ -431,8 +431,7 @@ RUN apt-get update && apt-get install -y \
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin && \
   echo "admin:admin" | chpasswd && \
-  adduser admin sudo && \
-  mkdir -p /home/admin/bin
+  adduser admin sudo
 
 # switch to admin
 USER admin
@@ -518,7 +517,7 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /usr/local/bin/hub
 
 # Z.LUA
-copy --from=zlua --chown=admin:admin /root/z.lua /home/admin/bin/z.lua
+copy --from=zlua --chown=admin:admin /root/z.lua /usr/local/bin/z.lua
 
 # PRETTYPING
 COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
@@ -541,7 +540,7 @@ RUN cd dotfiles && \
 RUN \
   echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
   echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:/usr/local/google-cloud-sdk/bin:$PATH' >> /home/admin/.zpath
+  echo 'export PATH=/home/admin/dotfiles/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:/usr/local/google-cloud-sdk/bin:$PATH' >> /home/admin/.zpath
 
 ENV PULSE_SERVER /run/pulse/native
 
