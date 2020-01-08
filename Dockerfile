@@ -170,6 +170,14 @@ RUN git clone https://github.com/stayradiated/clone && \
   go install && \
   rm -rf /usr/local/src/github.com
 
+# GO >> 1PW
+FROM go as onepw
+ENV GOPATH /usr/local
+RUN \
+  go get github.com/special/1pw && \
+  go install github.com/special/1pw && \
+  rm -rf src
+
 # GCLOUD
 FROM base as gcloud
 ARG GCLOUD_VERSION=274.0.0
@@ -216,7 +224,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.2
+ARG DOTFILES_VERSION=v1.5.4
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -512,6 +520,9 @@ COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
 
 # CLONE
 COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
+
+# ONEPW
+COPY --from=onepw --chown=admin:admin /usr/local/bin/1pw /usr/local/bin/1pw
 
 # HUB
 COPY --from=hub --chown=admin:admin /usr/local/bin/hub /usr/local/bin/hub
