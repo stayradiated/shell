@@ -260,9 +260,9 @@ RUN apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   castnow@0.6.0 \
   diff-so-fancy@1.2.7 \
-  lerna@3.19.0 \
+  lerna@3.20.2 \
   npm-check-updates@4.0.1 \
-  release-it@12.4.3 \
+  np@5.2.1 \
   yarn@1.21.1
 
 # HUB
