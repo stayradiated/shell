@@ -27,6 +27,7 @@ then
   -d \
   --name $INSTANCE_NAME \
   --network host \
+  --user root \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v ~/src:/home/admin/src \
   -v ~/Dropbox:/home/admin/dropbox \
