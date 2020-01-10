@@ -92,7 +92,7 @@ WORKDIR /root
 ### apps
 ###
 
-# Crystal Lang
+# CRYSTAL 
 FROM base as crystal
 ARG CRYSTAL_VERSION=0.32.1
 RUN \
@@ -100,7 +100,7 @@ RUN \
   tar xzvf crystal.tgz && \
   mv "crystal-${CRYSTAL_VERSION}-1" crystal
 
-# Git Crypt
+# GIT CRYPT
 FROM base as git-crypt
 ARG GIT_CRYPT_VERSION=0.6.0
 RUN \
@@ -114,7 +114,7 @@ RUN \
   ENABLE_MAN=yes make && \
   make install
 
-# Rust
+# RUST
 FROM base as rust
 ARG RUST_VERSION=1.40.0
 RUN \
@@ -122,12 +122,35 @@ RUN \
   sh rust.sh -y --default-toolchain "${RUST_VERSION}" && \
   rm rust.sh
 ENV PATH /root/.cargo/bin:$PATH
-RUN \
-  cargo install --version 0.6.5 sd && \
-  cargo install --version 7.4.0 fd-find && \
-  cargo install --version 11.0.2 ripgrep && \
-  cargo install --version 0.1.15 chit && \
-  cargo install --version 0.5.1 what
+# install a package to prime the crates.io index
+# chit is also really useful for checking if a new version of a crate exists
+ARG CHIT_VERSION=0.1.15
+RUN cargo install --version "${CHIT_VERSION}" chit
+
+# RUST >> BR
+FROM rust as br
+ARG BR_VERSION=0.11.5
+RUN cargo install --version "${BR_VERSION}" broot
+
+# RUST >> FD
+FROM rust as fd
+ARG FD_VERSION=7.4.0
+RUN cargo install --version "${FD_VERSION}" fd-find
+
+# RUST >> RG
+FROM rust as rg
+ARG RG_VERSION=11.0.2
+RUN cargo install --version "${RG_VERSION}" ripgrep
+
+# RUST >> SD
+FROM rust as sd
+ARG SD_VERSION=0.6.5
+RUN cargo install --version "${SD_VERSION}" sd
+
+# RUST >> BANDWHICH
+FROM rust as bandwhich
+ARG BANDWHICH_VERSION=0.8.0
+RUN cargo install --version "${BANDWHICH_VERSION}" bandwhich
 
 # ALACRITTY
 FROM rust as alacritty
@@ -488,6 +511,11 @@ COPY --from=light /usr/bin/light /usr/local/bin/light
 
 # RUST TOOLS 
 COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
+COPY --from=br --chown=admin:admin /root/.cargo/bin/broot /usr/local/bin
+COPY --from=fd --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin
+COPY --from=rg --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin
+COPY --from=sd --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin
+COPY --from=bandwhich --chown=admin:admin /root/.cargo/bin/bandwhich /usr/local/bin
 
 # ALACRITTY
 COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
