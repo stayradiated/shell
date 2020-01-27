@@ -175,6 +175,17 @@ RUN wget -O docker-compose "https://github.com/docker/compose/releases/download/
   chmod +x docker-compose && \
   mv docker-compose /usr/local/bin/docker-compose
 
+## ANKI
+FROM base as anki
+ARG ANKI_VERSION=2.1.19
+RUN wget -O anki.tar "https://apps.ankiweb.net/downloads/current/anki-${ANKI_VERSION}-linux-amd64.tar.bz2" && \
+  tar xjvf anki.tar && \
+  mv "anki-${ANKI_VERSION}-linux-amd64" anki && \
+  cd anki && \
+  make install && \
+  cd .. && \
+  rm -r anki anki.tar
+
 # GO
 FROM base as go
 ARG GO_VERSION=1.13.4
@@ -247,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.4
+ARG DOTFILES_VERSION=v1.5.7
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -387,6 +398,10 @@ RUN \
   git reset --hard "${SXHKD_VERSION}" && \
   make all
 
+### ANTIBODY
+FROM base as antibody
+RUN curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+
 ###
 ### the real deal
 ###
@@ -511,6 +526,7 @@ COPY --from=light /usr/bin/light /usr/local/bin/light
 
 # RUST TOOLS 
 COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
+COPY --from=rust --chown=admin:admin /root/.rustup /home/admin/.rustup
 COPY --from=br --chown=admin:admin /root/.cargo/bin/broot /usr/local/bin
 COPY --from=fd --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin
 COPY --from=rg --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin
@@ -528,6 +544,9 @@ COPY --from=gcloud --chown=admin:admin /usr/local/google-cloud-sdk /usr/local/go
 
 # DOCKER-COMPOSE
 COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
+
+# ANKI
+COPY --from=anki /usr/local/share/anki /usr/local/share/anki
 
 # GIT CRYPT
 COPY --from=git-crypt /root/git-crypt/git-crypt /usr/local/bin/git-crypt
@@ -561,8 +580,11 @@ copy --from=zlua --chown=admin:admin /root/z.lua /usr/local/bin/z.lua
 # PRETTYPING
 COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
 
-# ngrok
+# NGROK
 COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
+
+# ANTIBODY
+COPY --from=antibody --chown=admin:admin /usr/local/bin/antibody /usr/local/bin/antibody
 
 ###
 ### FINISHING UP
@@ -572,14 +594,10 @@ COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
 COPY --chown=admin:admin --from=dotfiles /root/dotfiles /home/admin/dotfiles
 RUN cd dotfiles && \
   make apps && \
-  cd ../.zprezto && \
-  git pull --rebase && \
+  antibody bundle \
+    < /home/admin/dotfiles/apps/zsh/bundles.txt \
+    > /home/admin/.antibody.sh && \
   nvim +'call dein#update()' +GoInstallBinaries +UpdateRemotePlugins +qall 
-
-RUN \
-  echo 'export GOPATH=/home/admin' >> /home/admin/.zpath && \
-  echo 'export GOROOT=/usr/local/go' >> /home/admin/.zpath && \
-  echo 'export PATH=/home/admin/dotfiles/bin:/home/admin/.local/bin:/home/admin/.cargo/bin:/usr/local/lib/node/bin:/home/admin/.yarn/bin:/usr/local/go/bin:/usr/local/google-cloud-sdk/bin:$PATH' >> /home/admin/.zpath
 
 ENV PULSE_SERVER /run/pulse/native
 
