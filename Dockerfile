@@ -258,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.7
+ARG DOTFILES_VERSION=v1.5.9
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -281,7 +281,7 @@ RUN mkdir -p /home/admin && \
 # NODE
 FROM base as nvm
 ARG NVM_VERSION=v0.35.1
-ARG NODE_VERSION=v12.14.0
+ARG NODE_VERSION=v13.7.0
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -359,8 +359,8 @@ RUN wget -O light.deb "https://github.com/haikarainen/light/releases/download/v1
 
 # ETCHER
 FROM base as etcher
-ARG ETCHER_VERSION=1.5.63
-RUN wget -O etcher.zip "https://github.com/balena-io/etcher/releases/download/v${ETCHER_VERSION}/balena-etcher-electron-${ETCHER_VERSION}-linux-ia32.zip" && \
+ARG ETCHER_VERSION=1.5.73
+RUN wget -O etcher.zip "https://github.com/balena-io/etcher/releases/download/v${ETCHER_VERSION}/balena-etcher-electron-${ETCHER_VERSION}-linux-x64.zip" && \
   unzip etcher.zip && \
   mv balenaEtcher-*.AppImage etcher && \
   rm etcher.zip
