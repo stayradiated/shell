@@ -258,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.9
+ARG DOTFILES_VERSION=v1.5.11
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -277,6 +277,13 @@ RUN mkdir -p /home/admin && \
   ./install --all && \
   cd && \
   mv /home/admin/.fzf /root/.fzf
+
+# DENO
+FROM base as deno
+ARG DENO_VERSION=v0.35.0
+RUN wget -O deno.gz "https://github.com/denoland/deno/releases/download/${DENO_VERSION}/deno_linux_x64.gz" && \
+  gunzip -df deno.gz && \
+  chmod +x deno
 
 # NODE
 FROM base as nvm
@@ -493,6 +500,9 @@ RUN pip3 install --user beets requests pylast eyeD3 mycli awscli td-watson
 # GO
 COPY --from=go /usr/local/go /usr/local/go
 
+# DENO
+COPY --from=deno --chown=admin:admin /root/deno /usr/local/bin/deno
+
 # NODE
 COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
 
@@ -500,7 +510,7 @@ COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
 COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
 RUN pip install --user neovim && \
-  pip3 install --user neovim && \
+  pip3 install --user neovim msgpack && \
   pip install --user pynvim && \
   nvim +UpdateRemotePlugins +qall
 
