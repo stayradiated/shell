@@ -258,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.11
+ARG DOTFILES_VERSION=v1.5.14
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -304,6 +304,7 @@ RUN npm config set user root && npm config set save-exact true && npm install -g
   lerna@3.20.2 \
   npm-check-updates@4.0.1 \
   np@5.2.1 \
+  public-ip-cli@2.0.0 \
   yarn@1.21.1
 
 # HUB
