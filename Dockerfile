@@ -258,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.16
+ARG DOTFILES_VERSION=v1.5.17
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
