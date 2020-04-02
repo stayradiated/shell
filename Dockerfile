@@ -154,7 +154,7 @@ RUN cargo install --version "${BANDWHICH_VERSION}" bandwhich
 
 # ALACRITTY
 FROM rust as alacritty
-ARG ALACRITTY_VERSION=v0.4.0
+ARG ALACRITTY_VERSION=v0.4.2
 RUN apt-get update && apt-get install -y \
   cmake \
   pkg-config \
@@ -222,7 +222,7 @@ RUN wget -O gcloud.tgz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloa
 
 # TMUX
 FROM base as tmux
-ARG TMUX_VERSION=2.8
+ARG TMUX_VERSION=3.0a
 RUN wget -O tmux.tgz "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz" && \
   tar xzvf tmux.tgz && \
   cd "tmux-${TMUX_VERSION}" && \
@@ -246,7 +246,7 @@ RUN apt-get update && apt-get install -y \
   ninja-build \
   pkg-config \
   texinfo
-ARG NEOVIM_VERSION=v0.4.2
+ARG NEOVIM_VERSION=v0.4.3
 RUN git clone --depth 1 https://github.com/neovim/neovim && \
   cd neovim && \
   git fetch --depth 1 origin tag "${NEOVIM_VERSION}" && \
@@ -258,7 +258,7 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.14
+ARG DOTFILES_VERSION=v1.5.16
 COPY ./files/secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
@@ -268,7 +268,7 @@ RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
 
 # FZF
 FROM base as fzf
-ARG FZF_VERSION=0.17.0
+ARG FZF_VERSION=0.21.0
 RUN mkdir -p /home/admin && \
   git clone --depth=1 https://github.com/junegunn/fzf /home/admin/.fzf && \
   cd /home/admin/.fzf && \
@@ -287,8 +287,8 @@ RUN wget -O deno.gz "https://github.com/denoland/deno/releases/download/${DENO_V
 
 # NODE
 FROM base as nvm
-ARG NVM_VERSION=v0.35.1
-ARG NODE_VERSION=v13.7.0
+ARG NVM_VERSION=v0.35.3
+ARG NODE_VERSION=v13.12.0
 RUN git clone --depth 1 https://github.com/creationix/nvm && \
   cd nvm && \
   git fetch --depth 1 origin tag $NVM_VERSION && \
@@ -297,30 +297,31 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
   mv "versions/node/${NODE_VERSION}" /usr/local/lib/node
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
 COPY ./files/.npmrc /root/.npmrc
-RUN apt-get install -y libsecret-1-dev
+RUN apt-get update && apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   castnow@0.6.0 \
   diff-so-fancy@1.2.7 \
   lerna@3.20.2 \
-  npm-check-updates@4.0.1 \
-  np@5.2.1 \
+  npm-check-updates@4.1.1 \
+  expo-cli@3.17.8 \
+  np@6.2.0 \
   public-ip-cli@2.0.0 \
-  yarn@1.21.1
+  yarn@1.22.4
 
-# HUB
-FROM base as hub
-ARG HUB_VERSION=2.11.2
-RUN wget -O hub.tgz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz" && \
-  tar xzvf hub.tgz && \
-  cd "hub-linux-amd64-${HUB_VERSION}" && \
-  mv bin/hub /usr/local/bin/hub && \
+# GH
+FROM base as gh
+ARG GH_VERSION=0.6.4
+RUN wget -O gh.tgz "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" && \
+  tar xzvf gh.tgz && \
+  cd "gh_${GH_VERSION}_linux_amd64" && \
+  mv bin/gh /usr/local/bin/gh && \
   cd .. && \
-  rm -rf "hub-linux-amd64-${HUB_VERSION}" hub.tgz
+  rm -rf "gh_${GH_VERSION}_linux_amd64" gh.tgz
 
 # Z.LUA
 FROM base as zlua
-ARG ZLUA_VERSION=1.7.0
-RUN wget "https://raw.githubusercontent.com/skywind3000/z.lua/v${ZLUA_VERSION}/z.lua"
+ARG ZLUA_VERSION=1.8.4
+RUN wget "https://raw.githubusercontent.com/skywind3000/z.lua/${ZLUA_VERSION}/z.lua"
 
 # PRETTYPING
 FROM base as prettyping
@@ -330,7 +331,7 @@ RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettypi
 
 # BAT
 FROM base as bat
-ARG BAT_VERSION=0.10.0
+ARG BAT_VERSION=0.13.0
 RUN wget -O bat.tgz "https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz" && \
   tar xzvf bat.tgz && \
   mv "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu/bat" /usr/local/bin/bat && \
@@ -409,6 +410,37 @@ RUN \
 ### ANTIBODY
 FROM base as antibody
 RUN curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+
+### CHARLES PROXY
+FROM base as charles
+ARG CHARLES_VERSION="4.5.6"
+RUN \
+  wget -O charles.tgz "https://www.charlesproxy.com/assets/release/${CHARLES_VERSION}/charles-proxy-${CHARLES_VERSION}_amd64.tar.gz" && \
+  tar xzvf charles.tgz && \
+  rm charles.tgz
+
+### SQLITE3
+
+FROM base as sqlite3
+ARG SQLITE_VERSION="3310100"
+RUN \
+  wget -O sqlite.tgz "https://sqlite.org/2020/sqlite-autoconf-${SQLITE_VERSION}.tar.gz" && \
+  tar xzvf sqlite.tgz && \
+  rm sqlite.tgz && \
+  cd "sqlite-autoconf-${SQLITE_VERSION}" && \
+  ./configure --prefix=/usr     \
+              --disable-static  \
+              --enable-fts5     \
+              CFLAGS="-g -O2                    \
+              -DSQLITE_ENABLE_FTS3=1            \
+              -DSQLITE_ENABLE_FTS4=1            \
+              -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+              -DSQLITE_ENABLE_UNLOCK_NOTIFY=1   \
+              -DSQLITE_ENABLE_DBSTAT_VTAB=1     \
+              -DSQLITE_SECURE_DELETE=1          \
+              -DSQLITE_ENABLE_FTS3_TOKENIZER=1" && \
+  make && \
+  make install
 
 ###
 ### the real deal
@@ -582,8 +614,8 @@ COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
 # ONEPW
 COPY --from=onepw --chown=admin:admin /usr/local/bin/1pw /usr/local/bin/1pw
 
-# HUB
-COPY --from=hub --chown=admin:admin /usr/local/bin/hub /usr/local/bin/hub
+# GH
+COPY --from=gh --chown=admin:admin /usr/local/bin/gh /usr/local/bin/gh
 
 # Z.LUA
 copy --from=zlua --chown=admin:admin /root/z.lua /usr/local/bin/z.lua
@@ -596,6 +628,14 @@ COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
 
 # ANTIBODY
 COPY --from=antibody --chown=admin:admin /usr/local/bin/antibody /usr/local/bin/antibody
+
+# CHARLES
+COPY --from=charles --chown=admin:admin /root/charles/bin/charles /usr/local/bin/charles
+COPY --from=charles --chown=admin:admin /root/charles/lib/* /usr/share/java/charles/
+
+# SQLITE
+COPY --from=sqlite3 --chown=admin:admin /usr/lib/libsqlite3.* /usr/lib/
+COPY --from=sqlite3 --chown=admin:admin /usr/bin/sqlite3 /usr/bin/sqlite3
 
 ###
 ### FINISHING UP
