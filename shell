@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xo
+
 INSTANCE_NAME="${INSTANCE_NAME:-shell}"
 
 if [[ $@ == *--rm* ]]
@@ -24,27 +26,15 @@ fi
 if [[ "`docker ps | grep $INSTANCE_NAME | head -c1 | wc -c`" -eq 0 ]]
 then
   docker run \
-  -d \
-  --name $INSTANCE_NAME \
-  --network host \
-  --user root \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v ~/src:/home/admin/src \
-  -v ~/Dropbox:/home/admin/dropbox \
-  -v ~/shared:/home/admin/shared \
-  -v ~/Downloads:/home/admin/downloads \
-  -v /mnt/data/music:/home/admin/music \
-  --privileged \
-  stayradiated/shell \
-  /sbin/my_init
-
-  docker cp ~/.Xauthority $INSTANCE_NAME:/home/admin/.Xauthority
+    -d \
+    --name $INSTANCE_NAME \
+    --network host \
+    --user root \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v ~/src:/home/admin/src \
+    --privileged \
+    stayradiated/shell \
+    /sbin/my_init
 fi
 
-docker exec \
-  -it \
-  -u admin \
-  -e DISPLAY=$DISPLAY \
-  $INSTANCE_NAME \
-  env COLUMNS=`tput cols` LINES=`tput lines` TERM=xterm \
-  /bin/bash -c 'stty cols $COLUMNS; stty rows $LINES; exec zsh'
+docker exec -it -u admin $INSTANCE_NAME /bin/zsh

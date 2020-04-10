@@ -1,19 +1,10 @@
-x11docker \
-  --xorg \
-  --desktop \
-  --gpu \
-  --hostnet \
-  --webcam \
-  --user=RETAIN \
-  --sudouser -- \
-  -u admin \
-  -v /dev/shm:/dev/shm \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v ~/src:/home/admin/src \
-  -v ~/Dropbox:/home/admin/dropbox \
-  -v ~/shared:/home/admin/shared \
-  -v ~/firefox:/home/admin/.mozilla/firefox \
-  -v /run/user/1000/pulse:/run/pulse:ro \
-  -v /etc/resolv.conf:/etc/resolv.conf \
-  --privileged \
-  -- stayradiated/shell
+x11docker --xorg --desktop --gpu --hostnet --hostdbus --hostipc --webcam \
+	--user=RETAIN --sudouser \
+	--workdir=/home/admin \
+	--share /dev/shm \
+	--share /var/run/docker.sock \
+	-- -u admin --privileged \
+	-v ~/src:/home/admin/src \
+	-v ~/firefox:/home/admin/.mozilla/firefox \
+	-v /run/user/1000/pulse:/run/pulse:ro \
+	-- stayradiated/shell

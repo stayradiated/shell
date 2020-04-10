@@ -127,11 +127,6 @@ ENV PATH /root/.cargo/bin:$PATH
 ARG CHIT_VERSION=0.1.15
 RUN cargo install --version "${CHIT_VERSION}" chit
 
-# RUST >> BR
-FROM rust as br
-ARG BR_VERSION=0.11.5
-RUN cargo install --version "${BR_VERSION}" broot
-
 # RUST >> FD
 FROM rust as fd
 ARG FD_VERSION=7.4.0
@@ -258,8 +253,8 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.5.17
-COPY ./files/secret-key /root/secret-key
+ARG DOTFILES_VERSION=v1.9.0
+COPY ./secret-key /root/secret-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch --depth 1 origin tag "${DOTFILES_VERSION}" && \
@@ -296,8 +291,6 @@ RUN git clone --depth 1 https://github.com/creationix/nvm && \
   bash -c "source nvm.sh && nvm install ${NODE_VERSION}" && \
   mv "versions/node/${NODE_VERSION}" /usr/local/lib/node
 ENV PATH "/usr/local/lib/node/bin:${PATH}"
-COPY ./files/.npmrc /root/.npmrc
-RUN apt-get update && apt-get install -y libsecret-1-dev
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   castnow@0.6.0 \
   diff-so-fancy@1.2.7 \
@@ -419,8 +412,15 @@ RUN \
   tar xzvf charles.tgz && \
   rm charles.tgz
 
-### SQLITE3
+### DBXCLI
+FROM base AS dbxcli
+ARG DBXCLI_VERSION="3.0.0"
+RUN \
+  wget -O dbxcli \
+    "https://github.com/dropbox/dbxcli/releases/download/v${DBXCLI_VERSION}/dbxcli-linux-amd64" && \
+  chmod +x dbxcli
 
+### SQLITE3
 FROM base as sqlite3
 ARG SQLITE_VERSION="3310100"
 RUN \
@@ -448,15 +448,6 @@ RUN \
 
 FROM base as shell
 
-# weechat ppa
-RUN apt-key adv \
-  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
-  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && \
-  add-apt-repository \
-    "deb [arch=amd64] https://weechat.org/ubuntu \
-    $(lsb_release -cs) \
-    main"
-
 # PPAs
 RUN \
   # PROLOG
@@ -469,10 +460,10 @@ RUN apt-get update && apt-get install -y \
   aria2=1.33.\* \
   audacity \
   bs1770gain=0.4.\* \
-  chromium-browser=79.0* \
+  chromium-browser=80.0* \
   ddgr \
   ffmpeg=7:3\* \
-  firefox=71.0+* \
+  firefox=75.0+* \
   fonts-noto \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
@@ -497,6 +488,7 @@ RUN apt-get update && apt-get install -y \
   qpdfview \
   ranger \
   redshift \
+  rlwrap \
   rofi \
   rsync \
   safe-rm \
@@ -508,11 +500,7 @@ RUN apt-get update && apt-get install -y \
   ttf-ubuntu-font-family \
   urlview=0.9-20\* \
   vlc \
-  weechat-curses \
-  weechat-perl \
-  weechat-plugins \
-  weechat-python && \
-  apt-get clean
+&& apt-get clean
 
 # setup admin user
 RUN useradd -s /usr/bin/zsh --create-home admin && \
@@ -570,7 +558,6 @@ COPY --from=light /usr/bin/light /usr/local/bin/light
 # RUST TOOLS 
 COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
 COPY --from=rust --chown=admin:admin /root/.rustup /home/admin/.rustup
-COPY --from=br --chown=admin:admin /root/.cargo/bin/broot /usr/local/bin
 COPY --from=fd --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin
 COPY --from=rg --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin
 COPY --from=sd --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin
@@ -633,6 +620,9 @@ COPY --from=antibody --chown=admin:admin /usr/local/bin/antibody /usr/local/bin/
 COPY --from=charles --chown=admin:admin /root/charles/bin/charles /usr/local/bin/charles
 COPY --from=charles --chown=admin:admin /root/charles/lib/* /usr/share/java/charles/
 
+# DBXCLI
+COPY --from=dbxcli --chown=admin:admin /root/dbxcli /usr/local/bin/dbxcli
+
 # SQLITE
 COPY --from=sqlite3 --chown=admin:admin /usr/lib/libsqlite3.* /usr/lib/
 COPY --from=sqlite3 --chown=admin:admin /usr/bin/sqlite3 /usr/bin/sqlite3
@@ -648,7 +638,8 @@ RUN cd dotfiles && \
   antibody bundle \
     < /home/admin/dotfiles/apps/zsh/bundles.txt \
     > /home/admin/.antibody.sh && \
-  nvim +'call dein#update()' +GoInstallBinaries +UpdateRemotePlugins +qall 
+  nvim +'call dein#update()' +GoInstallBinaries +UpdateRemotePlugins +qall && \
+  /home/admin/dotfiles/bin/1pw-pull
 
 ENV PULSE_SERVER /run/pulse/native
 
