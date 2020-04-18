@@ -253,13 +253,14 @@ RUN git clone --depth 1 https://github.com/neovim/neovim && \
 
 # DOTFILES
 FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.9.0
-COPY ./secret-key /root/secret-key
+ARG DOTFILES_VERSION=v1.12.0
+COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
   cd dotfiles && \
   git fetch --depth 1 origin tag "${DOTFILES_VERSION}" && \
   git reset --hard "${DOTFILES_VERSION}" && \
-  git-crypt unlock ~/secret-key
+  git-crypt unlock /tmp/dotfiles-key && \
+  rm /tmp/dotfiles-key
 
 # FZF
 FROM base as fzf
@@ -294,11 +295,12 @@ ENV PATH "/usr/local/lib/node/bin:${PATH}"
 RUN npm config set user root && npm config set save-exact true && npm install -g \
   castnow@0.6.0 \
   diff-so-fancy@1.2.7 \
+  expo-cli@3.17.24 \
   lerna@3.20.2 \
-  npm-check-updates@4.1.1 \
-  expo-cli@3.17.8 \
-  np@6.2.0 \
+  np@6.2.1 \
+  npm-check-updates@4.1.2 \
   public-ip-cli@2.0.0 \
+  serve@11.3.0 \
   yarn@1.22.4
 
 # GH
@@ -453,7 +455,9 @@ RUN \
   # PROLOG
   apt-add-repository ppa:swi-prolog/stable && \
   # OLIVER EDITOR
-  add-apt-repository ppa:olive-editor/olive-editor
+  add-apt-repository ppa:olive-editor/olive-editor && \
+  # PEEK
+  add-apt-repository ppa:peek-developers/stable
 
 # install apps
 RUN apt-get update && apt-get install -y \
@@ -461,11 +465,10 @@ RUN apt-get update && apt-get install -y \
   audacity \
   bs1770gain=0.4.\* \
   chromium-browser=80.0* \
-  ddgr \
   ffmpeg=7:3\* \
   firefox=75.0+* \
+  flameshot=0.5.1\* \
   fonts-noto \
-  fonts-noto-cjk \
   fonts-noto-color-emoji \
   gnome-keyring \
   graphicsmagick \
@@ -479,11 +482,11 @@ RUN apt-get update && apt-get install -y \
   moreutils \
   mysql-client \
   nmap \
-  nnn \
   olive-editor \
   openjdk-11-jre \
   pandoc \
   pdd \
+  peek \
   pv \
   qpdfview \
   ranger \
@@ -502,9 +505,16 @@ RUN apt-get update && apt-get install -y \
   vlc \
 && apt-get clean
 
+# ZOOM
+ARG ZOOM_VERSION="3.5.383291.0407"
+RUN wget -O /tmp/zoom.deb "https://zoom.us/client/${ZOOM_VERSION}/zoom_amd64.deb" && \
+  apt-get install -y /tmp/zoom.deb && \
+  rm /tmp/zoom.deb
+
 # setup admin user
+COPY ./secret/admin-passwd /tmp/admin-passwd
 RUN useradd -s /usr/bin/zsh --create-home admin && \
-  echo "admin:admin" | chpasswd && \
+  echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted && \
   adduser admin sudo
 
 # switch to admin

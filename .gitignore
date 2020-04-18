@@ -1,1 +1,2 @@
-secret-key
+secret/admin-passwd
+secret/dotfiles-key

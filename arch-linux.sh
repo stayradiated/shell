@@ -41,11 +41,9 @@ arch-chroot /mnt
 ln -sf /usr/share/zoneinfo/Pacific/Auckland  /etc/localtime
 hwclock --systohc
 
-# install neovim
-pacman -S neovim
-
 # configure language
-nvim /etc/locale.gen # uncomment en_NZ.UTF-8
+pacman -S vi
+vi /etc/locale.gen # uncomment en_NZ.UTF-8
 echo 'LANG=en_NZ.UTF-8' >> /etc/locale.conf
 
 # configure keyboard
@@ -121,3 +119,9 @@ bluetoothctl
 	trust D6:34:95:34:81:8E
 	pair D6:34:95:34:81:8E
 	scan off
+
+# sudo
+pacman -S sudo
+groupadd sudo
+usermod -G sudo admin
+visudo # allow group sudo
