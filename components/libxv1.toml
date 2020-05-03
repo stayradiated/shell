@@ -13,17 +13,6 @@ apteryx \
 """
 
 exports = [
-  '/usr/lib/x86_64-linux-gnu/libX11.*',
-  '/usr/lib/x86_64-linux-gnu/libX11.*',
-  '/usr/lib/x86_64-linux-gnu/libXau.*',
-  '/usr/lib/x86_64-linux-gnu/libXau.*',
-  '/usr/lib/x86_64-linux-gnu/libXdmcp.*',
-  '/usr/lib/x86_64-linux-gnu/libXdmcp.*',
-  '/usr/lib/x86_64-linux-gnu/libXext.*',
-  '/usr/lib/x86_64-linux-gnu/libXext.*',
-  '/usr/lib/x86_64-linux-gnu/libXv.*',
-  '/usr/lib/x86_64-linux-gnu/libXv.*',
-  '/usr/lib/x86_64-linux-gnu/libxcb.*',
-  '/usr/lib/x86_64-linux-gnu/libxcb.*',
+  '/usr/lib/x86_64-linux-gnu/',
   '/usr/share/X11/',
 ]

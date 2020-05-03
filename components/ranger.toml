@@ -13,14 +13,13 @@ pip3 install ranger-fm=='{{VERSION}}'
 """
 
 exports = [
-  "/usr/local/bin/ranger",
-  "/usr/local/bin/rifle",
-  "/usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/",
-  "/usr/local/lib/python3.6/dist-packages/ranger/",
+  '/usr/local/bin/ranger',
+  '/usr/local/bin/rifle',
+  '/usr/local/lib/python3.6/',
 ]
 
 docs = [
-  "/usr/local/share/doc/ranger/",
-  "/usr/local/share/man/man1/ranger.1",
-  "/usr/local/share/man/man1/rifle.1",
+  '/usr/local/share/doc/ranger/',
+  '/usr/local/share/man/man1/ranger.1',
+  '/usr/local/share/man/man1/rifle.1',
 ]

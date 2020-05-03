@@ -14,19 +14,5 @@ pip3 install eyeD3=='{{VERSION}}'
 
 exports = [
   '/usr/local/bin/eyeD3',
-  '/usr/local/lib/python3.6/dist-packages/dataclasses-0.7.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/dataclasses.py',
-  '/usr/local/lib/python3.6/dist-packages/deprecation-2.1.0.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/deprecation.py',
-  #'/usr/local/lib/python3.6/dist-packages/examples/',
-  '/usr/local/lib/python3.6/dist-packages/eyeD3-0.9.5.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/eyed3/',
-  '/usr/local/lib/python3.6/dist-packages/filetype-1.0.7.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/filetype/',
-  '/usr/local/lib/python3.6/dist-packages/packaging-20.3.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/packaging/',
-  '/usr/local/lib/python3.6/dist-packages/pyparsing-2.4.7.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/pyparsing.py',
-  '/usr/local/lib/python3.6/dist-packages/six-1.14.0.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/six.py',
+  '/usr/local/lib/python3.6/',
 ]

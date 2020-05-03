@@ -30,16 +30,9 @@ pip3 install neovim msgpack
 
 exports = [
   '/usr/local/bin/nvim',
-  '/usr/local/share/nvim/',
   '/usr/local/include/python3.6/',
-  '/usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so',
-  '/usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/msgpack/',
-  '/usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/neovim/',
-  '/usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/',
-  '/usr/local/lib/python3.6/dist-packages/pynvim/',
+  '/usr/local/lib/python3.6/',
+  '/usr/local/share/nvim/',
 ]
 
 docs = [

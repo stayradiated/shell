@@ -154,9 +154,6 @@ COPY --from=git \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 RUN \
   apteryx libssl-dev xsltproc && \
   clone --https --shallow --tag '0.6.0' https://github.com/AGWA/git-crypt && \
@@ -397,9 +394,6 @@ COPY --from=git \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 RUN \
   apteryx libxcb-util-dev libxcb-keysyms1-dev && \
   clone --https --shallow --tag '0.6.1' https://github.com/baskerville/sxhkd && \
@@ -450,9 +444,6 @@ COPY --from=git \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 RUN \
   apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
   clone --https --shallow --tag '0.9.9' https://github.com/baskerville/bspwm && \
@@ -530,9 +521,6 @@ COPY --from=wget \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 RUN \
   apteryx libncurses5-dev libevent-dev && \
   cd /root && \
@@ -730,9 +718,6 @@ COPY --from=git \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -757,9 +742,6 @@ COPY --from=sxhkd \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -785,41 +767,17 @@ COPY --from=neovim \
   /usr/local/bin/nvim \
   /usr/local/bin/
 COPY --from=neovim \
-  /usr/local/share/nvim/ \
-  /usr/local/share/nvim/
-COPY --from=neovim \
   /usr/local/include/python3.6/ \
   /usr/local/include/python3.6/
 COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
 COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so \
-  /usr/local/lib/python3.6/dist-packages/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/msgpack/ \
-  /usr/local/lib/python3.6/dist-packages/msgpack/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/neovim/ \
-  /usr/local/lib/python3.6/dist-packages/neovim/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/pynvim/ \
-  /usr/local/lib/python3.6/dist-packages/pynvim/
+  /usr/local/share/nvim/ \
+  /usr/local/share/nvim/
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -855,9 +813,6 @@ COPY --from=apteryx \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -882,9 +837,6 @@ FROM shell-admin AS shell-ssh
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 
@@ -895,17 +847,11 @@ COPY --from=ranger \
   /usr/local/bin/rifle \
   /usr/local/bin/
 COPY --from=ranger \
-  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/
-COPY --from=ranger \
-  /usr/local/lib/python3.6/dist-packages/ranger/ \
-  /usr/local/lib/python3.6/dist-packages/ranger/
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -923,9 +869,6 @@ COPY --from=one-pw \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -941,9 +884,6 @@ COPY --from=node \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
@@ -979,9 +919,6 @@ COPY --from=node \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
@@ -1050,9 +987,6 @@ COPY --from=git \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 RUN \
   apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
   clone --https --shallow --tag 'tig-2.5.1' https://github.com/jonas/tig && \
@@ -1325,9 +1259,6 @@ COPY --from=htop \
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
-COPY --from=make \
-  /usr/include/gnumake.h \
-  /usr/include/
 COPY --from=moreutils \
   /usr/bin/chronic \
   /usr/bin/combine \
@@ -1459,6 +1390,9 @@ COPY --from=mesa \
   /usr/share/ \
   /usr/share/
 COPY --from=x11-utils \
+  /etc/X11/ \
+  /etc/X11/
+COPY --from=x11-utils \
   /etc/fonts/ \
   /etc/fonts/
 COPY --from=x11-utils \
@@ -1468,167 +1402,20 @@ COPY --from=x11-utils \
   /etc/rcS.d/S01x11-common \
   /etc/rcS.d/
 COPY --from=x11-utils \
+  /etc/sensors.d/ \
+  /etc/sensors.d/
+COPY --from=x11-utils \
   /etc/sensors3.conf \
   /etc/
 COPY --from=x11-utils \
-  /etc/sensors.d/.placeholder \
-  /etc/sensors.d/
-COPY --from=x11-utils \
-  /etc/X11/ \
-  /etc/X11/
-COPY --from=x11-utils \
-  /usr/bin/appres \
-  /usr/bin/editres \
-  /usr/bin/iceauth \
-  /usr/bin/listres \
-  /usr/bin/luit \
-  /usr/bin/sessreg \
-  /usr/bin/setxkbmap \
-  /usr/bin/showrgb \
-  /usr/bin/viewres \
-  /usr/bin/X11 \
-  /usr/bin/xcmsdb \
-  /usr/bin/xdpyinfo \
-  /usr/bin/xdriinfo \
-  /usr/bin/xev \
-  /usr/bin/xfd \
-  /usr/bin/xfontsel \
-  /usr/bin/xgamma \
-  /usr/bin/xhost \
-  /usr/bin/xkbbell \
-  /usr/bin/xkbcomp \
-  /usr/bin/xkbevd \
-  /usr/bin/xkbprint \
-  /usr/bin/xkbvleds \
-  /usr/bin/xkbwatch \
-  /usr/bin/xkeystone \
-  /usr/bin/xkill \
-  /usr/bin/xlsatoms \
-  /usr/bin/xlsclients \
-  /usr/bin/xlsfonts \
-  /usr/bin/xmessage \
-  /usr/bin/xmodmap \
-  /usr/bin/xprop \
-  /usr/bin/xrandr \
-  /usr/bin/xrdb \
-  /usr/bin/xrefresh \
-  /usr/bin/xset \
-  /usr/bin/xsetmode \
-  /usr/bin/xsetpointer \
-  /usr/bin/xsetroot \
-  /usr/bin/xstdcmap \
-  /usr/bin/xvidtune \
-  /usr/bin/xvinfo \
-  /usr/bin/xwininfo \
+  /usr/bin/ \
   /usr/bin/
 COPY --from=x11-utils \
-  /usr/lib/x86_64-linux-gnu/dri/i915_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/i965_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/iris_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/nouveau_vieux_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/r200_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/r300_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/r600_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/radeon_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/radeonsi_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/virtio_gpu_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/vmwgfx_dri.so \
-  /usr/lib/x86_64-linux-gnu/dri/
-COPY --from=x11-utils \
-  /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* \
-  /usr/lib/x86_64-linux-gnu/libdrm_intel.so.* \
-  /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.* \
-  /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.* \
-  /usr/lib/x86_64-linux-gnu/libdrm.so.* \
-  /usr/lib/x86_64-linux-gnu/libelf-0.170.so \
-  /usr/lib/x86_64-linux-gnu/libelf.so.* \
-  /usr/lib/x86_64-linux-gnu/libfontconfig.so.* \
-  /usr/lib/x86_64-linux-gnu/libfontenc.so.* \
-  /usr/lib/x86_64-linux-gnu/libfreetype.so.* \
-  /usr/lib/x86_64-linux-gnu/libglapi.so.* \
-  /usr/lib/x86_64-linux-gnu/libGLdispatch.so.* \
-  /usr/lib/x86_64-linux-gnu/libGL.so.* \
-  /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.* \
-  /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.* \
-  /usr/lib/x86_64-linux-gnu/libGLX.so.* \
-  /usr/lib/x86_64-linux-gnu/libICE.so.* \
-  /usr/lib/x86_64-linux-gnu/libisl.so.* \
-  /usr/lib/x86_64-linux-gnu/libLLVM-9.so.* \
-  /usr/lib/x86_64-linux-gnu/libLLVM-9.so \
-  /usr/lib/x86_64-linux-gnu/libmpc.so.* \
-  /usr/lib/x86_64-linux-gnu/libmpfr.so.* \
-  /usr/lib/x86_64-linux-gnu/libpciaccess.so.* \
-  /usr/lib/x86_64-linux-gnu/libpng16.so.* \
-  /usr/lib/x86_64-linux-gnu/libsensors.so.* \
-  /usr/lib/x86_64-linux-gnu/libSM.so.* \
-  /usr/lib/x86_64-linux-gnu/libX11.so.* \
-  /usr/lib/x86_64-linux-gnu/libX11-xcb.so.* \
-  /usr/lib/x86_64-linux-gnu/libXau.so.* \
-  /usr/lib/x86_64-linux-gnu/libXaw7.so.* \
-  /usr/lib/x86_64-linux-gnu/libXaw.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-glx.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-present.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-shape.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb.so.* \
-  /usr/lib/x86_64-linux-gnu/libxcb-sync.so.* \
-  /usr/lib/x86_64-linux-gnu/libXcomposite.so.* \
-  /usr/lib/x86_64-linux-gnu/libXcursor.so.* \
-  /usr/lib/x86_64-linux-gnu/libXdamage.so.* \
-  /usr/lib/x86_64-linux-gnu/libXdmcp.so.* \
-  /usr/lib/x86_64-linux-gnu/libXext.so.* \
-  /usr/lib/x86_64-linux-gnu/libXfixes.so.* \
-  /usr/lib/x86_64-linux-gnu/libXft.so.* \
-  /usr/lib/x86_64-linux-gnu/libXinerama.so.* \
-  /usr/lib/x86_64-linux-gnu/libXi.so.* \
-  /usr/lib/x86_64-linux-gnu/libxkbfile.so.* \
-  /usr/lib/x86_64-linux-gnu/libXmu.so.* \
-  /usr/lib/x86_64-linux-gnu/libXmuu.so.* \
-  /usr/lib/x86_64-linux-gnu/libXpm.so.* \
-  /usr/lib/x86_64-linux-gnu/libXrandr.so.* \
-  /usr/lib/x86_64-linux-gnu/libXrender.so.* \
-  /usr/lib/x86_64-linux-gnu/libxshmfence.so.* \
-  /usr/lib/x86_64-linux-gnu/libXt.so.* \
-  /usr/lib/x86_64-linux-gnu/libXtst.so.* \
-  /usr/lib/x86_64-linux-gnu/libXv.so.* \
-  /usr/lib/x86_64-linux-gnu/libXxf86dga.so.* \
-  /usr/lib/x86_64-linux-gnu/libXxf86vm.so.* \
+  /usr/lib/x86_64-linux-gnu/ \
   /usr/lib/x86_64-linux-gnu/
 COPY --from=x11-utils \
-  /usr/local/share/fonts/ \
-  /usr/local/share/fonts/
-COPY --from=x11-utils \
-  /usr/share/drirc.d/00-mesa-defaults.conf \
-  /usr/share/drirc.d/
-COPY --from=x11-utils \
-  /usr/share/fonts/ \
-  /usr/share/fonts/
-COPY --from=x11-utils \
-  /usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/libisl.so.*-gdb.py \
-  /usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/
-COPY --from=x11-utils \
-  /usr/share/libdrm \
-  /usr/share/libsensors4 \
+  /usr/share/ \
   /usr/share/
-COPY --from=x11-utils \
-  /usr/share/libdrm/amdgpu.ids \
-  /usr/share/libdrm/
-COPY --from=x11-utils \
-  /usr/share/pkgconfig/xkbcomp.pc \
-  /usr/share/pkgconfig/
-COPY --from=x11-utils \
-  /usr/share/X11/ \
-  /usr/share/X11/
-COPY --from=x11-utils \
-  /usr/share/xml/fontconfig/fonts.dtd \
-  /usr/share/xml/fontconfig/
-COPY --from=x11-utils \
-  /var/lib/ucf/hashfile.1 \
-  /var/lib/ucf/
 COPY --from=alacritty \
   /usr/bin/alacritty \
   /usr/bin/
@@ -1685,11 +1472,8 @@ COPY --from=ranger \
   /usr/local/bin/rifle \
   /usr/local/bin/
 COPY --from=ranger \
-  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/
-COPY --from=ranger \
-  /usr/local/lib/python3.6/dist-packages/ranger/ \
-  /usr/local/lib/python3.6/dist-packages/ranger/
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
 COPY --from=tmux \
   /usr/local/bin/tmux \
   /usr/local/bin/
@@ -1700,35 +1484,14 @@ COPY --from=neovim \
   /usr/local/bin/nvim \
   /usr/local/bin/
 COPY --from=neovim \
-  /usr/local/share/nvim/ \
-  /usr/local/share/nvim/
-COPY --from=neovim \
   /usr/local/include/python3.6/ \
   /usr/local/include/python3.6/
 COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
 COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so \
-  /usr/local/lib/python3.6/dist-packages/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/msgpack/ \
-  /usr/local/lib/python3.6/dist-packages/msgpack/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/neovim/ \
-  /usr/local/lib/python3.6/dist-packages/neovim/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/ \
-  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/dist-packages/pynvim/ \
-  /usr/local/lib/python3.6/dist-packages/pynvim/
+  /usr/local/share/nvim/ \
+  /usr/local/share/nvim/
 COPY --from=bspwm \
   /usr/lib/x86_64-linux-gnu/ \
   /usr/lib/x86_64-linux-gnu/

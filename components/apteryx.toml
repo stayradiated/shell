@@ -1,7 +1,7 @@
-name = "apteryx"
-from = "base"
+name = 'apteryx'
+from = 'base'
 
-version = "1.0.0"
+version = '1.0.0'
 
 build = """
 EXPORT=/usr/local/bin/apteryx
@@ -18,5 +18,5 @@ chmod +x ${EXPORT}
 """
 
 exports = [
-  "/usr/local/bin/apteryx"
+  '/usr/local/bin/apteryx'
 ]

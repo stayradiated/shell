@@ -1,7 +1,7 @@
-name = "make"
-from = "base"
+name = 'make'
+from = 'base'
 
-version = "4.1-*"
+version = '4.1-*'
 
 devDependencies = [
   "apteryx"
@@ -12,8 +12,7 @@ apteryx make='{{VERSION}}'
 """
 
 exports = [
-  "/usr/bin/make",
-  "/usr/include/gnumake.h"
+  '/usr/bin/make',
 ]
 
 docs = [
