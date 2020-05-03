@@ -73,6 +73,9 @@ RUN \
 
 # CLONE
 FROM base AS clone
+COPY --from=go \
+  /usr/local/go/ \
+  /usr/local/go/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -86,9 +89,6 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=go \
-  /usr/local/go/ \
-  /usr/local/go/
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -114,6 +114,25 @@ RUN \
 
 # GIT-CRYPT
 FROM base AS git-crypt
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 COPY --from=build-essential \
   /etc/alternatives/ \
   /etc/alternatives/
@@ -135,25 +154,6 @@ COPY --from=build-essential \
 COPY --from=apteryx \
   /usr/local/bin/apteryx \
   /usr/local/bin/
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
-COPY --from=git \
-  /usr/bin/git \
-  /usr/bin/
-COPY --from=git \
-  /usr/lib/git-core/ \
-  /usr/lib/git-core/
-COPY --from=git \
-  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
-  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=git \
-  /usr/share/git-core/ \
-  /usr/share/git-core/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
 RUN \
   apteryx libssl-dev xsltproc && \
   clone --https --shallow --tag '0.6.0' https://github.com/AGWA/git-crypt && \
@@ -174,8 +174,8 @@ RUN \
 
 # DOTFILES
 FROM base AS dotfiles
-COPY --from=clone \
-  /usr/local/bin/clone \
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
   /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
@@ -190,8 +190,8 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=git-crypt \
-  /usr/local/bin/git-crypt \
+COPY --from=clone \
+  /usr/local/bin/clone \
   /usr/local/bin/
 COPY \
   ./secret/dotfiles-key \
@@ -206,9 +206,6 @@ RUN \
 
 # NVM
 FROM base AS nvm
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -222,6 +219,9 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 RUN \
   clone --https --shallow --tag 'v0.35.3' https://github.com/nvm-sh/nvm && \
   mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm && \
@@ -304,20 +304,17 @@ RUN \
 
 # Z.LUA
 FROM base AS z.lua
-COPY --from=lua \
-  /usr/bin/lua5.3 \
-  /usr/bin/
 COPY --from=wget \
   /usr/bin/wget \
+  /usr/bin/
+COPY --from=lua \
+  /usr/bin/lua5.3 \
   /usr/bin/
 RUN \
   wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
 
 # FZF
 FROM base AS fzf
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -331,6 +328,9 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 RUN \
   clone --https --shallow --tag '0.21.1' https://github.com/junegunn/fzf && \
   mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
@@ -354,6 +354,25 @@ WORKDIR /home/admin
 
 # SXHKD
 FROM base AS sxhkd
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 COPY --from=build-essential \
   /etc/alternatives/ \
   /etc/alternatives/
@@ -375,25 +394,6 @@ COPY --from=build-essential \
 COPY --from=apteryx \
   /usr/local/bin/apteryx \
   /usr/local/bin/
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
-COPY --from=git \
-  /usr/bin/git \
-  /usr/bin/
-COPY --from=git \
-  /usr/lib/git-core/ \
-  /usr/lib/git-core/
-COPY --from=git \
-  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
-  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=git \
-  /usr/share/git-core/ \
-  /usr/share/git-core/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
 RUN \
   apteryx libxcb-util-dev libxcb-keysyms1-dev && \
   clone --https --shallow --tag '0.6.1' https://github.com/baskerville/sxhkd && \
@@ -404,8 +404,24 @@ RUN \
 
 # BSPWM
 FROM base AS bspwm
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
   /usr/local/bin/
 COPY --from=build-essential \
   /etc/alternatives/ \
@@ -425,25 +441,9 @@ COPY --from=build-essential \
 COPY --from=build-essential \
   /usr/lib/ \
   /usr/lib/
-COPY --from=clone \
-  /usr/local/bin/clone \
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
   /usr/local/bin/
-COPY --from=git \
-  /usr/bin/git \
-  /usr/bin/
-COPY --from=git \
-  /usr/lib/git-core/ \
-  /usr/lib/git-core/
-COPY --from=git \
-  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
-  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=git \
-  /usr/share/git-core/ \
-  /usr/share/git-core/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
 RUN \
   apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
   clone --https --shallow --tag '0.9.9' https://github.com/baskerville/bspwm && \
@@ -491,9 +491,15 @@ RUN \
 
 # TMUX
 FROM base AS tmux
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
 COPY --from=build-essential \
   /etc/alternatives/ \
   /etc/alternatives/
@@ -512,15 +518,9 @@ COPY --from=build-essential \
 COPY --from=build-essential \
   /usr/lib/ \
   /usr/lib/
-COPY --from=tar \
-  /bin/tar \
-  /bin/
-COPY --from=wget \
-  /usr/bin/wget \
-  /usr/bin/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
 RUN \
   apteryx libncurses5-dev libevent-dev && \
   cd /root && \
@@ -562,9 +562,6 @@ FROM base AS one-pw
 COPY --from=go \
   /usr/local/go/ \
   /usr/local/go/
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -578,6 +575,9 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -633,6 +633,18 @@ COPY --from=apteryx \
 RUN \
   apteryx xz-utils='5.2.2-*'
 
+# ZOOM
+FROM base AS zoom
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
+  apteryx /tmp/zoom.deb
+
 # VLC
 FROM base AS vlc
 COPY --from=apteryx \
@@ -641,26 +653,14 @@ COPY --from=apteryx \
 RUN \
   apteryx vlc='3.0.8-*'
 
-# ZOOM
-FROM base AS zoom
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
-COPY --from=wget \
-  /usr/bin/wget \
-  /usr/bin/
-RUN \
-  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
-  apteryx /tmp/zoom.deb
-
 # ALACRITTY
 FROM base AS alacritty
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 COPY --from=wget \
   /usr/bin/wget \
   /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
 RUN \
   wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
   apteryx /tmp/alacritty.deb
@@ -681,11 +681,16 @@ COPY --from=apteryx \
 RUN \
   apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
 
+# LIBXV1
+FROM base AS libxv1
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx libxv1='2:1.0.11-1'
+
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
-COPY --from=fzf \
-  /usr/local/share/fzf/ \
-  /usr/local/share/fzf/
 COPY --from=z.lua \
   /usr/local/bin/z.lua \
   /usr/local/bin/
@@ -696,12 +701,12 @@ COPY --from=python2 \
 COPY --from=python2 \
   /usr/lib/python2.7/ \
   /usr/lib/python2.7/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
 COPY --from=lua \
   /usr/bin/lua5.3 \
   /usr/bin/
-COPY --from=antibody \
-  /usr/local/bin/antibody \
-  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -715,9 +720,12 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
+COPY --from=fzf \
+  /usr/local/share/fzf/ \
+  /usr/local/share/fzf/
+COPY --from=antibody \
+  /usr/local/bin/antibody \
+  /usr/local/bin/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -729,13 +737,6 @@ RUN \
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
-COPY --from=bspwm \
-  /usr/lib/x86_64-linux-gnu/ \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=bspwm \
-  /usr/local/bin/bspc \
-  /usr/local/bin/bspwm \
-  /usr/local/bin/
 COPY --from=sxhkd \
   /usr/local/bin/sxhkd \
   /usr/local/bin/
@@ -755,6 +756,13 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=bspwm \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=bspwm \
+  /usr/local/bin/bspc \
+  /usr/local/bin/bspwm \
+  /usr/local/bin/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -807,9 +815,6 @@ COPY --from=tmux \
 COPY --from=tmux \
   /usr/lib/x86_64-linux-gnu/ \
   /usr/lib/x86_64-linux-gnu/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
@@ -826,6 +831,9 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -860,15 +868,15 @@ RUN \
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
-COPY --from=dbxcli \
-  /usr/local/bin/dbxcli \
-  /usr/local/bin/
 COPY --from=one-pw \
   /usr/local/bin/1pw \
   /usr/local/bin/
 COPY --from=make \
   /usr/bin/make \
   /usr/bin/
+COPY --from=dbxcli \
+  /usr/local/bin/dbxcli \
+  /usr/local/bin/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -885,15 +893,24 @@ COPY --from=make \
   /usr/bin/make \
   /usr/bin/
 ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
-ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   cd dotfiles && \
   make npm
 
 # SHELL-GIT
 FROM shell-admin AS shell-git
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
+  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -907,22 +924,13 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=git-crypt \
-  /usr/local/bin/git-crypt \
-  /usr/local/bin/
 COPY --from=diff-so-fancy \
   /usr/local/lib/node/ \
   /usr/local/lib/node/
-COPY --from=node \
-  /usr/local/lib/node/ \
-  /usr/local/lib/node/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   cd dotfiles && \
   make git
@@ -947,6 +955,25 @@ RUN \
 
 # TIG
 FROM base AS tig
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 COPY --from=build-essential \
   /etc/alternatives/ \
   /etc/alternatives/
@@ -968,25 +995,6 @@ COPY --from=build-essential \
 COPY --from=apteryx \
   /usr/local/bin/apteryx \
   /usr/local/bin/
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
-COPY --from=git \
-  /usr/bin/git \
-  /usr/bin/
-COPY --from=git \
-  /usr/lib/git-core/ \
-  /usr/lib/git-core/
-COPY --from=git \
-  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
-  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=git \
-  /usr/share/git-core/ \
-  /usr/share/git-core/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
 RUN \
   apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
   clone --https --shallow --tag 'tig-2.5.1' https://github.com/jonas/tig && \
@@ -1027,9 +1035,6 @@ RUN \
 
 # SAFE-RM
 FROM base AS safe-rm
-COPY --from=clone \
-  /usr/local/bin/clone \
-  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -1043,6 +1048,9 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
 RUN \
   clone --https --shallow --tag '1.0.7' https://github.com/kaelzhang/shell-safe-rm && \
   cd /root/src/github.com/kaelzhang/shell-safe-rm && \
@@ -1069,6 +1077,9 @@ RUN \
 
 # PRETTYPING
 FROM base AS prettyping
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
 COPY --from=ping \
   /bin/ping \
   /bin/ping4 \
@@ -1077,9 +1088,6 @@ COPY --from=ping \
 COPY --from=ping \
   /lib/x86_64-linux-gnu/libidn.so.11 \
   /lib/x86_64-linux-gnu/
-COPY --from=wget \
-  /usr/bin/wget \
-  /usr/bin/
 RUN \
   wget -O /usr/local/bin/prettyping 'https://raw.githubusercontent.com/denilsonsa/prettyping/v1.0.1/prettyping' && \
   chmod +x /usr/local/bin/prettyping
@@ -1122,15 +1130,15 @@ RUN \
 
 # FFMPEG
 FROM base AS ffmpeg
+COPY --from=xz \
+  /usr/bin/xz \
+  /usr/bin/
 COPY --from=wget \
   /usr/bin/wget \
   /usr/bin/
 COPY --from=tar \
   /bin/tar \
   /bin/
-COPY --from=xz \
-  /usr/bin/xz \
-  /usr/bin/
 COPY --from=apteryx \
   /usr/local/bin/apteryx \
   /usr/local/bin/
@@ -1163,12 +1171,12 @@ RUN \
 
 # DOCKER
 FROM base AS docker
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 COPY --from=wget \
   /usr/bin/wget \
   /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
 RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
@@ -1210,185 +1218,18 @@ RUN \
 
 # MY-DESKTOP
 FROM shell-admin AS my-desktop
-COPY --from=adb \
-  /usr/local/bin/adb \
-  /usr/local/bin/
-COPY --from=bat \
-  /usr/local/bin/bat \
-  /usr/local/bin/
-COPY --from=build-essential \
-  /etc/alternatives/ \
-  /etc/alternatives/
-COPY --from=build-essential \
-  /etc/perl/ \
-  /etc/perl/
-COPY --from=build-essential \
-  /lib/cpp \
-  /lib/
-COPY --from=build-essential \
-  /usr/bin/ \
+COPY --from=zoom \
+  /usr/bin/zoom \
   /usr/bin/
-COPY --from=build-essential \
-  /usr/include/ \
-  /usr/include/
-COPY --from=build-essential \
-  /usr/lib/ \
-  /usr/lib/
-COPY --from=clone \
-  /usr/local/bin/clone \
+COPY --from=zoom \
+  /opt/zoom/ \
+  /opt/zoom/
+COPY --from=z.lua \
+  /usr/local/bin/z.lua \
   /usr/local/bin/
-COPY --from=docker \
-  /usr/bin/docker \
-  /usr/bin/
-COPY --from=fd \
-  /usr/local/bin/fd \
-  /usr/local/bin/
-COPY --from=ffmpeg \
-  /usr/local/bin/ffmpeg \
-  /usr/local/bin/ffprobe \
-  /usr/local/bin/
-COPY --from=fzf \
-  /usr/local/share/fzf/ \
-  /usr/local/share/fzf/
-COPY --from=go \
-  /usr/local/go/ \
-  /usr/local/go/
-COPY --from=htop \
-  /usr/bin/htop \
-  /usr/bin/
-COPY --from=make \
-  /usr/bin/make \
-  /usr/bin/
-COPY --from=moreutils \
-  /usr/bin/chronic \
-  /usr/bin/combine \
-  /usr/bin/errno \
-  /usr/bin/ifdata \
-  /usr/bin/ifne \
-  /usr/bin/isutf8 \
-  /usr/bin/lckdo \
-  /usr/bin/mispipe \
-  /usr/bin/parallel \
-  /usr/bin/pee \
-  /usr/bin/sponge \
-  /usr/bin/ts \
-  /usr/bin/vidir \
-  /usr/bin/vipe \
-  /usr/bin/zrun \
-  /usr/bin/
-COPY --from=ncu \
-  /usr/local/lib/node/ \
-  /usr/local/lib/node/
-COPY --from=node \
-  /usr/local/lib/node/ \
-  /usr/local/lib/node/
-COPY --from=np \
-  /usr/local/lib/node/ \
-  /usr/local/lib/node/
-COPY --from=prettyping \
-  /usr/local/bin/prettyping \
-  /usr/local/bin/
-COPY --from=ripgrep \
-  /usr/local/bin/rg \
-  /usr/local/bin/
-COPY --from=safe-rm \
-  /usr/local/bin/safe-rm \
-  /usr/local/bin/
-COPY --from=sd \
-  /usr/local/bin/sd \
-  /usr/local/bin/
-COPY --from=sudo \
-  /etc/sudoers \
-  /etc/
-COPY --from=sudo \
-  /usr/bin/sudo \
-  /usr/bin/
-COPY --from=sudo \
-  /usr/lib/sudo/ \
-  /usr/lib/sudo/
-COPY --from=sudo \
-  /var/lib/sudo/ \
-  /var/lib/sudo/
-COPY --from=tig \
-  /usr/local/bin/tig \
-  /usr/local/bin/
-COPY --from=tig \
-  /usr/local/etc/tigrc \
-  /usr/local/etc/
-COPY --from=tree \
-  /usr/bin/tree \
-  /usr/bin/
 COPY --from=yarn \
   /usr/local/lib/node/ \
   /usr/local/lib/node/
-COPY --from=shell-git --chown=admin \
-  /home/admin/.gitconfig \
-  /home/admin/
-COPY --from=shell-npm --chown=admin \
-  /home/admin/.npmrc \
-  /home/admin/
-COPY --from=shell-passwords --chown=admin \
-  /home/admin/.config/dbxcli/ \
-  /home/admin/.config/dbxcli/
-COPY --from=shell-passwords --chown=admin \
-  /home/admin/vaults/ \
-  /home/admin/vaults/
-COPY --from=shell-ranger --chown=admin \
-  /home/admin/.config/ranger/ \
-  /home/admin/.config/ranger/
-COPY --from=shell-tmux --chown=admin \
-  /home/admin/.tmux.conf \
-  /home/admin/
-COPY --from=shell-tmux --chown=admin \
-  /home/admin/.tmux/ \
-  /home/admin/.tmux/
-COPY --from=shell-vim --chown=admin \
-  /home/admin/.config/nvim/ \
-  /home/admin/.config/nvim/
-COPY --from=shell-vim --chown=admin \
-  /home/admin/.local/share/nvim/ \
-  /home/admin/.local/share/nvim/
-COPY --from=shell-vim --chown=admin \
-  /home/admin/dotfiles/apps/vim/ \
-  /home/admin/dotfiles/apps/vim/
-COPY --from=shell-wm --chown=admin \
-  /home/admin/.config/bspwm/ \
-  /home/admin/.config/bspwm/
-COPY --from=shell-wm --chown=admin \
-  /home/admin/.config/sxhkd/ \
-  /home/admin/.config/sxhkd/
-COPY --from=shell-wm --chown=admin \
-  /home/admin/.xinitrc \
-  /home/admin/
-COPY --from=shell-zsh --chown=admin \
-  /home/admin/.antibody.sh \
-  /home/admin/.fzf.zsh \
-  /home/admin/.zshrc \
-  /home/admin/
-COPY --from=shell-zsh --chown=admin \
-  /home/admin/.cache/antibody/ \
-  /home/admin/.cache/antibody/
-COPY --from=shell-zsh --chown=admin \
-  /home/admin/src/ \
-  /home/admin/src/
-COPY --from=mesa \
-  /etc/glvnd/ \
-  /etc/glvnd/
-COPY --from=mesa \
-  /etc/sensors.d/ \
-  /etc/sensors.d/
-COPY --from=mesa \
-  /etc/sensors3.conf \
-  /etc/
-COPY --from=mesa \
-  /usr/bin/ \
-  /usr/bin/
-COPY --from=mesa \
-  /usr/lib/x86_64-linux-gnu/ \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=mesa \
-  /usr/share/ \
-  /usr/share/
 COPY --from=x11-utils \
   /etc/X11/ \
   /etc/X11/
@@ -1416,21 +1257,203 @@ COPY --from=x11-utils \
 COPY --from=x11-utils \
   /usr/share/ \
   /usr/share/
-COPY --from=alacritty \
-  /usr/bin/alacritty \
-  /usr/bin/
-COPY --from=alacritty \
-  /usr/lib/x86_64-linux-gnu/ \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=zoom \
-  /usr/bin/zoom \
-  /usr/bin/
-COPY --from=zoom \
-  /opt/zoom/ \
-  /opt/zoom/
 COPY --from=vlc \
   /usr/bin/vlc \
   /usr/bin/
+COPY --from=tree \
+  /usr/bin/tree \
+  /usr/bin/
+COPY --from=tmux \
+  /usr/local/bin/tmux \
+  /usr/local/bin/
+COPY --from=tmux \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=tig \
+  /usr/local/bin/tig \
+  /usr/local/bin/
+COPY --from=tig \
+  /usr/local/etc/tigrc \
+  /usr/local/etc/
+COPY --from=sxhkd \
+  /usr/local/bin/sxhkd \
+  /usr/local/bin/
+COPY --from=sudo \
+  /etc/sudoers \
+  /etc/
+COPY --from=sudo \
+  /usr/bin/sudo \
+  /usr/bin/
+COPY --from=sudo \
+  /usr/lib/sudo/ \
+  /usr/lib/sudo/
+COPY --from=sudo \
+  /var/lib/sudo/ \
+  /var/lib/sudo/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/.antibody.sh \
+  /home/admin/.fzf.zsh \
+  /home/admin/.zshrc \
+  /home/admin/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/.cache/antibody/ \
+  /home/admin/.cache/antibody/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/src/ \
+  /home/admin/src/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.config/bspwm/ \
+  /home/admin/.config/bspwm/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.config/sxhkd/ \
+  /home/admin/.config/sxhkd/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.xinitrc \
+  /home/admin/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/.config/nvim/ \
+  /home/admin/.config/nvim/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/.local/share/nvim/ \
+  /home/admin/.local/share/nvim/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/dotfiles/apps/vim/ \
+  /home/admin/dotfiles/apps/vim/
+COPY --from=shell-tmux --chown=admin \
+  /home/admin/.tmux.conf \
+  /home/admin/
+COPY --from=shell-tmux --chown=admin \
+  /home/admin/.tmux/ \
+  /home/admin/.tmux/
+COPY --from=shell-ranger --chown=admin \
+  /home/admin/.config/ranger/ \
+  /home/admin/.config/ranger/
+COPY --from=shell-passwords --chown=admin \
+  /home/admin/.config/dbxcli/ \
+  /home/admin/.config/dbxcli/
+COPY --from=shell-passwords --chown=admin \
+  /home/admin/vaults/ \
+  /home/admin/vaults/
+COPY --from=shell-npm --chown=admin \
+  /home/admin/.npmrc \
+  /home/admin/
+COPY --from=shell-git --chown=admin \
+  /home/admin/.gitconfig \
+  /home/admin/
+COPY --from=sd \
+  /usr/local/bin/sd \
+  /usr/local/bin/
+COPY --from=safe-rm \
+  /usr/local/bin/safe-rm \
+  /usr/local/bin/
+COPY --from=ripgrep \
+  /usr/local/bin/rg \
+  /usr/local/bin/
+COPY --from=ranger \
+  /usr/local/bin/ranger \
+  /usr/local/bin/rifle \
+  /usr/local/bin/
+COPY --from=ranger \
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
+COPY --from=python2 \
+  /usr/bin/python \
+  /usr/bin/python2.7 \
+  /usr/bin/
+COPY --from=python2 \
+  /usr/lib/python2.7/ \
+  /usr/lib/python2.7/
+COPY --from=prettyping \
+  /usr/local/bin/prettyping \
+  /usr/local/bin/
+COPY --from=ping \
+  /bin/ping \
+  /bin/ping4 \
+  /bin/ping6 \
+  /bin/
+COPY --from=ping \
+  /lib/x86_64-linux-gnu/libidn.so.11 \
+  /lib/x86_64-linux-gnu/
+COPY --from=one-pw \
+  /usr/local/bin/1pw \
+  /usr/local/bin/
+COPY --from=np \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=neovim \
+  /usr/local/bin/nvim \
+  /usr/local/bin/
+COPY --from=neovim \
+  /usr/local/include/python3.6/ \
+  /usr/local/include/python3.6/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/ \
+  /usr/local/lib/python3.6/
+COPY --from=neovim \
+  /usr/local/share/nvim/ \
+  /usr/local/share/nvim/
+COPY --from=ncu \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=moreutils \
+  /usr/bin/chronic \
+  /usr/bin/combine \
+  /usr/bin/errno \
+  /usr/bin/ifdata \
+  /usr/bin/ifne \
+  /usr/bin/isutf8 \
+  /usr/bin/lckdo \
+  /usr/bin/mispipe \
+  /usr/bin/parallel \
+  /usr/bin/pee \
+  /usr/bin/sponge \
+  /usr/bin/ts \
+  /usr/bin/vidir \
+  /usr/bin/vipe \
+  /usr/bin/zrun \
+  /usr/bin/
+COPY --from=mesa \
+  /etc/glvnd/ \
+  /etc/glvnd/
+COPY --from=mesa \
+  /etc/sensors.d/ \
+  /etc/sensors.d/
+COPY --from=mesa \
+  /etc/sensors3.conf \
+  /etc/
+COPY --from=mesa \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=mesa \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=mesa \
+  /usr/share/ \
+  /usr/share/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=lua \
+  /usr/bin/lua5.3 \
+  /usr/bin/
+COPY --from=libxv1 \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=libxv1 \
+  /usr/share/X11/ \
+  /usr/share/X11/
+COPY --from=htop \
+  /usr/bin/htop \
+  /usr/bin/
+COPY --from=go \
+  /usr/local/go/ \
+  /usr/local/go/
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
+  /usr/local/bin/
 COPY --from=git \
   /usr/bin/git \
   /usr/bin/
@@ -1444,54 +1467,46 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=ping \
-  /bin/ping \
-  /bin/ping4 \
-  /bin/ping6 \
-  /bin/
-COPY --from=ping \
-  /lib/x86_64-linux-gnu/libidn.so.11 \
-  /lib/x86_64-linux-gnu/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
+COPY --from=fzf \
+  /usr/local/share/fzf/ \
+  /usr/local/share/fzf/
+COPY --from=ffmpeg \
+  /usr/local/bin/ffmpeg \
+  /usr/local/bin/ffprobe \
   /usr/local/bin/
-COPY --from=git-crypt \
-  /usr/local/bin/git-crypt \
+COPY --from=fd \
+  /usr/local/bin/fd \
   /usr/local/bin/
+COPY --from=docker \
+  /usr/bin/docker \
+  /usr/bin/
 COPY --from=diff-so-fancy \
   /usr/local/lib/node/ \
   /usr/local/lib/node/
 COPY --from=dbxcli \
   /usr/local/bin/dbxcli \
   /usr/local/bin/
-COPY --from=one-pw \
-  /usr/local/bin/1pw \
+COPY --from=clone \
+  /usr/local/bin/clone \
   /usr/local/bin/
-COPY --from=ranger \
-  /usr/local/bin/ranger \
-  /usr/local/bin/rifle \
-  /usr/local/bin/
-COPY --from=ranger \
-  /usr/local/lib/python3.6/ \
-  /usr/local/lib/python3.6/
-COPY --from=tmux \
-  /usr/local/bin/tmux \
-  /usr/local/bin/
-COPY --from=tmux \
-  /usr/lib/x86_64-linux-gnu/ \
-  /usr/lib/x86_64-linux-gnu/
-COPY --from=neovim \
-  /usr/local/bin/nvim \
-  /usr/local/bin/
-COPY --from=neovim \
-  /usr/local/include/python3.6/ \
-  /usr/local/include/python3.6/
-COPY --from=neovim \
-  /usr/local/lib/python3.6/ \
-  /usr/local/lib/python3.6/
-COPY --from=neovim \
-  /usr/local/share/nvim/ \
-  /usr/local/share/nvim/
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
 COPY --from=bspwm \
   /usr/lib/x86_64-linux-gnu/ \
   /usr/lib/x86_64-linux-gnu/
@@ -1499,29 +1514,28 @@ COPY --from=bspwm \
   /usr/local/bin/bspc \
   /usr/local/bin/bspwm \
   /usr/local/bin/
-COPY --from=sxhkd \
-  /usr/local/bin/sxhkd \
+COPY --from=bat \
+  /usr/local/bin/bat \
   /usr/local/bin/
-COPY --from=z.lua \
-  /usr/local/bin/z.lua \
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
   /usr/local/bin/
-COPY --from=python2 \
-  /usr/bin/python \
-  /usr/bin/python2.7 \
+COPY --from=alacritty \
+  /usr/bin/alacritty \
   /usr/bin/
-COPY --from=python2 \
-  /usr/lib/python2.7/ \
-  /usr/lib/python2.7/
-COPY --from=lua \
-  /usr/bin/lua5.3 \
-  /usr/bin/
+COPY --from=alacritty \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=adb \
+  /usr/local/bin/adb \
+  /usr/local/bin/
 ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
+  PATH=/home/admin/dotfiles/bin:${PATH}
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
 RUN \
   cd dotfiles && \
   make ssh
