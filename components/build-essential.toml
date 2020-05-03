@@ -1,0 +1,21 @@
+name = "build-essential"
+from = "base"
+
+version = "12.4*"
+
+devDependencies = [
+  "apteryx"
+]
+
+build = """
+apteryx build-essential='{{VERSION}}'
+"""
+
+exports = [
+  "/etc/alternatives/",
+  "/etc/perl/",
+  "/lib/cpp",
+  "/usr/bin/",
+  "/usr/include/",
+  "/usr/lib/",
+]

@@ -1,0 +1,24 @@
+name = "zsh"
+from = "base"
+
+version = "5.4.2-*"
+
+devDependencies = [
+  "apteryx"
+]
+
+
+build = """
+apteryx zsh='{{VERSION}}'
+"""
+
+exports = [
+  '/bin/zsh',
+  '/etc/zsh/',
+  '/usr/lib/x86_64-linux-gnu/zsh/',
+  '/usr/share/zsh/',
+]
+
+docs = [
+  "/usr/share/man/man1/zsh.1.gz"
+]

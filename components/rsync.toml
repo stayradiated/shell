@@ -1,0 +1,9 @@
+name = "rsync"
+from = "base"
+version = "3.1.2-2.1ubuntu1.1"
+devDependencies = [ "apteryx" ]
+build = """
+apteryx rsync='{{VERSION}}'
+"""
+exports = [ ]
+

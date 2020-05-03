@@ -1,0 +1,29 @@
+name = 'charles'
+from = 'base'
+
+version = '4.5.6'
+
+devDependencies = [
+  'wget',
+  'tar'
+]
+
+build = """
+wget \
+  -O /tmp/charles.tgz \
+  'https://www.charlesproxy.com/assets/release/{{VERSION}}/charles-proxy-{{VERSION}}_amd64.tar.gz'
+tar -xzvf /tmp/charles.tgz
+rm /tmp/charles.tgz
+
+mv ./charles/bin/charles /usr/local/bin/charles
+
+mkdir -p /usr/share/java/charles/
+mv ./charles/lib/* /usr/share/java/charles/
+
+rm -r ./charles
+"""
+
+exports = [
+  '/usr/local/bin/charles',
+  '/usr/share/java/charles/',
+]

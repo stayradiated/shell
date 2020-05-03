@@ -1,0 +1,76 @@
+name = 'moreutils'
+from = 'base'
+
+version = '0.60-*'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx moreutils='{{VERSION}}'
+"""
+
+exports = [
+  # chronic: runs a command quietly unless it fails
+  '/usr/bin/chronic',
+
+  # combine: combine the lines in two files using boolean operations
+  '/usr/bin/combine',
+
+  # errno: look up errno names and descriptions
+  '/usr/bin/errno',
+
+  # ifdata: get network interface info without parsing ifconfig output
+  '/usr/bin/ifdata',
+
+  # ifne: run a program if the standard input is not empty
+  '/usr/bin/ifne',
+
+  # isutf8: check if a file or standard input is utf-8
+  '/usr/bin/isutf8',
+
+  # lckdo: execute a program with a lock held
+  '/usr/bin/lckdo',
+
+  # mispipe: pipe two commands, returning the exit status of the first
+  '/usr/bin/mispipe',
+
+  # parallel: run multiple jobs at once
+  '/usr/bin/parallel',
+
+  # pee: tee standard input to pipes
+  '/usr/bin/pee',
+
+  # sponge: soak up standard input and write to a file
+  '/usr/bin/sponge',
+
+  # ts: timestamp standard input
+  '/usr/bin/ts',
+
+  # vidir: edit a directory in your text editor
+  '/usr/bin/vidir',
+
+  # vipe: insert a text editor into a pipe
+  '/usr/bin/vipe',
+
+  # zrun: automatically uncompress arguments to command
+  '/usr/bin/zrun',
+]
+
+docs = [
+  '/usr/share/doc/moreutils/',
+  '/usr/share/man/man1/chronic.1.gz',
+  '/usr/share/man/man1/combine.1.gz',
+  '/usr/share/man/man1/errno.1.gz',
+  '/usr/share/man/man1/ifdata.1.gz',
+  '/usr/share/man/man1/ifne.1.gz',
+  '/usr/share/man/man1/isutf8.1.gz',
+  '/usr/share/man/man1/lckdo.1.gz',
+  '/usr/share/man/man1/mispipe.1.gz',
+  '/usr/share/man/man1/parallel.1.gz',
+  '/usr/share/man/man1/pee.1.gz',
+  '/usr/share/man/man1/sponge.1.gz',
+  '/usr/share/man/man1/ts.1.gz',
+  '/usr/share/man/man1/vidir.1.gz',
+  '/usr/share/man/man1/vipe.1.gz',
+  '/usr/share/man/man1/zrun.1.gz',
+  ]

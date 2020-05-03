@@ -1,0 +1,70 @@
+name = 'autoconf'
+from = 'base'
+
+version = '2.69-*'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx autoconf='{{VERSION}}'
+"""
+
+exports = [
+# '/etc/emacs/',
+# '/etc/ld.so.cache',
+# '/etc/perl/',
+# '/usr/bin/autoconf',
+# '/usr/bin/autoheader',
+# '/usr/bin/autom4te',
+  '/usr/bin/autoreconf',
+# '/usr/bin/autoscan',
+# '/usr/bin/autoupdate',
+# '/usr/bin/corelist',
+# '/usr/bin/cpan',
+# '/usr/bin/cpan5.26-x86_64-linux-gnu',
+# '/usr/bin/enc2xs',
+# '/usr/bin/encguess',
+# '/usr/bin/h2ph',
+# '/usr/bin/h2xs',
+# '/usr/bin/ifnames',
+# '/usr/bin/instmodsh',
+# '/usr/bin/json_pp',
+# '/usr/bin/libnetcfg',
+# '/usr/bin/m4',
+# '/usr/bin/perl5.26-x86_64-linux-gnu',
+# '/usr/bin/perlbug',
+# '/usr/bin/perldoc',
+# '/usr/bin/perlivp',
+# '/usr/bin/perlthanks',
+# '/usr/bin/piconv',
+# '/usr/bin/pl2pm',
+# '/usr/bin/pod2html',
+# '/usr/bin/pod2man',
+# '/usr/bin/pod2text',
+# '/usr/bin/pod2usage',
+# '/usr/bin/podchecker',
+# '/usr/bin/podselect',
+# '/usr/bin/prove',
+# '/usr/bin/ptar',
+# '/usr/bin/ptardiff',
+# '/usr/bin/ptargrep',
+# '/usr/bin/shasum',
+# '/usr/bin/splain',
+# '/usr/bin/xsubpp',
+# '/usr/bin/zipdetails',
+  '/usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4',
+  '/usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4.0.0',
+  '/usr/lib/x86_64-linux-gnu/libgdbm.so.5',
+  '/usr/lib/x86_64-linux-gnu/libgdbm.so.5.0.0',
+  '/usr/lib/x86_64-linux-gnu/libperl.so.5.26',
+  '/usr/lib/x86_64-linux-gnu/libperl.so.5.26.1',
+  '/usr/lib/x86_64-linux-gnu/libsigsegv.so.2',
+  '/usr/lib/x86_64-linux-gnu/libsigsegv.so.2.0.5',
+  '/usr/lib/x86_64-linux-gnu/perl/5.26',
+  '/usr/lib/x86_64-linux-gnu/perl/5.26.1/',
+  '/usr/lib/x86_64-linux-gnu/perl/cross-config-5.26.1/',
+  '/usr/lib/x86_64-linux-gnu/perl/debian-config-data-5.26.1/',
+  '/usr/share/autoconf/',
+# '/usr/share/perl/',
+# '/var/cache/ldconfig/aux-cache',
+]

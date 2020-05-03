@@ -1,0 +1,18 @@
+name = "base"
+fromImage = "phusion/baseimage:0.11"
+
+version = "1.0.0"
+
+build = """
+export LANG=en_NZ.UTF-8
+locale-gen en_NZ.UTF-8
+
+# Do not exclude man pages & other documentation
+rm /etc/dpkg/dpkg.cfg.d/excludes
+
+# Reinstall all currently installed packages in order to get the man pages back
+apt-get -q update
+dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall
+apt-get -q clean
+rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
+"""

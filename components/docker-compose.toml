@@ -1,0 +1,20 @@
+name = 'docker-compose'
+from = 'base'
+
+version = '1.25.5'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget \
+  -O /usr/local/bin/docker-compose \
+  'https://github.com/docker/compose/releases/download/{{VERSION}}/docker-compose-Linux-x86_64'
+
+chmod +x /usr/local/bin/docker-compose
+"""
+
+exports = [
+  '/usr/local/bin/docker-compose'
+]

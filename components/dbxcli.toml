@@ -1,0 +1,19 @@
+name = "dbxcli"
+from = "base"
+
+version = "3.0.0"
+
+devDependencies = [
+  "wget"
+]
+
+build = """
+wget -O dbxcli \
+  'https://github.com/dropbox/dbxcli/releases/download/v{{VERSION}}/dbxcli-linux-amd64'
+chmod +x dbxcli
+mv dbxcli /usr/local/bin/dbxcli
+"""
+
+exports = [
+  "/usr/local/bin/dbxcli"
+]

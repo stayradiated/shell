@@ -1,656 +1,1765 @@
-FROM phusion/baseimage:0.11 as base
 
-# TERM environment
-ENV TERM=xterm-256color
 
-# use latest version of git
-RUN add-apt-repository ppa:git-core/ppa
-
-# Do not exclude man pages & other documentation
-RUN rm /etc/dpkg/dpkg.cfg.d/excludes
-
-# Reinstall all currently installed packages in order to get the man pages back
-RUN apt-get update && \
-    dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
-    rm -r /var/lib/apt/lists/*
-
-# Requirements for building dependencies
-RUN apt-get update && apt-get install -y \
-  acpi \
-  apt-transport-https \
-  build-essential \
-  ca-certificates \
-  curl \
-  dbus-x11 \
-  dnsutils \
-  exfat-fuse \
-  fontconfig \
-  git \
-  iputils-ping \
-  jq \
-  libevent-dev \
-  libgl1-mesa-dri \
-  libgl1-mesa-glx \
-  libncurses5-dev \
-  libpulse0 \
-  libssl-dev \
-  libxv1 \
-  locales  \
-  man \
-  mesa-utils \
-  mesa-utils-extra \
-  net-tools \
-  netcat-openbsd \
-  pkg-config \
-  psmisc \
-  pulseaudio \
-  python-pip \
-  python3-pip \
-  socat \
-  software-properties-common \
-  tzdata \
-  unzip \
-  wget \
-  x11-utils \
-  x11-xkb-utils \
-  x11-xserver-utils \
-  xclip \
-  xdg-utils \
-  xdo \
-  xfonts-utils \
-  zip \
-  zsh
-
-# Install Docker-CE
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-  add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable" && \
-  apt-get update && \
-  apt-get install -y docker-ce
-
-# configure fonts
-RUN cd /etc/fonts/conf.d && \
-  rm 10* 70-no-bitmaps.conf && \
-  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
-  dpkg-reconfigure fontconfig && \
-  fc-cache -fv
-
-# Locales
-ENV LANGUAGE=en_NZ.UTF-8
-ENV LANG=en_NZ.UTF-8
-ENV LC_CTYPE=en_NZ.UTF-8
-ENV LC_ALL=en_NZ.UTF-8
-RUN locale-gen en_NZ.UTF-8
-
-# Setup root shell
-RUN chsh -s /usr/bin/zsh
-WORKDIR /root
-
-###
-### apps
-###
-
-# CRYSTAL 
-FROM base as crystal
-ARG CRYSTAL_VERSION=0.32.1
+# BASE
+FROM phusion/baseimage:0.11 AS base
 RUN \
-  wget -O crystal.tgz "https://github.com/crystal-lang/crystal/releases/download/${CRYSTAL_VERSION}/crystal-${CRYSTAL_VERSION}-1-linux-x86_64.tar.gz" && \
-  tar xzvf crystal.tgz && \
-  mv "crystal-${CRYSTAL_VERSION}-1" crystal
+  export LANG=en_NZ.UTF-8 && \
+  locale-gen en_NZ.UTF-8 && \
+  rm /etc/dpkg/dpkg.cfg.d/excludes && \
+  apt-get -q update && \
+  dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
+  apt-get -q clean && \
+  rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
-# GIT CRYPT
-FROM base as git-crypt
-ARG GIT_CRYPT_VERSION=0.6.0
+# APTERYX
+FROM base AS apteryx
 RUN \
-  # xsltproc is required to build the man files
-  apt-get install -y xsltproc && \
-  wget -O git-crypt.tgz "https://www.agwa.name/projects/git-crypt/downloads/git-crypt-${GIT_CRYPT_VERSION}.tar.gz" && \
-  tar xzvf git-crypt.tgz && \
-  rm -rf git-crypt.tgz && \
-  mv "git-crypt-${GIT_CRYPT_VERSION}" git-crypt && \
-  cd git-crypt && \
-  ENABLE_MAN=yes make && \
-  make install
+  EXPORT=/usr/local/bin/apteryx && \
+  echo '#!/usr/bin/env sh' >> ${EXPORT} && \
+  echo 'set -e' >> ${EXPORT} && \
+  echo 'export DEBIAN_FRONTEND="noninteractive"' >> ${EXPORT} && \
+  echo 'apt-get -q update' >> ${EXPORT} && \
+  echo 'apt-get install -y --no-install-recommends --auto-remove "${@}"' >> ${EXPORT} && \
+  echo 'apt-get -q clean' >> ${EXPORT} && \
+  echo 'rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*' >> ${EXPORT} && \
+  chmod +x ${EXPORT}
 
-# RUST
-FROM base as rust
-ARG RUST_VERSION=1.40.0
+# TAR
+FROM base AS tar
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
 RUN \
-  wget -O rust.sh "https://sh.rustup.rs" && \
-  sh rust.sh -y --default-toolchain "${RUST_VERSION}" && \
-  rm rust.sh
-ENV PATH /root/.cargo/bin:$PATH
-# install a package to prime the crates.io index
-# chit is also really useful for checking if a new version of a crate exists
-ARG CHIT_VERSION=0.1.15
-RUN cargo install --version "${CHIT_VERSION}" chit
+  apteryx tar='1.29*'
 
-# RUST >> FD
-FROM rust as fd
-ARG FD_VERSION=7.4.0
-RUN cargo install --version "${FD_VERSION}" fd-find
+# WGET
+FROM base AS wget
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx wget='1.19.4-*'
 
-# RUST >> RG
-FROM rust as rg
-ARG RG_VERSION=11.0.2
-RUN cargo install --version "${RG_VERSION}" ripgrep
-
-# RUST >> SD
-FROM rust as sd
-ARG SD_VERSION=0.6.5
-RUN cargo install --version "${SD_VERSION}" sd
-
-# RUST >> BANDWHICH
-FROM rust as bandwhich
-ARG BANDWHICH_VERSION=0.8.0
-RUN cargo install --version "${BANDWHICH_VERSION}" bandwhich
-
-# ALACRITTY
-FROM rust as alacritty
-ARG ALACRITTY_VERSION=v0.4.2
-RUN apt-get update && apt-get install -y \
-  cmake \
-  pkg-config \
-  libfreetype6-dev \
-  libfontconfig1-dev \
-  libxcb-xfixes0-dev \
-  xclip
-RUN git clone --depth 1 https://github.com/jwilm/alacritty && \
-  cd alacritty && \
-  git fetch --depth 1 origin tag "${ALACRITTY_VERSION}" && \
-  git reset --hard "${ALACRITTY_VERSION}" && \
-  cargo build --release
-
-# Docker Compose
-FROM base as docker-compose
-ARG DOCKER_COMPOSE_VERSION=1.24.0
-RUN wget -O docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64" && \
-  chmod +x docker-compose && \
-  mv docker-compose /usr/local/bin/docker-compose
-
-## ANKI
-FROM base as anki
-ARG ANKI_VERSION=2.1.19
-RUN wget -O anki.tar "https://apps.ankiweb.net/downloads/current/anki-${ANKI_VERSION}-linux-amd64.tar.bz2" && \
-  tar xjvf anki.tar && \
-  mv "anki-${ANKI_VERSION}-linux-amd64" anki && \
-  cd anki && \
-  make install && \
-  cd .. && \
-  rm -r anki anki.tar
+# GIT
+FROM base AS git
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  add-apt-repository ppa:git-core/ppa && \
+  apteryx git='1:2.26.2*'
 
 # GO
-FROM base as go
-ARG GO_VERSION=1.13.4
-RUN wget -O go.tgz "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" && \
-  tar xzvf go.tgz && \
-  mv go /usr/local/go && \
-  rm -rf go.tgz
-ENV PATH "/usr/local/go/bin:${PATH}"
-
-# GO >> CLONE
-FROM go as clone
-ENV GOPATH /usr/local
-WORKDIR /usr/local/src
-RUN git clone https://github.com/stayradiated/clone && \
-  cd clone && \
-  go install && \
-  rm -rf /usr/local/src/github.com
-
-# GO >> 1PW
-FROM go as onepw
-ENV GOPATH /usr/local
+FROM base AS go
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
 RUN \
-  go get github.com/special/1pw && \
-  go install github.com/special/1pw && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" && \
+  tar xzvf /tmp/go.tgz && \
+  mv go /usr/local/go && \
+  rm -rf /tmp/go.tgz
+
+# MAKE
+FROM base AS make
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx make='4.1-*'
+
+# CLONE
+FROM base AS clone
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=go \
+  /usr/local/go/ \
+  /usr/local/go/
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
+RUN \
+  mkdir -p /root/src/github.com/stayradiated && \
+  cd /root/src/github.com/stayradiated && \
+  git clone --depth 1 https://github.com/stayradiated/clone && \
+  cd clone && \
+  git fetch --depth 1 origin tag 'v1.3.0' && \
+  git reset --hard 'v1.3.0' && \
+  go install && \
+  mv /root/bin/clone /usr/local/bin/clone && \
+  cd /root && \
+  rm -rf src bin
+
+# BUILD-ESSENTIAL
+FROM base AS build-essential
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx build-essential='12.4*'
+
+# GIT-CRYPT
+FROM base AS git-crypt
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+RUN \
+  apteryx libssl-dev xsltproc && \
+  clone --https --shallow --tag '0.6.0' https://github.com/AGWA/git-crypt && \
+  cd /root/src/github.com/AGWA/git-crypt && \
+  ENABLE_MAN=yes make && \
+  make install && \
+  mv git-crypt /usr/local/bin/git-crypt && \
+  mkdir -p /usr/local/share/man/man1/ && \
+  mv man/man1/git-crypt.1 /usr/local/share/man/man1/git-crypt.1
+
+# ZSH
+FROM base AS zsh
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx zsh='5.4.2-*'
+
+# DOTFILES
+FROM base AS dotfiles
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
+  /usr/local/bin/
+COPY \
+  ./secret/dotfiles-key \
+  /tmp/dotfiles-key
+RUN \
+  clone --https --shallow --tag 'v1.20.0' https://github.com/stayradiated/dotfiles && \
+  cd /root/src/github.com/stayradiated/dotfiles && \
+  git-crypt unlock /tmp/dotfiles-key && \
+  rm /tmp/dotfiles-key && \
+  mv /root/src/github.com/stayradiated/dotfiles /root/dotfiles && \
   rm -rf src
 
-# GCLOUD
-FROM base as gcloud
-ARG GCLOUD_VERSION=274.0.0
-RUN wget -O gcloud.tgz "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz" && \
-  tar xzvf gcloud.tgz && \
-  mv google-cloud-sdk /usr/local/ && \
-  rm -rf gcloud.tgz
+# NVM
+FROM base AS nvm
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+RUN \
+  clone --https --shallow --tag 'v0.35.3' https://github.com/nvm-sh/nvm && \
+  mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm && \
+  rm -rf /root/src
+
+# LUA
+FROM base AS lua
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx lua5.3='5.3.3-*'
+
+# SHELL-ROOT
+FROM base AS shell-root
+COPY --from=zsh \
+  /bin/zsh \
+  /bin/
+COPY --from=zsh \
+  /etc/zsh/ \
+  /etc/zsh/
+COPY --from=zsh \
+  /usr/lib/x86_64-linux-gnu/zsh/ \
+  /usr/lib/x86_64-linux-gnu/zsh/
+COPY --from=zsh \
+  /usr/share/zsh/ \
+  /usr/share/zsh/
+COPY --from=zsh \
+  /usr/share/man/man1/zsh.1.gz \
+  /usr/share/man/man1/
+COPY --from=dotfiles \
+  /root/dotfiles/ \
+  /root/dotfiles/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY \
+  ./secret/admin-passwd \
+  /tmp/admin-passwd
+RUN \
+  useradd -s /bin/zsh --create-home admin && \
+  echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted && \
+  adduser admin sudo && \
+  mv /root/dotfiles /home/admin/dotfiles && \
+  mkdir -p /home/admin/.cache && \
+  mkdir -p /home/admin/.config && \
+  mkdir -p /home/admin/.local/share && \
+  chown -R admin:admin /home/admin
+
+# PYTHON3-PIP
+FROM base AS python3-pip
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*'
+
+# NODE
+FROM base AS node
+COPY --from=nvm \
+  /usr/local/share/nvm/ \
+  /usr/local/share/nvm/
+ENV \
+  NVM_DIR=/usr/local/share/nvm
+RUN \
+  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.0.0' && \
+  mv "${NVM_DIR}/versions/node/v14.0.0" /usr/local/lib/node && \
+  PATH="/usr/local/lib/node/bin:${PATH}" && \
+  npm config set user root && \
+  npm config set save-exact true
+
+# PYTHON2
+FROM base AS python2
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx python2.7='2.7.17-*' && \
+  update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+
+# Z.LUA
+FROM base AS z.lua
+COPY --from=lua \
+  /usr/bin/lua5.3 \
+  /usr/bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
+
+# FZF
+FROM base AS fzf
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+RUN \
+  clone --https --shallow --tag '0.21.1' https://github.com/junegunn/fzf && \
+  mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
+  rm -rf /root/src && \
+  /usr/local/share/fzf/install --bin
+
+# ANTIBODY
+FROM base AS antibody
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /tmp/install-antibody.sh https://git.io/antibody && \
+  sh /tmp/install-antibody.sh -b /usr/local/bin && \
+  rm /tmp/install-antibody.sh
+
+# SHELL-ADMIN
+FROM shell-root AS shell-admin
+USER admin
+WORKDIR /home/admin
+
+# SXHKD
+FROM base AS sxhkd
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+RUN \
+  apteryx libxcb-util-dev libxcb-keysyms1-dev && \
+  clone --https --shallow --tag '0.6.1' https://github.com/baskerville/sxhkd && \
+  cd /root/src/github.com/baskerville/sxhkd && \
+  make all && \
+  make install && \
+  rm -rf /root/src
+
+# BSPWM
+FROM base AS bspwm
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+RUN \
+  apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
+  clone --https --shallow --tag '0.9.9' https://github.com/baskerville/bspwm && \
+  cd /root/src/github.com/baskerville/bspwm && \
+  make all && \
+  make install && \
+  rm -rf /root/src
+
+# NEOVIM
+FROM base AS neovim
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=python3-pip \
+  /usr/bin/pip3 \
+  /usr/bin/
+COPY --from=python3-pip \
+  /usr/lib/python3.6/ \
+  /usr/lib/python3.6/
+COPY --from=python3-pip \
+  /usr/lib/python3.7/ \
+  /usr/lib/python3.7/
+COPY --from=python3-pip \
+  /usr/lib/python3.8/ \
+  /usr/lib/python3.8/
+COPY --from=python3-pip \
+  /usr/lib/python3/ \
+  /usr/lib/python3/
+COPY --from=python3-pip \
+  /usr/share/python-wheels/ \
+  /usr/share/python-wheels/
+RUN \
+  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage' && \
+  chmod +x /tmp/nvim.appimage && \
+  /tmp/nvim.appimage --appimage-extract && \
+  rm /tmp/nvim.appimage && \
+  mv squashfs-root/usr/bin/nvim /usr/local/bin/nvim && \
+  mv squashfs-root/usr/share/nvim /usr/local/share/nvim && \
+  mkdir -p /usr/local/share/man/man1 && \
+  mv squashfs-root/usr/man/man1/nvim.1 /usr/local/share/man/man1/nvim.1 && \
+  rm -r squashfs-root && \
+  find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775 && \
+  find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664 && \
+  pip3 install neovim msgpack
 
 # TMUX
-FROM base as tmux
-ARG TMUX_VERSION=3.0a
-RUN wget -O tmux.tgz "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz" && \
-  tar xzvf tmux.tgz && \
-  cd "tmux-${TMUX_VERSION}" && \
+FROM base AS tmux
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+RUN \
+  apteryx libncurses5-dev libevent-dev && \
+  cd /root && \
+  wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.1/tmux-3.1.tar.gz' && \
+  tar xzvf /tmp/tmux.tgz && \
+  rm /tmp/tmux.tgz && \
+  cd 'tmux-3.1' && \
   ./configure && \
   make && \
   make install && \
   cd .. && \
-  rm -rf tmux tmux.tgz
+  rm -r 'tmux-3.1'
 
-# NEOVIM
-FROM base as neovim
-WORKDIR /usr/local/src
-RUN apt-get update && apt-get install -y \
-  autoconf \
-  automake \
-  cmake \
-  g++ \
-  gettext \
-  libtool \
-  libtool-bin \
-  ninja-build \
-  pkg-config \
-  texinfo
-ARG NEOVIM_VERSION=v0.4.3
-RUN git clone --depth 1 https://github.com/neovim/neovim && \
-  cd neovim && \
-  git fetch --depth 1 origin tag "${NEOVIM_VERSION}" && \
-  git reset --hard "${NEOVIM_VERSION}" && \
-  make CMAKE_BUILD_TYPE=Release && \
-  make install && \
-  cd .. && \
-  rm -rf neovim
-
-# DOTFILES
-FROM git-crypt as dotfiles
-ARG DOTFILES_VERSION=v1.12.0
-COPY ./secret/dotfiles-key /tmp/dotfiles-key
-RUN git clone --depth 1 https://github.com/stayradiated/dotfiles && \
-  cd dotfiles && \
-  git fetch --depth 1 origin tag "${DOTFILES_VERSION}" && \
-  git reset --hard "${DOTFILES_VERSION}" && \
-  git-crypt unlock /tmp/dotfiles-key && \
-  rm /tmp/dotfiles-key
-
-# FZF
-FROM base as fzf
-ARG FZF_VERSION=0.21.0
-RUN mkdir -p /home/admin && \
-  git clone --depth=1 https://github.com/junegunn/fzf /home/admin/.fzf && \
-  cd /home/admin/.fzf && \
-  git fetch --depth 1 origin tag "${FZF_VERSION}" && \
-  git reset --hard "${FZF_VERSION}" && \
-  ./install --all && \
-  cd && \
-  mv /home/admin/.fzf /root/.fzf
-
-# DENO
-FROM base as deno
-ARG DENO_VERSION=v0.35.0
-RUN wget -O deno.gz "https://github.com/denoland/deno/releases/download/${DENO_VERSION}/deno_linux_x64.gz" && \
-  gunzip -df deno.gz && \
-  chmod +x deno
-
-# NODE
-FROM base as nvm
-ARG NVM_VERSION=v0.35.3
-ARG NODE_VERSION=v13.12.0
-RUN git clone --depth 1 https://github.com/creationix/nvm && \
-  cd nvm && \
-  git fetch --depth 1 origin tag $NVM_VERSION && \
-  git reset --hard $NVM_VERSION && \
-  bash -c "source nvm.sh && nvm install ${NODE_VERSION}" && \
-  mv "versions/node/${NODE_VERSION}" /usr/local/lib/node
-ENV PATH "/usr/local/lib/node/bin:${PATH}"
-RUN npm config set user root && npm config set save-exact true && npm install -g \
-  castnow@0.6.0 \
-  diff-so-fancy@1.2.7 \
-  expo-cli@3.17.24 \
-  lerna@3.20.2 \
-  np@6.2.1 \
-  npm-check-updates@4.1.2 \
-  public-ip-cli@2.0.0 \
-  serve@11.3.0 \
-  yarn@1.22.4
-
-# GH
-FROM base as gh
-ARG GH_VERSION=0.6.4
-RUN wget -O gh.tgz "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" && \
-  tar xzvf gh.tgz && \
-  cd "gh_${GH_VERSION}_linux_amd64" && \
-  mv bin/gh /usr/local/bin/gh && \
-  cd .. && \
-  rm -rf "gh_${GH_VERSION}_linux_amd64" gh.tgz
-
-# Z.LUA
-FROM base as zlua
-ARG ZLUA_VERSION=1.8.4
-RUN wget "https://raw.githubusercontent.com/skywind3000/z.lua/${ZLUA_VERSION}/z.lua"
-
-# PRETTYPING
-FROM base as prettyping
-RUN wget https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping && \
-  chmod +x prettyping && \
-  mv prettyping /usr/local/bin/prettyping
-
-# BAT
-FROM base as bat
-ARG BAT_VERSION=0.13.0
-RUN wget -O bat.tgz "https://github.com/sharkdp/bat/releases/download/v${BAT_VERSION}/bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu.tar.gz" && \
-  tar xzvf bat.tgz && \
-  mv "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu/bat" /usr/local/bin/bat && \
-  rm -rf "bat-v${BAT_VERSION}-x86_64-unknown-linux-gnu" bat.tgz
-
-# ADB
-# https://developer.android.com/studio/releases/platform-tools
-FROM base as adb
-ARG TOOLS_VESRION=29.0.5
-RUN wget -O tools.zip "https://dl.google.com/android/repository/platform-tools_r${TOOLS_VESRION}-linux.zip" && \
-  unzip tools.zip && \
-  mv platform-tools/adb /usr/local/bin/adb && \
-  mv platform-tools/fastboot /usr/local/bin/fastboot && \
-  rm -rf platform-tools
-
-# NGROK
-FROM base as ngrok
-RUN wget -O ngrok.zip "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" && \
-  unzip ngrok.zip && \
-  mv ngrok /usr/local/bin/ngrok && \
-  rm ngrok.zip
-
-# FONTS:bitmapfonts
-FROM base as fonts
-RUN mkdir -p bitmap/ && cd bitmap/ && \
-  wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf" && \
-  wget -O terminal.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf"
-
-# LIGHT
-FROM base as light
-RUN wget -O light.deb "https://github.com/haikarainen/light/releases/download/v1.2/light_1.2_amd64.deb" && \
-  dpkg -i light.deb && \
-  rm light.deb
-
-# ETCHER
-FROM base as etcher
-ARG ETCHER_VERSION=1.5.73
-RUN wget -O etcher.zip "https://github.com/balena-io/etcher/releases/download/v${ETCHER_VERSION}/balena-etcher-electron-${ETCHER_VERSION}-linux-x64.zip" && \
-  unzip etcher.zip && \
-  mv balenaEtcher-*.AppImage etcher && \
-  rm etcher.zip
-
-# BSPWM
-FROM base as bspwm
-ARG BSPWM_VERSION=0.9.9
+# RANGER
+FROM base AS ranger
+COPY --from=python3-pip \
+  /usr/bin/pip3 \
+  /usr/bin/
+COPY --from=python3-pip \
+  /usr/lib/python3.6/ \
+  /usr/lib/python3.6/
+COPY --from=python3-pip \
+  /usr/lib/python3.7/ \
+  /usr/lib/python3.7/
+COPY --from=python3-pip \
+  /usr/lib/python3.8/ \
+  /usr/lib/python3.8/
+COPY --from=python3-pip \
+  /usr/lib/python3/ \
+  /usr/lib/python3/
+COPY --from=python3-pip \
+  /usr/share/python-wheels/ \
+  /usr/share/python-wheels/
 RUN \
-  apt-get install -y \
-    libxcb-ewmh-dev \
-    libxcb-icccm4-dev \
-    libxcb-keysyms1-dev \
-    libxcb-randr0-dev \
-    libxcb-shape0-dev \
-    libxcb-util-dev \
-    libxcb-xinerama0-dev \
-    && \
-  git clone --depth 1 https://github.com/baskerville/bspwm && \
-  cd bspwm && \
-  git fetch --depth 1 origin tag "${BSPWM_VERSION}" && \
-  git reset --hard "${BSPWM_VERSION}" && \
-  make all
+  pip3 install ranger-fm=='1.9.3'
 
-# SXHKD
-FROM base as sxhkd
-ARG SXHKD_VERSION=0.6.1
+# ONE-PW
+FROM base AS one-pw
+COPY --from=go \
+  /usr/local/go/ \
+  /usr/local/go/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
 RUN \
-  apt-get install -y \
-    libxcb-util-dev \
-    libxcb-keysyms1-dev \
-    && \
-  git clone --depth 1 https://github.com/baskerville/sxhkd && \
-  cd sxhkd && \
-  git fetch --depth 1 origin tag "${SXHKD_VERSION}" && \
-  git reset --hard "${SXHKD_VERSION}" && \
-  make all
-
-### ANTIBODY
-FROM base as antibody
-RUN curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
-
-### CHARLES PROXY
-FROM base as charles
-ARG CHARLES_VERSION="4.5.6"
-RUN \
-  wget -O charles.tgz "https://www.charlesproxy.com/assets/release/${CHARLES_VERSION}/charles-proxy-${CHARLES_VERSION}_amd64.tar.gz" && \
-  tar xzvf charles.tgz && \
-  rm charles.tgz
-
-### DBXCLI
-FROM base AS dbxcli
-ARG DBXCLI_VERSION="3.0.0"
-RUN \
-  wget -O dbxcli \
-    "https://github.com/dropbox/dbxcli/releases/download/v${DBXCLI_VERSION}/dbxcli-linux-amd64" && \
-  chmod +x dbxcli
-
-### SQLITE3
-FROM base as sqlite3
-ARG SQLITE_VERSION="3310100"
-RUN \
-  wget -O sqlite.tgz "https://sqlite.org/2020/sqlite-autoconf-${SQLITE_VERSION}.tar.gz" && \
-  tar xzvf sqlite.tgz && \
-  rm sqlite.tgz && \
-  cd "sqlite-autoconf-${SQLITE_VERSION}" && \
-  ./configure --prefix=/usr     \
-              --disable-static  \
-              --enable-fts5     \
-              CFLAGS="-g -O2                    \
-              -DSQLITE_ENABLE_FTS3=1            \
-              -DSQLITE_ENABLE_FTS4=1            \
-              -DSQLITE_ENABLE_COLUMN_METADATA=1 \
-              -DSQLITE_ENABLE_UNLOCK_NOTIFY=1   \
-              -DSQLITE_ENABLE_DBSTAT_VTAB=1     \
-              -DSQLITE_SECURE_DELETE=1          \
-              -DSQLITE_ENABLE_FTS3_TOKENIZER=1" && \
-  make && \
-  make install
-
-###
-### the real deal
-###
-
-FROM base as shell
-
-# PPAs
-RUN \
-  # PROLOG
-  apt-add-repository ppa:swi-prolog/stable && \
-  # OLIVER EDITOR
-  add-apt-repository ppa:olive-editor/olive-editor && \
-  # PEEK
-  add-apt-repository ppa:peek-developers/stable
-
-# install apps
-RUN apt-get update && apt-get install -y \
-  aria2=1.33.\* \
-  audacity \
-  bs1770gain=0.4.\* \
-  chromium-browser=80.0* \
-  ffmpeg=7:3\* \
-  firefox=75.0+* \
-  flameshot=0.5.1\* \
-  fonts-noto \
-  fonts-noto-color-emoji \
-  gnome-keyring \
-  graphicsmagick \
-  gthumb \
-  htop \
-  httpie \
-  libsecret-1-dev \
-  lua5.3 \
-  mediainfo \
-  mkvtoolnix \
-  moreutils \
-  mysql-client \
-  nmap \
-  olive-editor \
-  openjdk-11-jre \
-  pandoc \
-  pdd \
-  peek \
-  pv \
-  qpdfview \
-  ranger \
-  redshift \
-  rlwrap \
-  rofi \
-  rsync \
-  safe-rm \
-  scrot \
-  sudo \
-  swi-prolog \
-  tig \
-  tree \
-  ttf-ubuntu-font-family \
-  urlview=0.9-20\* \
-  vlc \
-&& apt-get clean
-
-# ZOOM
-ARG ZOOM_VERSION="3.5.383291.0407"
-RUN wget -O /tmp/zoom.deb "https://zoom.us/client/${ZOOM_VERSION}/zoom_amd64.deb" && \
-  apt-get install -y /tmp/zoom.deb && \
-  rm /tmp/zoom.deb
-
-# setup admin user
-COPY ./secret/admin-passwd /tmp/admin-passwd
-RUN useradd -s /usr/bin/zsh --create-home admin && \
-  echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted && \
-  adduser admin sudo
-
-# switch to admin
-USER admin
-WORKDIR /home/admin
-
-# beets, mycli, awsli
-RUN pip3 install --user beets requests pylast eyeD3 mycli awscli td-watson
-
-###
-### COPY LARGE DIRECTORIES
-###
-
-# GO
-COPY --from=go /usr/local/go /usr/local/go
-
-# DENO
-COPY --from=deno --chown=admin:admin /root/deno /usr/local/bin/deno
-
-# NODE
-COPY --from=nvm --chown=admin:admin /usr/local/lib/node /usr/local/lib/node
-
-# NEOVIM
-COPY --from=neovim /usr/local/bin/nvim /usr/local/bin/nvim
-COPY --from=neovim /usr/local/share/nvim /usr/local/share/nvim
-RUN pip install --user neovim && \
-  pip3 install --user neovim msgpack && \
-  pip install --user pynvim && \
-  nvim +UpdateRemotePlugins +qall
-
-###
-### COPY SINGLE BINARIES
-###
-
-# FONTS
-COPY --from=fonts /root/bitmap /usr/share/fonts/X11/bitmap
-
-# ETCHER
-COPY --from=etcher /root/etcher /usr/local/bin/etcher
-
-# BSPWM
-COPY --from=bspwm /root/bspwm/bspc /root/bspwm/bspwm /usr/local/bin/
-COPY --from=bspwm /root/bspwm/doc/bspwm.1 /root/bspwm/doc/bspc.1 /usr/local/share/man1/
-
-# SXHKD
-COPY --from=sxhkd /root/sxhkd/sxhkd /usr/local/bin/sxhkd
-
-# LIGHT
-COPY --from=light /usr/bin/light /usr/local/bin/light
-
-# RUST TOOLS 
-COPY --from=rust --chown=admin:admin /root/.cargo /home/admin/.cargo
-COPY --from=rust --chown=admin:admin /root/.rustup /home/admin/.rustup
-COPY --from=fd --chown=admin:admin /root/.cargo/bin/fd /usr/local/bin
-COPY --from=rg --chown=admin:admin /root/.cargo/bin/rg /usr/local/bin
-COPY --from=sd --chown=admin:admin /root/.cargo/bin/sd /usr/local/bin
-COPY --from=bandwhich --chown=admin:admin /root/.cargo/bin/bandwhich /usr/local/bin
-
-# ALACRITTY
-COPY --from=alacritty --chown=admin:admin /root/alacritty/target/release/alacritty /usr/local/bin/alacritty
-
-# CRYSTAL
-COPY --from=crystal --chown=admin:admin /root/crystal/ /usr/local/
-
-# GCLOUD
-COPY --from=gcloud --chown=admin:admin /usr/local/google-cloud-sdk /usr/local/google-cloud-sdk
-
-# DOCKER-COMPOSE
-COPY --from=docker-compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
-
-# ANKI
-COPY --from=anki /usr/local/share/anki /usr/local/share/anki
-
-# GIT CRYPT
-COPY --from=git-crypt /root/git-crypt/git-crypt /usr/local/bin/git-crypt
-COPY --from=git-crypt /root/git-crypt/man/man1/git-crypt.1 /usr/local/share/man/man1
-
-# ADB
-COPY --from=adb /usr/local/bin/fastboot /usr/local/bin/adb /usr/local/bin/
-
-# BAT
-COPY --from=bat /usr/local/bin/bat /usr/local/bin/bat
-
-# TMUX
-COPY --from=tmux /usr/local/bin/tmux /usr/local/bin/tmux
-
-# FZF
-COPY --from=fzf --chown=admin:admin /root/.fzf /home/admin/.fzf
-COPY --from=fzf --chown=admin:admin /root/.fzf.zsh /home/admin/.fzf.zsh
-
-# CLONE
-COPY --from=clone --chown=admin:admin /usr/local/bin/clone /usr/local/bin/clone
-
-# ONEPW
-COPY --from=onepw --chown=admin:admin /usr/local/bin/1pw /usr/local/bin/1pw
-
-# GH
-COPY --from=gh --chown=admin:admin /usr/local/bin/gh /usr/local/bin/gh
-
-# Z.LUA
-copy --from=zlua --chown=admin:admin /root/z.lua /usr/local/bin/z.lua
-
-# PRETTYPING
-COPY --from=prettyping --chown=admin:admin /usr/local/bin/prettyping /usr/local/bin/prettyping
-
-# NGROK
-COPY --from=ngrok --chown=admin:admin /usr/local/bin/ngrok /usr/local/bin/ngrok
-
-# ANTIBODY
-COPY --from=antibody --chown=admin:admin /usr/local/bin/antibody /usr/local/bin/antibody
-
-# CHARLES
-COPY --from=charles --chown=admin:admin /root/charles/bin/charles /usr/local/bin/charles
-COPY --from=charles --chown=admin:admin /root/charles/lib/* /usr/share/java/charles/
+  clone --https --shallow --tag 'master' https://github.com/special/1pw && \
+  cd /root/src/github.com/special/1pw && \
+  go get -v && \
+  go build && \
+  mv 1pw /usr/local/bin/1pw && \
+  rm -rf /root/src
 
 # DBXCLI
-COPY --from=dbxcli --chown=admin:admin /root/dbxcli /usr/local/bin/dbxcli
+FROM base AS dbxcli
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O dbxcli 'https://github.com/dropbox/dbxcli/releases/download/v3.0.0/dbxcli-linux-amd64' && \
+  chmod +x dbxcli && \
+  mv dbxcli /usr/local/bin/dbxcli
 
-# SQLITE
-COPY --from=sqlite3 --chown=admin:admin /usr/lib/libsqlite3.* /usr/lib/
-COPY --from=sqlite3 --chown=admin:admin /usr/bin/sqlite3 /usr/bin/sqlite3
+# DIFF-SO-FANCY
+FROM base AS diff-so-fancy
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'diff-so-fancy@1.2.6'
 
-###
-### FINISHING UP
-###
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx unzip='6.0-*'
 
-# dotfiles
-COPY --chown=admin:admin --from=dotfiles /root/dotfiles /home/admin/dotfiles
-RUN cd dotfiles && \
-  make apps && \
-  antibody bundle \
-    < /home/admin/dotfiles/apps/zsh/bundles.txt \
-    > /home/admin/.antibody.sh && \
-  nvim +'call dein#update()' +GoInstallBinaries +UpdateRemotePlugins +qall && \
-  /home/admin/dotfiles/bin/1pw-pull
+# PING
+FROM base AS ping
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx iputils-ping='3:20161105-*'
 
-ENV PULSE_SERVER /run/pulse/native
+# XZ
+FROM base AS xz
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx xz-utils='5.2.2-*'
 
+# VLC
+FROM base AS vlc
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx vlc='3.0.8-*'
+
+# ZOOM
+FROM base AS zoom
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
+  apteryx /tmp/zoom.deb
+
+# ALACRITTY
+FROM base AS alacritty
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
+  apteryx /tmp/alacritty.deb
+
+# X11-UTILS
+FROM base AS x11-utils
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*'
+
+# MESA
+FROM base AS mesa
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
+
+# SHELL-ZSH
+FROM shell-admin AS shell-zsh
+COPY --from=fzf \
+  /usr/local/share/fzf/ \
+  /usr/local/share/fzf/
+COPY --from=z.lua \
+  /usr/local/bin/z.lua \
+  /usr/local/bin/
+COPY --from=python2 \
+  /usr/bin/python \
+  /usr/bin/python2.7 \
+  /usr/bin/
+COPY --from=python2 \
+  /usr/lib/python2.7/ \
+  /usr/lib/python2.7/
+COPY --from=lua \
+  /usr/bin/lua5.3 \
+  /usr/bin/
+COPY --from=antibody \
+  /usr/local/bin/antibody \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make zsh && \
+  antibody bundle < /home/admin/dotfiles/apps/zsh/bundles.txt > /home/admin/.antibody.sh && \
+  /usr/local/share/fzf/install --key-bindings --completion && \
+  mkdir -p ~/src
+
+# SHELL-WM
+FROM shell-admin AS shell-wm
+COPY --from=bspwm \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=bspwm \
+  /usr/local/bin/bspc \
+  /usr/local/bin/bspwm \
+  /usr/local/bin/
+COPY --from=sxhkd \
+  /usr/local/bin/sxhkd \
+  /usr/local/bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make bspwm sxhkd x11
+
+# SHELL-VIM
+FROM shell-admin AS shell-vim
+COPY --from=neovim \
+  /usr/local/bin/nvim \
+  /usr/local/bin/
+COPY --from=neovim \
+  /usr/local/share/nvim/ \
+  /usr/local/share/nvim/
+COPY --from=neovim \
+  /usr/local/include/python3.6/ \
+  /usr/local/include/python3.6/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so \
+  /usr/local/lib/python3.6/dist-packages/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/msgpack/ \
+  /usr/local/lib/python3.6/dist-packages/msgpack/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/neovim/ \
+  /usr/local/lib/python3.6/dist-packages/neovim/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/pynvim/ \
+  /usr/local/lib/python3.6/dist-packages/pynvim/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make vim && \
+  nvim +'call dein#update()' +qall && \
+  nvim +UpdateRemotePlugins +qall
+
+# SHELL-TMUX
+FROM shell-admin AS shell-tmux
+COPY --from=tmux \
+  /usr/local/bin/tmux \
+  /usr/local/bin/
+COPY --from=tmux \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make tmux
+
+# SHELL-SSH
+FROM shell-admin AS shell-ssh
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+
+# SHELL-RANGER
+FROM shell-admin AS shell-ranger
+COPY --from=ranger \
+  /usr/local/bin/ranger \
+  /usr/local/bin/rifle \
+  /usr/local/bin/
+COPY --from=ranger \
+  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/
+COPY --from=ranger \
+  /usr/local/lib/python3.6/dist-packages/ranger/ \
+  /usr/local/lib/python3.6/dist-packages/ranger/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make ranger
+
+# SHELL-PASSWORDS
+FROM shell-admin AS shell-passwords
+COPY --from=dbxcli \
+  /usr/local/bin/dbxcli \
+  /usr/local/bin/
+COPY --from=one-pw \
+  /usr/local/bin/1pw \
+  /usr/local/bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make dbxcli && \
+  1pw-pull
+
+# SHELL-NPM
+FROM shell-admin AS shell-npm
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make npm
+
+# SHELL-GIT
+FROM shell-admin AS shell-git
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
+  /usr/local/bin/
+COPY --from=diff-so-fancy \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make git
+
+# YARN
+FROM base AS yarn
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'yarn@1.22.4'
+
+# TREE
+FROM base AS tree
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx tree='1.7.0-*'
+
+# TIG
+FROM base AS tig
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+RUN \
+  apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
+  clone --https --shallow --tag 'tig-2.5.1' https://github.com/jonas/tig && \
+  cd /root/src/github.com/jonas/tig && \
+  make configure && \
+  ./configure && \
+  make prefix=/usr/local && \
+  make install prefix=/usr/local && \
+  rm -rf /root/src
+
+# SUDO
+FROM base AS sudo
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx sudo='1.8.21p2*'
+
+# SD
+FROM base AS sd
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=unzip \
+  /usr/bin/unzip \
+  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  wget -O /tmp/sd.zip 'https://github.com/chmln/sd/releases/download/v0.7.4/sd-0.7.4.x86_64-unknown-linux-gnu.zip' && \
+  unzip /tmp/sd.zip && \
+  rm /tmp/sd.zip && \
+  mv b/x86_64-unknown-linux-gnu/release/sd /usr/local/bin/sd && \
+  mkdir -p /usr/local/share/man/man1 && \
+  mv b/x86_64-unknown-linux-gnu/release/build/sd-*/out/sd.1 /usr/local/share/man/man1/sd.1 && \
+  rm -r b
+
+# SAFE-RM
+FROM base AS safe-rm
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+RUN \
+  clone --https --shallow --tag '1.0.7' https://github.com/kaelzhang/shell-safe-rm && \
+  cd /root/src/github.com/kaelzhang/shell-safe-rm && \
+  cp ./bin/rm.sh /usr/local/bin/safe-rm && \
+  rm -rf /root/src/
+
+# RIPGREP
+FROM base AS ripgrep
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+RUN \
+  wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/12.0.1/ripgrep-12.0.1-x86_64-unknown-linux-musl.tar.gz' && \
+  tar -xzvf /tmp/ripgrep.tgz && \
+  rm /tmp/ripgrep.tgz && \
+  mv ripgrep-12.0.1-x86_64-unknown-linux-musl ripgrep && \
+  mv ripgrep/rg /usr/local/bin/rg && \
+  mkdir -p /usr/local/share/man/man1 && \
+  mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1 && \
+  rm -r ripgrep
+
+# PRETTYPING
+FROM base AS prettyping
+COPY --from=ping \
+  /bin/ping \
+  /bin/ping4 \
+  /bin/ping6 \
+  /bin/
+COPY --from=ping \
+  /lib/x86_64-linux-gnu/libidn.so.11 \
+  /lib/x86_64-linux-gnu/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /usr/local/bin/prettyping 'https://raw.githubusercontent.com/denilsonsa/prettyping/v1.0.1/prettyping' && \
+  chmod +x /usr/local/bin/prettyping
+
+# NP
+FROM base AS np
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'np@6.2.3'
+
+# NCU
+FROM base AS ncu
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'npm-check-updates@4.1.2'
+
+# MOREUTILS
+FROM base AS moreutils
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx moreutils='0.60-*'
+
+# HTOP
+FROM base AS htop
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx htop='2.1.0-*'
+
+# FFMPEG
+FROM base AS ffmpeg
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+COPY --from=xz \
+  /usr/bin/xz \
+  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
+  tar -xvf /tmp/ffmpeg.txz && \
+  rm /tmp/ffmpeg.txz && \
+  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
+  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
+  rm -r ffmpeg
+
+# FD
+FROM base AS fd
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+RUN \
+  wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v8.0.0/fd-v8.0.0-x86_64-unknown-linux-musl.tar.gz' && \
+  tar -xzvf /tmp/fd.tgz && \
+  rm /tmp/fd.tgz && \
+  mv 'fd-v8.0.0-x86_64-unknown-linux-musl' fd && \
+  mv fd/fd /usr/local/bin/fd && \
+  mkdir -p /usr/local/share/man/man1 && \
+  mv fd/fd.1 /usr/local/share/man/man1/fd.1 && \
+  rm -r fd
+
+# DOCKER
+FROM base AS docker
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
+  apt-key add /tmp/docker.gpg && \
+  apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
+  apteryx docker-ce='5:19.03.8*'
+
+# BAT
+FROM base AS bat
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=tar \
+  /bin/tar \
+  /bin/
+RUN \
+  wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.13.0/bat-v0.13.0-x86_64-unknown-linux-gnu.tar.gz' && \
+  tar -xzvf bat.tgz && \
+  rm bat.tgz && \
+  mv 'bat-v0.13.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat && \
+  rm -rf 'bat-v0.13.0-x86_64-unknown-linux-gnu'
+
+# ADB
+FROM base AS adb
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=unzip \
+  /usr/bin/unzip \
+  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  wget -O tools.zip 'https://dl.google.com/android/repository/platform-tools_r29.0.5-linux.zip' && \
+  unzip tools.zip && \
+  rm tools.zip && \
+  mv platform-tools/adb /usr/local/bin/adb && \
+  rm -rf platform-tools
+
+# MY-DESKTOP
+FROM shell-admin AS my-desktop
+COPY --from=adb \
+  /usr/local/bin/adb \
+  /usr/local/bin/
+COPY --from=bat \
+  /usr/local/bin/bat \
+  /usr/local/bin/
+COPY --from=build-essential \
+  /etc/alternatives/ \
+  /etc/alternatives/
+COPY --from=build-essential \
+  /etc/perl/ \
+  /etc/perl/
+COPY --from=build-essential \
+  /lib/cpp \
+  /lib/
+COPY --from=build-essential \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=build-essential \
+  /usr/include/ \
+  /usr/include/
+COPY --from=build-essential \
+  /usr/lib/ \
+  /usr/lib/
+COPY --from=clone \
+  /usr/local/bin/clone \
+  /usr/local/bin/
+COPY --from=docker \
+  /usr/bin/docker \
+  /usr/bin/
+COPY --from=fd \
+  /usr/local/bin/fd \
+  /usr/local/bin/
+COPY --from=ffmpeg \
+  /usr/local/bin/ffmpeg \
+  /usr/local/bin/ffprobe \
+  /usr/local/bin/
+COPY --from=fzf \
+  /usr/local/share/fzf/ \
+  /usr/local/share/fzf/
+COPY --from=go \
+  /usr/local/go/ \
+  /usr/local/go/
+COPY --from=htop \
+  /usr/bin/htop \
+  /usr/bin/
+COPY --from=make \
+  /usr/bin/make \
+  /usr/bin/
+COPY --from=make \
+  /usr/include/gnumake.h \
+  /usr/include/
+COPY --from=moreutils \
+  /usr/bin/chronic \
+  /usr/bin/combine \
+  /usr/bin/errno \
+  /usr/bin/ifdata \
+  /usr/bin/ifne \
+  /usr/bin/isutf8 \
+  /usr/bin/lckdo \
+  /usr/bin/mispipe \
+  /usr/bin/parallel \
+  /usr/bin/pee \
+  /usr/bin/sponge \
+  /usr/bin/ts \
+  /usr/bin/vidir \
+  /usr/bin/vipe \
+  /usr/bin/zrun \
+  /usr/bin/
+COPY --from=ncu \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=node \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=np \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=prettyping \
+  /usr/local/bin/prettyping \
+  /usr/local/bin/
+COPY --from=ripgrep \
+  /usr/local/bin/rg \
+  /usr/local/bin/
+COPY --from=safe-rm \
+  /usr/local/bin/safe-rm \
+  /usr/local/bin/
+COPY --from=sd \
+  /usr/local/bin/sd \
+  /usr/local/bin/
+COPY --from=sudo \
+  /etc/sudoers \
+  /etc/
+COPY --from=sudo \
+  /usr/bin/sudo \
+  /usr/bin/
+COPY --from=sudo \
+  /usr/lib/sudo/ \
+  /usr/lib/sudo/
+COPY --from=sudo \
+  /var/lib/sudo/ \
+  /var/lib/sudo/
+COPY --from=tig \
+  /usr/local/bin/tig \
+  /usr/local/bin/
+COPY --from=tig \
+  /usr/local/etc/tigrc \
+  /usr/local/etc/
+COPY --from=tree \
+  /usr/bin/tree \
+  /usr/bin/
+COPY --from=yarn \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=shell-git --chown=admin \
+  /home/admin/.gitconfig \
+  /home/admin/
+COPY --from=shell-npm --chown=admin \
+  /home/admin/.npmrc \
+  /home/admin/
+COPY --from=shell-passwords --chown=admin \
+  /home/admin/.config/dbxcli/ \
+  /home/admin/.config/dbxcli/
+COPY --from=shell-passwords --chown=admin \
+  /home/admin/vaults/ \
+  /home/admin/vaults/
+COPY --from=shell-ranger --chown=admin \
+  /home/admin/.config/ranger/ \
+  /home/admin/.config/ranger/
+COPY --from=shell-tmux --chown=admin \
+  /home/admin/.tmux.conf \
+  /home/admin/
+COPY --from=shell-tmux --chown=admin \
+  /home/admin/.tmux/ \
+  /home/admin/.tmux/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/.config/nvim/ \
+  /home/admin/.config/nvim/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/.local/share/nvim/ \
+  /home/admin/.local/share/nvim/
+COPY --from=shell-vim --chown=admin \
+  /home/admin/dotfiles/apps/vim/ \
+  /home/admin/dotfiles/apps/vim/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.config/bspwm/ \
+  /home/admin/.config/bspwm/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.config/sxhkd/ \
+  /home/admin/.config/sxhkd/
+COPY --from=shell-wm --chown=admin \
+  /home/admin/.xinitrc \
+  /home/admin/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/.antibody.sh \
+  /home/admin/.fzf.zsh \
+  /home/admin/.zshrc \
+  /home/admin/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/.cache/antibody/ \
+  /home/admin/.cache/antibody/
+COPY --from=shell-zsh --chown=admin \
+  /home/admin/src/ \
+  /home/admin/src/
+COPY --from=mesa \
+  /etc/glvnd/ \
+  /etc/glvnd/
+COPY --from=mesa \
+  /etc/sensors.d/ \
+  /etc/sensors.d/
+COPY --from=mesa \
+  /etc/sensors3.conf \
+  /etc/
+COPY --from=mesa \
+  /usr/bin/ \
+  /usr/bin/
+COPY --from=mesa \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=mesa \
+  /usr/share/ \
+  /usr/share/
+COPY --from=x11-utils \
+  /etc/fonts/ \
+  /etc/fonts/
+COPY --from=x11-utils \
+  /etc/init.d/x11-common \
+  /etc/init.d/
+COPY --from=x11-utils \
+  /etc/rcS.d/S01x11-common \
+  /etc/rcS.d/
+COPY --from=x11-utils \
+  /etc/sensors3.conf \
+  /etc/
+COPY --from=x11-utils \
+  /etc/sensors.d/.placeholder \
+  /etc/sensors.d/
+COPY --from=x11-utils \
+  /etc/X11/ \
+  /etc/X11/
+COPY --from=x11-utils \
+  /usr/bin/appres \
+  /usr/bin/editres \
+  /usr/bin/iceauth \
+  /usr/bin/listres \
+  /usr/bin/luit \
+  /usr/bin/sessreg \
+  /usr/bin/setxkbmap \
+  /usr/bin/showrgb \
+  /usr/bin/viewres \
+  /usr/bin/X11 \
+  /usr/bin/xcmsdb \
+  /usr/bin/xdpyinfo \
+  /usr/bin/xdriinfo \
+  /usr/bin/xev \
+  /usr/bin/xfd \
+  /usr/bin/xfontsel \
+  /usr/bin/xgamma \
+  /usr/bin/xhost \
+  /usr/bin/xkbbell \
+  /usr/bin/xkbcomp \
+  /usr/bin/xkbevd \
+  /usr/bin/xkbprint \
+  /usr/bin/xkbvleds \
+  /usr/bin/xkbwatch \
+  /usr/bin/xkeystone \
+  /usr/bin/xkill \
+  /usr/bin/xlsatoms \
+  /usr/bin/xlsclients \
+  /usr/bin/xlsfonts \
+  /usr/bin/xmessage \
+  /usr/bin/xmodmap \
+  /usr/bin/xprop \
+  /usr/bin/xrandr \
+  /usr/bin/xrdb \
+  /usr/bin/xrefresh \
+  /usr/bin/xset \
+  /usr/bin/xsetmode \
+  /usr/bin/xsetpointer \
+  /usr/bin/xsetroot \
+  /usr/bin/xstdcmap \
+  /usr/bin/xvidtune \
+  /usr/bin/xvinfo \
+  /usr/bin/xwininfo \
+  /usr/bin/
+COPY --from=x11-utils \
+  /usr/lib/x86_64-linux-gnu/dri/i915_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/i965_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/iris_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/nouveau_vieux_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/r200_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/r300_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/r600_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/radeon_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/radeonsi_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/virtio_gpu_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/vmwgfx_dri.so \
+  /usr/lib/x86_64-linux-gnu/dri/
+COPY --from=x11-utils \
+  /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* \
+  /usr/lib/x86_64-linux-gnu/libdrm_intel.so.* \
+  /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.* \
+  /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.* \
+  /usr/lib/x86_64-linux-gnu/libdrm.so.* \
+  /usr/lib/x86_64-linux-gnu/libelf-0.170.so \
+  /usr/lib/x86_64-linux-gnu/libelf.so.* \
+  /usr/lib/x86_64-linux-gnu/libfontconfig.so.* \
+  /usr/lib/x86_64-linux-gnu/libfontenc.so.* \
+  /usr/lib/x86_64-linux-gnu/libfreetype.so.* \
+  /usr/lib/x86_64-linux-gnu/libglapi.so.* \
+  /usr/lib/x86_64-linux-gnu/libGLdispatch.so.* \
+  /usr/lib/x86_64-linux-gnu/libGL.so.* \
+  /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.* \
+  /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.* \
+  /usr/lib/x86_64-linux-gnu/libGLX.so.* \
+  /usr/lib/x86_64-linux-gnu/libICE.so.* \
+  /usr/lib/x86_64-linux-gnu/libisl.so.* \
+  /usr/lib/x86_64-linux-gnu/libLLVM-9.so.* \
+  /usr/lib/x86_64-linux-gnu/libLLVM-9.so \
+  /usr/lib/x86_64-linux-gnu/libmpc.so.* \
+  /usr/lib/x86_64-linux-gnu/libmpfr.so.* \
+  /usr/lib/x86_64-linux-gnu/libpciaccess.so.* \
+  /usr/lib/x86_64-linux-gnu/libpng16.so.* \
+  /usr/lib/x86_64-linux-gnu/libsensors.so.* \
+  /usr/lib/x86_64-linux-gnu/libSM.so.* \
+  /usr/lib/x86_64-linux-gnu/libX11.so.* \
+  /usr/lib/x86_64-linux-gnu/libX11-xcb.so.* \
+  /usr/lib/x86_64-linux-gnu/libXau.so.* \
+  /usr/lib/x86_64-linux-gnu/libXaw7.so.* \
+  /usr/lib/x86_64-linux-gnu/libXaw.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-glx.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-present.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-shape.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb.so.* \
+  /usr/lib/x86_64-linux-gnu/libxcb-sync.so.* \
+  /usr/lib/x86_64-linux-gnu/libXcomposite.so.* \
+  /usr/lib/x86_64-linux-gnu/libXcursor.so.* \
+  /usr/lib/x86_64-linux-gnu/libXdamage.so.* \
+  /usr/lib/x86_64-linux-gnu/libXdmcp.so.* \
+  /usr/lib/x86_64-linux-gnu/libXext.so.* \
+  /usr/lib/x86_64-linux-gnu/libXfixes.so.* \
+  /usr/lib/x86_64-linux-gnu/libXft.so.* \
+  /usr/lib/x86_64-linux-gnu/libXinerama.so.* \
+  /usr/lib/x86_64-linux-gnu/libXi.so.* \
+  /usr/lib/x86_64-linux-gnu/libxkbfile.so.* \
+  /usr/lib/x86_64-linux-gnu/libXmu.so.* \
+  /usr/lib/x86_64-linux-gnu/libXmuu.so.* \
+  /usr/lib/x86_64-linux-gnu/libXpm.so.* \
+  /usr/lib/x86_64-linux-gnu/libXrandr.so.* \
+  /usr/lib/x86_64-linux-gnu/libXrender.so.* \
+  /usr/lib/x86_64-linux-gnu/libxshmfence.so.* \
+  /usr/lib/x86_64-linux-gnu/libXt.so.* \
+  /usr/lib/x86_64-linux-gnu/libXtst.so.* \
+  /usr/lib/x86_64-linux-gnu/libXv.so.* \
+  /usr/lib/x86_64-linux-gnu/libXxf86dga.so.* \
+  /usr/lib/x86_64-linux-gnu/libXxf86vm.so.* \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=x11-utils \
+  /usr/local/share/fonts/ \
+  /usr/local/share/fonts/
+COPY --from=x11-utils \
+  /usr/share/drirc.d/00-mesa-defaults.conf \
+  /usr/share/drirc.d/
+COPY --from=x11-utils \
+  /usr/share/fonts/ \
+  /usr/share/fonts/
+COPY --from=x11-utils \
+  /usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/libisl.so.*-gdb.py \
+  /usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/
+COPY --from=x11-utils \
+  /usr/share/libdrm \
+  /usr/share/libsensors4 \
+  /usr/share/
+COPY --from=x11-utils \
+  /usr/share/libdrm/amdgpu.ids \
+  /usr/share/libdrm/
+COPY --from=x11-utils \
+  /usr/share/pkgconfig/xkbcomp.pc \
+  /usr/share/pkgconfig/
+COPY --from=x11-utils \
+  /usr/share/X11/ \
+  /usr/share/X11/
+COPY --from=x11-utils \
+  /usr/share/xml/fontconfig/fonts.dtd \
+  /usr/share/xml/fontconfig/
+COPY --from=x11-utils \
+  /var/lib/ucf/hashfile.1 \
+  /var/lib/ucf/
+COPY --from=alacritty \
+  /usr/bin/alacritty \
+  /usr/bin/
+COPY --from=alacritty \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=zoom \
+  /usr/bin/zoom \
+  /usr/bin/
+COPY --from=zoom \
+  /opt/zoom/ \
+  /opt/zoom/
+COPY --from=vlc \
+  /usr/bin/vlc \
+  /usr/bin/
+COPY --from=git \
+  /usr/bin/git \
+  /usr/bin/
+COPY --from=git \
+  /usr/lib/git-core/ \
+  /usr/lib/git-core/
+COPY --from=git \
+  /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
+  /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=git \
+  /usr/share/git-core/ \
+  /usr/share/git-core/
+COPY --from=ping \
+  /bin/ping \
+  /bin/ping4 \
+  /bin/ping6 \
+  /bin/
+COPY --from=ping \
+  /lib/x86_64-linux-gnu/libidn.so.11 \
+  /lib/x86_64-linux-gnu/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+COPY --from=git-crypt \
+  /usr/local/bin/git-crypt \
+  /usr/local/bin/
+COPY --from=diff-so-fancy \
+  /usr/local/lib/node/ \
+  /usr/local/lib/node/
+COPY --from=dbxcli \
+  /usr/local/bin/dbxcli \
+  /usr/local/bin/
+COPY --from=one-pw \
+  /usr/local/bin/1pw \
+  /usr/local/bin/
+COPY --from=ranger \
+  /usr/local/bin/ranger \
+  /usr/local/bin/rifle \
+  /usr/local/bin/
+COPY --from=ranger \
+  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/ranger_fm-1.9.3.dist-info/
+COPY --from=ranger \
+  /usr/local/lib/python3.6/dist-packages/ranger/ \
+  /usr/local/lib/python3.6/dist-packages/ranger/
+COPY --from=tmux \
+  /usr/local/bin/tmux \
+  /usr/local/bin/
+COPY --from=tmux \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=neovim \
+  /usr/local/bin/nvim \
+  /usr/local/bin/
+COPY --from=neovim \
+  /usr/local/share/nvim/ \
+  /usr/local/share/nvim/
+COPY --from=neovim \
+  /usr/local/include/python3.6/ \
+  /usr/local/include/python3.6/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so \
+  /usr/local/lib/python3.6/dist-packages/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/msgpack/ \
+  /usr/local/lib/python3.6/dist-packages/msgpack/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/neovim/ \
+  /usr/local/lib/python3.6/dist-packages/neovim/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/ \
+  /usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/
+COPY --from=neovim \
+  /usr/local/lib/python3.6/dist-packages/pynvim/ \
+  /usr/local/lib/python3.6/dist-packages/pynvim/
+COPY --from=bspwm \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=bspwm \
+  /usr/local/bin/bspc \
+  /usr/local/bin/bspwm \
+  /usr/local/bin/
+COPY --from=sxhkd \
+  /usr/local/bin/sxhkd \
+  /usr/local/bin/
+COPY --from=z.lua \
+  /usr/local/bin/z.lua \
+  /usr/local/bin/
+COPY --from=python2 \
+  /usr/bin/python \
+  /usr/bin/python2.7 \
+  /usr/bin/
+COPY --from=python2 \
+  /usr/lib/python2.7/ \
+  /usr/lib/python2.7/
+COPY --from=lua \
+  /usr/bin/lua5.3 \
+  /usr/bin/
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  cd dotfiles && \
+  make ssh
 CMD /home/admin/.xinitrc

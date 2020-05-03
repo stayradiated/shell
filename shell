@@ -2,39 +2,40 @@
 
 set -xo
 
+IMAGE_NAME="${IMAGE_NAME:-stayradiated/shell:latest}"
 INSTANCE_NAME="${INSTANCE_NAME:-shell}"
 
 if [[ $@ == *--rm* ]]
 then
-  docker stop -t 0 $INSTANCE_NAME > /dev/null
-  docker rm $INSTANCE_NAME > /dev/null
+  docker stop -t 0 "${INSTANCE_NAME}" > /dev/null
+  docker rm "${INSTANCE_NAME}" > /dev/null
   exit 0
 fi
 
 if [[ $@ == *--stop* ]]
 then
-  docker stop -t 0 $INSTANCE_NAME > /dev/null
+  docker stop -t 0 "${INSTANCE_NAME}" > /dev/null
   exit 0
 fi
 
 if [[ $@ == *--restart* ]]
 then
-  docker stop -t 0 $INSTANCE_NAME > /dev/null
-  docker start $INSTANCE_NAME > /dev/null
+  docker stop -t 0 "${INSTANCE_NAME}" > /dev/null
+  docker start "${INSTANCE_NAME}" > /dev/null
 fi
 
-if [[ "`docker ps | grep $INSTANCE_NAME | head -c1 | wc -c`" -eq 0 ]]
+if [[ "`docker ps | grep "${INSTANCE_NAME}" | head -c1 | wc -c`" -eq 0 ]]
 then
   docker run \
     -d \
-    --name $INSTANCE_NAME \
+    --name "${INSTANCE_NAME}" \
     --network host \
     --user root \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v ~/src:/home/admin/src \
     --privileged \
-    stayradiated/shell \
+    "${INSTANCE_NAME}" \
     /sbin/my_init
 fi
 
-docker exec -it -u admin $INSTANCE_NAME /bin/zsh
+docker exec -it -u admin "${INSTANCE_NAME}" zsh

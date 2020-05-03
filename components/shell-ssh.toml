@@ -1,0 +1,13 @@
+name = 'shell-ssh'
+from = 'shell-admin'
+
+dependencies = [
+  'make'
+]
+
+# note that this is an INSTALL command -- not BUILD
+# so it was run in the final image
+install = """
+cd dotfiles
+make ssh
+"""

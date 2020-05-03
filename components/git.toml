@@ -1,0 +1,25 @@
+name = "git"
+from = "base"
+
+version = "1:2.26.2*"
+
+devDependencies = [
+  "apteryx"
+]
+
+build = """
+add-apt-repository ppa:git-core/ppa
+apteryx git='{{VERSION}}'
+"""
+
+exports = [
+  "/usr/bin/git",
+  "/usr/lib/git-core/",
+  "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4",
+  "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.0",
+  "/usr/share/git-core/",
+]
+
+docs = [
+  "/usr/share/doc/git/"
+]

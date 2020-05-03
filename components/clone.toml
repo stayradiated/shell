@@ -1,0 +1,32 @@
+name = "clone"
+from = "base"
+
+version = "v1.3.0"
+
+dependencies = [
+  "git"
+]
+
+devDependencies = [
+  "go"
+]
+
+build = """
+mkdir -p /root/src/github.com/stayradiated
+cd /root/src/github.com/stayradiated
+git clone --depth 1 https://github.com/stayradiated/clone
+cd clone
+git fetch --depth 1 origin tag '{{VERSION}}'
+git reset --hard '{{VERSION}}'
+
+go install
+mv /root/bin/clone /usr/local/bin/clone
+
+cd /root
+rm -rf src bin
+"""
+
+exports = [
+  "/usr/local/bin/clone"
+]
+

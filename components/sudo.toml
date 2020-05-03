@@ -1,0 +1,31 @@
+name = "sudo"
+from = "base"
+
+version = "1.8.21p2*"
+
+dependencies = [
+  "apteryx"
+]
+
+build = """
+apteryx sudo='{{VERSION}}'
+"""
+
+exports = [
+  "/etc/sudoers",
+  "/usr/bin/sudo",
+  "/usr/lib/sudo/",
+  "/var/lib/sudo/",
+]
+
+docs = [
+  "/usr/share/doc/sudo/",
+  "/usr/share/man/man5/sudo.conf.5.gz",
+  "/usr/share/man/man5/sudoers.5.gz",
+  "/usr/share/man/man8/sudo.8.gz",
+  "/usr/share/man/man8/sudo_plugin.8.gz",
+  "/usr/share/man/man8/sudo_root.8.gz",
+  "/usr/share/man/man8/sudoedit.8.gz",
+  "/usr/share/man/man8/sudoreplay.8.gz",
+  "/usr/share/man/man8/visudo.8.gz",
+]

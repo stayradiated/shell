@@ -1,0 +1,20 @@
+name = 'fzf'
+from = 'base'
+
+# https://github.com/junegunn/fzf/releases
+version = '0.21.1'
+
+devDependencies = [
+  'clone'
+]
+
+build = """
+clone --https --shallow --tag '{{VERSION}}' https://github.com/junegunn/fzf
+mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf
+rm -rf /root/src
+/usr/local/share/fzf/install --bin
+"""
+
+exports = [
+  '/usr/local/share/fzf/'
+]

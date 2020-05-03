@@ -1,0 +1,26 @@
+name = 'alacritty'
+from = 'base'
+
+version = 'v0.4.2'
+
+devDependencies = [
+  'apteryx',
+  'wget',
+]
+
+build = """
+wget \
+  -O /tmp/alacritty.deb \
+  'https://github.com/alacritty/alacritty/releases/download/{{VERSION}}/Alacritty-{{VERSION}}-ubuntu_18_04_amd64.deb'
+apteryx /tmp/alacritty.deb
+"""
+
+exports = [
+  '/usr/bin/alacritty',
+  '/usr/lib/x86_64-linux-gnu/',
+]
+
+docs = [
+  '/usr/share/bash-completion/completions/alacritty',
+  '/usr/share/zsh/vendor-completions/_alacritty',
+]

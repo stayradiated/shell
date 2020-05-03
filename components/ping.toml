@@ -1,0 +1,25 @@
+name = 'ping'
+from = 'base'
+
+version = '3:20161105-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx iputils-ping='{{VERSION}}'
+"""
+
+exports = [
+  '/bin/ping',
+  '/bin/ping4',
+  '/bin/ping6',
+  '/lib/x86_64-linux-gnu/libidn.so.11',
+]
+
+docs = [
+  '/usr/share/man/man8/ping.8.gz',
+  '/usr/share/man/man8/ping4.8.gz',
+  '/usr/share/man/man8/ping6.8.gz',
+]

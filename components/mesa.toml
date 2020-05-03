@@ -1,0 +1,23 @@
+name = 'mesa'
+from = 'base'
+
+version = '8.4.0-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx \
+  mesa-utils='{{VERSION}}' \
+  mesa-utils-extra='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/glvnd/',
+  '/etc/sensors.d/',
+  '/etc/sensors3.conf',
+  '/usr/bin/',
+  '/usr/lib/x86_64-linux-gnu/',
+  '/usr/share/',
+]

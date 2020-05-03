@@ -1,0 +1,21 @@
+name = 'tree'
+from = 'base'
+
+version = '1.7.0-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx tree='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/tree'
+]
+
+docs = [
+  '/usr/share/doc/tree/',
+  '/usr/share/man/man1/tree.1.gz'
+]

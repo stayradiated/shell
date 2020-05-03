@@ -1,0 +1,27 @@
+name = 'android-studio'
+from = 'base'
+
+version = '192.6392135'
+
+dependencies = [
+  'android-sdk',
+  'java',
+]
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+wget \
+  -O android-studio.tgz \
+  "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/3.6.3.0/android-studio-ide-{{VERSION}}-linux.tar.gz"
+tar -xzvf android-studio.tgz
+rm -rf android-studio.tgz
+mv android-studio /usr/local/android-studio
+"""
+
+exports = [
+  "/usr/local/android-studio/"
+]

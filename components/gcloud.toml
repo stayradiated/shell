@@ -1,0 +1,23 @@
+name = 'gcloud'
+from = 'base'
+
+# https://cloud.google.com/sdk/docs/downloads-versioned-archives
+version = '290.0.0'
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+wget \
+  -O /tmp/gcloud.tgz \
+  'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-{{VERSION}}-linux-x86_64.tar.gz'
+tar -xzvf /tmp/gcloud.tgz
+rm -rf /tmp/gcloud.tgz
+mv google-cloud-sdk /usr/local/google-cloud-sdk
+"""
+
+exports = [
+  '/usr/local/google-cloud-sdk/'
+]

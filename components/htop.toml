@@ -1,0 +1,20 @@
+name = 'htop'
+from = 'base'
+
+version = '2.1.0-*'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx htop='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/htop',
+]
+
+docs = [
+  '/usr/share/doc/htop/',
+  '/usr/share/man/man1/htop.1.gz',
+]
+

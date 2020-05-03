@@ -1,0 +1,29 @@
+name = 'anki'
+from = 'base'
+
+# Powerful, intelligent flash cards.
+#https://apps.ankiweb.net/
+
+version = '2.1.19'
+
+devDependencies = [
+  'build-essential',
+  'wget',
+  'tar',
+  'make',
+]
+
+
+build = """
+wget -O anki.tar 'https://apps.ankiweb.net/downloads/current/anki-{{VERSION}}-linux-amd64.tar.bz2'
+tar xjvf anki.tar
+rm anki.tar
+mv 'anki-{{VERSION}}-linux-amd64' /root/anki
+cd /root/anki
+make
+mv ./bin/anki /usr/local/bin/anki
+"""
+
+exports = [
+  '/usr/local/bin/anki'
+]

@@ -1,0 +1,22 @@
+name = 'peek'
+from = 'base'
+
+# https://github.com/phw/peek/releases
+version = '1.5.1-*'
+
+dependencies = [
+  'ffmpeg'
+]
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+add-apt-repository ppa:peek-developers/stable
+apteryx peek='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/peek'
+]

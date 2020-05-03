@@ -1,0 +1,24 @@
+name = 'prettyping'
+from = 'base'
+
+# https://github.com/denilsonsa/prettyping/releases
+version = 'v1.0.1'
+
+dependencies = [
+  'ping'
+]
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget \
+  -O /usr/local/bin/prettyping \
+  'https://raw.githubusercontent.com/denilsonsa/prettyping/{{VERSION}}/prettyping'
+chmod +x /usr/local/bin/prettyping
+"""
+
+exports = [
+  '/usr/local/bin/prettyping'
+]

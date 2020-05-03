@@ -1,0 +1,21 @@
+name = "make"
+from = "base"
+
+version = "4.1-*"
+
+devDependencies = [
+  "apteryx"
+]
+
+build = """
+apteryx make='{{VERSION}}'
+"""
+
+exports = [
+  "/usr/bin/make",
+  "/usr/include/gnumake.h"
+]
+
+docs = [
+  "/usr/share/man/man1/make.1.gz"
+]

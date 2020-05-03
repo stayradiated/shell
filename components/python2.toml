@@ -1,0 +1,19 @@
+name = 'python2'
+from = 'base'
+
+version = '2.7.17-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx python2.7='{{VERSION}}'
+update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+"""
+
+exports = [
+  '/usr/bin/python',
+  '/usr/bin/python2.7',
+  '/usr/lib/python2.7/',
+]

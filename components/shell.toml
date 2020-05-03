@@ -1,0 +1,14 @@
+name = 'shell'
+from = 'shell-admin'
+
+dependencies = [
+  'shell-tmux',
+  'sudo',
+  'docker',
+  'ripgrep',
+  'sd',
+  'fd',
+  'neovim',
+  'prettyping',
+  'chit',
+]

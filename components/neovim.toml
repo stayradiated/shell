@@ -1,0 +1,47 @@
+name = 'neovim'
+from = 'base'
+
+version = 'v0.4.3'
+
+devDependencies = [
+  'wget',
+  'python3-pip',
+]
+
+build = """
+wget \
+  -O /tmp/nvim.appimage \
+  'https://github.com/neovim/neovim/releases/download/{{VERSION}}/nvim.appimage'
+chmod +x /tmp/nvim.appimage
+/tmp/nvim.appimage --appimage-extract
+rm /tmp/nvim.appimage
+
+mv squashfs-root/usr/bin/nvim /usr/local/bin/nvim
+mv squashfs-root/usr/share/nvim /usr/local/share/nvim
+mkdir -p /usr/local/share/man/man1
+mv squashfs-root/usr/man/man1/nvim.1 /usr/local/share/man/man1/nvim.1
+rm -r squashfs-root
+
+find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775
+find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664
+
+pip3 install neovim msgpack
+"""
+
+exports = [
+  '/usr/local/bin/nvim',
+  '/usr/local/share/nvim/',
+  '/usr/local/include/python3.6/',
+  '/usr/local/lib/python3.6/dist-packages/greenlet-0.4.15.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/greenlet.cpython-36m-x86_64-linux-gnu.so',
+  '/usr/local/lib/python3.6/dist-packages/msgpack-1.0.0.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/msgpack/',
+  '/usr/local/lib/python3.6/dist-packages/neovim-0.3.1.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/neovim/',
+  '/usr/local/lib/python3.6/dist-packages/pynvim-0.4.1.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/pynvim/',
+]
+
+docs = [
+  '/usr/local/share/man/man1/nvim.1'
+]

@@ -1,0 +1,47 @@
+name = 'virtualbox'
+from = 'base'
+
+version = '6.1.6-137129'
+
+devDependencies = [
+  'apteryx',
+  'wget',
+]
+
+build = """
+# major.minor.patch
+VERSION_MMP=$(echo '{{VERSION}}' | grep -oP '^\\d+.\\d+.\\d+')
+
+# major.minor
+VERSION_MM=$(echo '{{VERSION}}' | grep -oP '^\\d+.\\d+')
+
+# major.minor-{{VERSION}}
+VERSION_MMV="${VERSION_MM}_{{VERSION}}"
+
+wget \
+  -O /tmp/virtualbox.deb \
+  "https://download.virtualbox.org/virtualbox/${VERSION_MMP}/virtualbox-${VERSION_MMV}~Ubuntu~bionic_amd64.deb"
+apteryx /tmp/virtualbox.deb
+
+wget \
+  -O "/tmp/Oracle_VM_VirtualBox_Extension_Pack-${VERSION_MMP}.vbox-extpack" \
+  "http://download.virtualbox.org/virtualbox/${VERSION_MMP}/Oracle_VM_VirtualBox_Extension_Pack-${VERSION_MMP}.vbox-extpack"
+echo y | VBoxManage extpack install "/tmp/Oracle_VM_VirtualBox_Extension_Pack-${VERSION_MMP}.vbox-extpack"
+rm "/tmp/Oracle_VM_VirtualBox_Extension_Pack-${VERSION_MMP}.vbox-extpack"
+"""
+
+exports = [
+  '/usr/bin/VBox',
+  '/usr/bin/VBoxAutostart',
+  '/usr/bin/VBoxBalloonCtrl',
+  '/usr/bin/VBoxBugReport',
+  '/usr/bin/VBoxDTrace',
+  '/usr/bin/VBoxHeadless',
+  '/usr/bin/VBoxManage',
+  '/usr/bin/VBoxSDL',
+  '/usr/bin/VBoxTunctl',
+  '/usr/bin/VBoxVRDP',
+  '/usr/bin/VirtualBox',
+  '/usr/bin/VirtualBoxVM',
+  '/usr/share/virtualbox/',
+]

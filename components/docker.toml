@@ -1,0 +1,24 @@
+name = 'docker'
+from = 'base'
+
+version ='5:19.03.8*'
+
+devDependencies = [
+  'apteryx',
+  'wget',
+]
+
+build = """
+wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg
+apt-key add /tmp/docker.gpg
+apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable'
+apteryx docker-ce='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/docker',
+]
+
+docs = [
+  '/usr/share/zsh/vendor-completions/_docker',
+]

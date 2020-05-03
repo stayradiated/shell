@@ -1,4 +1,5 @@
 .PHONY: build
 
 build:
-	docker build -t stayradiated/shell . 
+	# shoebox generate -c ./components -o Dockerfile my-benji
+	docker build -t stayradiated/desktop . 

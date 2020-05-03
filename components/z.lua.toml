@@ -1,0 +1,23 @@
+name = 'z.lua'
+from = 'base'
+
+# https://github.com/skywind3000/z.lua/releases
+version = '1.8.4'
+
+dependencies = [
+  'lua',
+]
+
+devDependencies = [
+  'wget',
+]
+
+build = """
+wget \
+  -O /usr/local/bin/z.lua \
+  'https://raw.githubusercontent.com/skywind3000/z.lua/{{VERSION}}/z.lua'
+"""
+
+exports = [
+  '/usr/local/bin/z.lua'
+]

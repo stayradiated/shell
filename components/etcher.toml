@@ -1,0 +1,22 @@
+name = 'etcher'
+from = 'base'
+
+version = '1.5.81'
+
+devDependencies = [
+  'wget',
+  'unzip',
+]
+
+build = """
+wget \
+  -O /tmp/etcher.zip \
+  'https://github.com/balena-io/etcher/releases/download/v{{VERSION}}/balena-etcher-electron-{{VERSION}}-linux-x64.zip'
+unzip /tmp/etcher.zip
+mv balenaEtcher-*.AppImage /usr/local/bin/etcher
+rm /tmp/etcher.zip
+"""
+
+exports = [
+  "/usr/local/bin/etcher"
+]

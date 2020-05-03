@@ -1,0 +1,40 @@
+name = 'bspwm'
+from = 'base'
+
+version = '0.9.9'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'clone',
+  'make'
+]
+
+build = """
+apteryx \
+  libxcb-ewmh-dev \
+  libxcb-icccm4-dev \
+  libxcb-keysyms1-dev \
+  libxcb-randr0-dev \
+  libxcb-shape0-dev \
+  libxcb-util-dev \
+  libxcb-xinerama0-dev
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/baskerville/bspwm
+
+cd /root/src/github.com/baskerville/bspwm
+make all
+make install
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/lib/x86_64-linux-gnu/',
+  '/usr/local/bin/bspc',
+  '/usr/local/bin/bspwm',
+]
+
+docs = [
+  '/usr/local/share/man/man1/bspwm.1',
+  '/usr/local/share/man/man1/bspc.1',
+]

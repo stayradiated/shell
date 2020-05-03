@@ -1,0 +1,16 @@
+name = 'diff-so-fancy'
+from = 'base'
+
+version = '1.2.6'
+
+dependencies = [
+  'node'
+]
+
+build = """
+npm install -g 'diff-so-fancy@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/',
+]

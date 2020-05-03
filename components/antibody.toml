@@ -1,0 +1,16 @@
+name = 'antibody'
+from = 'base'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget -O /tmp/install-antibody.sh https://git.io/antibody 
+sh /tmp/install-antibody.sh -b /usr/local/bin
+rm /tmp/install-antibody.sh
+"""
+
+exports = [
+  '/usr/local/bin/antibody'
+]

@@ -1,0 +1,20 @@
+name = 'xz'
+from = 'base'
+
+version = '5.2.2-*'
+
+dependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx xz-utils='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/xz',
+]
+
+docs = [
+  '/usr/share/man/man1/xz.1.gz'
+]

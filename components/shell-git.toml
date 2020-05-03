@@ -1,0 +1,21 @@
+name = 'shell-git'
+from = 'shell-admin'
+
+dependencies = [
+  'git',
+  'git-crypt',
+  'diff-so-fancy',
+]
+
+devDependencies = [
+  'make'
+]
+
+build = """
+cd dotfiles
+make git
+"""
+
+exports = [
+  '/home/admin/.gitconfig'
+]

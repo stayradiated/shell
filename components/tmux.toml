@@ -1,0 +1,41 @@
+name = 'tmux'
+from = 'base'
+
+version = '3.1'
+
+dependencies = [
+  'apteryx',
+]
+
+devDependencies = [
+  'build-essential',
+  'tar',
+  'wget',
+  'make',
+]
+
+build = """
+apteryx libncurses5-dev libevent-dev
+
+cd /root
+wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/{{VERSION}}/tmux-{{VERSION}}.tar.gz'
+tar xzvf /tmp/tmux.tgz
+rm /tmp/tmux.tgz
+
+cd 'tmux-{{VERSION}}'
+./configure
+make
+make install
+cd ..
+rm -r 'tmux-{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/bin/tmux',
+  '/usr/lib/x86_64-linux-gnu/',
+]
+
+docs = [
+  '/usr/local/share/man/man1/tmux.1'
+]
+

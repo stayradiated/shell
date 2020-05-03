@@ -1,0 +1,29 @@
+name = 'light'
+from = 'base'
+
+# https://github.com/haikarainen/light/releases
+version = 'v1.2.2'
+
+devDependencies = [
+  'build-essential',
+  'apteryx',
+  'clone',
+]
+
+build = """
+apteryx automake autoconf
+clone --https --shallow --tag '{{VERSION}}' https://github.com/haikarainen/light
+cd /root/src/github.com/haikarainen/light
+./autogen.sh
+./configure
+make
+make install
+"""
+
+exports = [
+  '/usr/bin/light'
+]
+
+docs = [
+  '/usr/local/share/man/man1/light.1'
+]

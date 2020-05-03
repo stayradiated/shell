@@ -1,0 +1,17 @@
+name = 'olive-editor'
+from = 'base'
+
+version = '201905021431-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+add-apt-repository ppa:olive-editor/olive-editor
+apteryx olive-editor='{{VERSION}}'
+"""
+
+exports = [
+  'container-diff'
+]

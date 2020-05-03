@@ -1,0 +1,37 @@
+name = 'tig'
+from = 'base'
+
+# https://github.com/jonas/tig/releases
+version = 'tig-2.5.1'
+
+devDependencies = [
+  'build-essential',
+  'apteryx',
+  'clone',
+  'make',
+]
+
+build = """
+apteryx \
+  autoconf \
+  automake \
+  pkg-config \
+  libreadline-dev \
+  libncursesw5-dev
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/jonas/tig
+cd /root/src/github.com/jonas/tig
+
+make configure
+./configure
+
+make prefix=/usr/local
+make install prefix=/usr/local
+
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/local/bin/tig',
+  '/usr/local/etc/tigrc',
+]

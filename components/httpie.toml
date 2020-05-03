@@ -1,0 +1,34 @@
+name = 'httpie'
+from = 'base'
+
+# https://github.com/jakubroztocil/httpie/releases
+version = '2.1.0'
+
+devDependencies = [
+  'python3-pip'
+]
+
+build = """
+pip3 install httpie=='{{VERSION}}'
+"""
+
+exports = [
+  #'/usr/local/bin/chardetect',
+  '/usr/local/bin/http',
+  '/usr/local/bin/https',
+  #'/usr/local/bin/pygmentize',
+  '/usr/local/lib/python3.6/dist-packages/certifi-2020.4.5.1.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/certifi/',
+  '/usr/local/lib/python3.6/dist-packages/chardet-3.0.4.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/chardet/',
+  '/usr/local/lib/python3.6/dist-packages/httpie-2.1.0.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/httpie/',
+  '/usr/local/lib/python3.6/dist-packages/idna-2.9.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/idna/',
+  '/usr/local/lib/python3.6/dist-packages/Pygments-2.6.1.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/pygments/',
+  '/usr/local/lib/python3.6/dist-packages/requests-2.23.0.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/requests/',
+  '/usr/local/lib/python3.6/dist-packages/urllib3-1.25.9.dist-info/',
+  '/usr/local/lib/python3.6/dist-packages/urllib3/',
+]

@@ -1,0 +1,47 @@
+name = 'my-desktop'
+from = 'shell-admin'
+
+dependencies = [
+  'adb',
+  'bat',
+  'build-essential',
+  'clone',
+  'docker',
+  'fd',
+  'ffmpeg',
+  'fzf',
+  'go',
+  'htop',
+  'make',
+  'moreutils',
+  'ncu',
+  'node',
+  'np',
+  'prettyping',
+  'ripgrep',
+  'safe-rm',
+  'sd',
+  'sudo',
+  'tig',
+  'tree',
+  'yarn',
+
+  'shell-git',
+  'shell-npm',
+  'shell-passwords',
+  'shell-ranger',
+  'shell-ssh',
+  'shell-tmux',
+  'shell-vim',
+  'shell-wm',
+  'shell-zsh',
+
+  'mesa',
+  'x11-utils',
+
+  'alacritty',
+  'zoom',
+  'vlc',
+]
+
+command = '/home/admin/.xinitrc'

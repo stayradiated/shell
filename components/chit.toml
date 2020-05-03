@@ -1,0 +1,23 @@
+name = 'chit'
+from = 'base'
+
+# https://github.com/peterheesterman/chit/releases$
+version = '0.1.15'
+
+devDependencies = [
+  'unzip',
+  'wget',
+]
+
+build = """
+wget \
+  -O /tmp/chit.zip \
+  'https://github.com/peterheesterman/chit/releases/download/{{VERSION}}/x86_64-unknown-linux-musl.zip'
+unzip /tmp/chit.zip
+chmod +x chit
+mv chit /usr/local/bin/chit
+"""
+
+exports = [
+  '/usr/local/bin/chit'
+]

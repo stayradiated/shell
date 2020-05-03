@@ -1,0 +1,31 @@
+name = "go"
+from = "base"
+
+version = "go1.13.4"
+
+devDependencies = [
+  "wget",
+  "tar"
+]
+
+build = """
+wget -O /tmp/go.tgz "https://dl.google.com/go/{{VERSION}}.linux-amd64.tar.gz"
+tar xzvf /tmp/go.tgz
+
+mv go /usr/local/go
+rm -rf /tmp/go.tgz
+"""
+
+exports = [
+  "/usr/local/go/"
+]
+
+exportEnv = [
+  ["PATH", "/usr/local/go/bin:${PATH}"],
+  ["GOPATH", "/root"]
+]
+
+
+latest_version = """
+https://golang.org/dl/
+"""

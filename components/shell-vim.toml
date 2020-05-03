@@ -1,0 +1,25 @@
+name = 'shell-vim'
+from = 'shell-admin'
+
+dependencies = [
+  'neovim',
+]
+
+devDependencies = [
+  'make',
+  'git',
+]
+
+build = """
+cd dotfiles
+make vim
+
+nvim +'call dein#update()' +qall
+nvim +UpdateRemotePlugins +qall
+"""
+
+exports = [
+  '/home/admin/.config/nvim/',
+  '/home/admin/.local/share/nvim/',
+  '/home/admin/dotfiles/apps/vim/',
+]

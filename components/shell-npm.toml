@@ -1,0 +1,19 @@
+name = 'shell-npm'
+from = 'shell-admin'
+
+dependencies = [
+  'node'
+]
+
+devDependencies = [
+  'make'
+]
+
+build = """
+cd dotfiles
+make npm
+"""
+
+exports = [
+  '/home/admin/.npmrc'
+]

@@ -1,0 +1,16 @@
+name = 'castnow'
+from = 'base'
+
+version = '0.6.0'
+
+dependencies = [
+  'node'
+]
+
+build = """
+npm install -g 'castnow@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/',
+]

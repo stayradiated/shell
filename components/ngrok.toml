@@ -1,0 +1,22 @@
+name = 'ngrok'
+from = 'base'
+
+version = '4VmDzA7iaHb'
+
+devDependencies = [
+  'wget',
+  'unzip',
+]
+
+build  ="""
+wget \
+  -O /tmp/ngrok.zip \
+  'https://bin.equinox.io/c/{{VERSION}}/ngrok-stable-linux-amd64.zip'
+unzip /tmp/ngrok.zip
+rm /tmp/ngrok.zip
+mv ngrok /usr/local/bin/ngrok
+"""
+
+exports = [
+  '/usr/local/bin/ngrok'
+]

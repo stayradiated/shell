@@ -1,0 +1,28 @@
+name = "fonts"
+from = "base"
+
+version = "0"
+
+devDependencies = [
+  "apteryx",
+  "wget"
+]
+
+build = """
+cd /etc/fonts/conf.d
+rm 10* 70-no-bitmaps.conf
+ln -s ../conf.avail/70-yes-bitmaps.conf .
+dpkg-reconfigure fontconfig
+fc-cache -fv
+
+apteryx install fonts-noto fonts-noto-color-emoji
+
+mkdir -p /usr/share/fonts/X11/bitmap
+cd /usr/share/fonts/X11/bitmap
+wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf"
+wget -O terminal.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf"
+"""
+
+exports = [
+  "/usr/share/fonts/X11/bitmap"
+]

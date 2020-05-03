@@ -1,0 +1,16 @@
+name = 'np'
+from = 'base'
+
+version = '6.2.3'
+
+dependencies = [
+  'node'
+]
+
+build = """
+npm install -g 'np@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/',
+]

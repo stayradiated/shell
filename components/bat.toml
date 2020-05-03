@@ -1,0 +1,24 @@
+name = 'bat'
+from = 'base'
+
+version = '0.13.0'
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+wget \
+  -O bat.tgz \
+  'https://github.com/sharkdp/bat/releases/download/v{{VERSION}}/bat-v{{VERSION}}-x86_64-unknown-linux-gnu.tar.gz'
+tar -xzvf bat.tgz
+rm bat.tgz
+
+mv 'bat-v{{VERSION}}-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat
+rm -rf 'bat-v{{VERSION}}-x86_64-unknown-linux-gnu'
+"""
+
+exports = [
+  '/usr/local/bin/bat'
+]

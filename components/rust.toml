@@ -1,0 +1,24 @@
+name = 'rust'
+from = 'base'
+
+# https://github.com/rust-lang/rust/releases
+version = '1.43.0'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget -O rust.sh 'https://sh.rustup.rs'
+sh rust.sh -y --default-toolchain '{{VERSION}}'
+rm rust.sh
+"""
+
+exports = [
+  '/root/.cargo/',
+  '/root/.rustup/'
+]
+
+exportEnv = [
+  ['PATH', '/root/.cargo/bin:$PATH']
+]

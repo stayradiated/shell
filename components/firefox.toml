@@ -1,0 +1,16 @@
+name = "firefox"
+from = "base"
+
+version = "75.0+*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx firefox='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/firefox',
+  '/usr/lib/firefox/',
+  '/usr/lib/firefox-addons/',
+]

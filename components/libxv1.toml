@@ -1,0 +1,29 @@
+name = 'libxv1'
+from = 'base'
+
+version = '2:1.0.11-1'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx \
+  libxv1='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/lib/x86_64-linux-gnu/libX11.*',
+  '/usr/lib/x86_64-linux-gnu/libX11.*',
+  '/usr/lib/x86_64-linux-gnu/libXau.*',
+  '/usr/lib/x86_64-linux-gnu/libXau.*',
+  '/usr/lib/x86_64-linux-gnu/libXdmcp.*',
+  '/usr/lib/x86_64-linux-gnu/libXdmcp.*',
+  '/usr/lib/x86_64-linux-gnu/libXext.*',
+  '/usr/lib/x86_64-linux-gnu/libXext.*',
+  '/usr/lib/x86_64-linux-gnu/libXv.*',
+  '/usr/lib/x86_64-linux-gnu/libXv.*',
+  '/usr/lib/x86_64-linux-gnu/libxcb.*',
+  '/usr/lib/x86_64-linux-gnu/libxcb.*',
+  '/usr/share/X11/',
+]

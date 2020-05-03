@@ -1,0 +1,47 @@
+name = 'android-sdk'
+from = 'base'
+
+version = '6200805'
+
+dependencies = [
+  'java',
+]
+
+devDependencies = [
+  'wget',
+  'unzip',
+]
+
+build = """
+ANDROID_HOME=/usr/local/android
+
+wget \
+  -O sdk-tools.zip \
+  'https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip'
+unzip sdk-tools.zip
+rm sdk-tools.zip
+
+mkdir -p ./tools/keymaps
+touch ./tools/keymaps/en-us
+
+mkdir -p "${ANDROID_HOME}"
+mv tools "${ANDROID_HOME}/tools"
+chmod -R +x "${ANDROID_HOME}"
+
+yes | sdkmanager --sdk_root="${ANDROID_HOME}" --licenses
+
+sdkmanager --sdk_root="${ANDROID_HOME}" \
+   "build-tools;29.0.3" \
+   "platform-tools" \
+   "platforms;android-26" \
+   "tools"
+ """
+
+exports = [
+  '/usr/local/android'
+]
+
+exportEnv = [
+  ['ANDROID_HOME', '/usr/local/android'],
+  ['PATH', '${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}'],
+]

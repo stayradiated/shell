@@ -1,0 +1,20 @@
+name = "wget"
+from = "base"
+
+version = "1.19.4-*"
+
+devDependencies = [
+  "apteryx"
+]
+
+build = """
+apteryx wget='{{VERSION}}'
+"""
+
+exports = [
+  "/usr/bin/wget"
+]
+
+docs = [
+  "/usr/share/man/man1/wget.1.gz"
+]

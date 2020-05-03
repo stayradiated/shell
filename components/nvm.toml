@@ -1,0 +1,25 @@
+name = 'nvm'
+from = 'base'
+
+# https://github.com/nvm-sh/nvm/releases
+
+version = 'v0.35.3'
+
+devDependencies = [
+  'clone'
+]
+
+build = """
+clone --https --shallow --tag '{{VERSION}}' https://github.com/nvm-sh/nvm
+
+mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/local/share/nvm/'
+]
+
+exportEnv = [
+  ['NVM_DIR', '/usr/local/share/nvm']
+]

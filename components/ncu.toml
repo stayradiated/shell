@@ -1,0 +1,16 @@
+name = 'ncu'
+from = 'base'
+
+version = '4.1.2'
+
+dependencies = [
+  'node'
+]
+
+build = """
+npm install -g 'npm-check-updates@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/'
+]

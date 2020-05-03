@@ -1,0 +1,31 @@
+name = 'sxhkd'
+from = 'base'
+
+version = '0.6.1'
+
+devDependencies = [
+  'build-essential',
+  'apteryx',
+  'clone',
+  'make'
+]
+
+build = """
+apteryx \
+  libxcb-util-dev \
+  libxcb-keysyms1-dev
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/baskerville/sxhkd
+cd /root/src/github.com/baskerville/sxhkd
+make all
+make install
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/local/bin/sxhkd'
+]
+
+docs = [
+  '/usr/local/share/man/man1/sxhkd.1'
+]

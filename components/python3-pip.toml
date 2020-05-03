@@ -1,0 +1,24 @@
+name = 'python3-pip'
+from = 'base'
+
+version = '9.0.1-*'
+
+devDependencies = [
+  'apteryx',
+]
+
+build = """
+apteryx \
+  python3-pip='{{VERSION}}' \
+  python3-setuptools='39.0.1-*' \
+  python3-wheel='0.30.0-*'
+"""
+
+exports = [
+  "/usr/bin/pip3",
+  "/usr/lib/python3.6/",
+  "/usr/lib/python3.7/",
+  "/usr/lib/python3.8/",
+  "/usr/lib/python3/",
+  "/usr/share/python-wheels/",
+]

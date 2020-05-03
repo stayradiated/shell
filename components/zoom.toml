@@ -1,0 +1,21 @@
+name = 'zoom'
+from = 'base'
+
+version = "3.5.383291.0407"
+
+devDependencies = [
+  'apteryx',
+  'wget',
+]
+
+build = """
+wget \
+  -O /tmp/zoom.deb \
+  'https://zoom.us/client/{{VERSION}}/zoom_amd64.deb'
+apteryx /tmp/zoom.deb
+"""
+
+exports = [
+  '/usr/bin/zoom',
+  '/opt/zoom/',
+]

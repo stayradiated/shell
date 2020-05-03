@@ -1,0 +1,9 @@
+name = "shell-admin"
+from = "shell-root"
+
+user = "admin"
+workdir = "/home/admin"
+
+exportEnv = [
+  ['PATH', '/home/admin/dotfiles/bin:${PATH}']
+]

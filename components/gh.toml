@@ -1,0 +1,25 @@
+name = 'gh'
+from = 'base'
+
+# https://github.com/cli/cli/releases
+version = '0.7.0'
+
+devDependencies = [
+  'wget',
+  'tar'
+]
+
+build = """
+wget \
+  -O /tmp/gh.tgz \
+  'https://github.com/cli/cli/releases/download/v{{VERSION}}/gh_{{VERSION}}_linux_amd64.tar.gz'
+tar xzvf /tmp/gh.tgz
+rm /tmp/gh.tgz
+
+mv 'gh_{{VERSION}}_linux_amd64/bin/gh' /usr/local/bin/gh
+rm -r 'gh_{{VERSION}}_linux_amd64'
+"""
+
+exports = [
+  '/usr/local/bin/gh'
+]

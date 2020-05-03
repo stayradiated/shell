@@ -1,0 +1,19 @@
+name = 'java'
+from = 'base'
+
+version = '11.0.7+*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx openjdk-11-jre='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/lib/jvm/'
+]
+
+
+

@@ -1,0 +1,19 @@
+name = 'safe-rm'
+from = 'base'
+
+version = '1.0.7'
+
+devDependencies = [
+  'clone'
+]
+
+build = """
+clone --https --shallow --tag '{{VERSION}}' https://github.com/kaelzhang/shell-safe-rm
+cd /root/src/github.com/kaelzhang/shell-safe-rm
+cp ./bin/rm.sh /usr/local/bin/safe-rm
+rm -rf /root/src/
+"""
+
+exports = [
+  '/usr/local/bin/safe-rm'
+]

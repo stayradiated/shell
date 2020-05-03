@@ -1,0 +1,22 @@
+name = 'one-pw'
+from = 'base'
+
+version = 'master'
+
+devDependencies = [
+  'go',
+  'clone'
+]
+
+build = """
+clone --https --shallow --tag '{{VERSION}}' https://github.com/special/1pw
+cd /root/src/github.com/special/1pw
+go get -v
+go build
+mv 1pw /usr/local/bin/1pw
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/local/bin/1pw'
+]

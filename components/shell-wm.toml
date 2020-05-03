@@ -1,0 +1,23 @@
+name = 'shell-wm'
+from = 'shell-admin'
+
+dependencies = [
+  'bspwm',
+  'sxhkd',
+]
+
+devDependencies = [
+  'make',
+  'git'
+]
+
+build = """
+cd dotfiles
+make bspwm sxhkd x11
+"""
+
+exports = [
+  '/home/admin/.config/bspwm/',
+  '/home/admin/.config/sxhkd/',
+  '/home/admin/.xinitrc',
+]

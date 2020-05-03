@@ -1,0 +1,34 @@
+name = 'git-crypt'
+from = 'base'
+
+# https://github.com/AGWA/git-crypt
+version = '0.6.0'
+
+devDependencies = [
+  'build-essential',
+  'apteryx',
+  'clone',
+  'make',
+]
+
+build = """
+apteryx libssl-dev xsltproc
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/AGWA/git-crypt
+cd /root/src/github.com/AGWA/git-crypt
+
+ENABLE_MAN=yes make
+make install
+
+mv git-crypt /usr/local/bin/git-crypt
+mkdir -p /usr/local/share/man/man1/
+mv man/man1/git-crypt.1 /usr/local/share/man/man1/git-crypt.1
+"""
+
+exports = [
+  '/usr/local/bin/git-crypt'
+]
+
+docs = [
+  '/usr/local/share/man/man1/git-crypt.1'
+]

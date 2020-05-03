@@ -1,0 +1,21 @@
+name = "tar"
+from = "base"
+
+version = "1.29*"
+
+devDependencies = [
+  "apteryx"
+]
+
+build = """
+apteryx tar='{{VERSION}}'
+"""
+
+exports = [
+  "/bin/tar"
+]
+
+docs = [
+  "/usr/lib/mime/packages/tar",
+  "/usr/share/man/man1/tar.1.gz"
+]
