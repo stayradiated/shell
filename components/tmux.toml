@@ -3,15 +3,12 @@ from = 'base'
 
 version = '3.1'
 
-dependencies = [
-  'apteryx',
-]
-
 devDependencies = [
+  'apteryx',
   'build-essential',
+  'make',
   'tar',
   'wget',
-  'make',
 ]
 
 build = """

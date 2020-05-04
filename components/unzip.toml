@@ -3,7 +3,7 @@ from = 'base'
 
 version = '6.0-*'
 
-dependencies = [
+devDependencies = [
   'apteryx'
 ]
 
