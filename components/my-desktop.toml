@@ -6,6 +6,7 @@ dependencies = [
   'bat',
   'build-essential',
   'clone',
+  'container-diff',
   'docker',
   'fd',
   'ffmpeg',
@@ -41,6 +42,8 @@ dependencies = [
   'x11-utils',
 
   'alacritty',
+  'firefox',
+  'google-chrome',
   'vlc',
   'zoom',
 ]

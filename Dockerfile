@@ -653,6 +653,26 @@ COPY --from=apteryx \
 RUN \
   apteryx vlc='3.0.8-*'
 
+# GOOGLE-CHROME
+FROM base AS google-chrome
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/81.0.4044.92/google-chrome-stable_current_amd64.deb' && \
+  apteryx /tmp/chrome.deb
+
+# FIREFOX
+FROM base AS firefox
+COPY --from=apteryx \
+  /usr/local/bin/apteryx \
+  /usr/local/bin/
+RUN \
+  apteryx firefox='75.0+*'
+
 # ALACRITTY
 FROM base AS alacritty
 COPY --from=wget \
@@ -831,9 +851,6 @@ COPY --from=git \
 COPY --from=git \
   /usr/share/git-core/ \
   /usr/share/git-core/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
@@ -1021,9 +1038,6 @@ COPY --from=wget \
 COPY --from=unzip \
   /usr/bin/unzip \
   /usr/bin/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 RUN \
   wget -O /tmp/sd.zip 'https://github.com/chmln/sd/releases/download/v0.7.4/sd-0.7.4.x86_64-unknown-linux-gnu.zip' && \
   unzip /tmp/sd.zip && \
@@ -1139,9 +1153,6 @@ COPY --from=wget \
 COPY --from=tar \
   /bin/tar \
   /bin/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 RUN \
   wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
   tar -xvf /tmp/ffmpeg.txz && \
@@ -1183,6 +1194,16 @@ RUN \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
   apteryx docker-ce='5:19.03.8*'
 
+# CONTAINER-DIFF
+FROM base AS container-diff
+COPY --from=wget \
+  /usr/bin/wget \
+  /usr/bin/
+RUN \
+  wget -O container-diff 'https://storage.googleapis.com/container-diff/v0.15.0/container-diff-linux-amd64' && \
+  chmod +x container-diff && \
+  mv container-diff /usr/local/bin/container-diff
+
 # BAT
 FROM base AS bat
 COPY --from=wget \
@@ -1206,9 +1227,6 @@ COPY --from=wget \
 COPY --from=unzip \
   /usr/bin/unzip \
   /usr/bin/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
-  /usr/local/bin/
 RUN \
   wget -O tools.zip 'https://dl.google.com/android/repository/platform-tools_r29.0.5-linux.zip' && \
   unzip tools.zip && \
@@ -1448,6 +1466,15 @@ COPY --from=libxv1 \
 COPY --from=htop \
   /usr/bin/htop \
   /usr/bin/
+COPY --from=google-chrome \
+  /opt/google/ \
+  /opt/google/
+COPY --from=google-chrome \
+  /usr/bin/google-chrome \
+  /usr/bin/
+COPY --from=google-chrome \
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
 COPY --from=go \
   /usr/local/go/ \
   /usr/local/go/
@@ -1470,6 +1497,15 @@ COPY --from=git \
 COPY --from=fzf \
   /usr/local/share/fzf/ \
   /usr/local/share/fzf/
+COPY --from=firefox \
+  /usr/bin/firefox \
+  /usr/bin/
+COPY --from=firefox \
+  /usr/lib/firefox/ \
+  /usr/lib/firefox/
+COPY --from=firefox \
+  /usr/lib/firefox-addons/ \
+  /usr/lib/firefox-addons/
 COPY --from=ffmpeg \
   /usr/local/bin/ffmpeg \
   /usr/local/bin/ffprobe \
@@ -1485,6 +1521,9 @@ COPY --from=diff-so-fancy \
   /usr/local/lib/node/
 COPY --from=dbxcli \
   /usr/local/bin/dbxcli \
+  /usr/local/bin/
+COPY --from=container-diff \
+  /usr/local/bin/container-diff \
   /usr/local/bin/
 COPY --from=clone \
   /usr/local/bin/clone \
@@ -1516,9 +1555,6 @@ COPY --from=bspwm \
   /usr/local/bin/
 COPY --from=bat \
   /usr/local/bin/bat \
-  /usr/local/bin/
-COPY --from=apteryx \
-  /usr/local/bin/apteryx \
   /usr/local/bin/
 COPY --from=alacritty \
   /usr/bin/alacritty \
