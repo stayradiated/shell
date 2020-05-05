@@ -16,25 +16,10 @@ apteryx /tmp/chrome.deb
 """
 
 exports = [
-  #"/etc/gtk-3.0/",
   "/opt/google/",
-  "/usr/bin/google-chrome",
   "/usr/lib/x86_64-linux-gnu/",
-  # "/usr/lib/dconf/",
-  # "/usr/lib/glib-networking/",
-  # "/usr/lib/systemd/user/glib-pacrunner.service",
-  # "/usr/sbin/update-icon-caches",
-  # "/usr/share/alsa/",
-  # "/usr/share/appdata/",
-  # "/usr/share/apport/package-hooks/source_fontconfig.py",
-  # "/usr/share/dbus-1/services/",
-  # "/usr/share/fonts/truetype/liberation/",
-  # "/usr/share/GConf/",
-  # "/usr/share/mime/",
-  # "/usr/share/pkgconfig/adwaita-icon-theme.pc",
-  # "/usr/share/pkgconfig/shared-mime-info.pc",
-  # "/usr/share/pkgconfig/xkeyboard-config.pc",
-  # "/usr/share/themes/",
-  # "/usr/share/thumbnailers/",
-  # "/usr/share/X11/xkb/",
+]
+
+exportEnv = [
+  ['PATH', '${PATH}:/opt/google/chrome']
 ]

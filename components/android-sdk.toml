@@ -32,7 +32,7 @@ yes | sdkmanager --sdk_root="${ANDROID_HOME}" --licenses
 
 sdkmanager --sdk_root="${ANDROID_HOME}" \
    "build-tools;29.0.3" \
-   "platform-tools" \
+   "platform-tools;30.0.0" \
    "platforms;android-26" \
    "tools"
  """

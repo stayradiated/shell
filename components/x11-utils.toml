@@ -9,7 +9,8 @@ build = """
 apteryx \
   x11-utils='{{VERSION}}' \
   x11-xkb-utils='{{VERSION}}' \
-  x11-xserver-utils='{{VERSION}}'
+  x11-xserver-utils='{{VERSION}}' \
+  xkb-data='2.23.1-*'
 """
 
 exports = [
@@ -20,6 +21,6 @@ exports = [
   '/etc/sensors.d/',
   '/etc/sensors3.conf',
   '/usr/bin/',
-  '/usr/lib/x86_64-linux-gnu/',
+  '/usr/lib/',
   '/usr/share/',
 ]

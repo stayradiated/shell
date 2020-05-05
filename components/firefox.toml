@@ -1,9 +1,9 @@
-name = "firefox"
-from = "base"
+name = 'firefox'
+from = 'base'
 
-version = "75.0+*"
+version = '75.0+*'
 
-devDependencies = [ "apteryx" ]
+devDependencies = [ 'apteryx' ]
 
 build = """
 apteryx firefox='{{VERSION}}'
@@ -11,6 +11,8 @@ apteryx firefox='{{VERSION}}'
 
 exports = [
   '/usr/bin/firefox',
-  '/usr/lib/firefox/',
   '/usr/lib/firefox-addons/',
+  '/usr/lib/firefox/',
+  '/usr/lib/x86_64-linux-gnu/',
+  '/usr/share/icons/',
 ]

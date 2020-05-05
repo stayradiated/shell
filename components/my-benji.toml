@@ -2,6 +2,7 @@ name = 'my-benji'
 from = 'shell-admin'
 
 dependencies = [
+  'aria2',
   'bat',
   'build-essential',
   'clone',

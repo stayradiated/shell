@@ -1,0 +1,16 @@
+name = 'aria2'
+from = 'base'
+
+version = '1.33.1-*'
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx aria2='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/aria2c',
+  '/usr/lib/x86_64-linux-gnu/',
+]
+

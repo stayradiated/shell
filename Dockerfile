@@ -691,7 +691,7 @@ COPY --from=apteryx \
   /usr/local/bin/apteryx \
   /usr/local/bin/
 RUN \
-  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*'
+  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
 
 # MESA
 FROM base AS mesa
@@ -1270,8 +1270,8 @@ COPY --from=x11-utils \
   /usr/bin/ \
   /usr/bin/
 COPY --from=x11-utils \
-  /usr/lib/x86_64-linux-gnu/ \
-  /usr/lib/x86_64-linux-gnu/
+  /usr/lib/ \
+  /usr/lib/
 COPY --from=x11-utils \
   /usr/share/ \
   /usr/share/
@@ -1470,9 +1470,6 @@ COPY --from=google-chrome \
   /opt/google/ \
   /opt/google/
 COPY --from=google-chrome \
-  /usr/bin/google-chrome \
-  /usr/bin/
-COPY --from=google-chrome \
   /usr/lib/x86_64-linux-gnu/ \
   /usr/lib/x86_64-linux-gnu/
 COPY --from=go \
@@ -1501,11 +1498,17 @@ COPY --from=firefox \
   /usr/bin/firefox \
   /usr/bin/
 COPY --from=firefox \
+  /usr/lib/firefox-addons/ \
+  /usr/lib/firefox-addons/
+COPY --from=firefox \
   /usr/lib/firefox/ \
   /usr/lib/firefox/
 COPY --from=firefox \
-  /usr/lib/firefox-addons/ \
-  /usr/lib/firefox-addons/
+  /usr/lib/x86_64-linux-gnu/ \
+  /usr/lib/x86_64-linux-gnu/
+COPY --from=firefox \
+  /usr/share/icons/ \
+  /usr/share/icons/
 COPY --from=ffmpeg \
   /usr/local/bin/ffmpeg \
   /usr/local/bin/ffprobe \
@@ -1569,6 +1572,8 @@ ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
+ENV \
+  PATH=${PATH}:/opt/google/chrome
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
