@@ -13,6 +13,8 @@ update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
 """
 
 exports = [
+  '/etc/alternatives/python',
+  '/etc/python2.7/',
   '/usr/bin/python',
   '/usr/bin/python2.7',
   '/usr/lib/python2.7/',

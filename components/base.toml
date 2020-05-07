@@ -1,7 +1,7 @@
-name = "base"
-fromImage = "phusion/baseimage:0.11"
+name = 'base'
+fromImage = 'phusion/baseimage:0.11'
 
-version = "1.0.0"
+version = '1.0.0'
 
 build = """
 export LANG=en_NZ.UTF-8
@@ -16,3 +16,5 @@ dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall
 apt-get -q clean
 rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 """
+
+baseExportDir = '/exports'

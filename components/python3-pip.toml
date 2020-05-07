@@ -15,10 +15,10 @@ apteryx \
 """
 
 exports = [
-  "/usr/bin/pip3",
-  "/usr/lib/python3.6/",
-  "/usr/lib/python3.7/",
-  "/usr/lib/python3.8/",
-  "/usr/lib/python3/",
-  "/usr/share/python-wheels/",
+  '/usr/bin/pip3',
+  '/usr/lib/python3.6/',
+  '/usr/lib/python3.7/',
+  '/usr/lib/python3.8/',
+  '/usr/lib/python3/',
+  '/usr/share/python-wheels/',
 ]

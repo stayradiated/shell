@@ -13,9 +13,7 @@ apteryx iputils-ping='{{VERSION}}'
 
 exports = [
   '/bin/ping',
-  '/bin/ping4',
-  '/bin/ping6',
-  '/lib/x86_64-linux-gnu/libidn.so.11',
+  '/lib/x86_64-linux-gnu/libidn.so.*',
 ]
 
 docs = [

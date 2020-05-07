@@ -1,8 +1,13 @@
-name = "shell-admin"
-from = "shell-root"
+name = 'shell-admin'
+from = 'shell-root'
 
-user = "admin"
-workdir = "/home/admin"
+user = 'admin'
+workdir = '/home/admin'
+baseExportDir = '/home/admin/exports'
+
+build =  """
+mkdir -p /home/admin/exports
+"""
 
 exportEnv = [
   ['PATH', '/home/admin/dotfiles/bin:${PATH}']

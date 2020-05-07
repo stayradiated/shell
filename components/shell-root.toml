@@ -1,8 +1,6 @@
 name = 'shell-root'
 from = 'base'
 
-includeDocs = true
-
 dependencies = [
   'zsh'
 ]

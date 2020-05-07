@@ -16,8 +16,8 @@ apteryx /tmp/chrome.deb
 """
 
 exports = [
-  "/opt/google/",
-  "/usr/lib/x86_64-linux-gnu/",
+ '/opt/google/',
+  '/usr/lib/x86_64-linux-gnu/',
 ]
 
 exportEnv = [

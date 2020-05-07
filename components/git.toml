@@ -15,8 +15,8 @@ apteryx git='{{VERSION}}'
 exports = [
   "/usr/bin/git",
   "/usr/lib/git-core/",
-  "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4",
-  "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.0",
+  "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.*",
+  "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.*",
   "/usr/share/git-core/",
 ]
 

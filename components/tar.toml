@@ -1,10 +1,10 @@
-name = "tar"
-from = "base"
+name = 'tar'
+from = 'base'
 
-version = "1.29*"
+version = '1.29*'
 
 devDependencies = [
-  "apteryx"
+  'apteryx'
 ]
 
 build = """
@@ -12,10 +12,10 @@ apteryx tar='{{VERSION}}'
 """
 
 exports = [
-  "/bin/tar"
+  '/bin/tar'
 ]
 
 docs = [
-  "/usr/lib/mime/packages/tar",
-  "/usr/share/man/man1/tar.1.gz"
+  '/usr/lib/mime/packages/tar',
+  '/usr/share/man/man1/tar.1.gz'
 ]
