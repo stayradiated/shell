@@ -82,8 +82,8 @@ RUN \
 
 # CLONE
 FROM base AS clone
-COPY --from=git /exports/ /
 COPY --from=go /exports/ /
+COPY --from=git /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -188,9 +188,9 @@ RUN \
 
 # SHELL-ROOT
 FROM base AS shell-root
-COPY --from=zsh /exports/ /
 COPY --from=dotfiles /exports/ /
 COPY --from=apteryx /exports/ /
+COPY --from=zsh /exports/ /
 COPY ./secret/admin-passwd /tmp/admin-passwd
 RUN \
   useradd -s /bin/zsh --create-home admin && \
@@ -249,8 +249,8 @@ RUN \
 
 # Z.LUA
 FROM base AS z.lua
-COPY --from=lua /exports/ /
 COPY --from=wget /exports/ /
+COPY --from=lua /exports/ /
 RUN \
   wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
 RUN \
@@ -650,13 +650,13 @@ RUN \
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
+COPY --from=antibody /exports/ /
+COPY --from=git /exports/ /
+COPY --from=make /exports/ /
 COPY --from=fzf /exports/ /
 COPY --from=z.lua /exports/ /
 COPY --from=zsh /exports/ /
 COPY --from=python2 /exports/ /
-COPY --from=antibody /exports/ /
-COPY --from=git /exports/ /
-COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make zsh && \
@@ -679,10 +679,10 @@ RUN \
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
-COPY --from=bspwm /exports/ /
-COPY --from=sxhkd /exports/ /
 COPY --from=make /exports/ /
 COPY --from=git /exports/ /
+COPY --from=bspwm /exports/ /
+COPY --from=sxhkd /exports/ /
 RUN \
   cd dotfiles && \
   make bspwm sxhkd x11
@@ -695,9 +695,9 @@ RUN \
 
 # SHELL-VIM
 FROM shell-admin AS shell-vim
-COPY --from=neovim /exports/ /
 COPY --from=make /exports/ /
 COPY --from=git /exports/ /
+COPY --from=neovim /exports/ /
 RUN \
   cd dotfiles && \
   make vim && \
@@ -715,9 +715,9 @@ RUN \
 
 # SHELL-TMUX
 FROM shell-admin AS shell-tmux
-COPY --from=tmux /exports/ /
 COPY --from=make /exports/ /
 COPY --from=git /exports/ /
+COPY --from=tmux /exports/ /
 RUN \
   cd dotfiles && \
   make tmux
@@ -740,8 +740,8 @@ RUN \
 
 # SHELL-RANGER
 FROM shell-admin AS shell-ranger
-COPY --from=ranger /exports/ /
 COPY --from=make /exports/ /
+COPY --from=ranger /exports/ /
 RUN \
   cd dotfiles && \
   make ranger
@@ -753,9 +753,9 @@ RUN \
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
+COPY --from=make /exports/ /
 COPY --from=dbxcli /exports/ /
 COPY --from=one-pw /exports/ /
-COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make dbxcli && \
@@ -768,8 +768,8 @@ RUN \
 
 # SHELL-NPM
 FROM shell-admin AS shell-npm
-COPY --from=node /exports/ /
 COPY --from=make /exports/ /
+COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
@@ -782,10 +782,10 @@ RUN \
 
 # SHELL-GIT
 FROM shell-admin AS shell-git
+COPY --from=make /exports/ /
 COPY --from=git /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY --from=diff-so-fancy /exports/ /
-COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make git
@@ -898,8 +898,8 @@ RUN \
 
 # PRETTYPING
 FROM base AS prettyping
-COPY --from=ping /exports/ /
 COPY --from=wget /exports/ /
+COPY --from=ping /exports/ /
 RUN \
   wget -O /usr/local/bin/prettyping 'https://raw.githubusercontent.com/denilsonsa/prettyping/v1.0.1/prettyping' && \
   chmod +x /usr/local/bin/prettyping
