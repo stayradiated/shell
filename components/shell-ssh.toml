@@ -5,9 +5,16 @@ dependencies = [
   'make'
 ]
 
-# note that this is an INSTALL command -- not BUILD
-# so it was run in the final image
-install = """
+build = """
 cd dotfiles
 make ssh
 """
+
+# docker doesn't seem to preserve chmod when copying files :(
+install = """
+chmod 0600 /home/admin/.ssh/*
+"""
+
+exports = [
+  '/home/admin/.ssh'
+]

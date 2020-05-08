@@ -1,0 +1,16 @@
+name = 'qpdfview'
+from = 'base'
+
+version = '0.4.14-1build1'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx qpdfview='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/qpdfview',
+  '/usr/lib/qpdfview/',
+  '/usr/lib/x86_64-linux-gnu/'
+]

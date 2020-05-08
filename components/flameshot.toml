@@ -1,0 +1,15 @@
+name = 'flameshot'
+from = 'base'
+
+version = '0.5.1-2'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx flameshot='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/flameshot',
+  '/usr/lib/x86_64-linux-gnu/'
+]

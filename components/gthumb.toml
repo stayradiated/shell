@@ -1,0 +1,16 @@
+name = 'gthumb'
+from = 'base'
+
+version = '3:3.6.1-1'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx gthumb='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/gthumb',
+  '/usr/lib/x86_64-linux-gnu/',
+]
+ 

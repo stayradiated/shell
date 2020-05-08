@@ -1,0 +1,15 @@
+name = 'redshift'
+from = 'base'
+
+version = '1.11-1ubuntu1'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx redshift='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/redshift',
+  '/usr/lib/x86_64-linux-gnu/',
+]

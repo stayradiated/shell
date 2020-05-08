@@ -1,0 +1,16 @@
+name = 'pavucontrol'
+from = 'base'
+
+version = '3.0-4'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx pavucontrol='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/pulse/',
+  '/usr/bin/pavucontrol',
+  '/usr/lib/x86_64-linux-gnu/',
+]

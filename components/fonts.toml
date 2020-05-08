@@ -1,28 +1,120 @@
-name = "fonts"
-from = "base"
+name = 'fonts'
+from = 'base'
 
-version = "0"
+version = '2.12.6-*'
 
 devDependencies = [
-  "apteryx",
-  "wget"
+  'apteryx',
+  'wget'
 ]
 
 build = """
+apteryx \
+  fonts-noto \
+  fonts-noto-color-emoji \
+  ttf-ubuntu-font-family \
+  fontconfig='{{VERSION}}'
+
+mkdir -p /usr/share/fonts/X11/bitmap
+wget \
+  -O /usr/share/fonts/X11/bitmap/gomme.bdf \
+  'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf'
+wget \
+  -O /usr/share/fonts/X11/bitmap/terminal.bdf \
+  'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf'
+
 cd /etc/fonts/conf.d
 rm 10* 70-no-bitmaps.conf
 ln -s ../conf.avail/70-yes-bitmaps.conf .
 dpkg-reconfigure fontconfig
 fc-cache -fv
-
-apteryx install fonts-noto fonts-noto-color-emoji
-
-mkdir -p /usr/share/fonts/X11/bitmap
-cd /usr/share/fonts/X11/bitmap
-wget -O gomme.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf"
-wget -O terminal.bdf "https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf"
 """
 
 exports = [
-  "/usr/share/fonts/X11/bitmap"
+  '/etc/fonts/',
+  '/etc/ld.so.cache',
+  '/usr/bin/fc-cache',
+  '/usr/bin/fc-cat',
+  '/usr/bin/fc-list',
+  '/usr/bin/fc-match',
+  '/usr/bin/fc-pattern',
+  '/usr/bin/fc-query',
+  '/usr/bin/fc-scan',
+  '/usr/bin/fc-validate',
+  '/usr/lib/x86_64-linux-gnu/libfontconfig.so.1',
+  '/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.10.1',
+  '/usr/lib/x86_64-linux-gnu/libfreetype.so.6',
+  '/usr/lib/x86_64-linux-gnu/libfreetype.so.6.15.0',
+  '/usr/lib/x86_64-linux-gnu/libpng16.so.16',
+  '/usr/lib/x86_64-linux-gnu/libpng16.so.16.34.0',
+  '/usr/local/share/fonts',
+  '/usr/share/apport/package-hooks/source_fontconfig.py',
+  '/usr/share/bug/fonts-noto-hinted/',
+  '/usr/share/bug/fonts-noto/',
+  '/usr/share/doc-base/fontconfig-user',
+  '/usr/share/doc-base/libpng16',
+  '/usr/share/doc/fontconfig-config/',
+  '/usr/share/doc/fontconfig/',
+  '/usr/share/doc/fonts-dejavu-core/',
+  '/usr/share/doc/fonts-noto-color-emoji/',
+  '/usr/share/doc/fonts-noto-hinted/',
+  '/usr/share/doc/fonts-noto/',
+  '/usr/share/doc/libfontconfig1/',
+  '/usr/share/doc/libfreetype6/',
+  '/usr/share/doc/libpng16-16/',
+  '/usr/share/fonts/',
+  '/usr/share/lintian/overrides/fontconfig',
+  '/usr/share/man/man1/fc-cache.1.gz',
+  '/usr/share/man/man1/fc-cat.1.gz',
+  '/usr/share/man/man1/fc-list.1.gz',
+  '/usr/share/man/man1/fc-match.1.gz',
+  '/usr/share/man/man1/fc-pattern.1.gz',
+  '/usr/share/man/man1/fc-query.1.gz',
+  '/usr/share/man/man1/fc-scan.1.gz',
+  '/usr/share/man/man1/fc-validate.1.gz',
+  '/usr/share/man/man5/fonts-conf.5.gz',
+  '/usr/share/xml/fontconfig/',
+  '/var/cache/fontconfig/',
+  '/var/cache/ldconfig/aux-cache',
+  '/var/lib/apt/extended_states',
+  '/var/lib/dpkg/info/fontconfig-config.conffiles',
+  '/var/lib/dpkg/info/fontconfig-config.list',
+  '/var/lib/dpkg/info/fontconfig-config.md5sums',
+  '/var/lib/dpkg/info/fontconfig-config.postinst',
+  '/var/lib/dpkg/info/fontconfig-config.postrm',
+  '/var/lib/dpkg/info/fontconfig.list',
+  '/var/lib/dpkg/info/fontconfig.md5sums',
+  '/var/lib/dpkg/info/fontconfig.postinst',
+  '/var/lib/dpkg/info/fontconfig.postrm',
+  '/var/lib/dpkg/info/fontconfig.triggers',
+  '/var/lib/dpkg/info/fonts-dejavu-core.conffiles',
+  '/var/lib/dpkg/info/fonts-dejavu-core.list',
+  '/var/lib/dpkg/info/fonts-dejavu-core.md5sums',
+  '/var/lib/dpkg/info/fonts-noto-color-emoji.list',
+  '/var/lib/dpkg/info/fonts-noto-color-emoji.md5sums',
+  '/var/lib/dpkg/info/fonts-noto-hinted.conffiles',
+  '/var/lib/dpkg/info/fonts-noto-hinted.list',
+  '/var/lib/dpkg/info/fonts-noto-hinted.md5sums',
+  '/var/lib/dpkg/info/fonts-noto.list',
+  '/var/lib/dpkg/info/fonts-noto.md5sums',
+  '/var/lib/dpkg/info/libfontconfig1:amd64.list',
+  '/var/lib/dpkg/info/libfontconfig1:amd64.md5sums',
+  '/var/lib/dpkg/info/libfontconfig1:amd64.shlibs',
+  '/var/lib/dpkg/info/libfontconfig1:amd64.triggers',
+  '/var/lib/dpkg/info/libfreetype6:amd64.list',
+  '/var/lib/dpkg/info/libfreetype6:amd64.md5sums',
+  '/var/lib/dpkg/info/libfreetype6:amd64.shlibs',
+  '/var/lib/dpkg/info/libfreetype6:amd64.symbols',
+  '/var/lib/dpkg/info/libfreetype6:amd64.triggers',
+  '/var/lib/dpkg/info/libpng16-16:amd64.list',
+  '/var/lib/dpkg/info/libpng16-16:amd64.md5sums',
+  '/var/lib/dpkg/info/libpng16-16:amd64.shlibs',
+  '/var/lib/dpkg/info/libpng16-16:amd64.triggers',
+  '/var/lib/dpkg/status',
+  '/var/lib/dpkg/status-old',
+  '/var/lib/dpkg/triggers/File',
+  '/var/log/apt/eipp.log.xz',
+  '/var/log/apt/history.log',
+  '/var/log/apt/term.log',
+  '/var/log/dpkg.log',
 ]

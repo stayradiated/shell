@@ -1,0 +1,16 @@
+name = 'audacity'
+from = 'base'
+
+version = '2.2.1-1'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx audacity='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/audacity',
+  '/usr/lib/x86_64-linux-gnu/',
+]
+

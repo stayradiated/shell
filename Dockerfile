@@ -23,22 +23,31 @@ RUN \
   echo 'apt-get -q clean' >> ${EXPORT} && \
   echo 'rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*' >> ${EXPORT} && \
   chmod +x ${EXPORT}
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/apteryx /exports/usr/local/bin/
 
 # TAR
 FROM base AS tar
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx tar='1.29*'
+RUN \
+  mkdir -p /exports/bin/ && \
+  mv /bin/tar /exports/bin/
 
 # WGET
 FROM base AS wget
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx wget='1.19.4-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/wget /exports/usr/bin/
 
 # GIT
 FROM base AS git
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
   apteryx git='1:2.26.2*'
@@ -51,24 +60,30 @@ RUN \
 
 # GO
 FROM base AS go
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
 RUN \
   wget -O /tmp/go.tgz "https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
+RUN \
+  mkdir -p /exports/usr/local/ && \
+  mv /usr/local/go /exports/usr/local/
 
 # MAKE
 FROM base AS make
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx make='4.1-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/make /exports/usr/bin/
 
 # CLONE
 FROM base AS clone
-COPY --from=go /usr/local/go/ /usr/local/go/
 COPY --from=git /exports/ /
+COPY --from=go /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -83,10 +98,17 @@ RUN \
   mv /root/bin/clone /usr/local/bin/clone && \
   cd /root && \
   rm -rf src bin
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ && \
+  mv /usr/bin/git /exports/usr/bin/ && \
+  mv /usr/lib/git-core /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/clone /exports/usr/local/bin/ && \
+  mv /usr/share/git-core /exports/usr/share/
 
 # BUILD-ESSENTIAL
 FROM base AS build-essential
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx build-essential='12.4*'
 RUN \
@@ -99,11 +121,10 @@ RUN \
 
 # GIT-CRYPT
 FROM base AS git-crypt
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
 COPY --from=build-essential /exports/ /
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
 RUN \
   apteryx libssl-dev xsltproc && \
   clone --https --shallow --tag '0.6.0' https://github.com/AGWA/git-crypt && \
@@ -113,10 +134,13 @@ RUN \
   mv git-crypt /usr/local/bin/git-crypt && \
   mkdir -p /usr/local/share/man/man1/ && \
   mv man/man1/git-crypt.1 /usr/local/share/man/man1/git-crypt.1
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/git-crypt /exports/usr/local/bin/
 
 # ZSH
 FROM base AS zsh
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx zsh='5.4.2-*'
 RUN \
@@ -128,9 +152,8 @@ RUN \
 
 # DOTFILES
 FROM base AS dotfiles
-COPY --from=git-crypt /usr/local/bin/git-crypt /usr/local/bin/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=clone /exports/ /
+COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
   clone --https --shallow --tag 'v1.20.0' https://github.com/stayradiated/dotfiles && \
@@ -139,27 +162,35 @@ RUN \
   rm /tmp/dotfiles-key && \
   mv /root/src/github.com/stayradiated/dotfiles /root/dotfiles && \
   rm -rf src
+RUN \
+  mkdir -p /exports/root/ && \
+  mv /root/dotfiles /exports/root/
 
 # NVM
 FROM base AS nvm
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=clone /exports/ /
 RUN \
   clone --https --shallow --tag 'v0.35.3' https://github.com/nvm-sh/nvm && \
   mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm && \
   rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/local/share/ && \
+  mv /usr/local/share/nvm /exports/usr/local/share/
 
 # LUA
 FROM base AS lua
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx lua5.3='5.3.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/
 
 # SHELL-ROOT
 FROM base AS shell-root
 COPY --from=zsh /exports/ /
-COPY --from=dotfiles /root/dotfiles/ /root/dotfiles/
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=dotfiles /exports/ /
+COPY --from=apteryx /exports/ /
 COPY ./secret/admin-passwd /tmp/admin-passwd
 RUN \
   useradd -s /bin/zsh --create-home admin && \
@@ -170,10 +201,16 @@ RUN \
   mkdir -p /home/admin/.config && \
   mkdir -p /home/admin/.local/share && \
   chown -R admin:admin /home/admin
+RUN \
+  mkdir -p /exports/bin/ /exports/etc/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
+  mv /bin/zsh /exports/bin/ && \
+  mv /etc/zsh /exports/etc/ && \
+  mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/zsh /exports/usr/share/
 
 # PYTHON3-PIP
 FROM base AS python3-pip
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*'
 RUN \
@@ -184,7 +221,7 @@ RUN \
 
 # NODE
 FROM base AS node
-COPY --from=nvm /usr/local/share/nvm/ /usr/local/share/nvm/
+COPY --from=nvm /exports/ /
 ENV \
   NVM_DIR=/usr/local/share/nvm
 RUN \
@@ -193,10 +230,13 @@ RUN \
   PATH="/usr/local/lib/node/bin:${PATH}" && \
   npm config set user root && \
   npm config set save-exact true
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # PYTHON2
 FROM base AS python2
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx python2.7='2.7.17-*' && \
   update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
@@ -209,28 +249,37 @@ RUN \
 
 # Z.LUA
 FROM base AS z.lua
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=lua /usr/bin/lua5.3 /usr/bin/
+COPY --from=lua /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/local/bin/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
+  mv /usr/local/bin/z.lua /exports/usr/local/bin/
 
 # FZF
 FROM base AS fzf
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=clone /exports/ /
 RUN \
   clone --https --shallow --tag '0.21.1' https://github.com/junegunn/fzf && \
   mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
   rm -rf /root/src && \
   /usr/local/share/fzf/install --bin
+RUN \
+  mkdir -p /exports/usr/local/share/ && \
+  mv /usr/local/share/fzf /exports/usr/local/share/
 
 # ANTIBODY
 FROM base AS antibody
-COPY --from=wget /usr/bin/wget /usr/bin/
+COPY --from=wget /exports/ /
 RUN \
   wget -O /tmp/install-antibody.sh https://git.io/antibody && \
   sh /tmp/install-antibody.sh -b /usr/local/bin && \
   rm /tmp/install-antibody.sh
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/antibody /exports/usr/local/bin/
 
 # SHELL-ADMIN
 FROM shell-root AS shell-admin
@@ -241,11 +290,10 @@ RUN \
 
 # SXHKD
 FROM base AS sxhkd
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
 COPY --from=build-essential /exports/ /
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
 RUN \
   apteryx libxcb-util-dev libxcb-keysyms1-dev && \
   clone --https --shallow --tag '0.6.1' https://github.com/baskerville/sxhkd && \
@@ -253,14 +301,16 @@ RUN \
   make all && \
   make install && \
   rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/sxhkd /exports/usr/local/bin/
 
 # BSPWM
 FROM base AS bspwm
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=apteryx /exports/ /
 COPY --from=build-essential /exports/ /
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
 RUN \
   apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
   clone --https --shallow --tag '0.9.9' https://github.com/baskerville/bspwm && \
@@ -275,7 +325,7 @@ RUN \
 
 # NEOVIM
 FROM base AS neovim
-COPY --from=wget /usr/bin/wget /usr/bin/
+COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
   wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage' && \
@@ -299,11 +349,11 @@ RUN \
 
 # TMUX
 FROM base AS tmux
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
-COPY --from=make /usr/bin/make /usr/bin/
+COPY --from=apteryx /exports/ /
 COPY --from=build-essential /exports/ /
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=make /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   apteryx libncurses5-dev libevent-dev && \
   cd /root && \
@@ -317,9 +367,9 @@ RUN \
   cd .. && \
   rm -r 'tmux-3.1'
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
-  mv /usr/local/bin/tmux /exports/usr/local/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+  mkdir -p /exports/usr/lib/ /exports/usr/local/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/tmux /exports/usr/local/bin/
 
 # RANGER
 FROM base AS ranger
@@ -333,9 +383,8 @@ RUN \
 
 # ONE-PW
 FROM base AS one-pw
-COPY --from=go /usr/local/go/ /usr/local/go/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=go /exports/ /
+COPY --from=clone /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -346,32 +395,44 @@ RUN \
   go build && \
   mv 1pw /usr/local/bin/1pw && \
   rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/1pw /exports/usr/local/bin/
 
 # DBXCLI
 FROM base AS dbxcli
-COPY --from=wget /usr/bin/wget /usr/bin/
+COPY --from=wget /exports/ /
 RUN \
   wget -O dbxcli 'https://github.com/dropbox/dbxcli/releases/download/v3.0.0/dbxcli-linux-amd64' && \
   chmod +x dbxcli && \
   mv dbxcli /usr/local/bin/dbxcli
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/dbxcli /exports/usr/local/bin/
 
 # DIFF-SO-FANCY
 FROM base AS diff-so-fancy
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
+COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'diff-so-fancy@1.2.6'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # UNZIP
 FROM base AS unzip
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
 
 # PING
 FROM base AS ping
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx iputils-ping='3:20161105-*'
 RUN \
@@ -381,14 +442,17 @@ RUN \
 
 # XZ
 FROM base AS xz
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx xz-utils='5.2.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/xz /exports/usr/bin/
 
 # ZOOM
 FROM base AS zoom
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
   apteryx /tmp/zoom.deb
@@ -400,14 +464,57 @@ RUN \
 
 # VLC
 FROM base AS vlc
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx vlc='3.0.8-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/vlc /exports/usr/bin/
+
+# ROFI
+FROM base AS rofi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx rofi='1.5.0-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/rofi /usr/bin/rofi-sensible-terminal /usr/bin/rofi-theme-selector /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# REDSHIFT
+FROM base AS redshift
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx redshift='1.11-1ubuntu1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/redshift /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# QPDFVIEW
+FROM base AS qpdfview
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx qpdfview='0.4.14-1build1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/qpdfview /exports/usr/bin/ && \
+  mv /usr/lib/qpdfview /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# GTHUMB
+FROM base AS gthumb
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx gthumb='3:3.6.1-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/gthumb /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # GOOGLE-CHROME
 FROM base AS google-chrome
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
 RUN \
   wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/81.0.4044.92/google-chrome-stable_current_amd64.deb' && \
   apteryx /tmp/chrome.deb
@@ -416,21 +523,41 @@ RUN \
   mv /opt/google /exports/opt/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# FLAMESHOT
+FROM base AS flameshot
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx flameshot='0.5.1-2'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/flameshot /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
 # FIREFOX
 FROM base AS firefox
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='75.0+*'
+  apteryx firefox='76.0+*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
   mv /usr/bin/firefox /exports/usr/bin/ && \
   mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
   mv /usr/share/icons /exports/usr/share/
 
+# AUDACITY
+FROM base AS audacity
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx audacity='2.2.1-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/audacity /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
 # ALACRITTY
 FROM base AS alacritty
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
   apteryx /tmp/alacritty.deb
@@ -439,21 +566,70 @@ RUN \
   mv /usr/bin/alacritty /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# PAVUCONTROL
+FROM base AS pavucontrol
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx pavucontrol='3.0-4'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /etc/pulse /exports/etc/ && \
+  mv /usr/bin/pavucontrol /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# FONTS
+FROM base AS fonts
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  apteryx fonts-noto fonts-noto-color-emoji ttf-ubuntu-font-family fontconfig='2.12.6-*' && \
+  mkdir -p /usr/share/fonts/X11/bitmap && \
+  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
+  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
+  cd /etc/fonts/conf.d && \
+  rm 10* 70-no-bitmaps.conf && \
+  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
+  dpkg-reconfigure fontconfig && \
+  fc-cache -fv
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/cache/ldconfig/ /exports/var/lib/apt/ /exports/var/lib/dpkg/info/ /exports/var/lib/dpkg/ /exports/var/lib/dpkg/triggers/ /exports/var/log/apt/ /exports/var/log/ && \
+  mv /etc/fonts /etc/ld.so.cache /exports/etc/ && \
+  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.10.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.15.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.34.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/fonts-noto-hinted /usr/share/bug/fonts-noto /exports/usr/share/bug/ && \
+  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/fonts-noto-color-emoji /usr/share/doc/fonts-noto-hinted /usr/share/doc/fonts-noto /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libpng16-16 /exports/usr/share/doc/ && \
+  mv /usr/share/fonts /exports/usr/share/ && \
+  mv /usr/share/lintian/overrides/fontconfig /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/fonts-conf.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
+  mv /var/cache/fontconfig /exports/var/cache/ && \
+  mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/ && \
+  mv /var/lib/apt/extended_states /exports/var/lib/apt/ && \
+  mv /var/lib/dpkg/info/fontconfig-config.conffiles /var/lib/dpkg/info/fontconfig-config.list /var/lib/dpkg/info/fontconfig-config.md5sums /var/lib/dpkg/info/fontconfig-config.postinst /var/lib/dpkg/info/fontconfig-config.postrm /var/lib/dpkg/info/fontconfig.list /var/lib/dpkg/info/fontconfig.md5sums /var/lib/dpkg/info/fontconfig.postinst /var/lib/dpkg/info/fontconfig.postrm /var/lib/dpkg/info/fontconfig.triggers /var/lib/dpkg/info/fonts-dejavu-core.conffiles /var/lib/dpkg/info/fonts-dejavu-core.list /var/lib/dpkg/info/fonts-dejavu-core.md5sums /var/lib/dpkg/info/fonts-noto-color-emoji.list /var/lib/dpkg/info/fonts-noto-color-emoji.md5sums /var/lib/dpkg/info/fonts-noto-hinted.conffiles /var/lib/dpkg/info/fonts-noto-hinted.list /var/lib/dpkg/info/fonts-noto-hinted.md5sums /var/lib/dpkg/info/fonts-noto.list /var/lib/dpkg/info/fonts-noto.md5sums /var/lib/dpkg/info/libfontconfig1:amd64.list /var/lib/dpkg/info/libfontconfig1:amd64.md5sums /var/lib/dpkg/info/libfontconfig1:amd64.shlibs /var/lib/dpkg/info/libfontconfig1:amd64.triggers /var/lib/dpkg/info/libfreetype6:amd64.list /var/lib/dpkg/info/libfreetype6:amd64.md5sums /var/lib/dpkg/info/libfreetype6:amd64.shlibs /var/lib/dpkg/info/libfreetype6:amd64.symbols /var/lib/dpkg/info/libfreetype6:amd64.triggers /var/lib/dpkg/info/libpng16-16:amd64.list /var/lib/dpkg/info/libpng16-16:amd64.md5sums /var/lib/dpkg/info/libpng16-16:amd64.shlibs /var/lib/dpkg/info/libpng16-16:amd64.triggers /exports/var/lib/dpkg/info/ && \
+  mv /var/lib/dpkg/status /var/lib/dpkg/status-old /exports/var/lib/dpkg/ && \
+  mv /var/lib/dpkg/triggers/File /exports/var/lib/dpkg/triggers/ && \
+  mv /var/log/apt/eipp.log.xz /var/log/apt/history.log /var/log/apt/term.log /exports/var/log/apt/ && \
+  mv /var/log/dpkg.log /exports/var/log/
+
 # X11-UTILS
 FROM base AS x11-utils
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
-  mv /etc/X11 /etc/fonts /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /etc/fonts /etc/sensors.d /etc/sensors3.conf /etc/X11 /exports/etc/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /usr/bin /usr/lib /usr/share /exports/usr/
 
 # MESA
 FROM base AS mesa
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
 RUN \
@@ -464,7 +640,7 @@ RUN \
 
 # LIBXV1
 FROM base AS libxv1
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx libxv1='2:1.0.11-1'
 RUN \
@@ -474,15 +650,13 @@ RUN \
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
-COPY --from=z.lua /usr/local/bin/z.lua /usr/local/bin/
+COPY --from=fzf /exports/ /
+COPY --from=z.lua /exports/ /
+COPY --from=zsh /exports/ /
 COPY --from=python2 /exports/ /
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=lua /usr/bin/lua5.3 /usr/bin/
+COPY --from=antibody /exports/ /
 COPY --from=git /exports/ /
-COPY --from=fzf /usr/local/share/fzf/ /usr/local/share/fzf/
-COPY --from=antibody /usr/local/bin/antibody /usr/local/bin/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make zsh && \
@@ -490,135 +664,167 @@ RUN \
   /usr/local/share/fzf/install --key-bindings --completion && \
   mkdir -p ~/src
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ && \
+  mkdir -p /home/admin/exports/bin/ /home/admin/exports/etc/alternatives/ /home/admin/exports/etc/ /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ /home/admin/exports/usr/bin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/lib/x86_64-linux-gnu/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/share/ /home/admin/exports/usr/share/ && \
+  mv /bin/zsh /home/admin/exports/bin/ && \
+  mv /etc/alternatives/python /home/admin/exports/etc/alternatives/ && \
+  mv /etc/python2.7 /etc/zsh /home/admin/exports/etc/ && \
   mv /home/admin/.antibody.sh /home/admin/.fzf.zsh /home/admin/.zshrc /home/admin/src /home/admin/exports/home/admin/ && \
-  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/
+  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/ && \
+  mv /usr/bin/lua5.3 /usr/bin/python /usr/bin/python2.7 /home/admin/exports/usr/bin/ && \
+  mv /usr/lib/python2.7 /home/admin/exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/zsh /home/admin/exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/z.lua /home/admin/exports/usr/local/bin/ && \
+  mv /usr/local/share/fzf /home/admin/exports/usr/local/share/ && \
+  mv /usr/share/zsh /home/admin/exports/usr/share/
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
-COPY --from=sxhkd /usr/local/bin/sxhkd /usr/local/bin/
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git /exports/ /
 COPY --from=bspwm /exports/ /
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=sxhkd /exports/ /
+COPY --from=make /exports/ /
+COPY --from=git /exports/ /
 RUN \
   cd dotfiles && \
   make bspwm sxhkd x11
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/local/bin/ && \
   mv /home/admin/.config/bspwm /home/admin/.config/sxhkd /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/.xinitrc /home/admin/exports/home/admin/
+  mv /home/admin/.xinitrc /home/admin/exports/home/admin/ && \
+  mv /usr/lib/x86_64-linux-gnu /home/admin/exports/usr/lib/ && \
+  mv /usr/local/bin/bspc /usr/local/bin/bspwm /usr/local/bin/sxhkd /home/admin/exports/usr/local/bin/
 
 # SHELL-VIM
 FROM shell-admin AS shell-vim
 COPY --from=neovim /exports/ /
-COPY --from=make /usr/bin/make /usr/bin/
+COPY --from=make /exports/ /
 COPY --from=git /exports/ /
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
   cd dotfiles && \
   make vim && \
   nvim +'call dein#update()' +qall && \
   nvim +UpdateRemotePlugins +qall
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/.local/share/ /home/admin/exports/home/admin/dotfiles/apps/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/.local/share/ /home/admin/exports/home/admin/dotfiles/apps/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/include/ /home/admin/exports/usr/local/lib/ /home/admin/exports/usr/local/share/ && \
   mv /home/admin/.config/nvim /home/admin/exports/home/admin/.config/ && \
   mv /home/admin/.local/share/nvim /home/admin/exports/home/admin/.local/share/ && \
-  mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/
+  mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/ && \
+  mv /usr/local/bin/nvim /home/admin/exports/usr/local/bin/ && \
+  mv /usr/local/include/python3.6 /home/admin/exports/usr/local/include/ && \
+  mv /usr/local/lib/python3.6 /home/admin/exports/usr/local/lib/ && \
+  mv /usr/local/share/nvim /home/admin/exports/usr/local/share/
 
 # SHELL-TMUX
 FROM shell-admin AS shell-tmux
 COPY --from=tmux /exports/ /
-COPY --from=make /usr/bin/make /usr/bin/
+COPY --from=make /exports/ /
 COPY --from=git /exports/ /
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
   cd dotfiles && \
   make tmux
+RUN \
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/local/bin/ && \
+  mv /home/admin/.tmux.conf /home/admin/.tmux /home/admin/exports/home/admin/ && \
+  mv /usr/lib/x86_64-linux-gnu /home/admin/exports/usr/lib/ && \
+  mv /usr/local/bin/tmux /home/admin/exports/usr/local/bin/
 
 # SHELL-SSH
 FROM shell-admin AS shell-ssh
-COPY --from=make /usr/bin/make /usr/bin/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=make /exports/ /
+RUN \
+  cd dotfiles && \
+  make ssh
+RUN \
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/bin/ && \
+  mv /home/admin/.ssh /home/admin/exports/home/admin/ && \
+  mv /usr/bin/make /home/admin/exports/usr/bin/
 
 # SHELL-RANGER
 FROM shell-admin AS shell-ranger
 COPY --from=ranger /exports/ /
-COPY --from=make /usr/bin/make /usr/bin/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make ranger
+RUN \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/lib/ && \
+  mv /home/admin/.config/ranger /home/admin/exports/home/admin/.config/ && \
+  mv /usr/local/bin/ranger /usr/local/bin/rifle /home/admin/exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /home/admin/exports/usr/local/lib/
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
-COPY --from=one-pw /usr/local/bin/1pw /usr/local/bin/
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=dbxcli /usr/local/bin/dbxcli /usr/local/bin/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=dbxcli /exports/ /
+COPY --from=one-pw /exports/ /
+COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make dbxcli && \
   1pw-pull
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ /home/admin/exports/usr/local/bin/ && \
   mv /home/admin/.config/dbxcli /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/vaults /home/admin/exports/home/admin/
+  mv /home/admin/vaults /home/admin/exports/home/admin/ && \
+  mv /usr/local/bin/1pw /usr/local/bin/dbxcli /home/admin/exports/usr/local/bin/
 
 # SHELL-NPM
 FROM shell-admin AS shell-npm
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=make /usr/bin/make /usr/bin/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+COPY --from=node /exports/ /
+COPY --from=make /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   cd dotfiles && \
   make npm
+RUN \
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/local/lib/ && \
+  mv /home/admin/.npmrc /home/admin/exports/home/admin/ && \
+  mv /usr/local/lib/node /home/admin/exports/usr/local/lib/
 
 # SHELL-GIT
 FROM shell-admin AS shell-git
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git-crypt /usr/local/bin/git-crypt /usr/local/bin/
 COPY --from=git /exports/ /
-COPY --from=diff-so-fancy /usr/local/lib/node/ /usr/local/lib/node/
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
+COPY --from=git-crypt /exports/ /
+COPY --from=diff-so-fancy /exports/ /
+COPY --from=make /exports/ /
 RUN \
   cd dotfiles && \
   make git
+RUN \
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/bin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/lib/x86_64-linux-gnu/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/lib/ /home/admin/exports/usr/share/ && \
+  mv /home/admin/.gitconfig /home/admin/exports/home/admin/ && \
+  mv /usr/bin/git /home/admin/exports/usr/bin/ && \
+  mv /usr/lib/git-core /home/admin/exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /home/admin/exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/git-crypt /home/admin/exports/usr/local/bin/ && \
+  mv /usr/local/lib/node /home/admin/exports/usr/local/lib/ && \
+  mv /usr/share/git-core /home/admin/exports/usr/share/
 
 # YARN
 FROM base AS yarn
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
+COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'yarn@1.22.4'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # TREE
 FROM base AS tree
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx tree='1.7.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/tree /exports/usr/bin/
 
 # TIG
 FROM base AS tig
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
 COPY --from=build-essential /exports/ /
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
 RUN \
   apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
   clone --https --shallow --tag 'tig-2.5.1' https://github.com/jonas/tig && \
@@ -635,7 +841,7 @@ RUN \
 
 # SUDO
 FROM base AS sudo
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx sudo='1.8.21p2*'
 RUN \
@@ -647,8 +853,8 @@ RUN \
 
 # SD
 FROM base AS sd
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=unzip /usr/bin/unzip /usr/bin/
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
 RUN \
   wget -O /tmp/sd.zip 'https://github.com/chmln/sd/releases/download/v0.7.4/sd-0.7.4.x86_64-unknown-linux-gnu.zip' && \
   unzip /tmp/sd.zip && \
@@ -657,21 +863,26 @@ RUN \
   mkdir -p /usr/local/share/man/man1 && \
   mv b/x86_64-unknown-linux-gnu/release/build/sd-*/out/sd.1 /usr/local/share/man/man1/sd.1 && \
   rm -r b
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/sd /exports/usr/local/bin/
 
 # SAFE-RM
 FROM base AS safe-rm
-COPY --from=git /exports/ /
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=clone /exports/ /
 RUN \
   clone --https --shallow --tag '1.0.7' https://github.com/kaelzhang/shell-safe-rm && \
   cd /root/src/github.com/kaelzhang/shell-safe-rm && \
   cp ./bin/rm.sh /usr/local/bin/safe-rm && \
   rm -rf /root/src/
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/safe-rm /exports/usr/local/bin/
 
 # RIPGREP
 FROM base AS ripgrep
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
 RUN \
   wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/12.0.1/ripgrep-12.0.1-x86_64-unknown-linux-musl.tar.gz' && \
   tar -xzvf /tmp/ripgrep.tgz && \
@@ -681,48 +892,68 @@ RUN \
   mkdir -p /usr/local/share/man/man1 && \
   mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1 && \
   rm -r ripgrep
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/rg /exports/usr/local/bin/
 
 # PRETTYPING
 FROM base AS prettyping
-COPY --from=wget /usr/bin/wget /usr/bin/
 COPY --from=ping /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   wget -O /usr/local/bin/prettyping 'https://raw.githubusercontent.com/denilsonsa/prettyping/v1.0.1/prettyping' && \
   chmod +x /usr/local/bin/prettyping
+RUN \
+  mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ && \
+  mv /bin/ping /exports/bin/ && \
+  mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/prettyping /exports/usr/local/bin/
 
 # NP
 FROM base AS np
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
+COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'np@6.2.3'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # NCU
 FROM base AS ncu
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
+COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'npm-check-updates@4.1.2'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # MOREUTILS
 FROM base AS moreutils
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx moreutils='0.60-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/chronic /usr/bin/combine /usr/bin/errno /usr/bin/ifdata /usr/bin/ifne /usr/bin/isutf8 /usr/bin/lckdo /usr/bin/mispipe /usr/bin/parallel /usr/bin/pee /usr/bin/sponge /usr/bin/ts /usr/bin/vidir /usr/bin/vipe /usr/bin/zrun /exports/usr/bin/
 
 # HTOP
 FROM base AS htop
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
 RUN \
   apteryx htop='2.1.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/htop /exports/usr/bin/
 
 # FFMPEG
 FROM base AS ffmpeg
-COPY --from=xz /usr/bin/xz /usr/bin/
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=xz /exports/ /
 RUN \
   wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
   tar -xvf /tmp/ffmpeg.txz && \
@@ -731,11 +962,14 @@ RUN \
   mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
   mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
   rm -r ffmpeg
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
 
 # FD
 FROM base AS fd
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
 RUN \
   wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v8.0.0/fd-v8.0.0-x86_64-unknown-linux-musl.tar.gz' && \
   tar -xzvf /tmp/fd.tgz && \
@@ -745,132 +979,124 @@ RUN \
   mkdir -p /usr/local/share/man/man1 && \
   mv fd/fd.1 /usr/local/share/man/man1/fd.1 && \
   rm -r fd
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/fd /exports/usr/local/bin/
 
 # DOCKER
 FROM base AS docker
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=apteryx /usr/local/bin/apteryx /usr/local/bin/
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
 RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
   apteryx docker-ce='5:19.03.8*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/docker /exports/usr/bin/
 
 # CONTAINER-DIFF
 FROM base AS container-diff
-COPY --from=wget /usr/bin/wget /usr/bin/
+COPY --from=wget /exports/ /
 RUN \
   wget -O container-diff 'https://storage.googleapis.com/container-diff/v0.15.0/container-diff-linux-amd64' && \
   chmod +x container-diff && \
   mv container-diff /usr/local/bin/container-diff
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/container-diff /exports/usr/local/bin/
 
 # BAT
 FROM base AS bat
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=tar /bin/tar /bin/
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
 RUN \
   wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.13.0/bat-v0.13.0-x86_64-unknown-linux-gnu.tar.gz' && \
   tar -xzvf bat.tgz && \
   rm bat.tgz && \
   mv 'bat-v0.13.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat && \
   rm -rf 'bat-v0.13.0-x86_64-unknown-linux-gnu'
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/bat /exports/usr/local/bin/
 
 # ADB
 FROM base AS adb
-COPY --from=wget /usr/bin/wget /usr/bin/
-COPY --from=unzip /usr/bin/unzip /usr/bin/
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
 RUN \
   wget -O tools.zip 'https://dl.google.com/android/repository/platform-tools_r29.0.5-linux.zip' && \
   unzip tools.zip && \
   rm tools.zip && \
   mv platform-tools/adb /usr/local/bin/adb && \
   rm -rf platform-tools
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/adb /exports/usr/local/bin/
 
 # MY-DESKTOP
 FROM shell-admin AS my-desktop
-COPY --from=zoom /exports/ /
-COPY --from=z.lua /usr/local/bin/z.lua /usr/local/bin/
-COPY --from=yarn /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=x11-utils /exports/ /
-COPY --from=vlc /usr/bin/vlc /usr/bin/
-COPY --from=tree /usr/bin/tree /usr/bin/
-COPY --from=tmux /exports/ /
-COPY --from=tig /exports/ /
-COPY --from=sxhkd /usr/local/bin/sxhkd /usr/local/bin/
-COPY --from=sudo /exports/ /
-COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
-COPY --from=shell-wm --chown=admin /home/admin/exports/ /
-COPY --from=shell-vim --chown=admin /home/admin/exports/ /
-COPY --from=shell-tmux --chown=admin /home/admin/exports/ /
-COPY --from=shell-ranger --chown=admin /home/admin/.config/ranger/ /home/admin/.config/ranger/
-COPY --from=shell-passwords --chown=admin /home/admin/exports/ /
-COPY --from=shell-npm --chown=admin /home/admin/.npmrc /home/admin/
-COPY --from=shell-git --chown=admin /home/admin/.gitconfig /home/admin/
-COPY --from=sd /usr/local/bin/sd /usr/local/bin/
-COPY --from=safe-rm /usr/local/bin/safe-rm /usr/local/bin/
-COPY --from=ripgrep /usr/local/bin/rg /usr/local/bin/
-COPY --from=ranger /exports/ /
-COPY --from=python2 /exports/ /
-COPY --from=prettyping /usr/local/bin/prettyping /usr/local/bin/
-COPY --from=ping /exports/ /
-COPY --from=one-pw /usr/local/bin/1pw /usr/local/bin/
-COPY --from=np /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=node /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=neovim /exports/ /
-COPY --from=ncu /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=moreutils \
-  /usr/bin/chronic \
-  /usr/bin/combine \
-  /usr/bin/errno \
-  /usr/bin/ifdata \
-  /usr/bin/ifne \
-  /usr/bin/isutf8 \
-  /usr/bin/lckdo \
-  /usr/bin/mispipe \
-  /usr/bin/parallel \
-  /usr/bin/pee \
-  /usr/bin/sponge \
-  /usr/bin/ts \
-  /usr/bin/vidir \
-  /usr/bin/vipe \
-  /usr/bin/zrun \
-  /usr/bin/
-COPY --from=mesa /exports/ /
-COPY --from=make /usr/bin/make /usr/bin/
-COPY --from=lua /usr/bin/lua5.3 /usr/bin/
-COPY --from=libxv1 /exports/ /
-COPY --from=htop /usr/bin/htop /usr/bin/
-COPY --from=google-chrome /exports/ /
-COPY --from=go /usr/local/go/ /usr/local/go/
-COPY --from=git-crypt /usr/local/bin/git-crypt /usr/local/bin/
-COPY --from=git /exports/ /
-COPY --from=fzf /usr/local/share/fzf/ /usr/local/share/fzf/
-COPY --from=firefox /exports/ /
-COPY --from=ffmpeg \
-  /usr/local/bin/ffmpeg \
-  /usr/local/bin/ffprobe \
-  /usr/local/bin/
-COPY --from=fd /usr/local/bin/fd /usr/local/bin/
-COPY --from=docker /usr/bin/docker /usr/bin/
-COPY --from=diff-so-fancy /usr/local/lib/node/ /usr/local/lib/node/
-COPY --from=dbxcli /usr/local/bin/dbxcli /usr/local/bin/
-COPY --from=container-diff /usr/local/bin/container-diff /usr/local/bin/
-COPY --from=clone /usr/local/bin/clone /usr/local/bin/
+COPY --from=adb /exports/ /
+COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
-COPY --from=bspwm /exports/ /
-COPY --from=bat /usr/local/bin/bat /usr/local/bin/
+COPY --from=clone /exports/ /
+COPY --from=container-diff /exports/ /
+COPY --from=docker /exports/ /
+COPY --from=fd /exports/ /
+COPY --from=ffmpeg /exports/ /
+COPY --from=fzf /exports/ /
+COPY --from=go /exports/ /
+COPY --from=htop /exports/ /
+COPY --from=make /exports/ /
+COPY --from=moreutils /exports/ /
+COPY --from=ncu /exports/ /
+COPY --from=node /exports/ /
+COPY --from=np /exports/ /
+COPY --from=prettyping /exports/ /
+COPY --from=ripgrep /exports/ /
+COPY --from=safe-rm /exports/ /
+COPY --from=sd /exports/ /
+COPY --from=sudo /exports/ /
+COPY --from=tig /exports/ /
+COPY --from=tree /exports/ /
+COPY --from=yarn /exports/ /
+COPY --from=shell-git --chown=admin /home/admin/exports/ /
+COPY --from=shell-npm --chown=admin /home/admin/exports/ /
+COPY --from=shell-passwords --chown=admin /home/admin/exports/ /
+COPY --from=shell-ranger --chown=admin /home/admin/exports/ /
+COPY --from=shell-ssh --chown=admin /home/admin/exports/ /
+COPY --from=shell-tmux --chown=admin /home/admin/exports/ /
+COPY --from=shell-vim --chown=admin /home/admin/exports/ /
+COPY --from=shell-wm --chown=admin /home/admin/exports/ /
+COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
+COPY --from=libxv1 /exports/ /
+COPY --from=mesa /exports/ /
+COPY --from=x11-utils /exports/ /
+COPY --from=fonts /exports/ /
+COPY --from=pavucontrol /exports/ /
 COPY --from=alacritty /exports/ /
-COPY --from=adb /usr/local/bin/adb /usr/local/bin/
+COPY --from=audacity /exports/ /
+COPY --from=firefox /exports/ /
+COPY --from=flameshot /exports/ /
+COPY --from=google-chrome /exports/ /
+COPY --from=gthumb /exports/ /
+COPY --from=qpdfview /exports/ /
+COPY --from=redshift /exports/ /
+COPY --from=rofi /exports/ /
+COPY --from=vlc /exports/ /
+COPY --from=zoom /exports/ /
 ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
   PATH=${PATH}:/opt/google/chrome
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
 RUN \
-  cd dotfiles && \
-  make ssh
+  chmod 0600 /home/admin/.ssh/*
+RUN \
+  echo 'export SXHKD_SHELL=/bin/bash' > /home/admin/.xinitrc && \
+  echo 'sxhkd &' >> /home/admin/.xinitrc && \
+  echo 'exec bspwm -c /home/admin/.config/bspwm/bspwmrc' >> /home/admin/.xinitrc
 CMD /home/admin/.xinitrc
