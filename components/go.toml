@@ -25,7 +25,6 @@ exportEnv = [
   ["GOPATH", "/root"]
 ]
 
-
 latest_version = """
 https://golang.org/dl/
 """

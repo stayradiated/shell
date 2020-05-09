@@ -3,9 +3,9 @@ from = 'shell-admin'
 
 dependencies = [
   'fzf',
+  'python2',
   'z.lua',
   'zsh',
-  'python2',
 ]
 
 devDependencies = [
@@ -22,7 +22,7 @@ antibody bundle \
   < /home/admin/dotfiles/apps/zsh/bundles.txt \
   > /home/admin/.antibody.sh
 
-/usr/local/share/fzf/install --key-bindings --completion
+/usr/local/share/fzf/install --key-bindings --completion --no-bash
 
 mkdir -p ~/src
 """
@@ -30,7 +30,6 @@ mkdir -p ~/src
 exports = [
   '/home/admin/.antibody.sh',
   '/home/admin/.cache/antibody/',
-  '/home/admin/.fzf.zsh',
   '/home/admin/.zshrc',
   '/home/admin/src/',
 ]

@@ -1,13 +1,10 @@
 name = 'shell-root'
 from = 'base'
 
-dependencies = [
-  'zsh'
-]
-
 devDependencies = [
+  'apteryx',
   'dotfiles',
-  'apteryx'
+  'zsh',
 ]
 
 mount = [

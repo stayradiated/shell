@@ -188,8 +188,8 @@ RUN \
 
 # SHELL-ROOT
 FROM base AS shell-root
-COPY --from=dotfiles /exports/ /
 COPY --from=apteryx /exports/ /
+COPY --from=dotfiles /exports/ /
 COPY --from=zsh /exports/ /
 COPY ./secret/admin-passwd /tmp/admin-passwd
 RUN \
@@ -201,12 +201,6 @@ RUN \
   mkdir -p /home/admin/.config && \
   mkdir -p /home/admin/.local/share && \
   chown -R admin:admin /home/admin
-RUN \
-  mkdir -p /exports/bin/ /exports/etc/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
-  mv /bin/zsh /exports/bin/ && \
-  mv /etc/zsh /exports/etc/ && \
-  mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/zsh /exports/usr/share/
 
 # PYTHON3-PIP
 FROM base AS python3-pip
@@ -234,6 +228,17 @@ RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
 
+# Z.LUA
+FROM base AS z.lua
+COPY --from=wget /exports/ /
+COPY --from=lua /exports/ /
+RUN \
+  wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/local/bin/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
+  mv /usr/local/bin/z.lua /exports/usr/local/bin/
+
 # PYTHON2
 FROM base AS python2
 COPY --from=apteryx /exports/ /
@@ -246,17 +251,6 @@ RUN \
   mv /etc/python2.7 /exports/etc/ && \
   mv /usr/bin/python /usr/bin/python2.7 /exports/usr/bin/ && \
   mv /usr/lib/python2.7 /exports/usr/lib/
-
-# Z.LUA
-FROM base AS z.lua
-COPY --from=wget /exports/ /
-COPY --from=lua /exports/ /
-RUN \
-  wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/local/bin/ && \
-  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
-  mv /usr/local/bin/z.lua /exports/usr/local/bin/
 
 # FZF
 FROM base AS fzf
@@ -285,6 +279,8 @@ RUN \
 FROM shell-root AS shell-admin
 USER admin
 WORKDIR /home/admin
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
   mkdir -p /home/admin/exports
 
@@ -367,9 +363,9 @@ RUN \
   cd .. && \
   rm -r 'tmux-3.1'
 RUN \
-  mkdir -p /exports/usr/lib/ /exports/usr/local/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/local/bin/tmux /exports/usr/local/bin/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
+  mv /usr/local/bin/tmux /exports/usr/local/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # RANGER
 FROM base AS ranger
@@ -622,7 +618,7 @@ RUN \
   apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
-  mv /etc/fonts /etc/sensors.d /etc/sensors3.conf /etc/X11 /exports/etc/ && \
+  mv /etc/X11 /etc/fonts /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /usr/bin /usr/lib /usr/share /exports/usr/
@@ -654,28 +650,31 @@ COPY --from=antibody /exports/ /
 COPY --from=git /exports/ /
 COPY --from=make /exports/ /
 COPY --from=fzf /exports/ /
+COPY --from=python2 /exports/ /
 COPY --from=z.lua /exports/ /
 COPY --from=zsh /exports/ /
-COPY --from=python2 /exports/ /
 RUN \
   cd dotfiles && \
   make zsh && \
   antibody bundle < /home/admin/dotfiles/apps/zsh/bundles.txt > /home/admin/.antibody.sh && \
-  /usr/local/share/fzf/install --key-bindings --completion && \
+  /usr/local/share/fzf/install --key-bindings --completion --no-bash && \
   mkdir -p ~/src
 RUN \
-  mkdir -p /home/admin/exports/bin/ /home/admin/exports/etc/alternatives/ /home/admin/exports/etc/ /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ /home/admin/exports/usr/bin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/lib/x86_64-linux-gnu/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/share/ /home/admin/exports/usr/share/ && \
-  mv /bin/zsh /home/admin/exports/bin/ && \
-  mv /etc/alternatives/python /home/admin/exports/etc/alternatives/ && \
-  mv /etc/python2.7 /etc/zsh /home/admin/exports/etc/ && \
-  mv /home/admin/.antibody.sh /home/admin/.fzf.zsh /home/admin/.zshrc /home/admin/src /home/admin/exports/home/admin/ && \
-  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/ && \
-  mv /usr/bin/lua5.3 /usr/bin/python /usr/bin/python2.7 /home/admin/exports/usr/bin/ && \
-  mv /usr/lib/python2.7 /home/admin/exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/zsh /home/admin/exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/z.lua /home/admin/exports/usr/local/bin/ && \
-  mv /usr/local/share/fzf /home/admin/exports/usr/local/share/ && \
-  mv /usr/share/zsh /home/admin/exports/usr/share/
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ && \
+  mv /home/admin/.antibody.sh /home/admin/.zshrc /home/admin/src /home/admin/exports/home/admin/ && \
+  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/
+USER root
+RUN \
+  mkdir -p /exports/bin/ /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/share/ && \
+  mv /bin/zsh /exports/bin/ && \
+  mv /etc/alternatives/python /exports/etc/alternatives/ && \
+  mv /etc/python2.7 /etc/zsh /exports/etc/ && \
+  mv /usr/bin/lua5.3 /usr/bin/python /usr/bin/python2.7 /exports/usr/bin/ && \
+  mv /usr/lib/python2.7 /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/z.lua /exports/usr/local/bin/ && \
+  mv /usr/local/share/fzf /exports/usr/local/share/ && \
+  mv /usr/share/zsh /exports/usr/share/
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
@@ -687,11 +686,14 @@ RUN \
   cd dotfiles && \
   make bspwm sxhkd x11
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/local/bin/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
   mv /home/admin/.config/bspwm /home/admin/.config/sxhkd /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/.xinitrc /home/admin/exports/home/admin/ && \
-  mv /usr/lib/x86_64-linux-gnu /home/admin/exports/usr/lib/ && \
-  mv /usr/local/bin/bspc /usr/local/bin/bspwm /usr/local/bin/sxhkd /home/admin/exports/usr/local/bin/
+  mv /home/admin/.xinitrc /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/lib/ /exports/usr/local/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/bspc /usr/local/bin/bspwm /usr/local/bin/sxhkd /exports/usr/local/bin/
 
 # SHELL-VIM
 FROM shell-admin AS shell-vim
@@ -704,14 +706,17 @@ RUN \
   nvim +'call dein#update()' +qall && \
   nvim +UpdateRemotePlugins +qall
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/.local/share/ /home/admin/exports/home/admin/dotfiles/apps/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/include/ /home/admin/exports/usr/local/lib/ /home/admin/exports/usr/local/share/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/.local/share/ /home/admin/exports/home/admin/dotfiles/apps/ && \
   mv /home/admin/.config/nvim /home/admin/exports/home/admin/.config/ && \
   mv /home/admin/.local/share/nvim /home/admin/exports/home/admin/.local/share/ && \
-  mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/ && \
-  mv /usr/local/bin/nvim /home/admin/exports/usr/local/bin/ && \
-  mv /usr/local/include/python3.6 /home/admin/exports/usr/local/include/ && \
-  mv /usr/local/lib/python3.6 /home/admin/exports/usr/local/lib/ && \
-  mv /usr/local/share/nvim /home/admin/exports/usr/local/share/
+  mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/
+USER root
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/share/ && \
+  mv /usr/local/bin/nvim /exports/usr/local/bin/ && \
+  mv /usr/local/include/python3.6 /exports/usr/local/include/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
+  mv /usr/local/share/nvim /exports/usr/local/share/
 
 # SHELL-TMUX
 FROM shell-admin AS shell-tmux
@@ -722,10 +727,13 @@ RUN \
   cd dotfiles && \
   make tmux
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/local/bin/ && \
-  mv /home/admin/.tmux.conf /home/admin/.tmux /home/admin/exports/home/admin/ && \
-  mv /usr/lib/x86_64-linux-gnu /home/admin/exports/usr/lib/ && \
-  mv /usr/local/bin/tmux /home/admin/exports/usr/local/bin/
+  mkdir -p /home/admin/exports/home/admin/ && \
+  mv /home/admin/.tmux.conf /home/admin/.tmux /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
+  mv /usr/local/bin/tmux /exports/usr/local/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # SHELL-SSH
 FROM shell-admin AS shell-ssh
@@ -734,9 +742,8 @@ RUN \
   cd dotfiles && \
   make ssh
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/bin/ && \
-  mv /home/admin/.ssh /home/admin/exports/home/admin/ && \
-  mv /usr/bin/make /home/admin/exports/usr/bin/
+  mkdir -p /home/admin/exports/home/admin/ && \
+  mv /home/admin/.ssh /home/admin/exports/home/admin/
 
 # SHELL-RANGER
 FROM shell-admin AS shell-ranger
@@ -746,10 +753,13 @@ RUN \
   cd dotfiles && \
   make ranger
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/lib/ && \
-  mv /home/admin/.config/ranger /home/admin/exports/home/admin/.config/ && \
-  mv /usr/local/bin/ranger /usr/local/bin/rifle /home/admin/exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /home/admin/exports/usr/local/lib/
+  mkdir -p /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.config/ranger /home/admin/exports/home/admin/.config/
+USER root
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
+  mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
@@ -761,10 +771,13 @@ RUN \
   make dbxcli && \
   1pw-pull
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ /home/admin/exports/usr/local/bin/ && \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
   mv /home/admin/.config/dbxcli /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/vaults /home/admin/exports/home/admin/ && \
-  mv /usr/local/bin/1pw /usr/local/bin/dbxcli /home/admin/exports/usr/local/bin/
+  mv /home/admin/vaults /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/1pw /usr/local/bin/dbxcli /exports/usr/local/bin/
 
 # SHELL-NPM
 FROM shell-admin AS shell-npm
@@ -776,9 +789,12 @@ RUN \
   cd dotfiles && \
   make npm
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/local/lib/ && \
-  mv /home/admin/.npmrc /home/admin/exports/home/admin/ && \
-  mv /usr/local/lib/node /home/admin/exports/usr/local/lib/
+  mkdir -p /home/admin/exports/home/admin/ && \
+  mv /home/admin/.npmrc /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # SHELL-GIT
 FROM shell-admin AS shell-git
@@ -790,14 +806,17 @@ RUN \
   cd dotfiles && \
   make git
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/usr/bin/ /home/admin/exports/usr/lib/ /home/admin/exports/usr/lib/x86_64-linux-gnu/ /home/admin/exports/usr/local/bin/ /home/admin/exports/usr/local/lib/ /home/admin/exports/usr/share/ && \
-  mv /home/admin/.gitconfig /home/admin/exports/home/admin/ && \
-  mv /usr/bin/git /home/admin/exports/usr/bin/ && \
-  mv /usr/lib/git-core /home/admin/exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /home/admin/exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/git-crypt /home/admin/exports/usr/local/bin/ && \
-  mv /usr/local/lib/node /home/admin/exports/usr/local/lib/ && \
-  mv /usr/share/git-core /home/admin/exports/usr/share/
+  mkdir -p /home/admin/exports/home/admin/ && \
+  mv /home/admin/.gitconfig /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ && \
+  mv /usr/bin/git /exports/usr/bin/ && \
+  mv /usr/lib/git-core /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/ && \
+  mv /usr/share/git-core /exports/usr/share/
 
 # YARN
 FROM base AS yarn
@@ -1062,14 +1081,22 @@ COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=yarn /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
+COPY --from=shell-git /exports/ /
 COPY --from=shell-npm --chown=admin /home/admin/exports/ /
+COPY --from=shell-npm /exports/ /
 COPY --from=shell-passwords --chown=admin /home/admin/exports/ /
+COPY --from=shell-passwords /exports/ /
 COPY --from=shell-ranger --chown=admin /home/admin/exports/ /
+COPY --from=shell-ranger /exports/ /
 COPY --from=shell-ssh --chown=admin /home/admin/exports/ /
 COPY --from=shell-tmux --chown=admin /home/admin/exports/ /
+COPY --from=shell-tmux /exports/ /
 COPY --from=shell-vim --chown=admin /home/admin/exports/ /
+COPY --from=shell-vim /exports/ /
 COPY --from=shell-wm --chown=admin /home/admin/exports/ /
+COPY --from=shell-wm /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
+COPY --from=shell-zsh /exports/ /
 COPY --from=libxv1 /exports/ /
 COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
@@ -1097,6 +1124,8 @@ RUN \
   chmod 0600 /home/admin/.ssh/*
 RUN \
   echo 'export SXHKD_SHELL=/bin/bash' > /home/admin/.xinitrc && \
+  echo 'setxkbmap us -variant colemak' >> /home/admin/.xinitrc && \
+  echo "xsetroot -solid '#001115'" >> /home/admin/.xinitrc && \
   echo 'sxhkd &' >> /home/admin/.xinitrc && \
   echo 'exec bspwm -c /home/admin/.config/bspwm/bspwmrc' >> /home/admin/.xinitrc
 CMD /home/admin/.xinitrc

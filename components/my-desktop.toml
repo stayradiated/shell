@@ -61,7 +61,8 @@ dependencies = [
 build = """
 echo 'export SXHKD_SHELL=/bin/bash' > /home/admin/.xinitrc
 # echo 'setxkbmap us -variant colemak -option ctrl:nocaps -option altwin:swap_alt_win' >> /home/admin/.xinitrc
-# echo "xsetroot -solid '#001115'" >> /home/admin/.xinitrc
+echo 'setxkbmap us -variant colemak' >> /home/admin/.xinitrc
+echo "xsetroot -solid '#001115'" >> /home/admin/.xinitrc
 echo 'sxhkd &' >> /home/admin/.xinitrc
 echo 'exec bspwm -c /home/admin/.config/bspwm/bspwmrc' >> /home/admin/.xinitrc
 """

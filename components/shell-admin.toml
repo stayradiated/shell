@@ -3,12 +3,13 @@ from = 'shell-root'
 
 user = 'admin'
 workdir = '/home/admin'
-baseExportDir = '/home/admin/exports'
+baseExportDir = '/home/admin/exports/'
+
+env = [
+  ['PATH', '/home/admin/dotfiles/bin:${PATH}']
+]
 
 build =  """
 mkdir -p /home/admin/exports
 """
 
-exportEnv = [
-  ['PATH', '/home/admin/dotfiles/bin:${PATH}']
-]
