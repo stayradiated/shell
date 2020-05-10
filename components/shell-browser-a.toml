@@ -1,0 +1,12 @@
+name = 'shell-browser-a'
+from = 'shell-admin'
+
+dependencies = [
+  'google-chrome',
+  'firefox',
+  'xdg-utils',
+]
+
+devDependencies = [
+  'make'
+]

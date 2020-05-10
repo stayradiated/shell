@@ -21,7 +21,7 @@ make install
 """
 
 exports = [
-  '/usr/bin/light'
+  '/usr/local/bin/light'
 ]
 
 docs = [

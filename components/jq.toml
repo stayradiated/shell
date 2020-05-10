@@ -1,0 +1,18 @@
+name = 'jq'
+from = 'base'
+
+version = '1.6'
+
+devDependencies = [ 'wget' ]
+
+build = """
+wget \
+  -O /usr/local/bin/jq \
+  'https://github.com/stedolan/jq/releases/download/jq-{{VERSION}}/jq-linux64'
+chmod +x /usr/local/bin/jq
+"""
+
+exports = [
+  '/usr/local/bin/jq'
+]
+

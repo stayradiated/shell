@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.20.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.24.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -202,17 +202,6 @@ RUN \
   mkdir -p /home/admin/.local/share && \
   chown -R admin:admin /home/admin
 
-# PYTHON3-PIP
-FROM base AS python3-pip
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/bin/pip3 /exports/usr/bin/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
-  mv /usr/share/python-wheels /exports/usr/share/
-
 # NODE
 FROM base AS node
 COPY --from=nvm /exports/ /
@@ -227,6 +216,17 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
+
+# PYTHON3-PIP
+FROM base AS python3-pip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
+  mv /usr/bin/pip3 /exports/usr/bin/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
+  mv /usr/share/python-wheels /exports/usr/share/
 
 # Z.LUA
 FROM base AS z.lua
@@ -283,6 +283,17 @@ ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
   mkdir -p /home/admin/exports
+
+# YARN
+FROM base AS yarn
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'yarn@1.22.4'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # SXHKD
 FROM base AS sxhkd
@@ -417,6 +428,39 @@ RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
 
+# FIREFOX
+FROM base AS firefox
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx firefox='76.0+*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
+  mv /usr/bin/firefox /exports/usr/bin/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/icons /exports/usr/share/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/
+
+# GOOGLE-CHROME
+FROM base AS google-chrome
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/81.0.4044.92/google-chrome-stable_current_amd64.deb' && \
+  apteryx /tmp/chrome.deb
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/lib/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# XDG-UTILS
+FROM base AS xdg-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xdg-utils='1.1.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
+
 # UNZIP
 FROM base AS unzip
 COPY --from=apteryx /exports/ /
@@ -445,123 +489,6 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
-# ZOOM
-FROM base AS zoom
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
-  apteryx /tmp/zoom.deb
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /opt/zoom /exports/opt/ && \
-  mv /usr/bin/zoom /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# VLC
-FROM base AS vlc
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx vlc='3.0.8-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/vlc /exports/usr/bin/
-
-# ROFI
-FROM base AS rofi
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx rofi='1.5.0-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/rofi /usr/bin/rofi-sensible-terminal /usr/bin/rofi-theme-selector /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# REDSHIFT
-FROM base AS redshift
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx redshift='1.11-1ubuntu1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/redshift /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# QPDFVIEW
-FROM base AS qpdfview
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx qpdfview='0.4.14-1build1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/qpdfview /exports/usr/bin/ && \
-  mv /usr/lib/qpdfview /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# GTHUMB
-FROM base AS gthumb
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx gthumb='3:3.6.1-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/gthumb /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# GOOGLE-CHROME
-FROM base AS google-chrome
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN \
-  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/81.0.4044.92/google-chrome-stable_current_amd64.deb' && \
-  apteryx /tmp/chrome.deb
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/lib/ && \
-  mv /opt/google /exports/opt/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# FLAMESHOT
-FROM base AS flameshot
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx flameshot='0.5.1-2'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/flameshot /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# FIREFOX
-FROM base AS firefox
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx firefox='76.0+*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/bin/firefox /exports/usr/bin/ && \
-  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/icons /exports/usr/share/
-
-# AUDACITY
-FROM base AS audacity
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx audacity='2.2.1-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/audacity /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# ALACRITTY
-FROM base AS alacritty
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
-  apteryx /tmp/alacritty.deb
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/alacritty /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
 # PAVUCONTROL
 FROM base AS pavucontrol
 COPY --from=apteryx /exports/ /
@@ -573,76 +500,39 @@ RUN \
   mv /usr/bin/pavucontrol /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
-# FONTS
-FROM base AS fonts
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  apteryx fonts-noto fonts-noto-color-emoji ttf-ubuntu-font-family fontconfig='2.12.6-*' && \
-  mkdir -p /usr/share/fonts/X11/bitmap && \
-  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
-  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
-  cd /etc/fonts/conf.d && \
-  rm 10* 70-no-bitmaps.conf && \
-  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
-  dpkg-reconfigure fontconfig && \
-  fc-cache -fv
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/cache/ldconfig/ /exports/var/lib/apt/ /exports/var/lib/dpkg/info/ /exports/var/lib/dpkg/ /exports/var/lib/dpkg/triggers/ /exports/var/log/apt/ /exports/var/log/ && \
-  mv /etc/fonts /etc/ld.so.cache /exports/etc/ && \
-  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.10.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.15.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.34.0 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/share/fonts /exports/usr/local/share/ && \
-  mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/bug/fonts-noto-hinted /usr/share/bug/fonts-noto /exports/usr/share/bug/ && \
-  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/fonts-noto-color-emoji /usr/share/doc/fonts-noto-hinted /usr/share/doc/fonts-noto /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libpng16-16 /exports/usr/share/doc/ && \
-  mv /usr/share/fonts /exports/usr/share/ && \
-  mv /usr/share/lintian/overrides/fontconfig /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/man5/fonts-conf.5.gz /exports/usr/share/man/man5/ && \
-  mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
-  mv /var/cache/fontconfig /exports/var/cache/ && \
-  mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/ && \
-  mv /var/lib/apt/extended_states /exports/var/lib/apt/ && \
-  mv /var/lib/dpkg/info/fontconfig-config.conffiles /var/lib/dpkg/info/fontconfig-config.list /var/lib/dpkg/info/fontconfig-config.md5sums /var/lib/dpkg/info/fontconfig-config.postinst /var/lib/dpkg/info/fontconfig-config.postrm /var/lib/dpkg/info/fontconfig.list /var/lib/dpkg/info/fontconfig.md5sums /var/lib/dpkg/info/fontconfig.postinst /var/lib/dpkg/info/fontconfig.postrm /var/lib/dpkg/info/fontconfig.triggers /var/lib/dpkg/info/fonts-dejavu-core.conffiles /var/lib/dpkg/info/fonts-dejavu-core.list /var/lib/dpkg/info/fonts-dejavu-core.md5sums /var/lib/dpkg/info/fonts-noto-color-emoji.list /var/lib/dpkg/info/fonts-noto-color-emoji.md5sums /var/lib/dpkg/info/fonts-noto-hinted.conffiles /var/lib/dpkg/info/fonts-noto-hinted.list /var/lib/dpkg/info/fonts-noto-hinted.md5sums /var/lib/dpkg/info/fonts-noto.list /var/lib/dpkg/info/fonts-noto.md5sums /var/lib/dpkg/info/libfontconfig1:amd64.list /var/lib/dpkg/info/libfontconfig1:amd64.md5sums /var/lib/dpkg/info/libfontconfig1:amd64.shlibs /var/lib/dpkg/info/libfontconfig1:amd64.triggers /var/lib/dpkg/info/libfreetype6:amd64.list /var/lib/dpkg/info/libfreetype6:amd64.md5sums /var/lib/dpkg/info/libfreetype6:amd64.shlibs /var/lib/dpkg/info/libfreetype6:amd64.symbols /var/lib/dpkg/info/libfreetype6:amd64.triggers /var/lib/dpkg/info/libpng16-16:amd64.list /var/lib/dpkg/info/libpng16-16:amd64.md5sums /var/lib/dpkg/info/libpng16-16:amd64.shlibs /var/lib/dpkg/info/libpng16-16:amd64.triggers /exports/var/lib/dpkg/info/ && \
-  mv /var/lib/dpkg/status /var/lib/dpkg/status-old /exports/var/lib/dpkg/ && \
-  mv /var/lib/dpkg/triggers/File /exports/var/lib/dpkg/triggers/ && \
-  mv /var/log/apt/eipp.log.xz /var/log/apt/history.log /var/log/apt/term.log /exports/var/log/apt/ && \
-  mv /var/log/dpkg.log /exports/var/log/
-
-# X11-UTILS
-FROM base AS x11-utils
+# GTHUMB
+FROM base AS gthumb
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
+  apteryx gthumb='3:3.6.1-1'
 RUN \
-  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
-  mv /etc/X11 /etc/fonts /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
-  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /usr/bin /usr/lib /usr/share /exports/usr/
-
-# MESA
-FROM base AS mesa
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/ /exports/usr/lib/ && \
-  mv /etc/glvnd /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
-  mv /usr/bin /usr/share /exports/usr/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/gthumb /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
-# LIBXV1
-FROM base AS libxv1
+# AUDACITY
+FROM base AS audacity
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx libxv1='2:1.0.11-1'
+  apteryx audacity='2.2.1-1'
 RUN \
-  mkdir -p /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/X11 /exports/usr/share/
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/audacity /exports/usr/bin/ && \
+  mv /usr/lib/liblilv-0.so.* /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# GH
+FROM base AS gh
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v0.7.0/gh_0.7.0_linux_amd64.tar.gz' && \
+  tar xzvf /tmp/gh.tgz && \
+  rm /tmp/gh.tgz && \
+  mv 'gh_0.7.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
+  rm -r 'gh_0.7.0_linux_amd64'
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/gh /exports/usr/local/bin/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -657,12 +547,14 @@ RUN \
   cd dotfiles && \
   make zsh && \
   antibody bundle < /home/admin/dotfiles/apps/zsh/bundles.txt > /home/admin/.antibody.sh && \
-  /usr/local/share/fzf/install --key-bindings --completion --no-bash && \
+  XDG_CONFIG_HOME=/home/admin/.config && \
+  /usr/local/share/fzf/install --xdg --key-bindings --completion --no-bash && \
   mkdir -p ~/src
 RUN \
-  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ && \
+  mkdir -p /home/admin/exports/home/admin/ /home/admin/exports/home/admin/.cache/ /home/admin/exports/home/admin/.config/ && \
   mv /home/admin/.antibody.sh /home/admin/.zshrc /home/admin/src /home/admin/exports/home/admin/ && \
-  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/
+  mv /home/admin/.cache/antibody /home/admin/exports/home/admin/.cache/ && \
+  mv /home/admin/.config/fzf /home/admin/exports/home/admin/.config/
 USER root
 RUN \
   mkdir -p /exports/bin/ /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/share/ && \
@@ -675,6 +567,14 @@ RUN \
   mv /usr/local/bin/z.lua /exports/usr/local/bin/ && \
   mv /usr/local/share/fzf /exports/usr/local/share/ && \
   mv /usr/share/zsh /exports/usr/share/
+
+# SHELL-YARN
+FROM shell-admin AS shell-yarn
+COPY --from=yarn /exports/ /
+USER root
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
@@ -818,16 +718,191 @@ RUN \
   mv /usr/local/lib/node /exports/usr/local/lib/ && \
   mv /usr/share/git-core /exports/usr/share/
 
-# YARN
-FROM base AS yarn
-COPY --from=node /exports/ /
+# SHELL-BROWSER
+FROM shell-admin AS shell-browser
+COPY --from=make /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=google-chrome /exports/ /
+COPY --from=firefox /exports/ /
 ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
+  PATH=${PATH}:/opt/google/chrome
 RUN \
-  npm install -g 'yarn@1.22.4'
+  cd dotfiles && \
+  make firefox
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
+USER root
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/applications/ /exports/usr/share/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/bin/firefox /exports/usr/bin/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/icons /exports/usr/share/
+
+# ZOOM
+FROM base AS zoom
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
+  apteryx /tmp/zoom.deb
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /opt/zoom /exports/opt/ && \
+  mv /usr/bin/zoom /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# XCLIP
+FROM base AS xclip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xclip='0.12+*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/xclip /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libXmu.so.* /usr/lib/x86_64-linux-gnu/libXt.so.* /exports/usr/lib/x86_64-linux-gnu/
+
+# VLC
+FROM base AS vlc
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx vlc='3.0.8-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/vlc /exports/usr/bin/
+
+# ROFI
+FROM base AS rofi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx rofi='1.5.0-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/rofi /usr/bin/rofi-sensible-terminal /usr/bin/rofi-theme-selector /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# REDSHIFT
+FROM base AS redshift
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx redshift='1.11-1ubuntu1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/redshift /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# QPDFVIEW
+FROM base AS qpdfview
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx qpdfview='0.4.14-1build1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/qpdfview /exports/usr/bin/ && \
+  mv /usr/lib/qpdfview /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# LIGHT
+FROM base AS light
+COPY --from=build-essential /exports/ /
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx automake autoconf && \
+  clone --https --shallow --tag 'v1.2.2' https://github.com/haikarainen/light && \
+  cd /root/src/github.com/haikarainen/light && \
+  ./autogen.sh && \
+  ./configure && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/light /exports/usr/local/bin/
+
+# FLAMESHOT
+FROM base AS flameshot
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx flameshot='0.5.1-2'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/flameshot /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# ALACRITTY
+FROM base AS alacritty
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
+  apteryx /tmp/alacritty.deb
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/alacritty /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# FONTS
+FROM base AS fonts
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  apteryx fonts-noto='20171026-2' fonts-noto-color-emoji='0~20180810-*' ttf-ubuntu-font-family='1:0.83-2' xfonts-utils='1:7.7+6' fontconfig='2.12.6-*' && \
+  mkdir -p /usr/share/fonts/X11/bitmap && \
+  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
+  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
+  cd /etc/fonts/conf.d && \
+  rm 10* 70-no-bitmaps.conf && \
+  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
+  dpkg-reconfigure fontconfig && \
+  fc-cache -fv
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/aclocal/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/lib/ && \
+  mv /etc/fonts /exports/etc/ && \
+  mv /usr/bin/bdftopcf /usr/bin/bdftruncate /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/fonttosfnt /usr/bin/mkfontdir /usr/bin/mkfontscale /usr/bin/ucs2any /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libfontconfig.so.* /usr/lib/x86_64-linux-gnu/libfontenc.so.* /usr/lib/x86_64-linux-gnu/libfreetype.so.* /usr/lib/x86_64-linux-gnu/libpng16.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-fonts-alias /usr/sbin/update-fonts-dir /usr/sbin/update-fonts-scale /exports/usr/sbin/ && \
+  mv /usr/share/aclocal/fontutil.m4 /exports/usr/share/aclocal/ && \
+  mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/fonts /exports/usr/share/ && \
+  mv /usr/share/pkgconfig/fontutil.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
+  mv /var/cache/fontconfig /exports/var/cache/ && \
+  mv /var/lib/xfonts /exports/var/lib/
+
+# X11-UTILS
+FROM base AS x11-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
+  mv /etc/X11 /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /usr/bin /usr/lib /usr/share /exports/usr/
+
+# MESA
+FROM base AS mesa
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/ /exports/usr/lib/ && \
+  mv /etc/glvnd /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /usr/bin /usr/share /exports/usr/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# LIBXV1
+FROM base AS libxv1
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx libxv1='2:1.0.11-1'
+RUN \
+  mkdir -p /exports/usr/lib/ /exports/usr/share/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/X11 /exports/usr/share/
 
 # TREE
 FROM base AS tree
@@ -959,6 +1034,16 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/chronic /usr/bin/combine /usr/bin/errno /usr/bin/ifdata /usr/bin/ifne /usr/bin/isutf8 /usr/bin/lckdo /usr/bin/mispipe /usr/bin/parallel /usr/bin/pee /usr/bin/sponge /usr/bin/ts /usr/bin/vidir /usr/bin/vipe /usr/bin/zrun /exports/usr/bin/
 
+# JQ
+FROM base AS jq
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/jq 'https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64' && \
+  chmod +x /usr/local/bin/jq
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/jq /exports/usr/local/bin/
+
 # HTOP
 FROM base AS htop
 COPY --from=apteryx /exports/ /
@@ -1067,6 +1152,7 @@ COPY --from=ffmpeg /exports/ /
 COPY --from=fzf /exports/ /
 COPY --from=go /exports/ /
 COPY --from=htop /exports/ /
+COPY --from=jq /exports/ /
 COPY --from=make /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
@@ -1079,7 +1165,22 @@ COPY --from=sd /exports/ /
 COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
-COPY --from=yarn /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=libxv1 /exports/ /
+COPY --from=mesa /exports/ /
+COPY --from=x11-utils /exports/ /
+COPY --from=fonts /exports/ /
+COPY --from=alacritty /exports/ /
+COPY --from=flameshot /exports/ /
+COPY --from=light /exports/ /
+COPY --from=qpdfview /exports/ /
+COPY --from=redshift /exports/ /
+COPY --from=rofi /exports/ /
+COPY --from=vlc /exports/ /
+COPY --from=xclip /exports/ /
+COPY --from=zoom /exports/ /
+COPY --from=shell-browser --chown=admin /home/admin/exports/ /
+COPY --from=shell-browser /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
 COPY --from=shell-git /exports/ /
 COPY --from=shell-npm --chown=admin /home/admin/exports/ /
@@ -1095,37 +1196,21 @@ COPY --from=shell-vim --chown=admin /home/admin/exports/ /
 COPY --from=shell-vim /exports/ /
 COPY --from=shell-wm --chown=admin /home/admin/exports/ /
 COPY --from=shell-wm /exports/ /
+COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
-COPY --from=libxv1 /exports/ /
-COPY --from=mesa /exports/ /
-COPY --from=x11-utils /exports/ /
-COPY --from=fonts /exports/ /
-COPY --from=pavucontrol /exports/ /
-COPY --from=alacritty /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=gh /exports/ /
 COPY --from=audacity /exports/ /
-COPY --from=firefox /exports/ /
-COPY --from=flameshot /exports/ /
-COPY --from=google-chrome /exports/ /
 COPY --from=gthumb /exports/ /
-COPY --from=qpdfview /exports/ /
-COPY --from=redshift /exports/ /
-COPY --from=rofi /exports/ /
-COPY --from=vlc /exports/ /
-COPY --from=zoom /exports/ /
+COPY --from=pavucontrol /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
-  PATH=${PATH}:/opt/google/chrome
+  PATH=/home/admin/.yarn/bin:${PATH}
 RUN \
   chmod 0600 /home/admin/.ssh/*
-RUN \
-  echo 'export SXHKD_SHELL=/bin/bash' > /home/admin/.xinitrc && \
-  echo 'setxkbmap us -variant colemak' >> /home/admin/.xinitrc && \
-  echo "xsetroot -solid '#001115'" >> /home/admin/.xinitrc && \
-  echo 'sxhkd &' >> /home/admin/.xinitrc && \
-  echo 'exec bspwm -c /home/admin/.config/bspwm/bspwmrc' >> /home/admin/.xinitrc
 CMD /home/admin/.xinitrc

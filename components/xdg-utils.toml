@@ -1,0 +1,22 @@
+name = 'xdg-utils'
+from = 'base'
+
+version = '1.1.2-*'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx xdg-utils='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/browse',
+  '/usr/bin/xdg-desktop-icon',
+  '/usr/bin/xdg-desktop-menu',
+  '/usr/bin/xdg-email',
+  '/usr/bin/xdg-icon-resource',
+  '/usr/bin/xdg-mime',
+  '/usr/bin/xdg-open',
+  '/usr/bin/xdg-screensaver',
+  '/usr/bin/xdg-settings',
+]

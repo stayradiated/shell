@@ -13,6 +13,7 @@ dependencies = [
   'fzf',
   'go',
   'htop',
+  'jq',
   'make',
   'moreutils',
   'ncu',
@@ -25,8 +26,25 @@ dependencies = [
   'sudo',
   'tig',
   'tree',
-  'yarn',
+  'wget',
 
+  'libxv1',
+  'mesa',
+  'x11-utils',
+
+  'fonts',
+
+  'alacritty',
+  'flameshot',
+  'light',
+  'qpdfview',
+  'redshift',
+  'rofi',
+  'vlc',
+  'xclip',
+  'zoom',
+
+  'shell-browser',
   'shell-git',
   'shell-npm',
   'shell-passwords',
@@ -35,36 +53,15 @@ dependencies = [
   'shell-tmux',
   'shell-vim',
   'shell-wm',
+  'shell-yarn',
   'shell-zsh',
 
-  'libxv1',
-  'mesa',
-  'x11-utils',
+  'xdg-utils',
+  'gh',
 
-  'fonts',
-  'pavucontrol',
-
-  'alacritty',
   'audacity',
-  'firefox',
-  'flameshot',
-  'google-chrome',
   'gthumb',
-  'qpdfview',
-  'redshift',
-  'rofi',
-  'vlc',
-  'zoom',
+  'pavucontrol',
 ]
-
-
-build = """
-echo 'export SXHKD_SHELL=/bin/bash' > /home/admin/.xinitrc
-# echo 'setxkbmap us -variant colemak -option ctrl:nocaps -option altwin:swap_alt_win' >> /home/admin/.xinitrc
-echo 'setxkbmap us -variant colemak' >> /home/admin/.xinitrc
-echo "xsetroot -solid '#001115'" >> /home/admin/.xinitrc
-echo 'sxhkd &' >> /home/admin/.xinitrc
-echo 'exec bspwm -c /home/admin/.config/bspwm/bspwmrc' >> /home/admin/.xinitrc
-"""
 
 command = '/home/admin/.xinitrc'

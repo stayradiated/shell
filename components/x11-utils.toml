@@ -15,7 +15,6 @@ apteryx \
 
 exports = [
   '/etc/X11/',
-  '/etc/fonts/',
   '/etc/init.d/x11-common',
   '/etc/rcS.d/S01x11-common',
   '/etc/sensors.d/',

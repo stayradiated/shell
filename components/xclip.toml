@@ -1,0 +1,26 @@
+name = 'xclip'
+from = 'base'
+
+version = '0.12+*'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx xclip='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/xclip',
+  # '/usr/bin/xclip-copyfile',
+  # '/usr/bin/xclip-cutfile',
+  # '/usr/bin/xclip-pastefile',
+  '/usr/lib/x86_64-linux-gnu/libICE.so.*',
+  '/usr/lib/x86_64-linux-gnu/libSM.so.*',
+  '/usr/lib/x86_64-linux-gnu/libX11.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXau.so.*',
+  '/usr/lib/x86_64-linux-gnu/libxcb.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXdmcp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXext.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXmu.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXt.so.*',
+]

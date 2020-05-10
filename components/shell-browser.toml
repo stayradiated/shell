@@ -1,0 +1,21 @@
+name = 'shell-browser'
+from = 'shell-admin'
+
+dependencies = [
+  'google-chrome',
+  'firefox',
+]
+
+devDependencies = [
+  'make',
+  'xdg-utils',
+]
+
+build =  """
+cd dotfiles
+make firefox
+"""
+
+exports = [
+  '/home/admin/.config/mimeapps.list',
+]

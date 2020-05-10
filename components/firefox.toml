@@ -15,4 +15,5 @@ exports = [
   '/usr/lib/firefox/',
   '/usr/lib/x86_64-linux-gnu/',
   '/usr/share/icons/',
+  '/usr/share/applications/firefox.desktop',
 ]
