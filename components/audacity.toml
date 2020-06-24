@@ -13,5 +13,6 @@ exports = [
   '/usr/bin/audacity',
   '/usr/lib/liblilv-0.so.*',
   '/usr/lib/x86_64-linux-gnu/',
+  '/usr/share/alsa/',
 ]
 

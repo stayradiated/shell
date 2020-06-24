@@ -1,0 +1,23 @@
+name = 'mediainfo'
+from = 'base'
+version = '17.12-1'
+
+devDependencies = [ 'apteryx' ]
+
+build = """
+apteryx mediainfo='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/mediainfo',
+  '/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.*',
+  '/usr/lib/x86_64-linux-gnu/libmediainfo.so.*',
+  '/usr/lib/x86_64-linux-gnu/libmms.so.*',
+  '/usr/lib/x86_64-linux-gnu/libtinyxml2.so.*',
+  '/usr/lib/x86_64-linux-gnu/libzen.so.*',
+]
+
+docs = [
+  '/usr/share/man/man1/mediainfo.1.gz'
+]
+

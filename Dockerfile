@@ -510,30 +510,6 @@ RUN \
   mv /usr/bin/gthumb /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
-# AUDACITY
-FROM base AS audacity
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx audacity='2.2.1-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/audacity /exports/usr/bin/ && \
-  mv /usr/lib/liblilv-0.so.* /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# GH
-FROM base AS gh
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-RUN \
-  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v0.7.0/gh_0.7.0_linux_amd64.tar.gz' && \
-  tar xzvf /tmp/gh.tgz && \
-  rm /tmp/gh.tgz && \
-  mv 'gh_0.7.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
-  rm -r 'gh_0.7.0_linux_amd64'
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/gh /exports/usr/local/bin/
-
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
 COPY --from=antibody /exports/ /
@@ -820,26 +796,18 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/light /exports/usr/local/bin/
 
-# FLAMESHOT
-FROM base AS flameshot
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx flameshot='0.5.1-2'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/flameshot /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# ALACRITTY
-FROM base AS alacritty
+# INSOMNIA
+FROM base AS insomnia
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
-  apteryx /tmp/alacritty.deb
+  echo "deb https://dl.bintray.com/getinsomnia/Insomnia /" > /etc/apt/sources.list.d/insomnia.list && \
+  wget --quiet -O - https://insomnia.rest/keys/debian-public.key.asc | apt-key add - && \
+  apteryx insomnia='7.1.1'
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/alacritty /exports/usr/bin/ && \
+  mkdir -p /exports/usr/bin/ /exports/opt/ /exports/usr/lib/ && \
+  mv /usr/bin/insomnia /exports/usr/bin/ && \
+  mv /opt/Insomnia /exports/opt/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # FONTS
@@ -871,38 +839,38 @@ RUN \
   mv /var/cache/fontconfig /exports/var/cache/ && \
   mv /var/lib/xfonts /exports/var/lib/
 
-# X11-UTILS
-FROM base AS x11-utils
+# FLAMESHOT
+FROM base AS flameshot
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
+  apteryx flameshot='0.5.1-2'
 RUN \
-  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
-  mv /etc/X11 /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
-  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /usr/bin /usr/lib /usr/share /exports/usr/
-
-# MESA
-FROM base AS mesa
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/ /exports/usr/lib/ && \
-  mv /etc/glvnd /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
-  mv /usr/bin /usr/share /exports/usr/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/flameshot /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
-# LIBXV1
-FROM base AS libxv1
+# AUDACITY
+FROM base AS audacity
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx libxv1='2:1.0.11-1'
+  apteryx audacity='2.2.1-1'
 RUN \
-  mkdir -p /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/X11 /exports/usr/share/
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
+  mv /usr/bin/audacity /exports/usr/bin/ && \
+  mv /usr/lib/liblilv-0.so.* /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/alsa /exports/usr/share/
+
+# ALACRITTY
+FROM base AS alacritty
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/alacritty.deb 'https://github.com/alacritty/alacritty/releases/download/v0.4.2/Alacritty-v0.4.2-ubuntu_18_04_amd64.deb' && \
+  apteryx /tmp/alacritty.deb
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/alacritty /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # TREE
 FROM base AS tree
@@ -1034,6 +1002,16 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/chronic /usr/bin/combine /usr/bin/errno /usr/bin/ifdata /usr/bin/ifne /usr/bin/isutf8 /usr/bin/lckdo /usr/bin/mispipe /usr/bin/parallel /usr/bin/pee /usr/bin/sponge /usr/bin/ts /usr/bin/vidir /usr/bin/vipe /usr/bin/zrun /exports/usr/bin/
 
+# MEDIAINFO
+FROM base AS mediainfo
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx mediainfo='17.12-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/mediainfo /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libmediainfo.so.* /usr/lib/x86_64-linux-gnu/libmms.so.* /usr/lib/x86_64-linux-gnu/libtinyxml2.so.* /usr/lib/x86_64-linux-gnu/libzen.so.* /exports/usr/lib/x86_64-linux-gnu/
+
 # JQ
 FROM base AS jq
 COPY --from=wget /exports/ /
@@ -1052,6 +1030,20 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/htop /exports/usr/bin/
+
+# GH
+FROM base AS gh
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v0.7.0/gh_0.7.0_linux_amd64.tar.gz' && \
+  tar xzvf /tmp/gh.tgz && \
+  rm /tmp/gh.tgz && \
+  mv 'gh_0.7.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
+  rm -r 'gh_0.7.0_linux_amd64'
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/gh /exports/usr/local/bin/
 
 # FFMPEG
 FROM base AS ffmpeg
@@ -1139,8 +1131,44 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/adb /exports/usr/local/bin/
 
+# X11-UTILS
+FROM base AS x11-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx x11-utils='7.7+*' x11-xkb-utils='7.7+*' x11-xserver-utils='7.7+*' xkb-data='2.23.1-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
+  mv /etc/X11 /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /usr/bin /usr/lib /usr/share /exports/usr/
+
+# MESA
+FROM base AS mesa
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/ /exports/usr/lib/ && \
+  mv /etc/glvnd /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /usr/bin /usr/share /exports/usr/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# LIBXV1
+FROM base AS libxv1
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx libxv1='2:1.0.11-1'
+RUN \
+  mkdir -p /exports/usr/lib/ /exports/usr/share/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/X11 /exports/usr/share/
+
 # MY-DESKTOP
 FROM shell-admin AS my-desktop
+COPY --from=libxv1 /exports/ /
+COPY --from=mesa /exports/ /
+COPY --from=x11-utils /exports/ /
 COPY --from=adb /exports/ /
 COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
@@ -1150,10 +1178,12 @@ COPY --from=docker /exports/ /
 COPY --from=fd /exports/ /
 COPY --from=ffmpeg /exports/ /
 COPY --from=fzf /exports/ /
+COPY --from=gh /exports/ /
 COPY --from=go /exports/ /
 COPY --from=htop /exports/ /
 COPY --from=jq /exports/ /
 COPY --from=make /exports/ /
+COPY --from=mediainfo /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
@@ -1166,18 +1196,18 @@ COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=wget /exports/ /
-COPY --from=libxv1 /exports/ /
-COPY --from=mesa /exports/ /
-COPY --from=x11-utils /exports/ /
-COPY --from=fonts /exports/ /
 COPY --from=alacritty /exports/ /
+COPY --from=audacity /exports/ /
 COPY --from=flameshot /exports/ /
+COPY --from=fonts /exports/ /
+COPY --from=insomnia /exports/ /
 COPY --from=light /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
 COPY --from=rofi /exports/ /
 COPY --from=vlc /exports/ /
 COPY --from=xclip /exports/ /
+COPY --from=xdg-utils /exports/ /
 COPY --from=zoom /exports/ /
 COPY --from=shell-browser --chown=admin /home/admin/exports/ /
 COPY --from=shell-browser /exports/ /
@@ -1199,9 +1229,6 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
-COPY --from=xdg-utils /exports/ /
-COPY --from=gh /exports/ /
-COPY --from=audacity /exports/ /
 COPY --from=gthumb /exports/ /
 COPY --from=pavucontrol /exports/ /
 ENV \

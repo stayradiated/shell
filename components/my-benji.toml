@@ -13,6 +13,7 @@ dependencies = [
   'go',
   'htop',
   'make',
+  'mediainfo',
   'moreutils',
   'ncu',
   'node',
@@ -33,5 +34,6 @@ dependencies = [
   'sudo',
   'tig',
   'tree',
+  'wget',
   'yarn',
 ]

@@ -1,0 +1,27 @@
+name = 'arduino-cli'
+from = 'base'
+
+# https://github.com/arduino/arduino-cli/releases
+version = '0.10.0'
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+wget \
+  -O /tmp/arduino.tgz \
+  'https://github.com/arduino/arduino-cli/releases/download/{{VERSION}}/arduino-cli_{{VERSION}}_Linux_64bit.tar.gz'
+tar xzvf /tmp/arduino.tgz
+mv arduino-cli /usr/local/bin/
+rm /tmp/arduino.tgz LICENSE.txt
+
+arduino-cli core update-index
+arduino-cli core install arduino:avr
+"""
+
+exports = [
+  '/usr/local/bin/arduino-cli',
+  '/root/.arduino15/',
+]

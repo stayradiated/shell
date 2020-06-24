@@ -2,6 +2,10 @@ name = 'my-desktop'
 from = 'shell-admin'
 
 dependencies = [
+  'libxv1',
+  'mesa',
+  'x11-utils',
+
   'adb',
   'bat',
   'build-essential',
@@ -11,10 +15,12 @@ dependencies = [
   'fd',
   'ffmpeg',
   'fzf',
+  'gh',
   'go',
   'htop',
   'jq',
   'make',
+  'mediainfo',
   'moreutils',
   'ncu',
   'node',
@@ -28,20 +34,18 @@ dependencies = [
   'tree',
   'wget',
 
-  'libxv1',
-  'mesa',
-  'x11-utils',
-
-  'fonts',
-
   'alacritty',
+  'audacity',
   'flameshot',
+  'fonts',
+  'insomnia',
   'light',
   'qpdfview',
   'redshift',
   'rofi',
   'vlc',
   'xclip',
+  'xdg-utils',
   'zoom',
 
   'shell-browser',
@@ -56,10 +60,7 @@ dependencies = [
   'shell-yarn',
   'shell-zsh',
 
-  'xdg-utils',
-  'gh',
-
-  'audacity',
+  # things I need to fix
   'gthumb',
   'pavucontrol',
 ]

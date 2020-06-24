@@ -9,7 +9,6 @@ env = [
   ['PATH', '/home/admin/dotfiles/bin:${PATH}']
 ]
 
-build =  """
+build = """
 mkdir -p /home/admin/exports
 """
-
