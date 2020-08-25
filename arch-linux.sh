@@ -110,7 +110,7 @@ mkdir -p ~/.ssh
 docker exec $INSTANCE cat /home/admin/.ssh/sshkey.pub > ~/.ssh/authorized_keys
 
 # bluetooth mouse
-pacman -S bluez bluez-utils
+pacman -S bluez bluez-utils bluez-hid2hci
 bluetoothctl
 	default-agent
 	power on
