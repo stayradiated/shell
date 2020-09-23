@@ -1,0 +1,27 @@
+name = 'pgcli'
+from = 'base'
+
+# https://github.com/dbcli/pgcli/releases
+version = '3.0.0'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'python3-pip',
+]
+
+build = """
+apteryx libpq-dev python3-dev
+pip3 install pgcli=='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/lib/x86_64-linux-gnu/libpq.*',
+  '/usr/local/bin/pgcli',
+  '/usr/local/bin/sqlformat',
+  '/usr/local/lib/python3.6/',
+  '/usr/lib/python3.6/',
+  '/usr/lib/python3.7/',
+  '/usr/lib/python3.8/',
+  '/usr/lib/python3/',
+]

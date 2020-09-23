@@ -1,7 +1,7 @@
 name = 'firefox'
 from = 'base'
 
-version = '77.0+*'
+version = '80.0.1+*'
 
 devDependencies = [ 'apteryx' ]
 

@@ -29,16 +29,19 @@ dependencies = [
   'ripgrep',
   'safe-rm',
   'sd',
+  'shoebox',
   'sudo',
   'tig',
   'tree',
+  'watson',
   'wget',
+  'pgcli',
 
   'alacritty',
   'audacity',
   'flameshot',
   'fonts',
-  'insomnia',
+  # 'insomnia',
   'light',
   'qpdfview',
   'redshift',
@@ -63,6 +66,12 @@ dependencies = [
   # things I need to fix
   'gthumb',
   'pavucontrol',
+  # 'java',
+
+  'rsync',
+  'charles',
+  'acpi',
+  'unzip',
 ]
 
 command = '/home/admin/.xinitrc'

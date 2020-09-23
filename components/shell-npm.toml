@@ -12,6 +12,9 @@ devDependencies = [
 build = """
 cd dotfiles
 make npm
+
+mkdir -p /home/admin/.cache/npm
+npm config set prefix /home/admin/.cache/npm
 """
 
 exports = [

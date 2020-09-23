@@ -2,7 +2,7 @@
 
 set -xo
 
-IMAGE_NAME="${IMAGE_NAME:-stayradiated/shell:latest}"
+IMAGE_NAME="${IMAGE_NAME:-stayradiated/desktop:latest}"
 INSTANCE_NAME="${INSTANCE_NAME:-shell}"
 
 if [[ $@ == *--rm* ]]
@@ -34,7 +34,7 @@ then
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v ~/src:/home/admin/src \
     --privileged \
-    "${INSTANCE_NAME}" \
+    "${IMAGE_NAME}" \
     /sbin/my_init
 fi
 

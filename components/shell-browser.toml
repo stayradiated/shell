@@ -19,3 +19,8 @@ make firefox
 exports = [
   '/home/admin/.config/mimeapps.list',
 ]
+
+# TODO: fix shoebox
+exportEnv = [
+  ['PATH', "${PATH}:/opt/google/chrome"]
+]

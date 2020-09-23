@@ -3,7 +3,13 @@ from = 'base'
 
 version = '3.0-4'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = [
+  'apteryx'
+]
+
+dependencies = [
+  'pulseaudio'
+]
 
 build = """
 apteryx pavucontrol='{{VERSION}}'

@@ -11,4 +11,10 @@ env = [
 
 build = """
 mkdir -p /home/admin/exports
+mkdir -p /home/admin/.local/tmp
 """
+
+exportEnv = [
+  ['PATH', "${PATH}:/home/admin/.local/bin"],
+  ['XDG_RUNTIME_DIR', "/home/admin/.local/tmp"]
+]

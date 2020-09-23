@@ -1,0 +1,14 @@
+name = "acpi"
+from = "base"
+
+version = "1.7-1.1"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx acpi='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/acpi'
+]

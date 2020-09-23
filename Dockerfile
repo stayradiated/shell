@@ -1,7 +1,7 @@
 
 
 # BASE
-FROM phusion/baseimage:0.11 AS base
+FROM phusion/baseimage:bionic-1.0.0 AS base
 RUN \
   export LANG=en_NZ.UTF-8 && \
   locale-gen en_NZ.UTF-8 && \
@@ -9,7 +9,7 @@ RUN \
   apt-get -q update && \
   dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
   apt-get -q clean && \
-  rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
+  rm -rf /var/tmp/* /tmp/*
 
 # APTERYX
 FROM base AS apteryx
@@ -18,10 +18,10 @@ RUN \
   echo '#!/usr/bin/env sh' >> ${EXPORT} && \
   echo 'set -e' >> ${EXPORT} && \
   echo 'export DEBIAN_FRONTEND="noninteractive"' >> ${EXPORT} && \
-  echo 'apt-get -q update' >> ${EXPORT} && \
+  echo 'if [ ! "$(find /var/lib/apt/lists/ -mmin -1440)" ]; then apt-get -q update; fi' >> ${EXPORT} && \
   echo 'apt-get install -y --no-install-recommends --auto-remove "${@}"' >> ${EXPORT} && \
   echo 'apt-get -q clean' >> ${EXPORT} && \
-  echo 'rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*' >> ${EXPORT} && \
+  echo 'rm -rf /var/tmp/* /tmp/*' >> ${EXPORT} && \
   chmod +x ${EXPORT}
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
@@ -50,7 +50,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
-  apteryx git='1:2.26.2*'
+  apteryx git='1:2.28.0*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.24.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.27.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -208,8 +208,8 @@ COPY --from=nvm /exports/ /
 ENV \
   NVM_DIR=/usr/local/share/nvm
 RUN \
-  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.0.0' && \
-  mv "${NVM_DIR}/versions/node/v14.0.0" /usr/local/lib/node && \
+  bash -c 'source $NVM_DIR/nvm.sh && nvm install 12.18.4' && \
+  mv "${NVM_DIR}/versions/node/v12.18.4" /usr/local/lib/node && \
   PATH="/usr/local/lib/node/bin:${PATH}" && \
   npm config set user root && \
   npm config set save-exact true
@@ -227,6 +227,19 @@ RUN \
   mv /usr/bin/pip3 /exports/usr/bin/ && \
   mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
   mv /usr/share/python-wheels /exports/usr/share/
+
+# PULSEAUDIO
+FROM base AS pulseaudio
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx pulseaudio='1:11.1-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
+  mv /etc/pulse /exports/etc/ && \
+  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
+  mv /usr/lib/pulse-11.1 /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/alsa-lib /usr/lib/x86_64-linux-gnu/gio /usr/lib/x86_64-linux-gnu/libasound.so.* /usr/lib/x86_64-linux-gnu/libasyncns.so.* /usr/lib/x86_64-linux-gnu/libdconf.so.* /usr/lib/x86_64-linux-gnu/libFLAC.so.* /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libicudata.so.* /usr/lib/x86_64-linux-gnu/libicui18n.so.* /usr/lib/x86_64-linux-gnu/libicuio.so.* /usr/lib/x86_64-linux-gnu/libicutest.so.* /usr/lib/x86_64-linux-gnu/libicutu.so.* /usr/lib/x86_64-linux-gnu/libicuuc.so.* /usr/lib/x86_64-linux-gnu/libjacknet.so.* /usr/lib/x86_64-linux-gnu/libjackserver.so.* /usr/lib/x86_64-linux-gnu/libjack.so.* /usr/lib/x86_64-linux-gnu/libjson-glib-1.*.so.* /usr/lib/x86_64-linux-gnu/libltdl.so.* /usr/lib/x86_64-linux-gnu/libogg.so.* /usr/lib/x86_64-linux-gnu/liborc-0.*.so.* /usr/lib/x86_64-linux-gnu/liborc-test-0.*.so.* /usr/lib/x86_64-linux-gnu/libproxy.so.* /usr/lib/x86_64-linux-gnu/libpulse-simple.so.* /usr/lib/x86_64-linux-gnu/libpulse.so.* /usr/lib/x86_64-linux-gnu/libsamplerate.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libsnapd-glib.so.* /usr/lib/x86_64-linux-gnu/libsndfile.so.* /usr/lib/x86_64-linux-gnu/libsoup-2.*.so.* /usr/lib/x86_64-linux-gnu/libspeexdsp.so.* /usr/lib/x86_64-linux-gnu/libtdb.so.* /usr/lib/x86_64-linux-gnu/libvorbisenc.so.* /usr/lib/x86_64-linux-gnu/libvorbis.so.* /usr/lib/x86_64-linux-gnu/libwebrtc_audio_processing.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libX11-xcb.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libxml2.so.* /usr/lib/x86_64-linux-gnu/libXtst.so.* /usr/lib/x86_64-linux-gnu/pulseaudio /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
 
 # Z.LUA
 FROM base AS z.lua
@@ -282,7 +295,8 @@ WORKDIR /home/admin
 ENV \
   PATH=/home/admin/dotfiles/bin:${PATH}
 RUN \
-  mkdir -p /home/admin/exports
+  mkdir -p /home/admin/exports && \
+  mkdir -p /home/admin/.local/tmp
 
 # YARN
 FROM base AS yarn
@@ -432,7 +446,7 @@ RUN \
 FROM base AS firefox
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='76.0+*'
+  apteryx firefox='80.0.1+*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
   mv /usr/bin/firefox /exports/usr/bin/ && \
@@ -489,16 +503,54 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
+# ACPI
+FROM base AS acpi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx acpi='1.7-1.1'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/acpi /exports/usr/bin/
+
+# CHARLES
+FROM base AS charles
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6_amd64.tar.gz' && \
+  tar -xzvf /tmp/charles.tgz && \
+  rm /tmp/charles.tgz && \
+  mv ./charles/bin/charles /usr/local/bin/charles && \
+  mkdir -p /usr/share/java/charles/ && \
+  mv ./charles/lib/* /usr/share/java/charles/ && \
+  rm -r ./charles
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/share/java/ && \
+  mv /usr/local/bin/charles /exports/usr/local/bin/ && \
+  mv /usr/share/java/charles /exports/usr/share/java/
+
+# RSYNC
+FROM base AS rsync
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx rsync='3.1.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/rsync /exports/usr/bin/
+
 # PAVUCONTROL
 FROM base AS pavucontrol
 COPY --from=apteryx /exports/ /
+COPY --from=pulseaudio /exports/ /
 RUN \
   apteryx pavucontrol='3.0-4'
 RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ && \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
   mv /etc/pulse /exports/etc/ && \
-  mv /usr/bin/pavucontrol /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pavucontrol /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
+  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/alsa-lib /usr/lib/x86_64-linux-gnu/gio /usr/lib/x86_64-linux-gnu/libasound.so.* /usr/lib/x86_64-linux-gnu/libasyncns.so.* /usr/lib/x86_64-linux-gnu/libdconf.so.* /usr/lib/x86_64-linux-gnu/libFLAC.so.* /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libicudata.so.* /usr/lib/x86_64-linux-gnu/libicui18n.so.* /usr/lib/x86_64-linux-gnu/libicuio.so.* /usr/lib/x86_64-linux-gnu/libicutest.so.* /usr/lib/x86_64-linux-gnu/libicutu.so.* /usr/lib/x86_64-linux-gnu/libicuuc.so.* /usr/lib/x86_64-linux-gnu/libjack.so.* /usr/lib/x86_64-linux-gnu/libjacknet.so.* /usr/lib/x86_64-linux-gnu/libjackserver.so.* /usr/lib/x86_64-linux-gnu/libjson-glib-1.*.so.* /usr/lib/x86_64-linux-gnu/libltdl.so.* /usr/lib/x86_64-linux-gnu/libogg.so.* /usr/lib/x86_64-linux-gnu/liborc-0.*.so.* /usr/lib/x86_64-linux-gnu/liborc-test-0.*.so.* /usr/lib/x86_64-linux-gnu/libproxy.so.* /usr/lib/x86_64-linux-gnu/libpulse-simple.so.* /usr/lib/x86_64-linux-gnu/libpulse.so.* /usr/lib/x86_64-linux-gnu/libsamplerate.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libsnapd-glib.so.* /usr/lib/x86_64-linux-gnu/libsndfile.so.* /usr/lib/x86_64-linux-gnu/libsoup-2.*.so.* /usr/lib/x86_64-linux-gnu/libspeexdsp.so.* /usr/lib/x86_64-linux-gnu/libtdb.so.* /usr/lib/x86_64-linux-gnu/libvorbis.so.* /usr/lib/x86_64-linux-gnu/libvorbisenc.so.* /usr/lib/x86_64-linux-gnu/libwebrtc_audio_processing.so.* /usr/lib/x86_64-linux-gnu/libX11-xcb.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libxml2.so.* /usr/lib/x86_64-linux-gnu/libXtst.so.* /usr/lib/x86_64-linux-gnu/pulseaudio /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
 
 # GTHUMB
 FROM base AS gthumb
@@ -663,7 +715,9 @@ ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   cd dotfiles && \
-  make npm
+  make npm && \
+  mkdir -p /home/admin/.cache/npm && \
+  npm config set prefix /home/admin/.cache/npm
 RUN \
   mkdir -p /home/admin/exports/home/admin/ && \
   mv /home/admin/.npmrc /home/admin/exports/home/admin/
@@ -722,7 +776,7 @@ FROM base AS zoom
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/zoom.deb 'https://zoom.us/client/3.5.383291.0407/zoom_amd64.deb' && \
+  wget -O /tmp/zoom.deb 'https://zoom.us/client/5.2.458699.0906/zoom_amd64.deb' && \
   apteryx /tmp/zoom.deb
 RUN \
   mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ && \
@@ -796,20 +850,6 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/light /exports/usr/local/bin/
 
-# INSOMNIA
-FROM base AS insomnia
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  echo "deb https://dl.bintray.com/getinsomnia/Insomnia /" > /etc/apt/sources.list.d/insomnia.list && \
-  wget --quiet -O - https://insomnia.rest/keys/debian-public.key.asc | apt-key add - && \
-  apteryx insomnia='7.1.1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/opt/ /exports/usr/lib/ && \
-  mv /usr/bin/insomnia /exports/usr/bin/ && \
-  mv /opt/Insomnia /exports/opt/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
 # FONTS
 FROM base AS fonts
 COPY --from=apteryx /exports/ /
@@ -872,6 +912,31 @@ RUN \
   mv /usr/bin/alacritty /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# PGCLI
+FROM base AS pgcli
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  apteryx libpq-dev python3-dev && \
+  pip3 install pgcli=='3.0.0'
+RUN \
+  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/
+
+# WATSON
+FROM base AS watson
+COPY --from=python3-pip /exports/ /
+RUN \
+  pip3 install td-watson=='1.10.0'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
+  mv /usr/local/bin/watson /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+
 # TREE
 FROM base AS tree
 COPY --from=apteryx /exports/ /
@@ -912,6 +977,17 @@ RUN \
   mv /usr/bin/sudo /exports/usr/bin/ && \
   mv /usr/lib/sudo /exports/usr/lib/ && \
   mv /var/lib/sudo /exports/var/lib/
+
+# SHOEBOX
+FROM base AS shoebox
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g '@stayradiated/shoebox@1.4.0'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # SD
 FROM base AS sd
@@ -1192,15 +1268,17 @@ COPY --from=prettyping /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=safe-rm /exports/ /
 COPY --from=sd /exports/ /
+COPY --from=shoebox /exports/ /
 COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
+COPY --from=watson /exports/ /
 COPY --from=wget /exports/ /
+COPY --from=pgcli /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=fonts /exports/ /
-COPY --from=insomnia /exports/ /
 COPY --from=light /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
@@ -1231,11 +1309,17 @@ COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
 COPY --from=gthumb /exports/ /
 COPY --from=pavucontrol /exports/ /
+COPY --from=rsync /exports/ /
+COPY --from=charles /exports/ /
+COPY --from=acpi /exports/ /
+COPY --from=unzip /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
+ENV \
+  PATH=${PATH}:/opt/google/chrome
 ENV \
   PATH=/home/admin/.yarn/bin:${PATH}
 RUN \

@@ -1,0 +1,16 @@
+name = 'shoebox'
+from = 'base'
+
+version = '1.4.0'
+
+dependencies = [
+  'node'
+]
+
+build = """
+npm install -g '@stayradiated/shoebox@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/'
+]

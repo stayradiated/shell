@@ -9,10 +9,10 @@ EXPORT=/usr/local/bin/apteryx
 echo '#!/usr/bin/env sh' >> ${EXPORT}
 echo 'set -e' >> ${EXPORT}
 echo 'export DEBIAN_FRONTEND="noninteractive"' >> ${EXPORT}
-echo 'apt-get -q update' >> ${EXPORT}
+echo 'if [ ! "$(find /var/lib/apt/lists/ -mmin -1440)" ]; then apt-get -q update; fi' >> ${EXPORT}
 echo 'apt-get install -y --no-install-recommends --auto-remove "${@}"' >> ${EXPORT}
 echo 'apt-get -q clean' >> ${EXPORT}
-echo 'rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*' >> ${EXPORT}
+echo 'rm -rf /var/tmp/* /tmp/*' >> ${EXPORT}
 
 chmod +x ${EXPORT}
 """

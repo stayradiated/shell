@@ -1,5 +1,5 @@
 name = 'base'
-fromImage = 'phusion/baseimage:0.11'
+fromImage = 'phusion/baseimage:bionic-1.0.0'
 
 baseExportDir = '/exports/'
 
@@ -16,5 +16,5 @@ rm /etc/dpkg/dpkg.cfg.d/excludes
 apt-get -q update
 dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall
 apt-get -q clean
-rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
+rm -rf /var/tmp/* /tmp/*
 """

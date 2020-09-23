@@ -1,0 +1,72 @@
+name = "pulseaudio"
+from = "base"
+
+version = "1:11.1-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx pulseaudio='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/pulse/',
+  '/usr/bin/pacat',
+  '/usr/bin/pacmd',
+  '/usr/bin/pactl',
+  '/usr/bin/padsp',
+  '/usr/bin/pamon',
+  '/usr/bin/paplay',
+  '/usr/bin/parec',
+  '/usr/bin/parecord',
+  '/usr/bin/pasuspender',
+  '/usr/bin/pax11publish',
+  '/usr/bin/pulseaudio',
+  '/usr/bin/start-pulseaudio-x11',
+  '/usr/lib/pulse-11.1/',
+  '/usr/lib/x86_64-linux-gnu/alsa-lib/',
+  '/usr/lib/x86_64-linux-gnu/gio/',
+  '/usr/lib/x86_64-linux-gnu/libasound.so.*',
+  '/usr/lib/x86_64-linux-gnu/libasyncns.so.*',
+  '/usr/lib/x86_64-linux-gnu/libdconf.so.*',
+  '/usr/lib/x86_64-linux-gnu/libFLAC.so.*',
+  '/usr/lib/x86_64-linux-gnu/libICE.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicudata.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicui18n.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicuio.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicutest.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicutu.so.*',
+  '/usr/lib/x86_64-linux-gnu/libicuuc.so.*',
+  '/usr/lib/x86_64-linux-gnu/libjacknet.so.*',
+  '/usr/lib/x86_64-linux-gnu/libjackserver.so.*',
+  '/usr/lib/x86_64-linux-gnu/libjack.so.*',
+  '/usr/lib/x86_64-linux-gnu/libjson-glib-1.*.so.*',
+  '/usr/lib/x86_64-linux-gnu/libltdl.so.*',
+  '/usr/lib/x86_64-linux-gnu/libogg.so.*',
+  '/usr/lib/x86_64-linux-gnu/liborc-0.*.so.*',
+  '/usr/lib/x86_64-linux-gnu/liborc-test-0.*.so.*',
+  '/usr/lib/x86_64-linux-gnu/libproxy.so.*',
+  '/usr/lib/x86_64-linux-gnu/libpulse-simple.so.*',
+  '/usr/lib/x86_64-linux-gnu/libpulse.so.*',
+  '/usr/lib/x86_64-linux-gnu/libsamplerate.so.*',
+  '/usr/lib/x86_64-linux-gnu/libSM.so.*',
+  '/usr/lib/x86_64-linux-gnu/libsnapd-glib.so.*',
+  '/usr/lib/x86_64-linux-gnu/libsndfile.so.*',
+  '/usr/lib/x86_64-linux-gnu/libsoup-2.*.so.*',
+  '/usr/lib/x86_64-linux-gnu/libspeexdsp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libtdb.so.*',
+  '/usr/lib/x86_64-linux-gnu/libvorbisenc.so.*',
+  '/usr/lib/x86_64-linux-gnu/libvorbis.so.*',
+  '/usr/lib/x86_64-linux-gnu/libwebrtc_audio_processing.so.*',
+  '/usr/lib/x86_64-linux-gnu/libX11.so.*',
+  '/usr/lib/x86_64-linux-gnu/libX11-xcb.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXau.so.*',
+  '/usr/lib/x86_64-linux-gnu/libxcb.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXdmcp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXext.so.*',
+  '/usr/lib/x86_64-linux-gnu/libxml2.so.*',
+  '/usr/lib/x86_64-linux-gnu/libXtst.so.*',
+  '/usr/lib/x86_64-linux-gnu/pulseaudio/',
+  '/usr/share/alsa/',
+  '/usr/share/pulseaudio/',
+]
