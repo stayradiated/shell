@@ -1,0 +1,21 @@
+name = "peaclock"
+from = "base"
+
+version = "0.4.3"
+
+devDependencies = [ "apteryx", "clone" ]
+
+build = """
+add-apt-repository ppa:ubuntu-toolchain-r/test
+apteryx cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/octobanana/peaclock
+cd /root/src/github.com/octobanana/peaclock
+
+./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9)
+./RUNME.sh install --release
+"""
+
+exports = [
+  '/usr/local/bin/peaclock'
+]
