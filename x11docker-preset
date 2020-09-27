@@ -1,0 +1,19 @@
+--xorg 
+--desktop 
+--gpu 
+--hostnet 
+--hostdbus 
+--hostipc
+--webcam
+--user=RETAIN
+--sudouser
+--workdir=/home/admin
+--share /dev/shm
+--share /var/run/docker.sock
+--share /home/admin/src
+-- 
+--privileged 
+-v /home/admin/src/firefox:/home/admin/.mozilla/firefox 
+-v /run/user/1000/pulse:/run/pulse:ro
+-- 
+stayradiated/desktop:latest

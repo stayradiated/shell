@@ -5,7 +5,7 @@ setfont /usr/share/kbd/consolefonts/Lat2-Terminus16.psfu.gz
 # wifi
 systemctl start netctl-auto@wlan0
 wifi-menu
-dhcpcd
+systemctl start dhcpcd
 ping archlinux.org
 
 # time
@@ -79,11 +79,15 @@ reboot
 # reconfigure wifi
 systemctl start netctl-auto@wlp2s0
 wifi-menu
-dhcpcd
+systemctl enable dhcpcd
+systemctl start dhcpcd
 
 # install base for x11docker
-pacman -S docker xorg-server xf86-video-intel weston xorg-server-xwayland xpra \
-  xdotool xorg-xinit xorg-xhost xorg-xrandr xorg-xdpyinfo xorg-xauth xclip
+pacman -S docker xorg-server xf86-video-intel xpra xdotool xorg-xinit xorg-xhost xorg-xrandr xorg-xdpyinfo xorg-xauth xclip
+
+echo '{ "experimental": true }' > /etc/docker/daemon.json
+systemctl enable docker
+systemctl start docker
 
 # install x11docker
 curl -fsSL https://raw.githubusercontent.com/mviereck/x11docker/master/x11docker | bash -s -- --update
@@ -91,8 +95,12 @@ curl -fsSL https://raw.githubusercontent.com/mviereck/x11docker/master/x11docker
 # audio
 pacman -S pulseaudio pulseaudio-alsa
 
+# sudo
+pacman -S sudo
+visudo # allow group sudo
+
 # admin user -- do we need them?
-useradd admin # GROUPS(audio video docker)
+useradd admin -G audio,video,docker,sudo
 
 # ssh
 pacman -S openssh
@@ -107,21 +115,17 @@ ChallengeResponseAuthentication no
 UsePAM 				no
 EOF
 mkdir -p ~/.ssh
-docker exec $INSTANCE cat /home/admin/.ssh/sshkey.pub > ~/.ssh/authorized_keys
+systemctl enable sshd
+systemctl start sshd
+docker exec $(docker ps -q) cat /home/admin/.ssh/sshkey.pub > ~/.ssh/authorized_keys
 
 # bluetooth mouse
-pacman -S bluez bluez-utils bluez-hid2hci
-bluetoothctl
-	default-agent
-	power on
-	scan on
-	connect D6:34:95:34:81:8E
-	trust D6:34:95:34:81:8E
-	pair D6:34:95:34:81:8E
-	scan off
-
-# sudo
-pacman -S sudo
-groupadd sudo
-usermod -G sudo admin
-visudo # allow group sudo
+# pacman -S bluez bluez-utils bluez-hid2hci
+# bluetoothctl
+# 	default-agent
+# 	power on
+# 	scan on
+# 	connect D6:34:95:34:81:8E
+# 	trust D6:34:95:34:81:8E
+# 	pair D6:34:95:34:81:8E
+# 	scan off
