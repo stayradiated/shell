@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.27.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.28.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -208,8 +208,8 @@ COPY --from=nvm /exports/ /
 ENV \
   NVM_DIR=/usr/local/share/nvm
 RUN \
-  bash -c 'source $NVM_DIR/nvm.sh && nvm install 12.18.4' && \
-  mv "${NVM_DIR}/versions/node/v12.18.4" /usr/local/lib/node && \
+  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.13.0' && \
+  mv "${NVM_DIR}/versions/node/v14.13.0" /usr/local/lib/node && \
   PATH="/usr/local/lib/node/bin:${PATH}" && \
   npm config set user root && \
   npm config set save-exact true
@@ -227,18 +227,6 @@ RUN \
   mv /usr/bin/pip3 /exports/usr/bin/ && \
   mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
   mv /usr/share/python-wheels /exports/usr/share/
-
-# PULSEAUDIO
-FROM base AS pulseaudio
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx pulseaudio='1:11.1-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /etc/pulse /exports/etc/ && \
-  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
-  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
 
 # Z.LUA
 FROM base AS z.lua
@@ -474,6 +462,18 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
 
+# PULSEAUDIO
+FROM base AS pulseaudio
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx pulseaudio='1:11.1-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
+  mv /etc/pulse /exports/etc/ && \
+  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
+  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
+
 # UNZIP
 FROM base AS unzip
 COPY --from=apteryx /exports/ /
@@ -501,64 +501,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
-
-# ACPI
-FROM base AS acpi
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx acpi='1.7-1.1'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/acpi /exports/usr/bin/
-
-# CHARLES
-FROM base AS charles
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-RUN \
-  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6_amd64.tar.gz' && \
-  tar -xzvf /tmp/charles.tgz && \
-  rm /tmp/charles.tgz && \
-  mv ./charles/bin/charles /usr/local/bin/charles && \
-  mkdir -p /usr/share/java/charles/ && \
-  mv ./charles/lib/* /usr/share/java/charles/ && \
-  rm -r ./charles
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/share/java/ && \
-  mv /usr/local/bin/charles /exports/usr/local/bin/ && \
-  mv /usr/share/java/charles /exports/usr/share/java/
-
-# RSYNC
-FROM base AS rsync
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx rsync='3.1.2-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/rsync /exports/usr/bin/
-
-# PAVUCONTROL
-FROM base AS pavucontrol
-COPY --from=apteryx /exports/ /
-COPY --from=pulseaudio /exports/ /
-RUN \
-  apteryx pavucontrol='3.0-4'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /etc/pulse /exports/etc/ && \
-  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pavucontrol /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
-  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
-
-# GTHUMB
-FROM base AS gthumb
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx gthumb='3:3.6.1-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/gthumb /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -831,6 +773,20 @@ RUN \
   mv /usr/bin/qpdfview /exports/usr/bin/ && \
   mv /usr/lib/qpdfview /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# PAVUCONTROL
+FROM base AS pavucontrol
+COPY --from=apteryx /exports/ /
+COPY --from=pulseaudio /exports/ /
+RUN \
+  apteryx pavucontrol='3.0-4'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ && \
+  mv /etc/gtk-3.0 /etc/pulse /exports/etc/ && \
+  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pavucontrol /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /usr/bin/update-mime-database /exports/usr/bin/ && \
+  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/alsa /usr/share/libthai /usr/share/mime /usr/share/pavucontrol /usr/share/pulseaudio /usr/share/sounds /usr/share/themes /usr/share/thumbnailers /exports/usr/share/ && \
+  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/
+
 # LIGHT
 FROM base AS light
 COPY --from=build-essential /exports/ /
@@ -887,6 +843,23 @@ RUN \
   mv /usr/bin/flameshot /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# CHARLES
+FROM base AS charles
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6_amd64.tar.gz' && \
+  tar -xzvf /tmp/charles.tgz && \
+  rm /tmp/charles.tgz && \
+  mv ./charles/bin/charles /usr/local/bin/charles && \
+  mkdir -p /usr/share/java/charles/ && \
+  mv ./charles/lib/* /usr/share/java/charles/ && \
+  rm -r ./charles
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/share/java/ && \
+  mv /usr/local/bin/charles /exports/usr/local/bin/ && \
+  mv /usr/share/java/charles /exports/usr/share/java/
+
 # AUDACITY
 FROM base AS audacity
 COPY --from=apteryx /exports/ /
@@ -909,21 +882,6 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
   mv /usr/bin/alacritty /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# PGCLI
-FROM base AS pgcli
-COPY --from=apteryx /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=python3-pip /exports/ /
-RUN \
-  apteryx libpq-dev python3-dev && \
-  pip3 install pgcli=='3.0.0'
-RUN \
-  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/
 
 # WATSON
 FROM base AS watson
@@ -1015,6 +973,15 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/safe-rm /exports/usr/local/bin/
 
+# RSYNC
+FROM base AS rsync
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx rsync='3.1.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/rsync /exports/usr/bin/
+
 # RIPGREP
 FROM base AS ripgrep
 COPY --from=wget /exports/ /
@@ -1044,6 +1011,21 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/prettyping /exports/usr/local/bin/
+
+# PGCLI
+FROM base AS pgcli
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  apteryx libpq-dev python3-dev && \
+  pip3 install pgcli=='3.0.0'
+RUN \
+  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/
 
 # NP
 FROM base AS np
@@ -1205,6 +1187,15 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/adb /exports/usr/local/bin/
 
+# ACPI
+FROM base AS acpi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx acpi='1.7-1.1'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/acpi /exports/usr/bin/
+
 # X11-UTILS
 FROM base AS x11-utils
 COPY --from=apteryx /exports/ /
@@ -1243,6 +1234,7 @@ FROM shell-admin AS my-desktop
 COPY --from=libxv1 /exports/ /
 COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
+COPY --from=acpi /exports/ /
 COPY --from=adb /exports/ /
 COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
@@ -1262,22 +1254,26 @@ COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
 COPY --from=np /exports/ /
+COPY --from=pgcli /exports/ /
 COPY --from=prettyping /exports/ /
 COPY --from=ripgrep /exports/ /
+COPY --from=rsync /exports/ /
 COPY --from=safe-rm /exports/ /
 COPY --from=sd /exports/ /
 COPY --from=shoebox /exports/ /
 COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
+COPY --from=unzip /exports/ /
 COPY --from=watson /exports/ /
 COPY --from=wget /exports/ /
-COPY --from=pgcli /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
+COPY --from=charles /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=light /exports/ /
+COPY --from=pavucontrol /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
 COPY --from=rofi /exports/ /
@@ -1305,12 +1301,6 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
-COPY --from=gthumb /exports/ /
-COPY --from=pavucontrol /exports/ /
-COPY --from=rsync /exports/ /
-COPY --from=charles /exports/ /
-COPY --from=acpi /exports/ /
-COPY --from=unzip /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

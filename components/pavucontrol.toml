@@ -16,7 +16,18 @@ apteryx pavucontrol='{{VERSION}}'
 """
 
 exports = [
-  '/etc/pulse/',
+  '/etc/gtk-3.0/',
   '/usr/bin/pavucontrol',
+  '/usr/bin/update-mime-database',
   '/usr/lib/x86_64-linux-gnu/',
+  '/usr/share/glib-2.0/schemas/gschemas.compiled',
+  '/usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml',
+  '/usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml',
+  '/usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml',
+  '/usr/share/libthai/',
+  '/usr/share/mime/',
+  '/usr/share/pavucontrol/',
+  '/usr/share/sounds/',
+  '/usr/share/themes/',
+  '/usr/share/thumbnailers/',
 ]

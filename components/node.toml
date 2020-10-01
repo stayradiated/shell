@@ -2,7 +2,7 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = '12.18.4' # 14.11.0
+version = '14.13.0'
 
 devDependencies = [
   'nvm'
