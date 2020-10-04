@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.28.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.30.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -501,6 +501,45 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
+
+# SIGNAL
+FROM base AS signal
+COPY --from=apteryx /exports/ /
+RUN \
+  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
+  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
+  apt-get -q update && \
+  apteryx signal-desktop-beta='1.36.3-beta.2'
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/bin/ && \
+  mv /opt/Signal\ Beta /exports/opt/ && \
+  mv /usr/bin/signal-desktop-beta /exports/usr/bin/
+
+# PEACLOCK
+FROM base AS peaclock
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+  apteryx cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
+  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
+  cd /root/src/github.com/octobanana/peaclock && \
+  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9) && \
+  ./RUNME.sh install --release
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
+  mv /usr/local/bin/peaclock /exports/usr/local/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# HTTPIE
+FROM base AS httpie
+COPY --from=python3-pip /exports/ /
+RUN \
+  pip3 install httpie=='2.2.0'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
+  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -1301,6 +1340,9 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=httpie /exports/ /
+COPY --from=peaclock /exports/ /
+COPY --from=signal /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

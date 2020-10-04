@@ -1,0 +1,18 @@
+name = "signal"
+from = "base"
+
+version = "1.36.3-beta.2"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add -
+echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list
+apt-get -q update
+apteryx signal-desktop-beta='{{VERSION}}'
+"""
+
+exports = [
+  '/opt/Signal\ Beta/',
+  '/usr/bin/signal-desktop-beta',
+]

@@ -67,9 +67,14 @@ dependencies = [
   'shell-yarn',
   'shell-zsh',
 
+  'httpie',
+  'peaclock',
+
   # things I need to fix
   # 'gthumb',
   # 'java',
+
+  'signal'
 ]
 
 command = '/home/admin/.xinitrc'

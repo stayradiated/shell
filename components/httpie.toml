@@ -2,7 +2,7 @@ name = 'httpie'
 from = 'base'
 
 # https://github.com/jakubroztocil/httpie/releases
-version = '2.1.0'
+version = '2.2.0'
 
 devDependencies = [
   'python3-pip'

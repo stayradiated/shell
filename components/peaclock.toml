@@ -1,6 +1,7 @@
 name = "peaclock"
 from = "base"
 
+# https://github.com/octobanana/peaclock
 version = "0.4.3"
 
 devDependencies = [ "apteryx", "clone" ]
@@ -17,5 +18,6 @@ cd /root/src/github.com/octobanana/peaclock
 """
 
 exports = [
-  '/usr/local/bin/peaclock'
+  '/usr/local/bin/peaclock',
+  '/usr/lib/x86_64-linux-gnu/',
 ]
