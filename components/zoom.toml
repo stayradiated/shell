@@ -1,7 +1,7 @@
 name = 'zoom'
 from = 'base'
 
-version = '5.2.458699.0906'
+version = '5.3.469451.0927'
 
 devDependencies = [
   'apteryx',

@@ -69,12 +69,13 @@ dependencies = [
 
   'httpie',
   'peaclock',
+  'signal',
 
   # things I need to fix
   # 'gthumb',
   # 'java',
 
-  'signal'
+  'docker-compose',
 ]
 
 command = '/home/admin/.xinitrc'

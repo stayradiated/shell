@@ -502,6 +502,16 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
+# DOCKER-COMPOSE
+FROM base AS docker-compose
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
+  chmod +x /usr/local/bin/docker-compose
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
+
 # SIGNAL
 FROM base AS signal
 COPY --from=apteryx /exports/ /
@@ -755,7 +765,7 @@ FROM base AS zoom
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/zoom.deb 'https://zoom.us/client/5.2.458699.0906/zoom_amd64.deb' && \
+  wget -O /tmp/zoom.deb 'https://zoom.us/client/5.3.469451.0927/zoom_amd64.deb' && \
   apteryx /tmp/zoom.deb
 RUN \
   mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ && \
@@ -1343,6 +1353,7 @@ COPY --from=shell-zsh /exports/ /
 COPY --from=httpie /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=signal /exports/ /
+COPY --from=docker-compose /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
