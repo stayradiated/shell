@@ -76,6 +76,8 @@ dependencies = [
   # 'java',
 
   'docker-compose',
+  'deno',
+  'peek',
 ]
 
 command = '/home/admin/.xinitrc'

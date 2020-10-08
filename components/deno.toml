@@ -2,7 +2,7 @@ name = 'deno'
 from = 'base'
 
 # https://github.com/denoland/deno/releases
-version = 'v0.41.0'
+version = 'v1.4.4'
 
 devDependencies = [
   'wget',

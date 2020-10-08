@@ -18,5 +18,8 @@ apteryx peek='{{VERSION}}'
 """
 
 exports = [
-  '/usr/bin/peek'
+  '/usr/bin/peek',
+  '/usr/lib/x86_64-linux-gnu/',
+  "/usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml",
+  '/usr/share/glib-2.0/schemas/gschemas.compiled',
 ]

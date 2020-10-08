@@ -177,6 +177,15 @@ RUN \
   mkdir -p /exports/usr/local/share/ && \
   mv /usr/local/share/nvm /exports/usr/local/share/
 
+# XZ
+FROM base AS xz
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xz-utils='5.2.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/xz /exports/usr/bin/
+
 # LUA
 FROM base AS lua
 COPY --from=apteryx /exports/ /
@@ -227,6 +236,32 @@ RUN \
   mv /usr/bin/pip3 /exports/usr/bin/ && \
   mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
   mv /usr/share/python-wheels /exports/usr/share/
+
+# FFMPEG
+FROM base AS ffmpeg
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=xz /exports/ /
+RUN \
+  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
+  tar -xvf /tmp/ffmpeg.txz && \
+  rm /tmp/ffmpeg.txz && \
+  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
+  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
+  rm -r ffmpeg
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
+
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
 
 # Z.LUA
 FROM base AS z.lua
@@ -474,15 +509,6 @@ RUN \
   mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
   mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
 
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx unzip='6.0-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/unzip /exports/usr/bin/
-
 # PING
 FROM base AS ping
 COPY --from=apteryx /exports/ /
@@ -493,14 +519,32 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
-# XZ
-FROM base AS xz
+# PEEK
+FROM base AS peek
 COPY --from=apteryx /exports/ /
+COPY --from=ffmpeg /exports/ /
 RUN \
-  apteryx xz-utils='5.2.2-*'
+  add-apt-repository ppa:peek-developers/stable && \
+  apteryx peek='1.5.1-*'
 RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/xz /exports/usr/bin/
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/bin/peek /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
+  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
+
+# DENO
+FROM base AS deno
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+RUN \
+  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.4/deno-x86_64-unknown-linux-gnu.zip' && \
+  cd /usr/local/bin && \
+  unzip /tmp/deno.zip && \
+  rm /tmp/deno.zip
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/deno /exports/usr/local/bin/
 
 # DOCKER-COMPOSE
 FROM base AS docker-compose
@@ -1150,23 +1194,6 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/gh /exports/usr/local/bin/
 
-# FFMPEG
-FROM base AS ffmpeg
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
-  tar -xvf /tmp/ffmpeg.txz && \
-  rm /tmp/ffmpeg.txz && \
-  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
-  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
-  rm -r ffmpeg
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
-
 # FD
 FROM base AS fd
 COPY --from=wget /exports/ /
@@ -1354,6 +1381,8 @@ COPY --from=httpie /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=signal /exports/ /
 COPY --from=docker-compose /exports/ /
+COPY --from=deno /exports/ /
+COPY --from=peek /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
