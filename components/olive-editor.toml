@@ -1,17 +1,17 @@
 name = 'olive-editor'
 from = 'base'
 
-version = '201905021431-*'
+version = 'ac4be090'
 
 devDependencies = [
-  'apteryx'
+  'wget'
 ]
 
 build = """
-add-apt-repository ppa:olive-editor/olive-editor
-apteryx olive-editor='{{VERSION}}'
+wget "https://www.olivevideoeditor.org/dl/Olive-{{VERSION}}-Linux-x86_64.AppImage"
+mv Olive-*.AppImage /usr/local/bin/olive-editor
 """
 
 exports = [
-  'container-diff'
+  '/usr/local/bin/olive-editor'
 ]

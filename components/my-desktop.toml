@@ -67,17 +67,19 @@ dependencies = [
   'shell-yarn',
   'shell-zsh',
 
+  'docker-compose',
   'httpie',
   'peaclock',
+
   'signal',
+  'deno',
+  'peek',
 
   # things I need to fix
   # 'gthumb',
   # 'java',
 
-  'docker-compose',
-  'deno',
-  'peek',
+  'olive-editor',
 ]
 
 command = '/home/admin/.xinitrc'

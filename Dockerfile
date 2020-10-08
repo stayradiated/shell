@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.30.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.31.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -519,6 +519,16 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# OLIVE-EDITOR
+FROM base AS olive-editor
+COPY --from=wget /exports/ /
+RUN \
+  wget "https://www.olivevideoeditor.org/dl/Olive-ac4be090-Linux-x86_64.AppImage" && \
+  mv Olive-*.AppImage /usr/local/bin/olive-editor
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/olive-editor /exports/usr/local/bin/
+
 # PEEK
 FROM base AS peek
 COPY --from=apteryx /exports/ /
@@ -545,16 +555,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/deno /exports/usr/local/bin/
-
-# DOCKER-COMPOSE
-FROM base AS docker-compose
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
-  chmod +x /usr/local/bin/docker-compose
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
 
 # SIGNAL
 FROM base AS signal
@@ -594,6 +594,16 @@ RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
   mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/ && \
   mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+
+# DOCKER-COMPOSE
+FROM base AS docker-compose
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
+  chmod +x /usr/local/bin/docker-compose
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -1377,12 +1387,13 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=docker-compose /exports/ /
 COPY --from=httpie /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=signal /exports/ /
-COPY --from=docker-compose /exports/ /
 COPY --from=deno /exports/ /
 COPY --from=peek /exports/ /
+COPY --from=olive-editor /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
