@@ -1,0 +1,38 @@
+name = 'feh'
+from = 'base'
+
+version = '3.5'
+
+devDependencies = [
+  'apteryx',
+  'wget',
+  'tar',
+  'build-essential',
+  'make',
+]
+
+build = """
+apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev
+
+wget \
+  -O /tmp/feh.tar.bz2 \
+  https://feh.finalrewind.org/feh-{{VERSION}}.tar.bz2
+tar xjvf /tmp/feh.tar.bz2 -C /tmp
+
+cd /tmp/feh-{{VERSION}}
+make curl=0 xinerama=0
+make install app=1
+
+rm -rf /tmp/feh*
+"""
+
+exports = [
+  '/usr/local/bin/feh',
+  '/usr/local/share/feh/',
+  '/usr/lib/x86_64-linux-gnu/imlib2/',
+  '/usr/lib/x86_64-linux-gnu/libImlib2*',
+  '/usr/lib/x86_64-linux-gnu/libpng*',
+  '/usr/lib/x86_64-linux-gnu/libX11*',
+  '/usr/lib/x86_64-linux-gnu/libXt*',
+]
+

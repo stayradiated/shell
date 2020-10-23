@@ -1,7 +1,7 @@
 name = 'google-chrome'
 from = 'base'
 
-version = '81.0.4044.92'
+version = '86.0.4240.75'
 
 devDependencies = [
   'wget',

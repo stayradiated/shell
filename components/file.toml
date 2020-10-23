@@ -1,20 +1,21 @@
-name = "file"
-from = "base"
+name = 'file'
+from = 'base'
 
-version = "1:5.32-*"
+version = '1:5.32-*'
 
-devDependencies = [ "apteryx" ]
+devDependencies = [ 'apteryx' ]
 
 build = """
 apteryx file='{{VERSION}}'
 """
 
 exports = [
-  '/etc/ld.so.cache',
   '/etc/magic',
   '/etc/magic.mime',
   '/usr/bin/file',
   '/usr/lib/file/',
   '/usr/lib/x86_64-linux-gnu/libmagic.so.*',
+  '/usr/share/misc/magic',
+  '/usr/share/misc/magic.mgc',
 ]
 

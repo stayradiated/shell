@@ -20,3 +20,7 @@ npm config set prefix /home/admin/.cache/npm
 exports = [
   '/home/admin/.npmrc'
 ]
+
+exportEnv = [
+  ['PATH', "${PATH}:/home/admin/.cache/npm/bin"]
+]

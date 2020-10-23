@@ -1,0 +1,17 @@
+name = 'heroku'
+from = 'base'
+
+version = '7.46.0'
+
+devDependencies = [
+  'node',
+]
+
+build = """
+npm install -g 'heroku@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/lib/node/'
+]
+

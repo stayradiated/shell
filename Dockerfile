@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.31.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.34.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -468,7 +468,7 @@ RUN \
 FROM base AS firefox
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='80.0.1+*'
+  apteryx firefox='81.0+*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
   mv /usr/bin/firefox /exports/usr/bin/ && \
@@ -481,7 +481,7 @@ FROM base AS google-chrome
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN \
-  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/81.0.4044.92/google-chrome-stable_current_amd64.deb' && \
+  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/86.0.4240.75/google-chrome-stable_current_amd64.deb' && \
   apteryx /tmp/chrome.deb
 RUN \
   mkdir -p /exports/opt/ /exports/usr/lib/ && \
@@ -519,15 +519,97 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
-# OLIVE-EDITOR
-FROM base AS olive-editor
+# FEH
+FROM base AS feh
+COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=make /exports/ /
 RUN \
-  wget "https://www.olivevideoeditor.org/dl/Olive-ac4be090-Linux-x86_64.AppImage" && \
-  mv Olive-*.AppImage /usr/local/bin/olive-editor
+  apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev && \
+  wget -O /tmp/feh.tar.bz2 https://feh.finalrewind.org/feh-3.5.tar.bz2 && \
+  tar xjvf /tmp/feh.tar.bz2 -C /tmp && \
+  cd /tmp/feh-3.5 && \
+  make curl=0 xinerama=0 && \
+  make install app=1 && \
+  rm -rf /tmp/feh*
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/olive-editor /exports/usr/local/bin/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/feh /exports/usr/local/bin/ && \
+  mv /usr/local/share/feh /exports/usr/local/share/ && \
+  mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
+
+# FILE
+FROM base AS file
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx file='1:5.32-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ && \
+  mv /etc/magic /etc/magic.mime /exports/etc/ && \
+  mv /usr/bin/file /exports/usr/bin/ && \
+  mv /usr/lib/file /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
+
+# VLC
+FROM base AS vlc
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx vlc='3.0.8-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/vlc /exports/usr/bin/
+
+# GTHUMB
+FROM base AS gthumb
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx gthumb='3:3.6.1-1'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/gthumb /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# XSECURELOCK
+FROM base AS xsecurelock
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx apache2-utils autoconf autotools-dev automake binutils gcc libc6-dev libpam-dev libx11-dev libxcomposite-dev libxext-dev libxfixes-dev libxft-dev libxmuu-dev libxrandr-dev libxss-dev make mplayer mpv pamtester pkg-config x11proto-core-dev xscreensaver && \
+  clone --https --shallow --tag 'v1.7.0' https://github.com/google/xsecurelock && \
+  cd ~/src/github.com/google/xsecurelock && \
+  sh autogen.sh && \
+  ./configure --with-pam-service-name=xscreensaver && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/etc/pam.d/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/lib/systemd/user/ /exports/usr/local/bin/ /exports/usr/local/libexec/ && \
+  mv /etc/pam.d/xscreensaver /exports/etc/pam.d/ && \
+  mv /usr/bin/xscreensaver /usr/bin/xscreensaver-* /exports/usr/bin/ && \
+  mv /usr/lib/xscreensaver /exports/usr/lib/ && \
+  mv /usr/share/xscreensaver /exports/usr/share/ && \
+  mv /usr/lib/systemd/user/xscreensaver.service /exports/usr/lib/systemd/user/ && \
+  mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
+  mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
+
+# GIFSKI
+FROM base AS gifski
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=xz /exports/ /
+RUN \
+  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.0/gifski-1.2.0.tar.xz"
+RUN \
+  tar -xvf gifski.txz debian && \
+  apteryx ./debian/gifski*.deb && \
+  rm -rf debian
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/gifski /exports/usr/bin/
 
 # PEEK
 FROM base AS peek
@@ -543,12 +625,23 @@ RUN \
   mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
   mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
 
+# HEROKU
+FROM base AS heroku
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'heroku@7.46.0'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
+
 # DENO
 FROM base AS deno
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN \
-  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.4/deno-x86_64-unknown-linux-gnu.zip' && \
+  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.6/deno-x86_64-unknown-linux-gnu.zip' && \
   cd /usr/local/bin && \
   unzip /tmp/deno.zip && \
   rm /tmp/deno.zip
@@ -581,9 +674,11 @@ RUN \
   ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9) && \
   ./RUNME.sh install --release
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ /exports/usr/include/ /exports/usr/share/ && \
   mv /usr/local/bin/peaclock /exports/usr/local/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/include/glib-2.0 /exports/usr/include/ && \
+  mv /usr/share/glib-2.0 /exports/usr/share/
 
 # HTTPIE
 FROM base AS httpie
@@ -836,15 +931,6 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/bin/xclip /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libXmu.so.* /usr/lib/x86_64-linux-gnu/libXt.so.* /exports/usr/lib/x86_64-linux-gnu/
-
-# VLC
-FROM base AS vlc
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx vlc='3.0.8-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/vlc /exports/usr/bin/
 
 # ROFI
 FROM base AS rofi
@@ -1363,7 +1449,6 @@ COPY --from=pavucontrol /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
 COPY --from=rofi /exports/ /
-COPY --from=vlc /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
 COPY --from=zoom /exports/ /
@@ -1392,8 +1477,14 @@ COPY --from=httpie /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=signal /exports/ /
 COPY --from=deno /exports/ /
+COPY --from=heroku /exports/ /
 COPY --from=peek /exports/ /
-COPY --from=olive-editor /exports/ /
+COPY --from=gifski /exports/ /
+COPY --from=xsecurelock /exports/ /
+COPY --from=gthumb /exports/ /
+COPY --from=vlc /exports/ /
+COPY --from=file /exports/ /
+COPY --from=feh /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -1401,6 +1492,8 @@ ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
   PATH=${PATH}:/opt/google/chrome
+ENV \
+  PATH=${PATH}:/home/admin/.cache/npm/bin
 ENV \
   PATH=/home/admin/.yarn/bin:${PATH}
 RUN \

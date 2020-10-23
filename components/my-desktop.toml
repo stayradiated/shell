@@ -50,7 +50,6 @@ dependencies = [
   'qpdfview',
   'redshift',
   'rofi',
-  'vlc',
   'xclip',
   'xdg-utils',
   'zoom',
@@ -73,13 +72,20 @@ dependencies = [
 
   'signal',
   'deno',
+  'heroku',
   'peek',
+  'gifski',
+  'xsecurelock',
 
   # things I need to fix
-  # 'gthumb',
   # 'java',
+  # 'olive-editor',
+  'gthumb',
+  'vlc',
 
-  'olive-editor',
+
+  'file',
+  'feh',
 ]
 
 command = '/home/admin/.xinitrc'

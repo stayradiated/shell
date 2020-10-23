@@ -20,4 +20,6 @@ cd /root/src/github.com/octobanana/peaclock
 exports = [
   '/usr/local/bin/peaclock',
   '/usr/lib/x86_64-linux-gnu/',
+  '/usr/include/glib-2.0/',
+  '/usr/share/glib-2.0/',
 ]

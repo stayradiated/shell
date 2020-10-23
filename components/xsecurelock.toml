@@ -1,0 +1,57 @@
+name = 'xsecurelock'
+from = 'base'
+
+# https://github.com/google/xsecurelock/releases
+version = 'v1.7.0'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'clone',
+]
+
+build = """
+apteryx \
+  apache2-utils \
+  autoconf \
+  autotools-dev \
+  automake \
+  binutils \
+  gcc \
+  libc6-dev \
+  libpam-dev \
+  libx11-dev \
+  libxcomposite-dev \
+  libxext-dev \
+  libxfixes-dev \
+  libxft-dev \
+  libxmuu-dev \
+  libxrandr-dev \
+  libxss-dev \
+  make \
+  mplayer \
+  mpv \
+  pamtester \
+  pkg-config \
+  x11proto-core-dev \
+  xscreensaver
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/google/xsecurelock
+
+cd ~/src/github.com/google/xsecurelock
+sh autogen.sh
+./configure --with-pam-service-name=xscreensaver
+make
+make install
+"""
+
+exports = [
+  '/etc/pam.d/xscreensaver',
+  '/usr/bin/xscreensaver',
+  '/usr/bin/xscreensaver-*',
+  '/usr/lib/xscreensaver/',
+  '/usr/share/xscreensaver/',
+  "/usr/lib/systemd/user/xscreensaver.service",
+  '/usr/local/bin/xsecurelock',
+  '/usr/local/libexec/xsecurelock/',
+]

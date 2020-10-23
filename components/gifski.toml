@@ -1,0 +1,25 @@
+name = 'gifski'
+from = 'base'
+
+version = '1.2.0'
+
+devDependencies = [
+  'apteryx',
+  'wget',
+  'tar',
+  'xz',
+]
+
+build = """
+wget \
+  -O gifski.txz \
+  "https://github.com/ImageOptim/gifski/releases/download/{{VERSION}}/gifski-1.2.0.tar.xz"
+#RUN
+tar -xvf gifski.txz debian
+apteryx ./debian/gifski*.deb
+rm -rf debian
+"""
+
+exports = [
+  '/usr/bin/gifski'
+]
