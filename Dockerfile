@@ -50,7 +50,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
-  apteryx git='1:2.28.0*'
+  apteryx git='1:2.29.2-*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
@@ -63,7 +63,7 @@ FROM base AS go
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.15.3.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
@@ -468,7 +468,7 @@ RUN \
 FROM base AS firefox
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='81.0+*'
+  apteryx firefox='82.0+*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
   mv /usr/bin/firefox /exports/usr/bin/ && \
@@ -519,58 +519,29 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
-# FEH
-FROM base AS feh
-COPY --from=apteryx /exports/ /
+# WITHEXEDITORHOST
+FROM base AS withexeditorhost
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'withexeditorhost@5.4.5'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
+
+# XSV
+FROM base AS xsv
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=make /exports/ /
 RUN \
-  apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev && \
-  wget -O /tmp/feh.tar.bz2 https://feh.finalrewind.org/feh-3.5.tar.bz2 && \
-  tar xjvf /tmp/feh.tar.bz2 -C /tmp && \
-  cd /tmp/feh-3.5 && \
-  make curl=0 xinerama=0 && \
-  make install app=1 && \
-  rm -rf /tmp/feh*
+  wget -O /tmp/xsv.tgz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-i686-unknown-linux-musl.tar.gz && \
+  tar xzvf /tmp/xsv.tgz -C /tmp && \
+  mv /tmp/xsv /usr/local/bin && \
+  rm -r /tmp/xsv*
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/feh /exports/usr/local/bin/ && \
-  mv /usr/local/share/feh /exports/usr/local/share/ && \
-  mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
-
-# FILE
-FROM base AS file
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx file='1:5.32-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ && \
-  mv /etc/magic /etc/magic.mime /exports/etc/ && \
-  mv /usr/bin/file /exports/usr/bin/ && \
-  mv /usr/lib/file /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
-
-# VLC
-FROM base AS vlc
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx vlc='3.0.8-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/vlc /exports/usr/bin/
-
-# GTHUMB
-FROM base AS gthumb
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx gthumb='3:3.6.1-1'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /usr/bin/gthumb /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/xsv /exports/usr/local/bin/
 
 # XSECURELOCK
 FROM base AS xsecurelock
@@ -595,6 +566,68 @@ RUN \
   mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
   mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
 
+# SIGNAL
+FROM base AS signal
+COPY --from=apteryx /exports/ /
+RUN \
+  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
+  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
+  apt-get -q update && \
+  apteryx signal-desktop='1.37.2'
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/bin/ && \
+  mv /opt/Signal /exports/opt/ && \
+  mv /usr/bin/signal-desktop /exports/usr/bin/
+
+# PROLOG
+FROM base AS prolog
+COPY --from=apteryx /exports/ /
+RUN \
+  apt-add-repository ppa:swi-prolog/stable && \
+  apteryx swi-prolog
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/local/share/ && \
+  mv /etc/alternatives/prolog /exports/etc/alternatives/ && \
+  mv /usr/bin/swipl /usr/bin/prolog /exports/usr/bin/ && \
+  mv /usr/lib/swi-prolog /exports/usr/lib/ && \
+  mv /usr/share/swi-prolog /exports/usr/share/ && \
+  mv /usr/local/share/swi-prolog /exports/usr/local/share/
+
+# PEEK
+FROM base AS peek
+COPY --from=apteryx /exports/ /
+COPY --from=ffmpeg /exports/ /
+RUN \
+  add-apt-repository ppa:peek-developers/stable && \
+  apteryx peek='1.5.1-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/bin/peek /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
+  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
+
+# KHAL
+FROM base AS khal
+COPY --from=python3-pip /exports/ /
+RUN \
+  pip3 install khal=='0.10.2'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
+  mv /usr/local/bin/khal /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+
+# HEROKU
+FROM base AS heroku
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'heroku@7.46.0'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
+
 # GIFSKI
 FROM base AS gifski
 COPY --from=apteryx /exports/ /
@@ -611,30 +644,39 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/gifski /exports/usr/bin/
 
-# PEEK
-FROM base AS peek
+# FILE
+FROM base AS file
 COPY --from=apteryx /exports/ /
-COPY --from=ffmpeg /exports/ /
 RUN \
-  add-apt-repository ppa:peek-developers/stable && \
-  apteryx peek='1.5.1-*'
+  apteryx file='1:5.32-*'
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/share/glib-2.0/schemas/ && \
-  mv /usr/bin/peek /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
-  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ && \
+  mv /etc/magic /etc/magic.mime /exports/etc/ && \
+  mv /usr/bin/file /exports/usr/bin/ && \
+  mv /usr/lib/file /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
 
-# HEROKU
-FROM base AS heroku
-COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
+# FEH
+FROM base AS feh
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=make /exports/ /
 RUN \
-  npm install -g 'heroku@7.46.0'
+  apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev && \
+  wget -O /tmp/feh.tar.bz2 https://feh.finalrewind.org/feh-3.5.tar.bz2 && \
+  tar xjvf /tmp/feh.tar.bz2 -C /tmp && \
+  cd /tmp/feh-3.5 && \
+  make curl=0 xinerama=0 && \
+  make install app=1 && \
+  rm -rf /tmp/feh*
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/feh /exports/usr/local/bin/ && \
+  mv /usr/local/share/feh /exports/usr/local/share/ && \
+  mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
 
 # DENO
 FROM base AS deno
@@ -648,37 +690,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/deno /exports/usr/local/bin/
-
-# SIGNAL
-FROM base AS signal
-COPY --from=apteryx /exports/ /
-RUN \
-  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
-  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
-  apt-get -q update && \
-  apteryx signal-desktop-beta='1.36.3-beta.2'
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ && \
-  mv /opt/Signal\ Beta /exports/opt/ && \
-  mv /usr/bin/signal-desktop-beta /exports/usr/bin/
-
-# PEACLOCK
-FROM base AS peaclock
-COPY --from=apteryx /exports/ /
-COPY --from=clone /exports/ /
-RUN \
-  add-apt-repository ppa:ubuntu-toolchain-r/test && \
-  apteryx cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
-  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
-  cd /root/src/github.com/octobanana/peaclock && \
-  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9) && \
-  ./RUNME.sh install --release
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ /exports/usr/include/ /exports/usr/share/ && \
-  mv /usr/local/bin/peaclock /exports/usr/local/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/include/glib-2.0 /exports/usr/include/ && \
-  mv /usr/share/glib-2.0 /exports/usr/share/
 
 # HTTPIE
 FROM base AS httpie
@@ -1474,17 +1485,18 @@ COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
 COPY --from=docker-compose /exports/ /
 COPY --from=httpie /exports/ /
-COPY --from=peaclock /exports/ /
-COPY --from=signal /exports/ /
 COPY --from=deno /exports/ /
-COPY --from=heroku /exports/ /
-COPY --from=peek /exports/ /
-COPY --from=gifski /exports/ /
-COPY --from=xsecurelock /exports/ /
-COPY --from=gthumb /exports/ /
-COPY --from=vlc /exports/ /
-COPY --from=file /exports/ /
 COPY --from=feh /exports/ /
+COPY --from=file /exports/ /
+COPY --from=gifski /exports/ /
+COPY --from=heroku /exports/ /
+COPY --from=khal /exports/ /
+COPY --from=peek /exports/ /
+COPY --from=prolog /exports/ /
+COPY --from=signal /exports/ /
+COPY --from=xsecurelock /exports/ /
+COPY --from=xsv /exports/ /
+COPY --from=withexeditorhost /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

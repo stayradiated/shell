@@ -68,24 +68,27 @@ dependencies = [
 
   'docker-compose',
   'httpie',
-  'peaclock',
 
-  'signal',
   'deno',
-  'heroku',
-  'peek',
+  'feh',
+  'file',
   'gifski',
+  'heroku',
+  'khal',
+  'peek',
+  'prolog',
+  'signal',
   'xsecurelock',
 
   # things I need to fix
   # 'java',
   # 'olive-editor',
-  'gthumb',
-  'vlc',
+  # 'gthumb',
+  # 'vlc',
+  # 'peaclock',
 
-
-  'file',
-  'feh',
+  'xsv',
+  'withexeditorhost',
 ]
 
 command = '/home/admin/.xinitrc'

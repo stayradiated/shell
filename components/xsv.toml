@@ -1,0 +1,25 @@
+name = 'xsv'
+from = 'base'
+
+# https://github.com/BurntSushi/xsv/releases
+version = '0.13.0'
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+wget \
+  -O /tmp/xsv.tgz \
+  https://github.com/BurntSushi/xsv/releases/download/{{VERSION}}/xsv-{{VERSION}}-i686-unknown-linux-musl.tar.gz
+
+tar xzvf /tmp/xsv.tgz -C /tmp
+
+mv /tmp/xsv /usr/local/bin
+rm -r /tmp/xsv*
+"""
+
+exports = [
+  '/usr/local/bin/xsv',
+]

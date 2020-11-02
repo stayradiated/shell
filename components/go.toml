@@ -1,7 +1,7 @@
 name = "go"
 from = "base"
 
-version = "go1.13.4"
+version = "go1.15.3"
 
 devDependencies = [
   "wget",

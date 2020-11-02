@@ -1,2 +1,0 @@
-  apt-add-repository ppa:swi-prolog/stable && \
-  swi-prolog \

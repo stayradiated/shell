@@ -1,0 +1,22 @@
+name = 'prolog'
+from = 'base'
+
+version = '7.6.4+*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apt-add-repository ppa:swi-prolog/stable
+apteryx swi-prolog
+"""
+
+exports = [
+  '/etc/alternatives/prolog',
+  '/usr/bin/swipl',
+  '/usr/bin/prolog',
+  '/usr/lib/swi-prolog',
+  '/usr/share/swi-prolog',
+  '/usr/local/share/swi-prolog',
+]

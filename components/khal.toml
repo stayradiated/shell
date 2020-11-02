@@ -1,0 +1,17 @@
+name = 'khal'
+from = 'base'
+
+version = '0.10.2'
+
+devDependencies = [
+  'python3-pip'
+]
+
+build = """
+pip3 install khal=='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/bin/khal',
+  '/usr/local/lib/python3.6/',
+]
