@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.34.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.35.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -519,16 +519,15 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
-# WITHEXEDITORHOST
-FROM base AS withexeditorhost
-COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
+# CADDY
+FROM base AS caddy
+COPY --from=wget /exports/ /
 RUN \
-  npm install -g 'withexeditorhost@5.4.5'
+  wget -O /usr/local/bin/caddy 'https://caddyserver.com/api/download?os=linux&arch=amd64&idempotency=72866995282326' && \
+  chmod +x /usr/local/bin/caddy
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/caddy /exports/usr/local/bin/
 
 # XSV
 FROM base AS xsv
@@ -565,6 +564,17 @@ RUN \
   mv /usr/lib/systemd/user/xscreensaver.service /exports/usr/lib/systemd/user/ && \
   mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
   mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
+
+# WITHEXEDITORHOST
+FROM base AS withexeditorhost
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'withexeditorhost@5.4.5'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
 
 # SIGNAL
 FROM base AS signal
@@ -1494,9 +1504,10 @@ COPY --from=khal /exports/ /
 COPY --from=peek /exports/ /
 COPY --from=prolog /exports/ /
 COPY --from=signal /exports/ /
+COPY --from=withexeditorhost /exports/ /
 COPY --from=xsecurelock /exports/ /
 COPY --from=xsv /exports/ /
-COPY --from=withexeditorhost /exports/ /
+COPY --from=caddy /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

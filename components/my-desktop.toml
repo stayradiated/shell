@@ -78,7 +78,9 @@ dependencies = [
   'peek',
   'prolog',
   'signal',
+  'withexeditorhost',
   'xsecurelock',
+  'xsv',
 
   # things I need to fix
   # 'java',
@@ -87,8 +89,7 @@ dependencies = [
   # 'vlc',
   # 'peaclock',
 
-  'xsv',
-  'withexeditorhost',
+  'caddy',
 ]
 
 command = '/home/admin/.xinitrc'
