@@ -4,6 +4,7 @@ from = 'base'
 version = '0.10.2'
 
 devDependencies = [
+  'python3-pip',
   'pipx'
 ]
 

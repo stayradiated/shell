@@ -10,18 +10,83 @@ devDependencies = [
 build = """
 apteryx \
   python3-pip='{{VERSION}}' \
+  python3-dev='3.6.7-*' \
   python3-setuptools='39.0.1-*' \
-  python3-wheel='0.30.0-*' \
-  python3-venv='3.6.7-*'
+  python3-venv='3.6.7-*' \
+  python3-wheel='0.30.0-*'
+
+pip3 install wheel
 """
 
 exports = [
+  # can't mv these without breaking the system
+  # '/lib/x86_64-linux-gnu/ld-*.so',
+  # '/lib/x86_64-linux-gnu/libanl-*.so',
+  # '/lib/x86_64-linux-gnu/libBrokenLocale-*.so',
+  # '/lib/x86_64-linux-gnu/libc-*.so',
+  # '/lib/x86_64-linux-gnu/libcidn-*.so',
+  # '/lib/x86_64-linux-gnu/libcrypt-*.so',
+  # '/lib/x86_64-linux-gnu/libdl-*.so',
+  # '/lib/x86_64-linux-gnu/libm-*.so',
+  # '/lib/x86_64-linux-gnu/libmemusage.so',
+  # '/lib/x86_64-linux-gnu/libmvec-*.so',
+  # '/lib/x86_64-linux-gnu/libnsl-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_compat-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_dns-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_files-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_hesiod-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_nis-*.so',
+  # '/lib/x86_64-linux-gnu/libnss_nisplus-*.so',
+  # '/lib/x86_64-linux-gnu/libpcprofile.so',
+  # '/lib/x86_64-linux-gnu/libpthread-*.so',
+  # '/lib/x86_64-linux-gnu/libresolv-*.so',
+  # '/lib/x86_64-linux-gnu/librt-*.so',
+  # '/lib/x86_64-linux-gnu/libSegFault.so',
+  # '/lib/x86_64-linux-gnu/libthread_db-*.so',
+
   '/usr/bin/pip3',
-  '/usr/bin/pyvenv',
-  '/usr/bin/pyvenv-3.6',
+  '/usr/bin/pybuild',
+  '/usr/bin/python3*-config',
+  '/usr/bin/pyvenv*',
+  '/usr/bin/x86_64-linux-gnu-python3*-config',
+
+  '/usr/include/*.h',
+  "/usr/include/arpa/",
+  "/usr/include/asm-generic/",
+  "/usr/include/drm/",
+  "/usr/include/linux/",
+  "/usr/include/misc/",
+  "/usr/include/mtd/",
+  "/usr/include/net/",
+  "/usr/include/netash/",
+  "/usr/include/netatalk/",
+  "/usr/include/netax25/",
+  "/usr/include/neteconet/",
+  "/usr/include/netinet/",
+  "/usr/include/netipx/",
+  "/usr/include/netiucv/",
+  "/usr/include/netpacket/",
+  "/usr/include/netrom/",
+  "/usr/include/netrose/",
+  "/usr/include/nfs/",
+  "/usr/include/protocols/",
+  "/usr/include/python3.6",
+  "/usr/include/python3.6m/",
+  "/usr/include/rdma/",
+  "/usr/include/rpc/",
+  "/usr/include/rpcsvc/",
+  "/usr/include/scsi/",
+  "/usr/include/sound/",
+  "/usr/include/video/",
+  "/usr/include/x86_64-linux-gnu/",
+  "/usr/include/xen/",
+
   '/usr/lib/python3.6/',
   '/usr/lib/python3.7/',
   '/usr/lib/python3.8/',
   '/usr/lib/python3/',
+  '/usr/lib/x86_64-linux-gnu/',
+  '/usr/share/gdb/auto-load/lib/',
   '/usr/share/python-wheels/',
+  '/usr/share/python3/runtime.d/dh-python.rtupdate',
 ]

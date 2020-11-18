@@ -7,11 +7,12 @@ version = '3.0.0'
 devDependencies = [
   'apteryx',
   'build-essential',
+  'python3-pip',
   'pipx',
 ]
 
 build = """
-apteryx libpq-dev python3-dev
+apteryx libpq-dev
 pipx install pgcli=='{{VERSION}}' --include-deps
 """
 

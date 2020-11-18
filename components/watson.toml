@@ -5,7 +5,8 @@ from = 'base'
 version = '1.10.0'
 
 devDependencies = [
-  'pipx'
+  'python3-pip',
+  'pipx',
 ]
 
 build = """

@@ -181,21 +181,16 @@ RUN \
 FROM base AS python3-pip
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*' python3-venv='3.6.7-*'
+  apteryx python3-pip='9.0.1-*' python3-dev='3.6.7-*' python3-setuptools='39.0.1-*' python3-venv='3.6.7-*' python3-wheel='0.30.0-*' && \
+  pip3 install wheel
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/bin/pip3 /usr/bin/pyvenv /usr/bin/pyvenv-3.6 /exports/usr/bin/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
-  mv /usr/share/python-wheels /exports/usr/share/
-
-# XZ
-FROM base AS xz
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xz-utils='5.2.2-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/xz /exports/usr/bin/
+  mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/share/gdb/auto-load/ /exports/usr/share/ /exports/usr/share/python3/runtime.d/ && \
+  mv /usr/bin/pip3 /usr/bin/pybuild /usr/bin/python3*-config /usr/bin/pyvenv* /usr/bin/x86_64-linux-gnu-python3*-config /exports/usr/bin/ && \
+  mv /usr/include/*.h /usr/include/arpa /usr/include/asm-generic /usr/include/drm /usr/include/linux /usr/include/misc /usr/include/mtd /usr/include/net /usr/include/netash /usr/include/netatalk /usr/include/netax25 /usr/include/neteconet /usr/include/netinet /usr/include/netipx /usr/include/netiucv /usr/include/netpacket /usr/include/netrom /usr/include/netrose /usr/include/nfs /usr/include/protocols /usr/include/python3.6 /usr/include/python3.6m /usr/include/rdma /usr/include/rpc /usr/include/rpcsvc /usr/include/scsi /usr/include/sound /usr/include/video /usr/include/x86_64-linux-gnu /usr/include/xen /exports/usr/include/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/gdb/auto-load/lib /exports/usr/share/gdb/auto-load/ && \
+  mv /usr/share/python-wheels /exports/usr/share/ && \
+  mv /usr/share/python3/runtime.d/dh-python.rtupdate /exports/usr/share/python3/runtime.d/
 
 # LUA
 FROM base AS lua
@@ -244,38 +239,18 @@ COPY --from=python3-pip /exports/ /
 RUN \
   pip3 install pipx==0.15.6.0
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ && \
-  mv /usr/bin/pip3 /usr/bin/pyvenv /usr/bin/pyvenv-3.6 /exports/usr/bin/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
   mv /usr/local/bin/pipx /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
-  mv /usr/share/python-wheels /exports/usr/share/
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
 
-# UNZIP
-FROM base AS unzip
+# XZ
+FROM base AS xz
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx unzip='6.0-*'
+  apteryx xz-utils='5.2.2-*'
 RUN \
   mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/unzip /exports/usr/bin/
-
-# FFMPEG
-FROM base AS ffmpeg
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
-  tar -xvf /tmp/ffmpeg.txz && \
-  rm /tmp/ffmpeg.txz && \
-  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
-  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
-  rm -r ffmpeg
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
+  mv /usr/bin/xz /exports/usr/bin/
 
 # Z.LUA
 FROM base AS z.lua
@@ -430,6 +405,7 @@ RUN \
 
 # RANGER
 FROM base AS ranger
+COPY --from=python3-pip /exports/ /
 COPY --from=pipx /exports/ /
 ENV \
   PIPX_HOME=/usr/local/pipx \
@@ -514,6 +490,23 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
 
+# FFMPEG
+FROM base AS ffmpeg
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=xz /exports/ /
+RUN \
+  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
+  tar -xvf /tmp/ffmpeg.txz && \
+  rm /tmp/ffmpeg.txz && \
+  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
+  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
+  rm -r ffmpeg
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
+
 # PULSEAUDIO
 FROM base AS pulseaudio
 COPY --from=apteryx /exports/ /
@@ -526,6 +519,15 @@ RUN \
   mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
   mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
 
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
+
 # PING
 FROM base AS ping
 COPY --from=apteryx /exports/ /
@@ -535,240 +537,6 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
-
-# VDIRSYNCER
-FROM base AS vdirsyncer
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN \
-  pipx install vdirsyncer=='0.16.8'
-RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/vdirsyncer /exports/usr/local/bin/
-
-# NGROK
-FROM base AS ngrok
-COPY --from=wget /exports/ /
-COPY --from=unzip /exports/ /
-RUN \
-  wget -O /tmp/ngrok.zip 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip' && \
-  unzip /tmp/ngrok.zip && \
-  rm /tmp/ngrok.zip && \
-  mv ngrok /usr/local/bin/ngrok
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ngrok /exports/usr/local/bin/
-
-# CADDY
-FROM base AS caddy
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /usr/local/bin/caddy 'https://caddyserver.com/api/download?os=linux&arch=amd64&idempotency=72866995282326' && \
-  chmod +x /usr/local/bin/caddy
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/caddy /exports/usr/local/bin/
-
-# XSV
-FROM base AS xsv
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-RUN \
-  wget -O /tmp/xsv.tgz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-i686-unknown-linux-musl.tar.gz && \
-  tar xzvf /tmp/xsv.tgz -C /tmp && \
-  mv /tmp/xsv /usr/local/bin && \
-  rm -r /tmp/xsv*
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/xsv /exports/usr/local/bin/
-
-# XSECURELOCK
-FROM base AS xsecurelock
-COPY --from=apteryx /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=clone /exports/ /
-RUN \
-  apteryx apache2-utils autoconf autotools-dev automake binutils gcc libc6-dev libpam-dev libx11-dev libxcomposite-dev libxext-dev libxfixes-dev libxft-dev libxmuu-dev libxrandr-dev libxss-dev make mplayer mpv pamtester pkg-config x11proto-core-dev xscreensaver && \
-  clone --https --shallow --tag 'v1.7.0' https://github.com/google/xsecurelock && \
-  cd ~/src/github.com/google/xsecurelock && \
-  sh autogen.sh && \
-  ./configure --with-pam-service-name=xscreensaver && \
-  make && \
-  make install
-RUN \
-  mkdir -p /exports/etc/pam.d/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/lib/systemd/user/ /exports/usr/local/bin/ /exports/usr/local/libexec/ && \
-  mv /etc/pam.d/xscreensaver /exports/etc/pam.d/ && \
-  mv /usr/bin/xscreensaver /usr/bin/xscreensaver-* /exports/usr/bin/ && \
-  mv /usr/lib/xscreensaver /exports/usr/lib/ && \
-  mv /usr/share/xscreensaver /exports/usr/share/ && \
-  mv /usr/lib/systemd/user/xscreensaver.service /exports/usr/lib/systemd/user/ && \
-  mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
-  mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
-
-# WITHEXEDITORHOST
-FROM base AS withexeditorhost
-COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
-RUN \
-  npm install -g 'withexeditorhost@5.5.0'
-RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
-
-# SIGNAL
-FROM base AS signal
-COPY --from=apteryx /exports/ /
-RUN \
-  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
-  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
-  apt-get -q update && \
-  apteryx signal-desktop='1.37.2'
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ && \
-  mv /opt/Signal /exports/opt/ && \
-  mv /usr/bin/signal-desktop /exports/usr/bin/
-
-# PROLOG
-FROM base AS prolog
-COPY --from=apteryx /exports/ /
-RUN \
-  apt-add-repository ppa:swi-prolog/stable && \
-  apteryx swi-prolog
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/local/share/ && \
-  mv /etc/alternatives/prolog /exports/etc/alternatives/ && \
-  mv /usr/bin/swipl /usr/bin/prolog /exports/usr/bin/ && \
-  mv /usr/lib/swi-prolog /exports/usr/lib/ && \
-  mv /usr/share/swi-prolog /exports/usr/share/ && \
-  mv /usr/local/share/swi-prolog /exports/usr/local/share/
-
-# PEEK
-FROM base AS peek
-COPY --from=apteryx /exports/ /
-COPY --from=ffmpeg /exports/ /
-RUN \
-  add-apt-repository ppa:peek-developers/stable && \
-  apteryx peek='1.5.1-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/share/glib-2.0/schemas/ && \
-  mv /usr/bin/peek /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
-  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
-
-# KHAL
-FROM base AS khal
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN \
-  pipx install khal=='0.10.2'
-RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/khal /exports/usr/local/bin/
-
-# HEROKU
-FROM base AS heroku
-COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
-RUN \
-  npm install -g 'heroku@7.46.0'
-RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
-
-# GIFSKI
-FROM base AS gifski
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.0/gifski-1.2.0.tar.xz"
-RUN \
-  tar -xvf gifski.txz debian && \
-  apteryx ./debian/gifski*.deb && \
-  rm -rf debian
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/gifski /exports/usr/bin/
-
-# FILE
-FROM base AS file
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx file='1:5.32-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ && \
-  mv /etc/magic /etc/magic.mime /exports/etc/ && \
-  mv /usr/bin/file /exports/usr/bin/ && \
-  mv /usr/lib/file /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
-
-# FEH
-FROM base AS feh
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=make /exports/ /
-RUN \
-  apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev && \
-  wget -O /tmp/feh.tar.bz2 https://feh.finalrewind.org/feh-3.5.tar.bz2 && \
-  tar xjvf /tmp/feh.tar.bz2 -C /tmp && \
-  cd /tmp/feh-3.5 && \
-  make curl=0 xinerama=0 && \
-  make install app=1 && \
-  rm -rf /tmp/feh*
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/feh /exports/usr/local/bin/ && \
-  mv /usr/local/share/feh /exports/usr/local/share/ && \
-  mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
-
-# DENO
-FROM base AS deno
-COPY --from=wget /exports/ /
-COPY --from=unzip /exports/ /
-RUN \
-  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.6/deno-x86_64-unknown-linux-gnu.zip' && \
-  cd /usr/local/bin && \
-  unzip /tmp/deno.zip && \
-  rm /tmp/deno.zip
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/deno /exports/usr/local/bin/
-
-# HTTPIE
-FROM base AS httpie
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN \
-  pipx install httpie=='2.2.0'
-RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/
-
-# DOCKER-COMPOSE
-FROM base AS docker-compose
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
-  chmod +x /usr/local/bin/docker-compose
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -979,6 +747,29 @@ RUN \
   mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
   mv /usr/share/icons /exports/usr/share/
 
+# XSECURELOCK
+FROM base AS xsecurelock
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx apache2-utils autoconf autotools-dev automake binutils gcc libc6-dev libpam-dev libx11-dev libxcomposite-dev libxext-dev libxfixes-dev libxft-dev libxmuu-dev libxrandr-dev libxss-dev make mplayer mpv pamtester pkg-config x11proto-core-dev xscreensaver && \
+  clone --https --shallow --tag 'v1.7.0' https://github.com/google/xsecurelock && \
+  cd ~/src/github.com/google/xsecurelock && \
+  sh autogen.sh && \
+  ./configure --with-pam-service-name=xscreensaver && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/etc/pam.d/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/lib/systemd/user/ /exports/usr/local/bin/ /exports/usr/local/libexec/ && \
+  mv /etc/pam.d/xscreensaver /exports/etc/pam.d/ && \
+  mv /usr/bin/xscreensaver /usr/bin/xscreensaver-* /exports/usr/bin/ && \
+  mv /usr/lib/xscreensaver /exports/usr/lib/ && \
+  mv /usr/share/xscreensaver /exports/usr/share/ && \
+  mv /usr/lib/systemd/user/xscreensaver.service /exports/usr/lib/systemd/user/ && \
+  mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
+  mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
+
 # XCLIP
 FROM base AS xclip
 COPY --from=apteryx /exports/ /
@@ -988,6 +779,19 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/bin/xclip /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libXmu.so.* /usr/lib/x86_64-linux-gnu/libXt.so.* /exports/usr/lib/x86_64-linux-gnu/
+
+# SIGNAL
+FROM base AS signal
+COPY --from=apteryx /exports/ /
+RUN \
+  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
+  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
+  apt-get -q update && \
+  apteryx signal-desktop='1.37.2'
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/bin/ && \
+  mv /opt/Signal /exports/opt/ && \
+  mv /usr/bin/signal-desktop /exports/usr/bin/
 
 # ROFI
 FROM base AS rofi
@@ -1018,6 +822,20 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
   mv /usr/bin/qpdfview /exports/usr/bin/ && \
   mv /usr/lib/qpdfview /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# PEEK
+FROM base AS peek
+COPY --from=apteryx /exports/ /
+COPY --from=ffmpeg /exports/ /
+RUN \
+  add-apt-repository ppa:peek-developers/stable && \
+  apteryx peek='1.5.1-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/bin/peek /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
+  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
 
 # PAVUCONTROL
 FROM base AS pavucontrol
@@ -1089,6 +907,27 @@ RUN \
   mv /usr/bin/flameshot /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# FEH
+FROM base AS feh
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=make /exports/ /
+RUN \
+  apteryx libimlib2-dev libpng-dev libx11-dev libxt-dev && \
+  wget -O /tmp/feh.tar.bz2 https://feh.finalrewind.org/feh-3.5.tar.bz2 && \
+  tar xjvf /tmp/feh.tar.bz2 -C /tmp && \
+  cd /tmp/feh-3.5 && \
+  make curl=0 xinerama=0 && \
+  make install app=1 && \
+  rm -rf /tmp/feh*
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/feh /exports/usr/local/bin/ && \
+  mv /usr/local/share/feh /exports/usr/local/share/ && \
+  mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
+
 # CHARLES
 FROM base AS charles
 COPY --from=wget /exports/ /
@@ -1129,8 +968,33 @@ RUN \
   mv /usr/bin/alacritty /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
+# XSV
+FROM base AS xsv
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/xsv.tgz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-i686-unknown-linux-musl.tar.gz && \
+  tar xzvf /tmp/xsv.tgz -C /tmp && \
+  mv /tmp/xsv /usr/local/bin && \
+  rm -r /tmp/xsv*
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/xsv /exports/usr/local/bin/
+
+# WITHEXEDITORHOST
+FROM base AS withexeditorhost
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'withexeditorhost@5.5.0'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
+
 # WATSON
 FROM base AS watson
+COPY --from=python3-pip /exports/ /
 COPY --from=pipx /exports/ /
 ENV \
   PIPX_HOME=/usr/local/pipx \
@@ -1141,6 +1005,22 @@ RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/watson /exports/usr/local/bin/
+
+# VDIRSYNCER
+FROM base AS vdirsyncer
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install vdirsyncer=='0.16.8' && \
+  pipx inject vdirsyncer vdirsyncer[gcalendar] && \
+  pipx inject vdirsyncer requests-oauthlib
+RUN \
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/vdirsyncer /exports/usr/local/bin/
 
 # TREE
 FROM base AS tree
@@ -1248,6 +1128,20 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/rg /exports/usr/local/bin/
 
+# PROLOG
+FROM base AS prolog
+COPY --from=apteryx /exports/ /
+RUN \
+  apt-add-repository ppa:swi-prolog/stable && \
+  apteryx swi-prolog
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/local/share/ && \
+  mv /etc/alternatives/prolog /exports/etc/alternatives/ && \
+  mv /usr/bin/swipl /usr/bin/prolog /exports/usr/bin/ && \
+  mv /usr/lib/swi-prolog /exports/usr/lib/ && \
+  mv /usr/share/swi-prolog /exports/usr/share/ && \
+  mv /usr/local/share/swi-prolog /exports/usr/local/share/
+
 # PRETTYPING
 FROM base AS prettyping
 COPY --from=wget /exports/ /
@@ -1265,12 +1159,13 @@ RUN \
 FROM base AS pgcli
 COPY --from=apteryx /exports/ /
 COPY --from=build-essential /exports/ /
+COPY --from=python3-pip /exports/ /
 COPY --from=pipx /exports/ /
 ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  apteryx libpq-dev python3-dev && \
+  apteryx libpq-dev && \
   pipx install pgcli=='3.0.0' --include-deps
 RUN \
   mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ && \
@@ -1288,6 +1183,19 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
+
+# NGROK
+FROM base AS ngrok
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+RUN \
+  wget -O /tmp/ngrok.zip 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip' && \
+  unzip /tmp/ngrok.zip && \
+  rm /tmp/ngrok.zip && \
+  mv ngrok /usr/local/bin/ngrok
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ngrok /exports/usr/local/bin/
 
 # NCU
 FROM base AS ncu
@@ -1319,6 +1227,20 @@ RUN \
   mv /usr/bin/mediainfo /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libmediainfo.so.* /usr/lib/x86_64-linux-gnu/libmms.so.* /usr/lib/x86_64-linux-gnu/libtinyxml2.so.* /usr/lib/x86_64-linux-gnu/libzen.so.* /exports/usr/lib/x86_64-linux-gnu/
 
+# KHAL
+FROM base AS khal
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install khal=='0.10.2'
+RUN \
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/khal /exports/usr/local/bin/
+
 # JQ
 FROM base AS jq
 COPY --from=wget /exports/ /
@@ -1329,6 +1251,20 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/jq /exports/usr/local/bin/
 
+# HTTPIE
+FROM base AS httpie
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install httpie=='2.2.0'
+RUN \
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/
+
 # HTOP
 FROM base AS htop
 COPY --from=apteryx /exports/ /
@@ -1337,6 +1273,33 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/htop /exports/usr/bin/
+
+# HEROKU
+FROM base AS heroku
+COPY --from=node /exports/ /
+ENV \
+  PATH=/usr/local/lib/node/bin:${PATH}
+RUN \
+  npm install -g 'heroku@7.46.0'
+RUN \
+  mkdir -p /exports/usr/local/lib/ && \
+  mv /usr/local/lib/node /exports/usr/local/lib/
+
+# GIFSKI
+FROM base AS gifski
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=xz /exports/ /
+RUN \
+  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.0/gifski-1.2.0.tar.xz"
+RUN \
+  tar -xvf gifski.txz debian && \
+  apteryx ./debian/gifski*.deb && \
+  rm -rf debian
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/gifski /exports/usr/bin/
 
 # GH
 FROM base AS gh
@@ -1351,6 +1314,19 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/gh /exports/usr/local/bin/
+
+# FILE
+FROM base AS file
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx file='1:5.32-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ && \
+  mv /etc/magic /etc/magic.mime /exports/etc/ && \
+  mv /usr/bin/file /exports/usr/bin/ && \
+  mv /usr/lib/file /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
 
 # FD
 FROM base AS fd
@@ -1369,6 +1345,16 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/fd /exports/usr/local/bin/
 
+# DOCKER-COMPOSE
+FROM base AS docker-compose
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
+  chmod +x /usr/local/bin/docker-compose
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
+
 # DOCKER
 FROM base AS docker
 COPY --from=apteryx /exports/ /
@@ -1382,6 +1368,19 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/docker /exports/usr/bin/
 
+# DENO
+FROM base AS deno
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+RUN \
+  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.6/deno-x86_64-unknown-linux-gnu.zip' && \
+  cd /usr/local/bin && \
+  unzip /tmp/deno.zip && \
+  rm /tmp/deno.zip
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/deno /exports/usr/local/bin/
+
 # CONTAINER-DIFF
 FROM base AS container-diff
 COPY --from=wget /exports/ /
@@ -1392,6 +1391,16 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/container-diff /exports/usr/local/bin/
+
+# CADDY
+FROM base AS caddy
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/caddy 'https://caddyserver.com/api/download?os=linux&arch=amd64&idempotency=72866995282326' && \
+  chmod +x /usr/local/bin/caddy
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/caddy /exports/usr/local/bin/
 
 # BAT
 FROM base AS bat
@@ -1468,28 +1477,39 @@ FROM shell-admin AS my-desktop
 COPY --from=libxv1 /exports/ /
 COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
+COPY --from=python3-pip /exports/ /
 COPY --from=acpi /exports/ /
 COPY --from=adb /exports/ /
 COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
+COPY --from=caddy /exports/ /
 COPY --from=clone /exports/ /
 COPY --from=container-diff /exports/ /
+COPY --from=deno /exports/ /
 COPY --from=docker /exports/ /
+COPY --from=docker-compose /exports/ /
 COPY --from=fd /exports/ /
 COPY --from=ffmpeg /exports/ /
+COPY --from=file /exports/ /
 COPY --from=fzf /exports/ /
 COPY --from=gh /exports/ /
+COPY --from=gifski /exports/ /
 COPY --from=go /exports/ /
+COPY --from=heroku /exports/ /
 COPY --from=htop /exports/ /
+COPY --from=httpie /exports/ /
 COPY --from=jq /exports/ /
+COPY --from=khal /exports/ /
 COPY --from=make /exports/ /
 COPY --from=mediainfo /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
+COPY --from=ngrok /exports/ /
 COPY --from=node /exports/ /
 COPY --from=np /exports/ /
 COPY --from=pgcli /exports/ /
 COPY --from=prettyping /exports/ /
+COPY --from=prolog /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=rsync /exports/ /
 COPY --from=safe-rm /exports/ /
@@ -1499,20 +1519,27 @@ COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=unzip /exports/ /
+COPY --from=vdirsyncer /exports/ /
 COPY --from=watson /exports/ /
 COPY --from=wget /exports/ /
+COPY --from=withexeditorhost /exports/ /
+COPY --from=xsv /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
 COPY --from=charles /exports/ /
+COPY --from=feh /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=light /exports/ /
 COPY --from=pavucontrol /exports/ /
+COPY --from=peek /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
 COPY --from=rofi /exports/ /
+COPY --from=signal /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
+COPY --from=xsecurelock /exports/ /
 COPY --from=shell-browser --chown=admin /home/admin/exports/ /
 COPY --from=shell-browser /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
@@ -1533,23 +1560,6 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
-COPY --from=docker-compose /exports/ /
-COPY --from=httpie /exports/ /
-COPY --from=deno /exports/ /
-COPY --from=feh /exports/ /
-COPY --from=file /exports/ /
-COPY --from=gifski /exports/ /
-COPY --from=heroku /exports/ /
-COPY --from=khal /exports/ /
-COPY --from=peek /exports/ /
-COPY --from=prolog /exports/ /
-COPY --from=signal /exports/ /
-COPY --from=withexeditorhost /exports/ /
-COPY --from=xsecurelock /exports/ /
-COPY --from=xsv /exports/ /
-COPY --from=caddy /exports/ /
-COPY --from=ngrok /exports/ /
-COPY --from=vdirsyncer /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
