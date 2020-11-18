@@ -4,14 +4,14 @@ from = 'base'
 version = '0.10.2'
 
 devDependencies = [
-  'python3-pip'
+  'pipx'
 ]
 
 build = """
-pip3 install khal=='{{VERSION}}'
+pipx install khal=='{{VERSION}}'
 """
 
 exports = [
+  '/usr/local/pipx/',
   '/usr/local/bin/khal',
-  '/usr/local/lib/python3.6/',
 ]

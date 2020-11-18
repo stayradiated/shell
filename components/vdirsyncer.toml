@@ -1,0 +1,18 @@
+name = 'vdirsyncer'
+from = 'base'
+
+# https://github.com/pimutils/vdirsyncer/releases
+version = '0.16.8'
+
+devDependencies = [
+  'pipx'
+]
+
+build = """
+pipx install vdirsyncer=='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/pipx/',
+  '/usr/local/bin/vdirsyncer',
+]

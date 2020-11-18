@@ -52,7 +52,7 @@ dependencies = [
   'rofi',
   'xclip',
   'xdg-utils',
-  'zoom',
+  # 'zoom',
 
   'shell-browser',
   'shell-git',
@@ -90,6 +90,8 @@ dependencies = [
   # 'peaclock',
 
   'caddy',
+  'ngrok',
+  'vdirsyncer',
 ]
 
 command = '/home/admin/.xinitrc'

@@ -5,15 +5,14 @@ from = 'base'
 version = '1.10.0'
 
 devDependencies = [
-  'python3-pip'
+  'pipx'
 ]
 
 build = """
-pip3 install td-watson=='{{VERSION}}'
+pipx install td-watson=='{{VERSION}}'
 """
 
 exports = [
-  #'/usr/local/bin/chardetect',
+  '/usr/local/pipx/',
   '/usr/local/bin/watson',
-  '/usr/local/lib/python3.6/',
 ]

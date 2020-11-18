@@ -1,7 +1,7 @@
 name = 'withexeditorhost'
 from = 'base'
 
-version = '5.4.5'
+version = '5.5.0'
 
 dependencies = [
   'node'

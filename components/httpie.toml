@@ -5,15 +5,15 @@ from = 'base'
 version = '2.2.0'
 
 devDependencies = [
-  'python3-pip'
+  'pipx'
 ]
 
 build = """
-pip3 install httpie=='{{VERSION}}'
+pipx install httpie=='{{VERSION}}'
 """
 
 exports = [
+  '/usr/local/pipx/',
   '/usr/local/bin/http',
   '/usr/local/bin/https',
-  '/usr/local/lib/python3.6/',
 ]

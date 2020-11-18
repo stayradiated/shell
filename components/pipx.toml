@@ -1,0 +1,32 @@
+name = 'pipx'
+from = 'base'
+
+# https://github.com/pipxproject/pipx/releases/
+version = '0.15.6.0'
+
+devDependencies = [
+  'apteryx',
+  'python3-pip',
+]
+
+build = """
+pip3 install pipx=={{VERSION}}
+"""
+
+exportEnv = [
+  ['PIPX_HOME', '/usr/local/pipx'],
+  ['PIPX_BIN_DIR', '/usr/local/bin'],
+]
+
+exports = [
+  '/usr/bin/pip3',
+  '/usr/bin/pyvenv',
+  '/usr/bin/pyvenv-3.6',
+  '/usr/lib/python3.6/',
+  '/usr/lib/python3.7/',
+  '/usr/lib/python3.8/',
+  '/usr/lib/python3/',
+  '/usr/local/bin/pipx',
+  '/usr/local/lib/python3.6/',
+  '/usr/share/python-wheels/',
+]

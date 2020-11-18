@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.35.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.36.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -176,6 +176,17 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/share/ && \
   mv /usr/local/share/nvm /exports/usr/local/share/
+
+# PYTHON3-PIP
+FROM base AS python3-pip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*' python3-venv='3.6.7-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
+  mv /usr/bin/pip3 /usr/bin/pyvenv /usr/bin/pyvenv-3.6 /exports/usr/bin/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
+  mv /usr/share/python-wheels /exports/usr/share/
 
 # XZ
 FROM base AS xz
@@ -226,16 +237,28 @@ RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
 
-# PYTHON3-PIP
-FROM base AS python3-pip
+# PIPX
+FROM base AS pipx
+COPY --from=apteryx /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  pip3 install pipx==0.15.6.0
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ && \
+  mv /usr/bin/pip3 /usr/bin/pyvenv /usr/bin/pyvenv-3.6 /exports/usr/bin/ && \
+  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
+  mv /usr/local/bin/pipx /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
+  mv /usr/share/python-wheels /exports/usr/share/
+
+# UNZIP
+FROM base AS unzip
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx python3-pip='9.0.1-*' python3-setuptools='39.0.1-*' python3-wheel='0.30.0-*'
+  apteryx unzip='6.0-*'
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /usr/bin/pip3 /exports/usr/bin/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/ && \
-  mv /usr/share/python-wheels /exports/usr/share/
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
 
 # FFMPEG
 FROM base AS ffmpeg
@@ -253,15 +276,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
-
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx unzip='6.0-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/unzip /exports/usr/bin/
 
 # Z.LUA
 FROM base AS z.lua
@@ -416,13 +430,16 @@ RUN \
 
 # RANGER
 FROM base AS ranger
-COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pip3 install ranger-fm=='1.9.3'
+  pipx install ranger-fm=='1.9.3'
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
 
 # ONE-PW
 FROM base AS one-pw
@@ -519,6 +536,32 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# VDIRSYNCER
+FROM base AS vdirsyncer
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install vdirsyncer=='0.16.8'
+RUN \
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/vdirsyncer /exports/usr/local/bin/
+
+# NGROK
+FROM base AS ngrok
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+RUN \
+  wget -O /tmp/ngrok.zip 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip' && \
+  unzip /tmp/ngrok.zip && \
+  rm /tmp/ngrok.zip && \
+  mv ngrok /usr/local/bin/ngrok
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ngrok /exports/usr/local/bin/
+
 # CADDY
 FROM base AS caddy
 COPY --from=wget /exports/ /
@@ -571,7 +614,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'withexeditorhost@5.4.5'
+  npm install -g 'withexeditorhost@5.5.0'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -619,13 +662,16 @@ RUN \
 
 # KHAL
 FROM base AS khal
-COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pip3 install khal=='0.10.2'
+  pipx install khal=='0.10.2'
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/khal /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/khal /exports/usr/local/bin/
 
 # HEROKU
 FROM base AS heroku
@@ -703,13 +749,16 @@ RUN \
 
 # HTTPIE
 FROM base AS httpie
-COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pip3 install httpie=='2.2.0'
+  pipx install httpie=='2.2.0'
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/
 
 # DOCKER-COMPOSE
 FROM base AS docker-compose
@@ -844,9 +893,9 @@ RUN \
   mv /home/admin/.config/ranger /home/admin/exports/home/admin/.config/
 USER root
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
@@ -929,19 +978,6 @@ RUN \
   mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
   mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
   mv /usr/share/icons /exports/usr/share/
-
-# ZOOM
-FROM base AS zoom
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/zoom.deb 'https://zoom.us/client/5.3.469451.0927/zoom_amd64.deb' && \
-  apteryx /tmp/zoom.deb
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ && \
-  mv /opt/zoom /exports/opt/ && \
-  mv /usr/bin/zoom /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
 
 # XCLIP
 FROM base AS xclip
@@ -1095,13 +1131,16 @@ RUN \
 
 # WATSON
 FROM base AS watson
-COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pip3 install td-watson=='1.10.0'
+  pipx install td-watson=='1.10.0'
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/watson /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/watson /exports/usr/local/bin/
 
 # TREE
 FROM base AS tree
@@ -1226,16 +1265,18 @@ RUN \
 FROM base AS pgcli
 COPY --from=apteryx /exports/ /
 COPY --from=build-essential /exports/ /
-COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
   apteryx libpq-dev python3-dev && \
-  pip3 install pgcli=='3.0.0'
+  pipx install pgcli=='3.0.0' --include-deps
 RUN \
-  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/lib/ && \
+  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ && \
   mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6 /exports/usr/local/lib/ && \
-  mv /usr/lib/python3.6 /usr/lib/python3.7 /usr/lib/python3.8 /usr/lib/python3 /exports/usr/lib/
+  mv /usr/local/pipx /exports/usr/local/
 
 # NP
 FROM base AS np
@@ -1472,7 +1513,6 @@ COPY --from=redshift /exports/ /
 COPY --from=rofi /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
-COPY --from=zoom /exports/ /
 COPY --from=shell-browser --chown=admin /home/admin/exports/ /
 COPY --from=shell-browser /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
@@ -1508,6 +1548,8 @@ COPY --from=withexeditorhost /exports/ /
 COPY --from=xsecurelock /exports/ /
 COPY --from=xsv /exports/ /
 COPY --from=caddy /exports/ /
+COPY --from=ngrok /exports/ /
+COPY --from=vdirsyncer /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

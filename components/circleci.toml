@@ -1,0 +1,25 @@
+name = 'circleci'
+from = 'base'
+
+# https://github.com/CircleCI-Public/circleci-cli/releases
+version = '0.1.11458'
+
+devDependencies = [
+  'wget',
+  'tar',
+]
+
+build = """
+  wget \
+    -O /tmp/circleci.tgz \
+  https://github.com/CircleCI-Public/circleci-cli/releases/download/v{{VERSION}}/circleci-cli_{{VERSION}}_linux_amd64.tar.gz
+
+  tar xzvf /tmp/circleci.tgz
+  rm /tmp/circleci.tgz
+
+  mv circleci-cli_{{VERSION}}_linux_amd64/circleci /usr/local/bin/circleci
+"""
+
+exports = [
+  '/usr/local/bin/circleci'
+]
