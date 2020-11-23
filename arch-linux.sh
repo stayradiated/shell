@@ -92,9 +92,6 @@ systemctl start docker
 # install x11docker
 curl -fsSL https://raw.githubusercontent.com/mviereck/x11docker/master/x11docker | bash -s -- --update
 
-# audio
-pacman -S pulseaudio pulseaudio-alsa
-
 # sudo
 pacman -S sudo
 visudo # allow group sudo
@@ -118,6 +115,9 @@ mkdir -p ~/.ssh
 systemctl enable sshd
 systemctl start sshd
 docker exec $(docker ps -q) cat /home/admin/.ssh/sshkey.pub > ~/.ssh/authorized_keys
+
+# wacom driver (requires reboot)
+pacman -S xf86-input-wacom
 
 # bluetooth mouse
 # pacman -S bluez bluez-utils bluez-hid2hci
