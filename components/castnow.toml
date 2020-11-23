@@ -1,6 +1,7 @@
 name = 'castnow'
 from = 'base'
 
+# https://www.npmjs.com/package/castnow
 version = '0.6.0'
 
 dependencies = [

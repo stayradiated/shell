@@ -1,7 +1,8 @@
 name = 'heroku'
 from = 'base'
 
-version = '7.46.0'
+# https://www.npmjs.com/package/heroku
+version = '7.47.3'
 
 devDependencies = [
   'node',

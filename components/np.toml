@@ -1,7 +1,8 @@
 name = 'np'
 from = 'base'
 
-version = '6.2.3'
+# https://npmjs.com/package/np
+version = '7.0.0'
 
 dependencies = [
   'node'

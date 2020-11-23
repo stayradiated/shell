@@ -1,8 +1,8 @@
 name = 'sd'
 from = 'base'
 
-# https://github.com/chmln/sd
-version = '0.7.4'
+# https://github.com/chmln/sd/releases
+version = 'v0.7.6'
 
 devDependencies = [
   'wget',
@@ -11,20 +11,10 @@ devDependencies = [
 
 build = """
 wget \
-  -O /tmp/sd.zip \
-  'https://github.com/chmln/sd/releases/download/v{{VERSION}}/sd-{{VERSION}}.x86_64-unknown-linux-gnu.zip'
-unzip /tmp/sd.zip
-rm /tmp/sd.zip
-mv b/x86_64-unknown-linux-gnu/release/sd /usr/local/bin/sd
-mkdir -p /usr/local/share/man/man1
-mv b/x86_64-unknown-linux-gnu/release/build/sd-*/out/sd.1 /usr/local/share/man/man1/sd.1
-rm -r b
+  -O /usr/local/bin/sd \
+  'https://github.com/chmln/sd/releases/download/{{VERSION}}/sd-{{VERSION}}-x86_64-unknown-linux-gnu'
 """
 
 exports = [
   '/usr/local/bin/sd'
-]
-
-docs = [
-  '/usr/local/share/man/man1/sd.1'
 ]

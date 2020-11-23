@@ -2,7 +2,7 @@ name = 'arduino-cli'
 from = 'base'
 
 # https://github.com/arduino/arduino-cli/releases
-version = '0.10.0'
+version = '0.13.0'
 
 devDependencies = [
   'wget',

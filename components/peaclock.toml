@@ -1,7 +1,7 @@
 name = "peaclock"
 from = "base"
 
-# https://github.com/octobanana/peaclock
+# https://github.com/octobanana/peaclock/releases
 version = "0.4.3"
 
 devDependencies = [ "apteryx", "clone" ]

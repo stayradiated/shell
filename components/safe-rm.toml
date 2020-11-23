@@ -1,6 +1,7 @@
 name = 'safe-rm'
 from = 'base'
 
+# https://github.com/kaelzhang/shell-safe-rm/releases
 version = '1.0.7'
 
 devDependencies = [

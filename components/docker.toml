@@ -1,7 +1,8 @@
 name = 'docker'
 from = 'base'
 
-version ='5:19.03.8*'
+# https://docs.docker.com/engine/release-notes/
+version ='5:19.03.13*'
 
 devDependencies = [
   'apteryx',

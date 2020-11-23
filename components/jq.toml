@@ -1,6 +1,7 @@
 name = 'jq'
 from = 'base'
 
+# https://github.com/stedolan/jq/releases
 version = '1.6'
 
 devDependencies = [ 'wget' ]

@@ -2,7 +2,7 @@ name = 'fzf'
 from = 'base'
 
 # https://github.com/junegunn/fzf/releases
-version = '0.21.1'
+version = '0.24.3'
 
 devDependencies = [
   'clone'

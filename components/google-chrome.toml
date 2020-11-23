@@ -1,6 +1,7 @@
 name = 'google-chrome'
 from = 'base'
 
+# https://www.slimjet.com/chrome/google-chrome-old-version.php
 version = '86.0.4240.75'
 
 devDependencies = [

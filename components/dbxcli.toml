@@ -1,6 +1,7 @@
 name = "dbxcli"
 from = "base"
 
+# https://github.com/dropbox/dbxcli/releases
 version = "3.0.0"
 
 devDependencies = [

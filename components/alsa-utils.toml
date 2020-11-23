@@ -1,0 +1,74 @@
+name = "alsa-utils"
+from = "base"
+
+version = "1.1.3-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx alsa-utils='{{VERSION}}'
+"""
+
+exports = [ 
+  '/bin/kmod',
+  '/bin/lsmod',
+  '/bin/whiptail',
+  '/etc/alternatives/newt-palette',
+  '/etc/depmod.d/',
+  '/etc/init.d/alsa-utils',
+  '/etc/init.d/kmod',
+  '/etc/ld.so.cache',
+  '/etc/modprobe.d/',
+  '/etc/modules',
+  '/etc/newt/',
+  '/etc/rc0.d/K01alsa-utils',
+  '/etc/rc1.d/K01alsa-utils',
+  '/etc/rc6.d/K01alsa-utils',
+  '/etc/rcS.d/S01alsa-utils',
+  '/etc/rcS.d/S01kmod',
+  '/lib/modprobe.d/',
+  '/lib/systemd/system/alsa-restore.service',
+  '/lib/systemd/system/alsa-state.service',
+  '/lib/systemd/system/alsa-utils.service',
+  '/lib/systemd/system/basic.target.wants/',
+  '/lib/udev/rules.d/',
+  '/lib/x86_64-linux-gnu/libkmod.so.*',
+  '/lib/x86_64-linux-gnu/libnewt.so.*',
+  '/lib/x86_64-linux-gnu/libslang.so.*',
+  '/sbin/depmod',
+  '/sbin/insmod',
+  '/sbin/lsmod',
+  '/sbin/modinfo',
+  '/sbin/modprobe',
+  '/sbin/rmmod',
+  '/usr/bin/aconnect',
+  '/usr/bin/alsabat',
+  '/usr/bin/alsaloop',
+  '/usr/bin/alsamixer',
+  '/usr/bin/alsatplg',
+  '/usr/bin/alsaucm',
+  '/usr/bin/amidi',
+  '/usr/bin/amixer',
+  '/usr/bin/aplay',
+  '/usr/bin/aplaymidi',
+  '/usr/bin/arecord',
+  '/usr/bin/arecordmidi',
+  '/usr/bin/aseqdump',
+  '/usr/bin/aseqnet',
+  '/usr/bin/iecset',
+  '/usr/bin/speaker-test',
+  '/usr/lib/x86_64-linux-gnu/libasound.so.*',
+  '/usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.*',
+  '/usr/lib/x86_64-linux-gnu/libfftw3f.so.*',
+  '/usr/lib/x86_64-linux-gnu/libgomp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libsamplerate.so.*',
+  '/usr/sbin/alsa-info',
+  '/usr/sbin/alsabat-test',
+  '/usr/sbin/alsactl',
+  '/usr/share/alsa/',
+  '/usr/share/sounds/',
+  '/var/cache/ldconfig/aux-cache',
+  '/var/lib/alsa',
+]
+

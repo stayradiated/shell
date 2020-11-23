@@ -1,0 +1,73 @@
+name = 'wacom'
+from = 'base'
+
+version = '1:0.36.1-*'
+
+dependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx xserver-xorg-input-wacom='{{VERSION}}'
+"""
+
+exports = [
+  '/lib/x86_64-linux-gnu/libkmod.so.*',
+  '/usr/bin/xsetwacom',
+  '/usr/lib/x86_64-linux-gnu/',
+
+  # # '/bin/systemd-hwdb',
+  # # '/bin/udevadm',
+  # # '/etc/default/keyboard',
+  # # '/etc/glvnd/',
+  # # '/etc/group',
+  # # '/etc/group-',
+  # # '/etc/gshadow',
+  # '/etc/gshadow-',
+  # '/etc/init.d/udev',
+  # # '/etc/init.d/x11-common',
+  # # '/etc/ld.so.cache',
+  # '/etc/rcS.d/S01udev',
+  # # '/etc/rcS.d/S01x11-common',
+  # # '/etc/sensors.d/',
+  # # '/etc/sensors3.conf',
+  # '/etc/udev/',
+  # # '/etc/X11/rgb.txt',
+  # # '/etc/X11/xkb',
+  # # '/etc/X11/Xreset',
+  # # '/etc/X11/Xreset.d/',
+  # # '/etc/X11/Xresources/',
+  # # '/etc/X11/Xsession',
+  # # '/etc/X11/Xsession.d/20x11-common_process-args',
+  # # '/etc/X11/Xsession.d/30x11-common_xresources',
+  # # '/etc/X11/Xsession.d/35x11-common_xhost-local',
+  # # '/etc/X11/Xsession.d/40x11-common_xsessionrc',
+  # # '/etc/X11/Xsession.d/50x11-common_determine-startup',
+  # # '/etc/X11/Xsession.d/60x11-common_localhost',
+  # # '/etc/X11/Xsession.d/60x11-common_xdg_path',
+  # # '/etc/X11/Xsession.d/90x11-common_ssh-agent',
+  # # '/etc/X11/Xsession.d/99x11-common_start',
+  # # '/etc/X11/Xsession.options',
+  # '/lib/modprobe.d/',
+  # '/lib/systemd/network/',
+  # '/lib/systemd/system/sockets.target.wants/',
+  # '/lib/systemd/system/sysinit.target.wants/',
+  # '/lib/systemd/system/systemd-hwdb-update.service',
+  # '/lib/systemd/system/systemd-udev-settle.service',
+  # '/lib/systemd/system/systemd-udev-trigger.service',
+  # '/lib/systemd/system/systemd-udevd-control.socket',
+  # '/lib/systemd/system/systemd-udevd-kernel.socket',
+  # '/lib/systemd/system/systemd-udevd.service',
+  # '/lib/systemd/system/udev.service',
+  # '/lib/systemd/system/wacom-inputattach@.service',
+  # '/lib/systemd/systemd-udevd',
+  # '/lib/udev/ata_id',
+  # '/lib/udev/cdrom_id',
+  # '/lib/udev/collect',
+  # '/lib/udev/hwdb.bin',
+  # '/lib/udev/hwdb.d/',
+  # '/lib/udev/mtd_probe',
+  # '/lib/udev/rules.d/',
+  # '/lib/udev/scsi_id',
+  # '/lib/udev/v4l_id',
+]

@@ -1,0 +1,27 @@
+name = 'rexpaint'
+from = 'base'
+
+version = '1.60'
+
+devDependencies = [
+  'unzip',
+  'wget',
+]
+
+build = """
+wget \
+  -O /tmp/rexpaint.zip \
+  http://www.gridsagegames.com/blogs/fileDownload.php?fileName=REXPaint-v{{VERSION}}-ANSI.zip
+unzip /tmp/rexpaint.zip
+mv REXPaint-v{{VERSION}}-ANSI /usr/local/lib/rexpaint
+
+bin_file=/usr/local/bin/rexpaint
+echo '#!/usr/bin/env bash' > $bin_file
+echo 'exec wine64-stable /usr/local/lib/rexpaint/REXPaint.exe' >> $bin_file
+chmod +x $bin_file
+"""
+
+exports = [
+  '/usr/local/bin/rexpaint',
+  '/usr/local/lib/rexpaint',
+]

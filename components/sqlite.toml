@@ -2,7 +2,7 @@ name = 'sqlite'
 from = 'base'
 
 # https://sqlite.org/download.html
-version = '3310100'
+version = '3330000'
 
 devDependencies = [
   'build-essential',

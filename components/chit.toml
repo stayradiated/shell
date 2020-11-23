@@ -1,7 +1,7 @@
 name = 'chit'
 from = 'base'
 
-# https://github.com/peterheesterman/chit/releases$
+# https://github.com/peterheesterman/chit/releases
 version = '0.1.15'
 
 devDependencies = [

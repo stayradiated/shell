@@ -1,6 +1,7 @@
 name = 'one-pw'
 from = 'base'
 
+# https://github.com/special/1pw
 version = 'master'
 
 devDependencies = [

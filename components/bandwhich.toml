@@ -2,7 +2,7 @@ name = 'bandwhich'
 from = 'base'
 
 # https://github.com/imsnif/bandwhich/releases
-version = '0.13.0'
+version = '0.20.0'
 
 devDependencies = [
   'tar',

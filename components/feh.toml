@@ -1,6 +1,7 @@
 name = 'feh'
 from = 'base'
 
+# https://feh.finalrewind.org/
 version = '3.5'
 
 devDependencies = [

@@ -2,7 +2,7 @@ name = 'gh'
 from = 'base'
 
 # https://github.com/cli/cli/releases
-version = '0.7.0'
+version = '1.2.1'
 
 devDependencies = [
   'wget',

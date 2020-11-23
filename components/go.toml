@@ -1,7 +1,8 @@
 name = "go"
 from = "base"
 
-version = "go1.15.3"
+# https://golang.org/dl/
+version = "go1.15.5"
 
 devDependencies = [
   "wget",

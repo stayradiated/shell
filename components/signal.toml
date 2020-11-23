@@ -2,7 +2,7 @@ name = "signal"
 from = "base"
 
 # https://github.com/signalapp/Signal-Desktop/releases
-version = "1.37.2"
+version = "1.38.1"
 
 devDependencies = [ "apteryx" ]
 

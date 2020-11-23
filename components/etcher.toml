@@ -1,7 +1,8 @@
 name = 'etcher'
 from = 'base'
 
-version = '1.5.81'
+# https://github.com/balena-io/etcher/releases
+version = '1.5.110'
 
 devDependencies = [
   'wget',

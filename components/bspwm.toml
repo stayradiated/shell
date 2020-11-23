@@ -1,7 +1,8 @@
 name = 'bspwm'
 from = 'base'
 
-version = '0.9.9'
+# https://github.com/baskerville/bspwm/releases
+version = '0.9.10'
 
 devDependencies = [
   'apteryx',

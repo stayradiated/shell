@@ -1,7 +1,8 @@
 name = 'sxhkd'
 from = 'base'
 
-version = '0.6.1'
+# https://github.com/baskerville/sxhkd/releases
+version = '0.6.2'
 
 devDependencies = [
   'build-essential',

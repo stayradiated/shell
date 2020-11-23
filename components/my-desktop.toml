@@ -63,7 +63,6 @@ dependencies = [
   'flameshot',
   'fonts',
   'light',
-  'pavucontrol',
   'peek',
   'qpdfview',
   'redshift',
@@ -91,6 +90,14 @@ dependencies = [
   # 'gthumb',
   # 'vlc',
   # 'peaclock',
+
+  'wacom',
+  'apulse',
+  'alsa-utils',
+
+  # todo:
+  'wine',
+  'rexpaint',
 ]
 
 command = '/home/admin/.xinitrc'

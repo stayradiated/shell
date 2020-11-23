@@ -4,8 +4,9 @@ from = 'base'
 version = '2.12.6-*'
 
 devDependencies = [
+  'clone',
   'apteryx',
-  'wget'
+  'wget',
 ]
 
 build = """
@@ -23,6 +24,12 @@ wget \
 wget \
   -O /usr/share/fonts/X11/bitmap/terminal.bdf \
   'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf'
+
+clone --shallow --https https://github.com/blaisck/sfwin
+cd /root/src/github.com/blaisck/sfwin
+mv SFCompact/TrueType /usr/share/fonts/SFCompact
+mv SFMono/TrueType /usr/share/fonts/SFMono
+mv SFPro/TrueType /usr/share/fonts/SFPro
 
 cd /etc/fonts/conf.d
 rm 10* 70-no-bitmaps.conf

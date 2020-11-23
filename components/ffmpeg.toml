@@ -1,9 +1,8 @@
 name = 'ffmpeg'
 from = 'base'
 
-# https://github.com/FFmpeg/FFmpeg
 # https://www.johnvansickle.com/ffmpeg/
-version = '4.2.1'
+version = '4.3.1'
 
 devDependencies = [
   'wget',
@@ -14,10 +13,10 @@ devDependencies = [
 build = """
 wget \
   -O /tmp/ffmpeg.txz \
-  'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-{{VERSION}}-i686-static.tar.xz'
+  'https://www.johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'
 tar -xvf /tmp/ffmpeg.txz
 rm /tmp/ffmpeg.txz
-mv 'ffmpeg-{{VERSION}}-i686-static' ffmpeg
+mv 'ffmpeg-{{VERSION}}-amd64-static' ffmpeg
 mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg
 mv ffmpeg/ffprobe /usr/local/bin/ffprobe
 rm -r ffmpeg

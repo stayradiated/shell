@@ -1,6 +1,7 @@
 name = 'shoebox'
 from = 'base'
 
+# https://www.npmjs.com/package/@stayradiated/shoebox
 version = '1.4.0'
 
 dependencies = [

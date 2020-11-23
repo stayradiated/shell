@@ -1,7 +1,8 @@
 name = 'diff-so-fancy'
 from = 'base'
 
-version = '1.2.6'
+# https://www.npmjs.com/package/diff-so-fancy
+version = '1.3.0'
 
 dependencies = [
   'node'

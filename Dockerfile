@@ -63,7 +63,7 @@ FROM base AS go
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.15.3.linux-amd64.tar.gz" && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.15.5.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.36.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.37.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -170,7 +170,7 @@ RUN \
 FROM base AS nvm
 COPY --from=clone /exports/ /
 RUN \
-  clone --https --shallow --tag 'v0.35.3' https://github.com/nvm-sh/nvm && \
+  clone --https --shallow --tag 'v0.37.0' https://github.com/nvm-sh/nvm && \
   mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm && \
   rm -rf /root/src
 RUN \
@@ -223,8 +223,8 @@ COPY --from=nvm /exports/ /
 ENV \
   NVM_DIR=/usr/local/share/nvm
 RUN \
-  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.13.0' && \
-  mv "${NVM_DIR}/versions/node/v14.13.0" /usr/local/lib/node && \
+  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.15.1' && \
+  mv "${NVM_DIR}/versions/node/v14.15.1" /usr/local/lib/node && \
   PATH="/usr/local/lib/node/bin:${PATH}" && \
   npm config set user root && \
   npm config set save-exact true
@@ -252,12 +252,21 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
+
 # Z.LUA
 FROM base AS z.lua
 COPY --from=wget /exports/ /
 COPY --from=lua /exports/ /
 RUN \
-  wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.4/z.lua'
+  wget -O /usr/local/bin/z.lua 'https://raw.githubusercontent.com/skywind3000/z.lua/1.8.7/z.lua'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/local/bin/ && \
   mv /usr/bin/lua5.3 /exports/usr/bin/ && \
@@ -280,7 +289,7 @@ RUN \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN \
-  clone --https --shallow --tag '0.21.1' https://github.com/junegunn/fzf && \
+  clone --https --shallow --tag '0.24.3' https://github.com/junegunn/fzf && \
   mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
   rm -rf /root/src && \
   /usr/local/share/fzf/install --bin
@@ -315,7 +324,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'yarn@1.22.4'
+  npm install -g 'yarn@1.22.10'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -328,7 +337,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx libxcb-util-dev libxcb-keysyms1-dev && \
-  clone --https --shallow --tag '0.6.1' https://github.com/baskerville/sxhkd && \
+  clone --https --shallow --tag '0.6.2' https://github.com/baskerville/sxhkd && \
   cd /root/src/github.com/baskerville/sxhkd && \
   make all && \
   make install && \
@@ -345,7 +354,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
-  clone --https --shallow --tag '0.9.9' https://github.com/baskerville/bspwm && \
+  clone --https --shallow --tag '0.9.10' https://github.com/baskerville/bspwm && \
   cd /root/src/github.com/baskerville/bspwm && \
   make all && \
   make install && \
@@ -360,7 +369,7 @@ FROM base AS neovim
 COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
-  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage' && \
+  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.4.4/nvim.appimage' && \
   chmod +x /tmp/nvim.appimage && \
   /tmp/nvim.appimage --appimage-extract && \
   rm /tmp/nvim.appimage && \
@@ -389,15 +398,15 @@ COPY --from=wget /exports/ /
 RUN \
   apteryx libncurses5-dev libevent-dev && \
   cd /root && \
-  wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.1/tmux-3.1.tar.gz' && \
+  wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.1c/tmux-3.1c.tar.gz' && \
   tar xzvf /tmp/tmux.tgz && \
   rm /tmp/tmux.tgz && \
-  cd 'tmux-3.1' && \
+  cd 'tmux-3.1c' && \
   ./configure && \
   make && \
   make install && \
   cd .. && \
-  rm -r 'tmux-3.1'
+  rm -r 'tmux-3.1c'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ && \
   mv /usr/local/bin/tmux /exports/usr/local/bin/ && \
@@ -452,7 +461,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'diff-so-fancy@1.2.6'
+  npm install -g 'diff-so-fancy@1.3.0'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -461,7 +470,7 @@ RUN \
 FROM base AS firefox
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='82.0+*'
+  apteryx firefox='83.0+*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
   mv /usr/bin/firefox /exports/usr/bin/ && \
@@ -496,37 +505,16 @@ COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 COPY --from=xz /exports/ /
 RUN \
-  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.2.1-i686-static.tar.xz' && \
+  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' && \
   tar -xvf /tmp/ffmpeg.txz && \
   rm /tmp/ffmpeg.txz && \
-  mv 'ffmpeg-4.2.1-i686-static' ffmpeg && \
+  mv 'ffmpeg-4.3.1-amd64-static' ffmpeg && \
   mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
   mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
   rm -r ffmpeg
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
-
-# PULSEAUDIO
-FROM base AS pulseaudio
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx pulseaudio='1:11.1-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ && \
-  mv /etc/pulse /exports/etc/ && \
-  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /exports/usr/bin/ && \
-  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/alsa /usr/share/pulseaudio /exports/usr/share/
-
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx unzip='6.0-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/unzip /exports/usr/bin/
 
 # PING
 FROM base AS ping
@@ -537,6 +525,95 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
+
+# REXPAINT
+FROM base AS rexpaint
+COPY --from=unzip /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/rexpaint.zip http://www.gridsagegames.com/blogs/fileDownload.php?fileName=REXPaint-v1.60-ANSI.zip && \
+  unzip /tmp/rexpaint.zip && \
+  mv REXPaint-v1.60-ANSI /usr/local/lib/rexpaint && \
+  bin_file=/usr/local/bin/rexpaint && \
+  echo '#!/usr/bin/env bash' > $bin_file && \
+  echo 'exec wine64-stable /usr/local/lib/rexpaint/REXPaint.exe' >> $bin_file && \
+  chmod +x $bin_file
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
+  mv /usr/local/bin/rexpaint /exports/usr/local/bin/ && \
+  mv /usr/local/lib/rexpaint /exports/usr/local/lib/
+
+# WINE
+FROM base AS wine
+COPY --from=apteryx /exports/ /
+RUN \
+  dpkg --add-architecture i386 && \
+  apt-get -q update && \
+  apteryx wine64='3.0-*' wine32 wine-stable
+RUN \
+  mkdir -p /exports/etc/ /exports/etc/ld.so.conf.d/ /exports/lib/ /exports/lib/udev/ /exports/lib/x86_64-linux-gnu/ /exports/sbin/ /exports/usr/bin/ /exports/usr/lib/gcc/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/gdb/auto-load/usr/lib/ /exports/usr/share/ && \
+  mv /etc/ld.so.cache /etc/openal /etc/pulse /exports/etc/ && \
+  mv /etc/ld.so.conf.d/i386-linux-gnu.conf /exports/etc/ld.so.conf.d/ && \
+  mv /lib/i386-linux-gnu /lib/ld-linux.so.2 /exports/lib/ && \
+  mv /lib/udev/hwdb.d /lib/udev/rules.d /exports/lib/udev/ && \
+  mv /lib/x86_64-linux-gnu/libusb-1.0.so.0 /lib/x86_64-linux-gnu/libusb-1.0.so.0.1.0 /exports/lib/x86_64-linux-gnu/ && \
+  mv /sbin/capsh /sbin/getcap /sbin/getpcaps /sbin/setcap /exports/sbin/ && \
+  mv /usr/bin/wine64-stable /exports/usr/bin/ && \
+  mv /usr/lib/gcc/i686-linux-gnu /exports/usr/lib/gcc/ && \
+  mv /usr/lib/i386-linux-gnu /usr/lib/wine /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/gstreamer-1.0 /usr/lib/x86_64-linux-gnu/gstreamer1.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0.3.1 /usr/lib/x86_64-linux-gnu/libexif.so.12 /usr/lib/x86_64-linux-gnu/libexif.so.12.3.3 /usr/lib/x86_64-linux-gnu/libFLAC.so.8 /usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.10.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.15.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.5 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstbase-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstbase-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstcheck-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstcheck-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstcontroller-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstcontroller-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstnet-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstnet-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstreamer-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstreamer-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libicudata.so.60 /usr/lib/x86_64-linux-gnu/libicudata.so.60.2 /usr/lib/x86_64-linux-gnu/libicui18n.so.60 /usr/lib/x86_64-linux-gnu/libicui18n.so.60.2 /usr/lib/x86_64-linux-gnu/libicuio.so.60 /usr/lib/x86_64-linux-gnu/libicuio.so.60.2 /usr/lib/x86_64-linux-gnu/libicutest.so.60 /usr/lib/x86_64-linux-gnu/libicutest.so.60.2 /usr/lib/x86_64-linux-gnu/libicutu.so.60 /usr/lib/x86_64-linux-gnu/libicutu.so.60.2 /usr/lib/x86_64-linux-gnu/libicuuc.so.60 /usr/lib/x86_64-linux-gnu/libicuuc.so.60.2 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.1.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libltdl.so.7 /usr/lib/x86_64-linux-gnu/libltdl.so.7.3.1 /usr/lib/x86_64-linux-gnu/libmpg123.so.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0.44.8 /usr/lib/x86_64-linux-gnu/libogg.so.0 /usr/lib/x86_64-linux-gnu/libogg.so.0.8.2 /usr/lib/x86_64-linux-gnu/libopenal.so.1 /usr/lib/x86_64-linux-gnu/libopenal.so.1.18.2 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0.28.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0.28.0 /usr/lib/x86_64-linux-gnu/libpcap.so.0.8 /usr/lib/x86_64-linux-gnu/libpcap.so.1.8.1 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.34.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0.1.1 /usr/lib/x86_64-linux-gnu/libpulse.so.0 /usr/lib/x86_64-linux-gnu/libpulse.so.0.20.2 /usr/lib/x86_64-linux-gnu/libsndfile.so.1 /usr/lib/x86_64-linux-gnu/libsndfile.so.1.0.28 /usr/lib/x86_64-linux-gnu/libsndio.so.6.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.3.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0.4.8 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2.0.11 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libxml2.so.2 /usr/lib/x86_64-linux-gnu/libxml2.so.2.9.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/pulseaudio /usr/lib/x86_64-linux-gnu/wine /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/gdb/auto-load/usr/lib/i386-linux-gnu /exports/usr/share/gdb/auto-load/usr/lib/ && \
+  mv /usr/share/gst-plugins-base /usr/share/libgphoto2 /usr/share/openal /usr/share/wine /exports/usr/share/
+
+# ALSA-UTILS
+FROM base AS alsa-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx alsa-utils='1.1.3-*'
+RUN \
+  mkdir -p /exports/bin/ /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rc0.d/ /exports/etc/rc1.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/lib/ /exports/lib/systemd/system/ /exports/lib/udev/ /exports/lib/x86_64-linux-gnu/ /exports/sbin/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/var/cache/ldconfig/ /exports/var/lib/ && \
+  mv /bin/kmod /bin/lsmod /bin/whiptail /exports/bin/ && \
+  mv /etc/alternatives/newt-palette /exports/etc/alternatives/ && \
+  mv /etc/depmod.d /etc/ld.so.cache /etc/modprobe.d /etc/modules /etc/newt /exports/etc/ && \
+  mv /etc/init.d/alsa-utils /etc/init.d/kmod /exports/etc/init.d/ && \
+  mv /etc/rc0.d/K01alsa-utils /exports/etc/rc0.d/ && \
+  mv /etc/rc1.d/K01alsa-utils /exports/etc/rc1.d/ && \
+  mv /etc/rc6.d/K01alsa-utils /exports/etc/rc6.d/ && \
+  mv /etc/rcS.d/S01alsa-utils /etc/rcS.d/S01kmod /exports/etc/rcS.d/ && \
+  mv /lib/modprobe.d /exports/lib/ && \
+  mv /lib/systemd/system/alsa-restore.service /lib/systemd/system/alsa-state.service /lib/systemd/system/alsa-utils.service /lib/systemd/system/basic.target.wants /exports/lib/systemd/system/ && \
+  mv /lib/udev/rules.d /exports/lib/udev/ && \
+  mv /lib/x86_64-linux-gnu/libkmod.so.* /lib/x86_64-linux-gnu/libnewt.so.* /lib/x86_64-linux-gnu/libslang.so.* /exports/lib/x86_64-linux-gnu/ && \
+  mv /sbin/depmod /sbin/insmod /sbin/lsmod /sbin/modinfo /sbin/modprobe /sbin/rmmod /exports/sbin/ && \
+  mv /usr/bin/aconnect /usr/bin/alsabat /usr/bin/alsaloop /usr/bin/alsamixer /usr/bin/alsatplg /usr/bin/alsaucm /usr/bin/amidi /usr/bin/amixer /usr/bin/aplay /usr/bin/aplaymidi /usr/bin/arecord /usr/bin/arecordmidi /usr/bin/aseqdump /usr/bin/aseqnet /usr/bin/iecset /usr/bin/speaker-test /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libasound.so.* /usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.* /usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.* /usr/lib/x86_64-linux-gnu/libfftw3f.so.* /usr/lib/x86_64-linux-gnu/libgomp.so.* /usr/lib/x86_64-linux-gnu/libsamplerate.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/sbin/alsa-info /usr/sbin/alsabat-test /usr/sbin/alsactl /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/sounds /exports/usr/share/ && \
+  mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/ && \
+  mv /var/lib/alsa /exports/var/lib/
+
+# APULSE
+FROM base AS apulse
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx apulse='0.1.10+*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/apulse /exports/usr/bin/ && \
+  mv /usr/lib/apulse /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libasound.so.* /exports/usr/lib/x86_64-linux-gnu/
+
+# WACOM
+FROM base AS wacom
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xserver-xorg-input-wacom='1:0.36.1-*'
+RUN \
+  mkdir -p /exports/lib/x86_64-linux-gnu/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/local/bin/ && \
+  mv /lib/x86_64-linux-gnu/libkmod.so.* /exports/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/xsetwacom /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/local/bin/apteryx /exports/usr/local/bin/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -787,7 +864,7 @@ RUN \
   curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
   echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
   apt-get -q update && \
-  apteryx signal-desktop='1.37.2'
+  apteryx signal-desktop='1.38.1'
 RUN \
   mkdir -p /exports/opt/ /exports/usr/bin/ && \
   mv /opt/Signal /exports/opt/ && \
@@ -837,20 +914,6 @@ RUN \
   mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
   mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/
 
-# PAVUCONTROL
-FROM base AS pavucontrol
-COPY --from=apteryx /exports/ /
-COPY --from=pulseaudio /exports/ /
-RUN \
-  apteryx pavucontrol='3.0-4'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ && \
-  mv /etc/gtk-3.0 /etc/pulse /exports/etc/ && \
-  mv /usr/bin/pacat /usr/bin/pacmd /usr/bin/pactl /usr/bin/padsp /usr/bin/pamon /usr/bin/paplay /usr/bin/parec /usr/bin/parecord /usr/bin/pasuspender /usr/bin/pavucontrol /usr/bin/pax11publish /usr/bin/pulseaudio /usr/bin/start-pulseaudio-x11 /usr/bin/update-mime-database /exports/usr/bin/ && \
-  mv /usr/lib/pulse-11.1 /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/alsa /usr/share/libthai /usr/share/mime /usr/share/pavucontrol /usr/share/pulseaudio /usr/share/sounds /usr/share/themes /usr/share/thumbnailers /exports/usr/share/ && \
-  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/
-
 # LIGHT
 FROM base AS light
 COPY --from=build-essential /exports/ /
@@ -870,6 +933,7 @@ RUN \
 
 # FONTS
 FROM base AS fonts
+COPY --from=clone /exports/ /
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
@@ -877,6 +941,11 @@ RUN \
   mkdir -p /usr/share/fonts/X11/bitmap && \
   wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
   wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
+  clone --shallow --https https://github.com/blaisck/sfwin && \
+  cd /root/src/github.com/blaisck/sfwin && \
+  mv SFCompact/TrueType /usr/share/fonts/SFCompact && \
+  mv SFMono/TrueType /usr/share/fonts/SFMono && \
+  mv SFPro/TrueType /usr/share/fonts/SFPro && \
   cd /etc/fonts/conf.d && \
   rm 10* 70-no-bitmaps.conf && \
   ln -s ../conf.avail/70-yes-bitmaps.conf . && \
@@ -933,7 +1002,7 @@ FROM base AS charles
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.5.6/charles-proxy-4.5.6_amd64.tar.gz' && \
+  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.6.1/charles-proxy-4.6.1_amd64.tar.gz' && \
   tar -xzvf /tmp/charles.tgz && \
   rm /tmp/charles.tgz && \
   mv ./charles/bin/charles /usr/local/bin/charles && \
@@ -1079,13 +1148,7 @@ FROM base AS sd
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN \
-  wget -O /tmp/sd.zip 'https://github.com/chmln/sd/releases/download/v0.7.4/sd-0.7.4.x86_64-unknown-linux-gnu.zip' && \
-  unzip /tmp/sd.zip && \
-  rm /tmp/sd.zip && \
-  mv b/x86_64-unknown-linux-gnu/release/sd /usr/local/bin/sd && \
-  mkdir -p /usr/local/share/man/man1 && \
-  mv b/x86_64-unknown-linux-gnu/release/build/sd-*/out/sd.1 /usr/local/share/man/man1/sd.1 && \
-  rm -r b
+  wget -O /usr/local/bin/sd 'https://github.com/chmln/sd/releases/download/v0.7.6/sd-v0.7.6-x86_64-unknown-linux-gnu'
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/sd /exports/usr/local/bin/
@@ -1116,10 +1179,10 @@ FROM base AS ripgrep
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/12.0.1/ripgrep-12.0.1-x86_64-unknown-linux-musl.tar.gz' && \
+  wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz' && \
   tar -xzvf /tmp/ripgrep.tgz && \
   rm /tmp/ripgrep.tgz && \
-  mv ripgrep-12.0.1-x86_64-unknown-linux-musl ripgrep && \
+  mv ripgrep-12.1.1-x86_64-unknown-linux-musl ripgrep && \
   mv ripgrep/rg /usr/local/bin/rg && \
   mkdir -p /usr/local/share/man/man1 && \
   mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1 && \
@@ -1179,7 +1242,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'np@6.2.3'
+  npm install -g 'np@7.0.0'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -1203,7 +1266,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'npm-check-updates@4.1.2'
+  npm install -g 'npm-check-updates@10.2.2'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -1259,7 +1322,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install httpie=='2.2.0'
+  pipx install httpie=='2.3.0'
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
@@ -1280,7 +1343,7 @@ COPY --from=node /exports/ /
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'heroku@7.46.0'
+  npm install -g 'heroku@7.47.3'
 RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
@@ -1292,7 +1355,7 @@ COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 COPY --from=xz /exports/ /
 RUN \
-  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.0/gifski-1.2.0.tar.xz"
+  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.3/gifski-1.2.3.tar.xz"
 RUN \
   tar -xvf gifski.txz debian && \
   apteryx ./debian/gifski*.deb && \
@@ -1306,11 +1369,11 @@ FROM base AS gh
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v0.7.0/gh_0.7.0_linux_amd64.tar.gz' && \
+  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v1.2.1/gh_1.2.1_linux_amd64.tar.gz' && \
   tar xzvf /tmp/gh.tgz && \
   rm /tmp/gh.tgz && \
-  mv 'gh_0.7.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
-  rm -r 'gh_0.7.0_linux_amd64'
+  mv 'gh_1.2.1_linux_amd64/bin/gh' /usr/local/bin/gh && \
+  rm -r 'gh_1.2.1_linux_amd64'
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -1333,10 +1396,10 @@ FROM base AS fd
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v8.0.0/fd-v8.0.0-x86_64-unknown-linux-musl.tar.gz' && \
+  wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v8.1.1/fd-v8.1.1-x86_64-unknown-linux-musl.tar.gz' && \
   tar -xzvf /tmp/fd.tgz && \
   rm /tmp/fd.tgz && \
-  mv 'fd-v8.0.0-x86_64-unknown-linux-musl' fd && \
+  mv 'fd-v8.1.1-x86_64-unknown-linux-musl' fd && \
   mv fd/fd /usr/local/bin/fd && \
   mkdir -p /usr/local/share/man/man1 && \
   mv fd/fd.1 /usr/local/share/man/man1/fd.1 && \
@@ -1363,7 +1426,7 @@ RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
-  apteryx docker-ce='5:19.03.8*'
+  apteryx docker-ce='5:19.03.13*'
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/docker /exports/usr/bin/
@@ -1373,7 +1436,7 @@ FROM base AS deno
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN \
-  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.4.6/deno-x86_64-unknown-linux-gnu.zip' && \
+  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.5.3/deno-x86_64-unknown-linux-gnu.zip' && \
   cd /usr/local/bin && \
   unzip /tmp/deno.zip && \
   rm /tmp/deno.zip
@@ -1407,11 +1470,11 @@ FROM base AS bat
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.13.0/bat-v0.13.0-x86_64-unknown-linux-gnu.tar.gz' && \
+  wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.16.0/bat-v0.16.0-x86_64-unknown-linux-gnu.tar.gz' && \
   tar -xzvf bat.tgz && \
   rm bat.tgz && \
-  mv 'bat-v0.13.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat && \
-  rm -rf 'bat-v0.13.0-x86_64-unknown-linux-gnu'
+  mv 'bat-v0.16.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat && \
+  rm -rf 'bat-v0.16.0-x86_64-unknown-linux-gnu'
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/bat /exports/usr/local/bin/
@@ -1531,7 +1594,6 @@ COPY --from=feh /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=light /exports/ /
-COPY --from=pavucontrol /exports/ /
 COPY --from=peek /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
@@ -1560,6 +1622,11 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=wacom /exports/ /
+COPY --from=apulse /exports/ /
+COPY --from=alsa-utils /exports/ /
+COPY --from=wine /exports/ /
+COPY --from=rexpaint /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

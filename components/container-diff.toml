@@ -1,6 +1,7 @@
 name = 'container-diff'
 from = 'base'
 
+# https://github.com/GoogleContainerTools/container-diff/releases
 version = 'v0.15.0'
 
 devDependencies = [

@@ -1,7 +1,8 @@
 name = 'olive-editor'
 from = 'base'
 
-version = 'ac4be090'
+# https://www.olivevideoeditor.org/download.php
+version = 'af0f6163'
 
 devDependencies = [
   'wget'

@@ -1,7 +1,8 @@
 name = 'ncu'
 from = 'base'
 
-version = '4.1.2'
+# https://www.npmjs.com/package/npm-check-updates
+version = '10.2.2'
 
 dependencies = [
   'node'
