@@ -192,15 +192,6 @@ RUN \
   mv /usr/share/python-wheels /exports/usr/share/ && \
   mv /usr/share/python3/runtime.d/dh-python.rtupdate /exports/usr/share/python3/runtime.d/
 
-# LUA
-FROM base AS lua
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx lua5.3='5.3.3-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/lua5.3 /exports/usr/bin/
-
 # SHELL-ROOT
 FROM base AS shell-root
 COPY --from=apteryx /exports/ /
@@ -216,6 +207,15 @@ RUN \
   mkdir -p /home/admin/.config && \
   mkdir -p /home/admin/.local/share && \
   chown -R admin:admin /home/admin
+
+# LUA
+FROM base AS lua
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx lua5.3='5.3.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/
 
 # NODE
 FROM base AS node
@@ -260,6 +260,51 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/unzip /exports/usr/bin/
+
+# FIREFOX
+FROM base AS firefox
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx firefox='83.0+*'
+RUN \
+  mkdir -p /exports/etc/ /exports/run/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/applications/ /exports/usr/share/ && \
+  mv /etc/firefox /exports/etc/ && \
+  mv /run/firefox-restart-required /exports/run/ && \
+  mv /usr/bin/firefox /exports/usr/bin/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/glib-2.0 /usr/share/icons /usr/share/mime /exports/usr/share/
+
+# GOOGLE-CHROME
+FROM base AS google-chrome
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/86.0.4240.75/google-chrome-stable_current_amd64.deb' && \
+  apteryx /tmp/chrome.deb
+RUN \
+  mkdir -p /exports/opt/ /exports/usr/lib/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# XDG-UTILS
+FROM base AS xdg-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xdg-utils='1.1.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
+
+# SHELL-ADMIN
+FROM shell-root AS shell-admin
+USER admin
+WORKDIR /home/admin
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  mkdir -p /home/admin/exports && \
+  mkdir -p /home/admin/.local/tmp
 
 # Z.LUA
 FROM base AS z.lua
@@ -307,16 +352,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/antibody /exports/usr/local/bin/
-
-# SHELL-ADMIN
-FROM shell-root AS shell-admin
-USER admin
-WORKDIR /home/admin
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
-RUN \
-  mkdir -p /home/admin/exports && \
-  mkdir -p /home/admin/.local/tmp
 
 # YARN
 FROM base AS yarn
@@ -466,39 +501,6 @@ RUN \
   mkdir -p /exports/usr/local/lib/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/
 
-# FIREFOX
-FROM base AS firefox
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx firefox='83.0+*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/share/applications/ && \
-  mv /usr/bin/firefox /exports/usr/bin/ && \
-  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/icons /exports/usr/share/ && \
-  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/
-
-# GOOGLE-CHROME
-FROM base AS google-chrome
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN \
-  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/86.0.4240.75/google-chrome-stable_current_amd64.deb' && \
-  apteryx /tmp/chrome.deb
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/lib/ && \
-  mv /opt/google /exports/opt/ && \
-  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
-
-# XDG-UTILS
-FROM base AS xdg-utils
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xdg-utils='1.1.2-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
-
 # FFMPEG
 FROM base AS ffmpeg
 COPY --from=wget /exports/ /
@@ -525,6 +527,34 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
+
+# WEECHAT
+FROM base AS weechat
+COPY --from=apteryx /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && add-apt-repository "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main" && \
+  apteryx weechat-curses weechat-perl weechat-plugins weechat-python && \
+  pip3 install websocket-client
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/perl/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.6/dist-packages/ /exports/usr/share/ /exports/usr/share/pixmaps/ && \
+  mv /usr/bin/cpan5.26-x86_64-linux-gnu /usr/bin/perl5.26-x86_64-linux-gnu /usr/bin/weechat /usr/bin/weechat-curses /exports/usr/bin/ && \
+  mv /usr/lib/aspell /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libaspell.so.* /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/libpspell.so.* /usr/lib/x86_64-linux-gnu/weechat /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/lib/x86_64-linux-gnu/perl/5.26 /usr/lib/x86_64-linux-gnu/perl/5.26.1 /usr/lib/x86_64-linux-gnu/perl/cross-config-5.26.1 /usr/lib/x86_64-linux-gnu/perl/debian-config-data-5.26.1 /exports/usr/lib/x86_64-linux-gnu/perl/ && \
+  mv /usr/local/bin/wsdump.py /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6/dist-packages/six-1.15.0.dist-info /usr/local/lib/python3.6/dist-packages/six.py /usr/local/lib/python3.6/dist-packages/websocket_client-0.57.0.dist-info /usr/local/lib/python3.6/dist-packages/websocket /exports/usr/local/lib/python3.6/dist-packages/ && \
+  mv /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/pixmaps/weechat.xpm /exports/usr/share/pixmaps/
+
+# XINPUT
+FROM base AS xinput
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xinput='1.6.2-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/xinput /exports/usr/bin/
 
 # REXPAINT
 FROM base AS rexpaint
@@ -571,16 +601,11 @@ COPY --from=apteryx /exports/ /
 RUN \
   apteryx alsa-utils='1.1.3-*'
 RUN \
-  mkdir -p /exports/bin/ /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rc0.d/ /exports/etc/rc1.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/lib/ /exports/lib/systemd/system/ /exports/lib/udev/ /exports/lib/x86_64-linux-gnu/ /exports/sbin/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/var/cache/ldconfig/ /exports/var/lib/ && \
-  mv /bin/kmod /bin/lsmod /bin/whiptail /exports/bin/ && \
-  mv /etc/alternatives/newt-palette /exports/etc/alternatives/ && \
-  mv /etc/depmod.d /etc/ld.so.cache /etc/modprobe.d /etc/modules /etc/newt /exports/etc/ && \
-  mv /etc/init.d/alsa-utils /etc/init.d/kmod /exports/etc/init.d/ && \
+  mkdir -p /exports/etc/rc0.d/ /exports/etc/rc1.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/lib/systemd/system/ /exports/lib/udev/ /exports/lib/x86_64-linux-gnu/ /exports/sbin/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/var/cache/ldconfig/ /exports/var/lib/ && \
   mv /etc/rc0.d/K01alsa-utils /exports/etc/rc0.d/ && \
   mv /etc/rc1.d/K01alsa-utils /exports/etc/rc1.d/ && \
   mv /etc/rc6.d/K01alsa-utils /exports/etc/rc6.d/ && \
   mv /etc/rcS.d/S01alsa-utils /etc/rcS.d/S01kmod /exports/etc/rcS.d/ && \
-  mv /lib/modprobe.d /exports/lib/ && \
   mv /lib/systemd/system/alsa-restore.service /lib/systemd/system/alsa-state.service /lib/systemd/system/alsa-utils.service /lib/systemd/system/basic.target.wants /exports/lib/systemd/system/ && \
   mv /lib/udev/rules.d /exports/lib/udev/ && \
   mv /lib/x86_64-linux-gnu/libkmod.so.* /lib/x86_64-linux-gnu/libnewt.so.* /lib/x86_64-linux-gnu/libslang.so.* /exports/lib/x86_64-linux-gnu/ && \
@@ -614,6 +639,31 @@ RUN \
   mv /usr/bin/xsetwacom /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
   mv /usr/local/bin/apteryx /exports/usr/local/bin/
+
+# SHELL-BROWSER
+FROM shell-admin AS shell-browser
+COPY --from=make /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=google-chrome /exports/ /
+COPY --from=firefox /exports/ /
+ENV \
+  PATH=${PATH}:/opt/google/chrome
+RUN \
+  cd dotfiles && \
+  make firefox
+RUN \
+  mkdir -p /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
+USER root
+RUN \
+  mkdir -p /exports/etc/ /exports/opt/ /exports/run/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/applications/ /exports/usr/share/ && \
+  mv /etc/firefox /exports/etc/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /run/firefox-restart-required /exports/run/ && \
+  mv /usr/bin/firefox /exports/usr/bin/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/glib-2.0 /usr/share/icons /usr/share/mime /exports/usr/share/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -800,29 +850,6 @@ RUN \
   mv /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/ && \
   mv /usr/share/git-core /exports/usr/share/
-
-# SHELL-BROWSER
-FROM shell-admin AS shell-browser
-COPY --from=make /exports/ /
-COPY --from=xdg-utils /exports/ /
-COPY --from=google-chrome /exports/ /
-COPY --from=firefox /exports/ /
-ENV \
-  PATH=${PATH}:/opt/google/chrome
-RUN \
-  cd dotfiles && \
-  make firefox
-RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
-USER root
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/applications/ /exports/usr/share/ && \
-  mv /opt/google /exports/opt/ && \
-  mv /usr/bin/firefox /exports/usr/bin/ && \
-  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/x86_64-linux-gnu /exports/usr/lib/ && \
-  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/icons /exports/usr/share/
 
 # XSECURELOCK
 FROM base AS xsecurelock
@@ -1602,8 +1629,6 @@ COPY --from=signal /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
 COPY --from=xsecurelock /exports/ /
-COPY --from=shell-browser --chown=admin /home/admin/exports/ /
-COPY --from=shell-browser /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
 COPY --from=shell-git /exports/ /
 COPY --from=shell-npm --chown=admin /home/admin/exports/ /
@@ -1622,22 +1647,26 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=shell-browser --chown=admin /home/admin/exports/ /
+COPY --from=shell-browser /exports/ /
 COPY --from=wacom /exports/ /
 COPY --from=apulse /exports/ /
 COPY --from=alsa-utils /exports/ /
 COPY --from=wine /exports/ /
 COPY --from=rexpaint /exports/ /
+COPY --from=xinput /exports/ /
+COPY --from=weechat /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
-  PATH=${PATH}:/opt/google/chrome
-ENV \
   PATH=${PATH}:/home/admin/.cache/npm/bin
 ENV \
   PATH=/home/admin/.yarn/bin:${PATH}
+ENV \
+  PATH=${PATH}:/opt/google/chrome
 RUN \
   chmod 0600 /home/admin/.ssh/*
 CMD /home/admin/.xinitrc

@@ -1,0 +1,49 @@
+name = 'weechat'
+from = 'base'
+
+devDependencies = [
+  'apteryx',
+  'python3-pip',
+]
+
+build = """
+apt-key adv \
+  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
+  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && \
+  add-apt-repository \
+    "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main"
+
+apteryx \
+  weechat-curses \
+  weechat-perl \
+  weechat-plugins \
+  weechat-python
+
+pip3 install websocket-client
+"""
+
+exports = [
+  "/usr/bin/cpan5.26-x86_64-linux-gnu",
+  "/usr/bin/perl5.26-x86_64-linux-gnu",
+  "/usr/bin/weechat",
+  "/usr/bin/weechat-curses",
+  "/usr/lib/aspell/",
+  "/usr/lib/x86_64-linux-gnu/libaspell.so.*",
+  "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.*",
+  "/usr/lib/x86_64-linux-gnu/libgdbm_compat.so.*",
+  "/usr/lib/x86_64-linux-gnu/libgdbm.so.*",
+  "/usr/lib/x86_64-linux-gnu/libperl.so.*",
+  "/usr/lib/x86_64-linux-gnu/libpspell.so.*",
+  "/usr/lib/x86_64-linux-gnu/perl/5.26",
+  "/usr/lib/x86_64-linux-gnu/perl/5.26.1/",
+  "/usr/lib/x86_64-linux-gnu/perl/cross-config-5.26.1/",
+  "/usr/lib/x86_64-linux-gnu/perl/debian-config-data-5.26.1/",
+  "/usr/lib/x86_64-linux-gnu/weechat/",
+  "/usr/local/bin/wsdump.py",
+  "/usr/local/lib/python3.6/dist-packages/six-1.15.0.dist-info/",
+  "/usr/local/lib/python3.6/dist-packages/six.py",
+  "/usr/local/lib/python3.6/dist-packages/websocket_client-0.57.0.dist-info/",
+  "/usr/local/lib/python3.6/dist-packages/websocket/",
+  "/usr/share/perl/",
+  "/usr/share/pixmaps/weechat.xpm",
+]

@@ -72,7 +72,6 @@ dependencies = [
   'xdg-utils',
   'xsecurelock',
 
-  'shell-browser',
   'shell-git',
   'shell-npm',
   'shell-passwords',
@@ -83,6 +82,7 @@ dependencies = [
   'shell-wm',
   'shell-yarn',
   'shell-zsh',
+  'shell-browser',
 
   # things I need to fix
   # 'java',
@@ -94,10 +94,10 @@ dependencies = [
   'wacom',
   'apulse',
   'alsa-utils',
-
-  # todo:
   'wine',
   'rexpaint',
+  'xinput',
+  'weechat',
 ]
 
 command = '/home/admin/.xinitrc'

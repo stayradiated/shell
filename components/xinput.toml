@@ -1,0 +1,15 @@
+name = "xinput"
+from = "base"
+
+version = "1.6.2-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx xinput='{{VERSION}}'
+"""
+
+exports = [
+  "/usr/bin/xinput",
+]
+

@@ -11,10 +11,14 @@ apteryx firefox='{{VERSION}}'
 """
 
 exports = [
+  '/etc/firefox',
+  '/run/firefox-restart-required',
   '/usr/bin/firefox',
   '/usr/lib/firefox-addons/',
   '/usr/lib/firefox/',
   '/usr/lib/x86_64-linux-gnu/',
-  '/usr/share/icons/',
   '/usr/share/applications/firefox.desktop',
+  '/usr/share/glib-2.0/',
+  '/usr/share/icons/',
+  '/usr/share/mime/',
 ]
