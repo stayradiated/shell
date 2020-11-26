@@ -84,13 +84,6 @@ dependencies = [
   'shell-zsh',
   'shell-browser',
 
-  # things I need to fix
-  # 'java',
-  # 'olive-editor',
-  # 'gthumb',
-  # 'vlc',
-  # 'peaclock',
-
   'wacom',
   'apulse',
   'alsa-utils',
@@ -98,6 +91,17 @@ dependencies = [
   'rexpaint',
   'xinput',
   'weechat',
+  'urlview',
+
+  'bsdmainutils',
+
+  # things I need to fix
+  # 'java',
+  # 'olive-editor',
+  # 'gthumb',
+  # 'vlc',
+
+  'peaclock',
 ]
 
 command = '/home/admin/.xinitrc'

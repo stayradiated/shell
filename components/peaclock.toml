@@ -4,22 +4,34 @@ from = "base"
 # https://github.com/octobanana/peaclock/releases
 version = "0.4.3"
 
-devDependencies = [ "apteryx", "clone" ]
+devDependencies = [ "clone" ]
 
 build = """
 add-apt-repository ppa:ubuntu-toolchain-r/test
-apteryx cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9
+apt-get update -q
+apt-get install -y --no-install-recommends --auto-remove \
+  cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9
 
 clone --https --shallow --tag '{{VERSION}}' https://github.com/octobanana/peaclock
 cd /root/src/github.com/octobanana/peaclock
 
 ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9)
 ./RUNME.sh install --release
+
+rm -rf /root/src
+apt purge -y \
+  cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9
+apt autoremove -y
+apt-get -q clean
 """
 
 exports = [
-  '/usr/local/bin/peaclock',
-  '/usr/lib/x86_64-linux-gnu/',
-  '/usr/include/glib-2.0/',
-  '/usr/share/glib-2.0/',
+  "/etc/perl/",
+  "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+  "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+  "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28",
+  "/usr/local/bin/peaclock",
+  "/usr/share/gcc-10/",
+  "/usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28-gdb.py",
+  "/var/cache/ldconfig/aux-cache",
 ]

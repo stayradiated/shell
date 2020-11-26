@@ -1,0 +1,16 @@
+name = "urlview"
+from = "base"
+
+version = "0.9-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx urlview='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/urlview/',
+  '/usr/bin/urlview',
+]
+

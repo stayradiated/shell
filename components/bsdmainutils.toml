@@ -1,0 +1,38 @@
+name = "bsdmainutils"
+from = "base"
+
+version = "11.1.2*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx bsdmainutils='{{VERSION}}'
+"""
+
+exports = [
+  # "/etc/alternatives/from",
+  # "/etc/alternatives/from.1.gz",
+  # "/etc/alternatives/write",
+  # "/etc/alternatives/write.1.gz",
+  # "/etc/calendar/",
+  # "/etc/cron.daily/bsdmainutils",
+  # "/etc/default/bsdmainutils",
+  # "/usr/bin/bsd-from",
+  # "/usr/bin/bsd-write",
+  # "/usr/bin/cal",
+  # "/usr/bin/calendar",
+  # "/usr/bin/col",
+  # "/usr/bin/colcrt",
+  # "/usr/bin/colrm",
+  "/usr/bin/column",
+  # "/usr/bin/from",
+  # "/usr/bin/hd",
+  # "/usr/bin/hexdump",
+  # "/usr/bin/look",
+  # "/usr/bin/lorder",
+  # "/usr/bin/ncal",
+  # "/usr/bin/printerbanner",
+  # "/usr/bin/ul",
+  # "/usr/bin/write",
+  # "/usr/share/calendar/",
+]
