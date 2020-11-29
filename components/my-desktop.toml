@@ -92,16 +92,15 @@ dependencies = [
   'xinput',
   'weechat',
   'urlview',
-
   'bsdmainutils',
+  'peaclock',
+  'xournalpp',
 
   # things I need to fix
   # 'java',
   # 'olive-editor',
   # 'gthumb',
   # 'vlc',
-
-  'peaclock',
 ]
 
 command = '/home/admin/.xinitrc'

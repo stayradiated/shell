@@ -13,6 +13,7 @@ build = """
 wget \
   -O /usr/local/bin/sd \
   'https://github.com/chmln/sd/releases/download/{{VERSION}}/sd-{{VERSION}}-x86_64-unknown-linux-gnu'
+chmod +x /usr/local/bin/sd
 """
 
 exports = [

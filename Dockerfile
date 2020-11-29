@@ -528,6 +528,20 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# XOURNALPP
+FROM base AS xournalpp
+COPY --from=apteryx /exports/ /
+RUN \
+  add-apt-repository ppa:apandada1/xournalpp-stable && \
+  apteryx xournalpp='1.0.19-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/glib-2.0/ /exports/usr/share/ && \
+  mv /etc/gtk-3.0 /exports/etc/ && \
+  mv /usr/bin/xournalpp /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.* /usr/lib/x86_64-linux-gnu/liblua5.3.so.* /usr/lib/x86_64-linux-gnu/libpoppler-glib.so.* /usr/lib/x86_64-linux-gnu/libportaudiocpp.so.* /usr/lib/x86_64-linux-gnu/libzip.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/glib-2.0/schemas /exports/usr/share/glib-2.0/ && \
+  mv /usr/share/icons /usr/share/xournalpp /exports/usr/share/
+
 # PEACLOCK
 FROM base AS peaclock
 COPY --from=clone /exports/ /
@@ -1219,7 +1233,8 @@ FROM base AS sd
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN \
-  wget -O /usr/local/bin/sd 'https://github.com/chmln/sd/releases/download/v0.7.6/sd-v0.7.6-x86_64-unknown-linux-gnu'
+  wget -O /usr/local/bin/sd 'https://github.com/chmln/sd/releases/download/v0.7.6/sd-v0.7.6-x86_64-unknown-linux-gnu' && \
+  chmod +x /usr/local/bin/sd
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/sd /exports/usr/local/bin/
@@ -1703,6 +1718,7 @@ COPY --from=weechat /exports/ /
 COPY --from=urlview /exports/ /
 COPY --from=bsdmainutils /exports/ /
 COPY --from=peaclock /exports/ /
+COPY --from=xournalpp /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
