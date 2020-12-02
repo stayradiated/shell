@@ -101,6 +101,7 @@ dependencies = [
   # 'olive-editor',
   # 'gthumb',
   # 'vlc',
+  'clang-format',
 ]
 
 command = '/home/admin/.xinitrc'

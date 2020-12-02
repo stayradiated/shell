@@ -1,0 +1,23 @@
+name = "clang-format"
+from = "base"
+
+version = "1:10.0.0-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx clang-format-10='{{VERSION}}'
+mv /usr/bin/clang-format-10 /usr/bin/clang-format
+"""
+
+exports = [
+  '/usr/bin/clang-format',
+  # '/usr/bin/clang-format-diff-10',
+  # '/usr/bin/git-clang-format-10',
+  '/usr/lib/llvm-10/',
+  '/usr/lib/x86_64-linux-gnu/libclang-cpp.so.10',
+  '/usr/lib/x86_64-linux-gnu/libLLVM-10.so',
+  '/usr/lib/x86_64-linux-gnu/libLLVM-10.so.1',
+  '/usr/share/clang/',
+]
+

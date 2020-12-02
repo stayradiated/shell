@@ -528,6 +528,19 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# CLANG-FORMAT
+FROM base AS clang-format
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx clang-format-10='1:10.0.0-*' && \
+  mv /usr/bin/clang-format-10 /usr/bin/clang-format
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
+  mv /usr/bin/clang-format /exports/usr/bin/ && \
+  mv /usr/lib/llvm-10 /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libclang-cpp.so.10 /usr/lib/x86_64-linux-gnu/libLLVM-10.so /usr/lib/x86_64-linux-gnu/libLLVM-10.so.1 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/clang /exports/usr/share/
+
 # XOURNALPP
 FROM base AS xournalpp
 COPY --from=apteryx /exports/ /
@@ -1719,6 +1732,7 @@ COPY --from=urlview /exports/ /
 COPY --from=bsdmainutils /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=xournalpp /exports/ /
+COPY --from=clang-format /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

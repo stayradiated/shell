@@ -6,7 +6,7 @@ version = "1.0.19-*"
 devDependencies = [ "apteryx" ]
 
 build = """
-add-apt-repository ppa:apandada1/xournalpp-master
+add-apt-repository ppa:apandada1/xournalpp-stable
 apteryx xournalpp='{{VERSION}}'
 """
 
