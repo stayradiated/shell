@@ -2,7 +2,7 @@ name = 'gcloud'
 from = 'base'
 
 # https://cloud.google.com/sdk/docs/downloads-versioned-archives
-version = '319.0.0'
+version = '320.0.0'
 
 devDependencies = [
   'wget',

@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.38.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.39.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -252,14 +252,19 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
+# SCDOC
+FROM base AS scdoc
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
 RUN \
-  apteryx unzip='6.0-*'
+  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/scdoc && \
+  cd ~/src/git.sr.ht/~sircmpwn/scdoc && \
+  make && \
+  make install && \
+  rm -rf ~/src
 RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/unzip /exports/usr/bin/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/scdoc /exports/usr/local/bin/
 
 # FIREFOX
 FROM base AS firefox
@@ -518,6 +523,15 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
 
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/unzip /exports/usr/bin/
+
 # PING
 FROM base AS ping
 COPY --from=apteryx /exports/ /
@@ -527,6 +541,44 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
+
+# AERC
+FROM base AS aerc
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=go /exports/ /
+COPY --from=scdoc /exports/ /
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root
+RUN \
+  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc && \
+  cd ~/src/git.sr.ht/~sircmpwn/aerc && \
+  make && \
+  make install && \
+  rm -rf ~/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/ && \
+  mv /usr/local/bin/aerc /exports/usr/local/bin/ && \
+  mv /usr/local/share/man/man1/aerc-* /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/share/man/man5/aerc-* /exports/usr/local/share/man/man5/ && \
+  mv /usr/local/share/man/man7/aerc-* /exports/usr/local/share/man/man7/ && \
+  mv /usr/local/share/aerc /exports/usr/local/share/
+
+# MAN
+FROM base AS man
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx man-db='2.8.3-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/tmpfiles.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/var/cache/ && \
+  mv /etc/groff /etc/manpath.config /exports/etc/ && \
+  mv /usr/bin/apropos /usr/bin/bsd-from /usr/bin/bsd-write /usr/bin/cal /usr/bin/calendar /usr/bin/catman /usr/bin/col /usr/bin/colcrt /usr/bin/colrm /usr/bin/column /usr/bin/eqn /usr/bin/from /usr/bin/geqn /usr/bin/gpic /usr/bin/groff /usr/bin/grog /usr/bin/grops /usr/bin/grotty /usr/bin/gtbl /usr/bin/hd /usr/bin/hexdump /usr/bin/lexgrog /usr/bin/look /usr/bin/lorder /usr/bin/man /usr/bin/mandb /usr/bin/manpath /usr/bin/ncal /usr/bin/neqn /usr/bin/nroff /usr/bin/pic /usr/bin/preconv /usr/bin/printerbanner /usr/bin/soelim /usr/bin/tbl /usr/bin/troff /usr/bin/ul /usr/bin/whatis /usr/bin/write /exports/usr/bin/ && \
+  mv /usr/lib/man-db /usr/lib/groff /exports/usr/lib/ && \
+  mv /usr/lib/tmpfiles.d/man-db.conf /exports/usr/lib/tmpfiles.d/ && \
+  mv /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libpipeline.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/groff /usr/share/man /usr/share/man-db /exports/usr/share/ && \
+  mv /var/cache/man /exports/var/cache/
 
 # CLANG-FORMAT
 FROM base AS clang-format
@@ -626,45 +678,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xinput /exports/usr/bin/
-
-# REXPAINT
-FROM base AS rexpaint
-COPY --from=unzip /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/rexpaint.zip http://www.gridsagegames.com/blogs/fileDownload.php?fileName=REXPaint-v1.60-ANSI.zip && \
-  unzip /tmp/rexpaint.zip && \
-  mv REXPaint-v1.60-ANSI /usr/local/lib/rexpaint && \
-  bin_file=/usr/local/bin/rexpaint && \
-  echo '#!/usr/bin/env bash' > $bin_file && \
-  echo 'exec wine64-stable /usr/local/lib/rexpaint/REXPaint.exe' >> $bin_file && \
-  chmod +x $bin_file
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/ && \
-  mv /usr/local/bin/rexpaint /exports/usr/local/bin/ && \
-  mv /usr/local/lib/rexpaint /exports/usr/local/lib/
-
-# WINE
-FROM base AS wine
-COPY --from=apteryx /exports/ /
-RUN \
-  dpkg --add-architecture i386 && \
-  apt-get -q update && \
-  apteryx wine64='3.0-*' wine32 wine-stable
-RUN \
-  mkdir -p /exports/etc/ /exports/etc/ld.so.conf.d/ /exports/lib/ /exports/lib/udev/ /exports/lib/x86_64-linux-gnu/ /exports/sbin/ /exports/usr/bin/ /exports/usr/lib/gcc/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/gdb/auto-load/usr/lib/ /exports/usr/share/ && \
-  mv /etc/ld.so.cache /etc/openal /etc/pulse /exports/etc/ && \
-  mv /etc/ld.so.conf.d/i386-linux-gnu.conf /exports/etc/ld.so.conf.d/ && \
-  mv /lib/i386-linux-gnu /lib/ld-linux.so.2 /exports/lib/ && \
-  mv /lib/udev/hwdb.d /lib/udev/rules.d /exports/lib/udev/ && \
-  mv /lib/x86_64-linux-gnu/libusb-1.0.so.0 /lib/x86_64-linux-gnu/libusb-1.0.so.0.1.0 /exports/lib/x86_64-linux-gnu/ && \
-  mv /sbin/capsh /sbin/getcap /sbin/getpcaps /sbin/setcap /exports/sbin/ && \
-  mv /usr/bin/wine64-stable /exports/usr/bin/ && \
-  mv /usr/lib/gcc/i686-linux-gnu /exports/usr/lib/gcc/ && \
-  mv /usr/lib/i386-linux-gnu /usr/lib/wine /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/gstreamer-1.0 /usr/lib/x86_64-linux-gnu/gstreamer1.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0.3.1 /usr/lib/x86_64-linux-gnu/libexif.so.12 /usr/lib/x86_64-linux-gnu/libexif.so.12.3.3 /usr/lib/x86_64-linux-gnu/libFLAC.so.8 /usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.10.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.15.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.5 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstbase-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstbase-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstcheck-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstcheck-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstcontroller-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstcontroller-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstnet-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstnet-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstreamer-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstreamer-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0.1405.0 /usr/lib/x86_64-linux-gnu/libicudata.so.60 /usr/lib/x86_64-linux-gnu/libicudata.so.60.2 /usr/lib/x86_64-linux-gnu/libicui18n.so.60 /usr/lib/x86_64-linux-gnu/libicui18n.so.60.2 /usr/lib/x86_64-linux-gnu/libicuio.so.60 /usr/lib/x86_64-linux-gnu/libicuio.so.60.2 /usr/lib/x86_64-linux-gnu/libicutest.so.60 /usr/lib/x86_64-linux-gnu/libicutest.so.60.2 /usr/lib/x86_64-linux-gnu/libicutu.so.60 /usr/lib/x86_64-linux-gnu/libicutu.so.60.2 /usr/lib/x86_64-linux-gnu/libicuuc.so.60 /usr/lib/x86_64-linux-gnu/libicuuc.so.60.2 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.1.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libltdl.so.7 /usr/lib/x86_64-linux-gnu/libltdl.so.7.3.1 /usr/lib/x86_64-linux-gnu/libmpg123.so.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0.44.8 /usr/lib/x86_64-linux-gnu/libogg.so.0 /usr/lib/x86_64-linux-gnu/libogg.so.0.8.2 /usr/lib/x86_64-linux-gnu/libopenal.so.1 /usr/lib/x86_64-linux-gnu/libopenal.so.1.18.2 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0.28.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0.28.0 /usr/lib/x86_64-linux-gnu/libpcap.so.0.8 /usr/lib/x86_64-linux-gnu/libpcap.so.1.8.1 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.34.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0.1.1 /usr/lib/x86_64-linux-gnu/libpulse.so.0 /usr/lib/x86_64-linux-gnu/libpulse.so.0.20.2 /usr/lib/x86_64-linux-gnu/libsndfile.so.1 /usr/lib/x86_64-linux-gnu/libsndfile.so.1.0.28 /usr/lib/x86_64-linux-gnu/libsndio.so.6.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.3.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0.4.8 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2.0.11 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libxml2.so.2 /usr/lib/x86_64-linux-gnu/libxml2.so.2.9.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/pulseaudio /usr/lib/x86_64-linux-gnu/wine /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/gdb/auto-load/usr/lib/i386-linux-gnu /exports/usr/share/gdb/auto-load/usr/lib/ && \
-  mv /usr/share/gst-plugins-base /usr/share/libgphoto2 /usr/share/openal /usr/share/wine /exports/usr/share/
 
 # ALSA-UTILS
 FROM base AS alsa-utils
@@ -1724,8 +1737,6 @@ COPY --from=shell-browser /exports/ /
 COPY --from=wacom /exports/ /
 COPY --from=apulse /exports/ /
 COPY --from=alsa-utils /exports/ /
-COPY --from=wine /exports/ /
-COPY --from=rexpaint /exports/ /
 COPY --from=xinput /exports/ /
 COPY --from=weechat /exports/ /
 COPY --from=urlview /exports/ /
@@ -1733,6 +1744,8 @@ COPY --from=bsdmainutils /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=xournalpp /exports/ /
 COPY --from=clang-format /exports/ /
+COPY --from=man /exports/ /
+COPY --from=aerc /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

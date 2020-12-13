@@ -1,0 +1,27 @@
+name = "aerc"
+from = "base"
+
+version = "0.5.2"
+
+devDependencies = [
+  "build-essential",
+  "clone",
+  "go",
+  "scdoc",
+]
+
+build = """
+clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc
+cd ~/src/git.sr.ht/~sircmpwn/aerc
+make
+make install
+rm -rf ~/src
+"""
+
+exports = [
+  '/usr/local/bin/aerc',
+  '/usr/local/share/man/man1/aerc-*',
+  '/usr/local/share/man/man5/aerc-*',
+  '/usr/local/share/man/man7/aerc-*',
+  '/usr/local/share/aerc/',
+]

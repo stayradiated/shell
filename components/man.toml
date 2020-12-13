@@ -1,0 +1,63 @@
+name = "man"
+from = "base"
+
+version = "2.8.3-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx man-db='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/groff/',
+  '/etc/manpath.config',
+  '/usr/bin/apropos',
+  '/usr/bin/bsd-from',
+  '/usr/bin/bsd-write',
+  '/usr/bin/cal',
+  '/usr/bin/calendar',
+  '/usr/bin/catman',
+  '/usr/bin/col',
+  '/usr/bin/colcrt',
+  '/usr/bin/colrm',
+  '/usr/bin/column',
+  '/usr/bin/eqn',
+  '/usr/bin/from',
+  '/usr/bin/geqn',
+  '/usr/bin/gpic',
+  '/usr/bin/groff',
+  '/usr/bin/grog',
+  '/usr/bin/grops',
+  '/usr/bin/grotty',
+  '/usr/bin/gtbl',
+  '/usr/bin/hd',
+  '/usr/bin/hexdump',
+  '/usr/bin/lexgrog',
+  '/usr/bin/look',
+  '/usr/bin/lorder',
+  '/usr/bin/man',
+  '/usr/bin/mandb',
+  '/usr/bin/manpath',
+  '/usr/bin/ncal',
+  '/usr/bin/neqn',
+  '/usr/bin/nroff',
+  '/usr/bin/pic',
+  '/usr/bin/preconv',
+  '/usr/bin/printerbanner',
+  '/usr/bin/soelim',
+  '/usr/bin/tbl',
+  '/usr/bin/troff',
+  '/usr/bin/ul',
+  '/usr/bin/whatis',
+  '/usr/bin/write',
+  '/usr/lib/man-db/',
+  '/usr/lib/groff/',
+  '/usr/lib/tmpfiles.d/man-db.conf',
+  '/usr/lib/x86_64-linux-gnu/libgdbm.so.*',
+  '/usr/lib/x86_64-linux-gnu/libpipeline.so.*',
+  '/usr/share/groff/',
+  '/usr/share/man/',
+  '/usr/share/man-db/',
+  '/var/cache/man/',
+]

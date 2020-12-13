@@ -87,8 +87,10 @@ dependencies = [
   'wacom',
   'apulse',
   'alsa-utils',
-  'wine',
-  'rexpaint',
+
+  # 'wine',
+  # 'rexpaint',
+
   'xinput',
   'weechat',
   'urlview',
@@ -102,6 +104,9 @@ dependencies = [
   # 'gthumb',
   # 'vlc',
   'clang-format',
+  # 'gcloud',
+  'man',
+  'aerc',
 ]
 
 command = '/home/admin/.xinitrc'

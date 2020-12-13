@@ -1,0 +1,22 @@
+name = "scdoc"
+from = "base"
+
+# https://git.sr.ht/~sircmpwn/scdoc
+version = "1.11.1"
+
+devDependencies = [
+  "build-essential",
+  "clone",
+]
+
+build = """
+clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/scdoc
+cd ~/src/git.sr.ht/~sircmpwn/scdoc
+make
+make install
+rm -rf ~/src
+"""
+
+exports = [
+  '/usr/local/bin/scdoc'
+]
