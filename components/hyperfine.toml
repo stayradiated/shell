@@ -1,0 +1,22 @@
+name = "hyperfine"
+from = "base"
+
+version = "v1.11.0"
+
+devDependencies = [ "wget", "tar" ]
+
+build = """
+wget \
+  -O hyperfine.tgz \
+  https://github.com/sharkdp/hyperfine/releases/download/{{VERSION}}/hyperfine-{{VERSION}}-x86_64-unknown-linux-musl.tar.gz
+tar xzf ./hyperfine.tgz
+mkdir -p /usr/local/man/man1
+mv ./hyperfine-{{VERSION}}-x86_64-unknown-linux-musl/hyperfine /usr/local/bin/
+mv ./hyperfine-{{VERSION}}-x86_64-unknown-linux-musl/hyperfine.1 /usr/local/man/man1/
+rm -r ./hyperfine.tgz ./hyperfine-{{VERSION}}-x86_64-unknown-linux-musl
+"""
+
+exports = [
+  '/usr/local/bin/hyperfine',
+  '/usr/local/man/man1/hyperfine.1',
+]

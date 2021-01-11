@@ -8,3 +8,6 @@ build-manual:
 
 benji:
 	shoebox build my-benji --tag stayradiated/benji:latest --build-dir . --verbose
+
+chromebook:
+	shoebox build my-chromebook --tag stayradiated/chromebook:latest --build-dir . --verbose

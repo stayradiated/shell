@@ -252,6 +252,31 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xz /exports/usr/bin/
 
+# SOCKSIFY
+FROM base AS socksify
+COPY --from=build-essential /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget "https://www.inet.no/dante/files/dante-1.4.2.tar.gz" && \
+  tar xzvf "dante-1.4.2.tar.gz" && \
+  cd "dante-1.4.2" && \
+  ./configure && \
+  make && \
+  make check && \
+  make install && \
+  cd .. && \
+  rm -rf "dante-1.4.2.tar.gz" "dante-1.4.2"
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man8/ && \
+  mv /usr/local/bin/socksify /exports/usr/local/bin/ && \
+  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
+  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
+  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
+  mv /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
+  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
+
 # SCDOC
 FROM base AS scdoc
 COPY --from=build-essential /exports/ /
@@ -542,12 +567,59 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# YOUTUBE-DL
+FROM base AS youtube-dl
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/youtube-dl "https://github.com/ytdl-org/youtube-dl/releases/download/2020.12.14/youtube-dl" && \
+  chmod a+rx /usr/local/bin/youtube-dl
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/youtube-dl /exports/usr/local/bin/
+
+# CHS
+FROM base AS chs
+COPY --from=clone /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  clone --shallow --https 'https://github.com/nickzuber/chs' && \
+  cd ~/src/github.com/nickzuber/chs && \
+  git fetch && \
+  git reset --hard c3eda7c33bc59bd9624f83c7a8c387d6ca1af358 && \
+  pip3 install -r requirements.txt && \
+  sed -i 's/python/python3/' chs.py && \
+  cd && \
+  mv ~/src/github.com/nickzuber/chs /usr/local/lib/python3.6/dist-packages/ && \
+  ln -s /usr/local/lib/python3.6/dist-packages/chs/chs.py /usr/local/bin/chs && \
+  chmod +x /usr/local/bin/chs
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.6/dist-packages/ && \
+  mv /usr/local/bin/chs /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.6/dist-packages/chess /usr/local/lib/python3.6/dist-packages/chs /usr/local/lib/python3.6/dist-packages/editdistance /exports/usr/local/lib/python3.6/dist-packages/
+
+# HYPERFINE
+FROM base AS hyperfine
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O hyperfine.tgz https://github.com/sharkdp/hyperfine/releases/download/v1.11.0/hyperfine-v1.11.0-x86_64-unknown-linux-musl.tar.gz && \
+  tar xzf ./hyperfine.tgz && \
+  mkdir -p /usr/local/man/man1 && \
+  mv ./hyperfine-v1.11.0-x86_64-unknown-linux-musl/hyperfine /usr/local/bin/ && \
+  mv ./hyperfine-v1.11.0-x86_64-unknown-linux-musl/hyperfine.1 /usr/local/man/man1/ && \
+  rm -r ./hyperfine.tgz ./hyperfine-v1.11.0-x86_64-unknown-linux-musl
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/man/man1/ && \
+  mv /usr/local/bin/hyperfine /exports/usr/local/bin/ && \
+  mv /usr/local/man/man1/hyperfine.1 /exports/usr/local/man/man1/
+
 # AERC
 FROM base AS aerc
 COPY --from=build-essential /exports/ /
 COPY --from=clone /exports/ /
 COPY --from=go /exports/ /
 COPY --from=scdoc /exports/ /
+COPY --from=socksify /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root
@@ -558,12 +630,16 @@ RUN \
   make install && \
   rm -rf ~/src
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/ && \
-  mv /usr/local/bin/aerc /exports/usr/local/bin/ && \
-  mv /usr/local/share/man/man1/aerc-* /exports/usr/local/share/man/man1/ && \
-  mv /usr/local/share/man/man5/aerc-* /exports/usr/local/share/man/man5/ && \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/man/man8/ && \
+  mv /usr/local/bin/aerc /usr/local/bin/socksify /exports/usr/local/bin/ && \
+  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
+  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
+  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
+  mv /usr/local/share/aerc /exports/usr/local/share/ && \
+  mv /usr/local/share/man/man1/aerc-* /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/share/man/man5/aerc-* /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
   mv /usr/local/share/man/man7/aerc-* /exports/usr/local/share/man/man7/ && \
-  mv /usr/local/share/aerc /exports/usr/local/share/
+  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
 
 # MAN
 FROM base AS man
@@ -1746,6 +1822,9 @@ COPY --from=xournalpp /exports/ /
 COPY --from=clang-format /exports/ /
 COPY --from=man /exports/ /
 COPY --from=aerc /exports/ /
+COPY --from=hyperfine /exports/ /
+COPY --from=chs /exports/ /
+COPY --from=youtube-dl /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root

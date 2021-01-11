@@ -1,0 +1,37 @@
+name = "socksify"
+from = "base"
+
+version = "1.4.2"
+
+devDependencies = [ "build-essential", "wget", "tar" ]
+
+build = """
+wget "https://www.inet.no/dante/files/dante-{{VERSION}}.tar.gz"
+tar xzvf "dante-{{VERSION}}.tar.gz"
+
+cd "dante-{{VERSION}}"
+./configure
+make
+make check
+make install
+
+cd ..
+rm -rf "dante-{{VERSION}}.tar.gz" "dante-{{VERSION}}"
+"""
+
+exports = [
+  '/usr/local/bin/socksify',
+  '/usr/local/include/socks.h',
+  '/usr/local/lib/libdsocks.la',
+  '/usr/local/lib/libdsocks.so',
+  '/usr/local/lib/libsocks.a',
+  '/usr/local/lib/libsocks.la',
+  '/usr/local/lib/libsocks.so',
+  '/usr/local/lib/libsocks.so.0',
+  '/usr/local/lib/libsocks.so.0.1.1',
+  '/usr/local/sbin/sockd',
+  '/usr/local/share/man/man1/socksify.1',
+  '/usr/local/share/man/man5/sockd.conf.5',
+  '/usr/local/share/man/man5/socks.conf.5',
+  '/usr/local/share/man/man8/sockd.8',
+]

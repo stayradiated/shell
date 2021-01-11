@@ -3,6 +3,10 @@ from = "base"
 
 version = "0.5.2"
 
+dependencies = [
+  'socksify'
+]
+
 devDependencies = [
   "build-essential",
   "clone",

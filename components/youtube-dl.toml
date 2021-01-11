@@ -1,0 +1,21 @@
+name = 'youtube-dl'
+from = 'base'
+
+# https://github.com/ytdl-org/youtube-dl/releases
+version = '2020.12.14'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget \
+  -O /usr/local/bin/youtube-dl \
+  "https://github.com/ytdl-org/youtube-dl/releases/download/{{VERSION}}/youtube-dl"
+
+chmod a+rx /usr/local/bin/youtube-dl
+"""
+
+exports = [
+  '/usr/local/bin/youtube-dl'
+]

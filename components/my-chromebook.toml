@@ -1,0 +1,39 @@
+name = 'my-chromebook'
+from = 'shell-admin'
+
+dependencies = [
+  # needs to be loaded before other apps
+  'python3-pip',
+
+  'bat',
+  'build-essential',
+  'clone',
+  'docker',
+  'fd',
+  'file',
+  'fzf',
+  'gh',
+  'htop',
+  'httpie',
+  'jq',
+  'make',
+  'moreutils',
+  'prettyping',
+  'ripgrep',
+  'safe-rm',
+  'sd',
+  'sudo',
+  'tig',
+  'tree',
+  'unzip',
+  'wget',
+  'xsv',
+
+  'shell-git',
+  'shell-passwords',
+  'shell-ranger',
+  'shell-ssh',
+  'shell-tmux',
+  'shell-vim',
+  'shell-zsh',
+]

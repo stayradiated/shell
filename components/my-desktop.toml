@@ -107,6 +107,10 @@ dependencies = [
   # 'gcloud',
   'man',
   'aerc',
+
+  'hyperfine',
+  'chs',
+  'youtube-dl',
 ]
 
 command = '/home/admin/.xinitrc'
