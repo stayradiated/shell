@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build build-manual benji chromebook
 
 build:
 	shoebox build my-desktop --tag stayradiated/desktop:latest --build-dir . --verbose

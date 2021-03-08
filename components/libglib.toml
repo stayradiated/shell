@@ -1,0 +1,22 @@
+name = "libglib"
+from = "base"
+
+version = "2.56.4-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx libglib2.0-bin='{{VERSION}}'
+"""
+
+exports = [
+  "/usr/bin/gapplication",
+  "/usr/bin/gdbus",
+  "/usr/bin/gio",
+  "/usr/bin/gio-querymodules",
+  "/usr/bin/glib-compile-schemas",
+  "/usr/bin/gresource",
+  "/usr/bin/gsettings",
+  "/usr/lib/x86_64-linux-gnu/libelf-0.170.so",
+  "/usr/lib/x86_64-linux-gnu/libelf.so.1",
+]

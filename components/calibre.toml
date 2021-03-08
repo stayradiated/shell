@@ -1,0 +1,39 @@
+name = 'calibre'
+from = 'base'
+
+version = "5.9.0"
+
+devDependencies = [
+  'tar',
+  'wget',
+  'xz',
+]
+
+build = """
+wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh \
+  | sh /dev/stdin version={{VERSION}}
+"""
+
+exports = [
+  '/opt/calibre',
+  '/usr/bin/calibre',
+  '/usr/bin/calibre-customize',
+  '/usr/bin/calibre-debug',
+  '/usr/bin/calibre-parallel',
+  '/usr/bin/calibre-server',
+  '/usr/bin/calibre-smtp',
+  '/usr/bin/calibre-uninstall',
+  '/usr/bin/calibredb',
+  '/usr/bin/ebook-convert',
+  '/usr/bin/ebook-device',
+  '/usr/bin/ebook-edit',
+  '/usr/bin/ebook-meta',
+  '/usr/bin/ebook-polish',
+  '/usr/bin/ebook-viewer',
+  '/usr/bin/fetch-ebook-metadata',
+  '/usr/bin/lrf2lrs',
+  '/usr/bin/lrfviewer',
+  '/usr/bin/lrs2lrf',
+  '/usr/bin/markdown-calibre',
+  '/usr/bin/web2disk',
+]

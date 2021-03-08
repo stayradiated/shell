@@ -52,18 +52,19 @@ RUN \
   add-apt-repository ppa:git-core/ppa && \
   apteryx git='1:2.29.2-*'
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/git-core /exports/usr/share/
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
 
 # GO
 FROM base AS go
 COPY --from=wget /exports/ /
 COPY --from=tar /exports/ /
 RUN \
-  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.15.5.linux-amd64.tar.gz" && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.16.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
@@ -86,7 +87,8 @@ COPY --from=go /exports/ /
 COPY --from=git /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
+  GOPATH=/root \
+  GO111MODULE=auto
 RUN \
   mkdir -p /root/src/github.com/stayradiated && \
   cd /root/src/github.com/stayradiated && \
@@ -99,12 +101,13 @@ RUN \
   cd /root && \
   rm -rf src bin
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/clone /exports/usr/local/bin/ && \
-  mv /usr/share/git-core /exports/usr/share/
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
 
 # BUILD-ESSENTIAL
 FROM base AS build-essential
@@ -156,7 +159,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.39.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.43.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -497,7 +500,8 @@ COPY --from=go /exports/ /
 COPY --from=clone /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
+  GOPATH=/root \
+  GO111MODULE=auto
 RUN \
   clone --https --shallow --tag 'master' https://github.com/special/1pw && \
   cd /root/src/github.com/special/1pw && \
@@ -567,6 +571,44 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# XCAPE
+FROM base AS xcape
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx pkg-config libx11-dev libxtst-dev libxi-dev && \
+  clone --https --shallow https://github.com/alols/xcape && \
+  cd /root/src/github.com/alols/xcape && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/xcape /exports/usr/bin/
+
+# BANDWHICH
+FROM base AS bandwhich
+COPY --from=tar /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/0.20.0/bandwhich-v0.20.0-x86_64-unknown-linux-musl.tar.gz' && \
+  tar -xvf /tmp/bandwhich.tgz && \
+  rm /tmp/bandwhich.tgz && \
+  mv bandwhich /usr/local/bin/bandwhich
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/bandwhich /exports/usr/local/bin/
+
+# LIBGLIB
+FROM base AS libglib
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx libglib2.0-bin='2.56.4-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/gapplication /usr/bin/gdbus /usr/bin/gio /usr/bin/gio-querymodules /usr/bin/glib-compile-schemas /usr/bin/gresource /usr/bin/gsettings /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libelf-0.170.so /usr/lib/x86_64-linux-gnu/libelf.so.1 /exports/usr/lib/x86_64-linux-gnu/
+
 # YOUTUBE-DL
 FROM base AS youtube-dl
 COPY --from=wget /exports/ /
@@ -613,6 +655,19 @@ RUN \
   mv /usr/local/bin/hyperfine /exports/usr/local/bin/ && \
   mv /usr/local/man/man1/hyperfine.1 /exports/usr/local/man/man1/
 
+# W3M
+FROM base AS w3m
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx w3m='0.5.3-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/mime/packages/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /etc/w3m /exports/etc/ && \
+  mv /usr/bin/w3m /usr/bin/w3mman /usr/bin/www-browser /exports/usr/bin/ && \
+  mv /usr/lib/mime/packages/w3m /exports/usr/lib/mime/packages/ && \
+  mv /usr/lib/w3m /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libgc.so.* /usr/lib/x86_64-linux-gnu/libgccpp.so.* /usr/lib/x86_64-linux-gnu/libgpm.so.* /exports/usr/lib/x86_64-linux-gnu/
+
 # AERC
 FROM base AS aerc
 COPY --from=build-essential /exports/ /
@@ -622,7 +677,8 @@ COPY --from=scdoc /exports/ /
 COPY --from=socksify /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
+  GOPATH=/root \
+  GO111MODULE=auto
 RUN \
   clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc && \
   cd ~/src/git.sr.ht/~sircmpwn/aerc && \
@@ -1003,13 +1059,14 @@ RUN \
   mv /home/admin/.gitconfig /home/admin/exports/home/admin/
 USER root
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
   mv /usr/local/lib/node /exports/usr/local/lib/ && \
-  mv /usr/share/git-core /exports/usr/share/
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
 
 # XSECURELOCK
 FROM base AS xsecurelock
@@ -1636,7 +1693,7 @@ RUN \
 FROM base AS container-diff
 COPY --from=wget /exports/ /
 RUN \
-  wget -O container-diff 'https://storage.googleapis.com/container-diff/v0.15.0/container-diff-linux-amd64' && \
+  wget -O container-diff 'https://storage.googleapis.com/container-diff/v0.16.0/container-diff-linux-amd64' && \
   chmod +x container-diff && \
   mv container-diff /usr/local/bin/container-diff
 RUN \
@@ -1822,12 +1879,17 @@ COPY --from=xournalpp /exports/ /
 COPY --from=clang-format /exports/ /
 COPY --from=man /exports/ /
 COPY --from=aerc /exports/ /
+COPY --from=w3m /exports/ /
 COPY --from=hyperfine /exports/ /
 COPY --from=chs /exports/ /
 COPY --from=youtube-dl /exports/ /
+COPY --from=libglib /exports/ /
+COPY --from=bandwhich /exports/ /
+COPY --from=xcape /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root
+  GOPATH=/root \
+  GO111MODULE=auto
 ENV \
   PATH=/usr/local/lib/node/bin:${PATH}
 ENV \

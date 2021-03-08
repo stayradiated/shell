@@ -98,19 +98,29 @@ dependencies = [
   'peaclock',
   'xournalpp',
 
-  # things I need to fix
-  # 'java',
-  # 'olive-editor',
-  # 'gthumb',
-  # 'vlc',
   'clang-format',
   # 'gcloud',
   'man',
   'aerc',
+  'w3m',
 
   'hyperfine',
   'chs',
   'youtube-dl',
+
+  # 'calibre',
+
+  'libglib',
+  'bandwhich',
+
+  'xcape',
+
+  # things I need to fix
+  # 'java',
+  # 'gthumb',
+  # 'olive-editor',
+  # 'vlc',
 ]
 
 command = '/home/admin/.xinitrc'
+

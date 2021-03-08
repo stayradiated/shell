@@ -19,6 +19,11 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.*",
   "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.*",
   "/usr/share/git-core/",
+  "/usr/share/perl/",
+  "/usr/share/perl5/Error.pm",
+  "/usr/share/perl5/Error/",
+  "/usr/share/perl5/Git.pm",
+  "/usr/share/perl5/Git/",
 ]
 
 docs = [

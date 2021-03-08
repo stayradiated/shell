@@ -1,0 +1,22 @@
+name = "w3m"
+from = "base"
+
+version = "0.5.3-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx w3m='{{VERSION}}'
+"""
+
+exports = [
+  '/etc/w3m',
+  '/usr/bin/w3m',
+  '/usr/bin/w3mman',
+  '/usr/bin/www-browser',
+  '/usr/lib/mime/packages/w3m',
+  '/usr/lib/w3m/',
+  '/usr/lib/x86_64-linux-gnu/libgc.so.*',
+  '/usr/lib/x86_64-linux-gnu/libgccpp.so.*',
+  '/usr/lib/x86_64-linux-gnu/libgpm.so.*',
+]
