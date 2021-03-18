@@ -113,7 +113,7 @@ dependencies = [
   'libglib',
   'bandwhich',
 
-  'xcape',
+  'mycli',
 
   # things I need to fix
   # 'java',

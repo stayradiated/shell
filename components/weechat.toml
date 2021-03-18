@@ -42,7 +42,7 @@ exports = [
   "/usr/local/bin/wsdump.py",
   "/usr/local/lib/python3.6/dist-packages/six-1.15.0.dist-info/",
   "/usr/local/lib/python3.6/dist-packages/six.py",
-  "/usr/local/lib/python3.6/dist-packages/websocket_client-0.57.0.dist-info/",
+  "/usr/local/lib/python3.6/dist-packages/websocket_client-*/",
   "/usr/local/lib/python3.6/dist-packages/websocket/",
   "/usr/share/perl/",
   "/usr/share/pixmaps/weechat.xpm",

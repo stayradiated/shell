@@ -1,0 +1,22 @@
+name = 'mycli'
+from = 'base'
+
+# https://github.com/dbcli/mycli/releases
+version = '1.24.1'
+
+devDependencies = [
+  'apteryx',
+  'python3-pip',
+]
+
+build = """
+pip3 install mycli=={{VERSION}}
+"""
+
+exports = [
+  '/usr/local/bin/mycli',
+  '/usr/local/bin/pygmentize',
+  '/usr/local/bin/sqlformat',
+  '/usr/local/bin/tabulate',
+  '/usr/local/lib/python3.6/dist-packages/',
+]

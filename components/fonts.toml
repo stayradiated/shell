@@ -12,6 +12,7 @@ devDependencies = [
 build = """
 apteryx \
   fonts-noto='20171026-2' \
+  fonts-noto-cjk='1:20190409+*' \
   fonts-noto-color-emoji='0~20180810-*' \
   ttf-ubuntu-font-family='1:0.83-2' \
   xfonts-utils='1:7.7+6' \
