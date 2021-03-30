@@ -97,7 +97,7 @@ pacman -S sudo
 visudo # allow group sudo
 
 # admin user -- do we need them?
-useradd admin -G audio,video,docker,sudo
+useradd admin -G audio,video,docker,sudo,network
 
 # ssh
 pacman -S openssh

@@ -159,7 +159,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.43.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.44.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -325,8 +325,10 @@ FROM base AS google-chrome
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN \
-  wget -O /tmp/chrome.deb 'https://www.slimjet.com/chrome/download-chrome.php?file=files/86.0.4240.75/google-chrome-stable_current_amd64.deb' && \
-  apteryx /tmp/chrome.deb
+  curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+  apt-get update && \
+  apteryx google-chrome-stable='89.0.4389.114-1'
 RUN \
   mkdir -p /exports/opt/ /exports/usr/lib/ && \
   mv /opt/google /exports/opt/ && \
@@ -583,16 +585,36 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
+# XDO
+FROM base AS xdo
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
+RUN \
+  apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xtest0-dev && \
+  clone --https --shallow --tag '0.5.7' https://github.com/baskerville/xdo && \
+  cd /root/src/github.com/baskerville/xdo && \
+  make all && \
+  make install && \
+  rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/xdo /exports/usr/local/bin/
+
 # MYCLI
 FROM base AS mycli
-COPY --from=apteryx /exports/ /
 COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pip3 install mycli==1.24.1
+  pipx install mycli==1.24.1
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.6/ && \
-  mv /usr/local/bin/mycli /usr/local/bin/pygmentize /usr/local/bin/sqlformat /usr/local/bin/tabulate /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.6/dist-packages /exports/usr/local/lib/python3.6/
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/mycli /exports/usr/local/bin/
 
 # BANDWHICH
 FROM base AS bandwhich
@@ -1317,11 +1339,12 @@ RUN \
 FROM base AS watson
 COPY --from=python3-pip /exports/ /
 COPY --from=pipx /exports/ /
+COPY --from=git /exports/ /
 ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install td-watson=='1.10.0'
+  pipx install git+git://github.com/TailorDev/Watson@06bdbc8828b14afa6d5a6b22e1ac8c36ae9fdefc
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
@@ -1894,6 +1917,7 @@ COPY --from=youtube-dl /exports/ /
 COPY --from=libglib /exports/ /
 COPY --from=bandwhich /exports/ /
 COPY --from=mycli /exports/ /
+COPY --from=xdo /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

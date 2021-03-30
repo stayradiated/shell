@@ -5,18 +5,15 @@ from = 'base'
 version = '1.24.1'
 
 devDependencies = [
-  'apteryx',
   'python3-pip',
+  'pipx',
 ]
 
 build = """
-pip3 install mycli=={{VERSION}}
+pipx install mycli=={{VERSION}}
 """
 
 exports = [
+  '/usr/local/pipx/',
   '/usr/local/bin/mycli',
-  '/usr/local/bin/pygmentize',
-  '/usr/local/bin/sqlformat',
-  '/usr/local/bin/tabulate',
-  '/usr/local/lib/python3.6/dist-packages/',
 ]

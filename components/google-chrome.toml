@@ -1,8 +1,8 @@
 name = 'google-chrome'
 from = 'base'
 
-# https://www.slimjet.com/chrome/google-chrome-old-version.php
-version = '86.0.4240.75'
+# https://www.ubuntuupdates.org/ppa/google_chrome
+version = '89.0.4389.114-1'
 
 devDependencies = [
   'wget',
@@ -10,10 +10,11 @@ devDependencies = [
 ]
 
 build = """
-wget \
-  -O /tmp/chrome.deb \
-  'https://www.slimjet.com/chrome/download-chrome.php?file=files/{{VERSION}}/google-chrome-stable_current_amd64.deb'
-apteryx /tmp/chrome.deb
+curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
+sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+apt-get update
+
+apteryx google-chrome-stable='{{VERSION}}'
 """
 
 exports = [

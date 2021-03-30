@@ -1,0 +1,35 @@
+name = 'xdo'
+from = 'base'
+
+# https://github.com/baskerville/xdo/releases
+version = '0.5.7'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'clone',
+  'make'
+]
+
+build = """
+apteryx \
+  libxcb-ewmh-dev \
+  libxcb-icccm4-dev \
+  libxcb-keysyms1-dev \
+  libxcb-randr0-dev \
+  libxcb-shape0-dev \
+  libxcb-util-dev \
+  libxcb-xinerama0-dev \
+  libxcb-xtest0-dev
+
+clone --https --shallow --tag '{{VERSION}}' https://github.com/baskerville/xdo
+
+cd /root/src/github.com/baskerville/xdo
+make all
+make install
+rm -rf /root/src
+"""
+
+exports = [
+  '/usr/local/bin/xdo',
+]

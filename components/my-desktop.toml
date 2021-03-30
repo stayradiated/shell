@@ -114,6 +114,7 @@ dependencies = [
   'bandwhich',
 
   'mycli',
+  'xdo',
 
   # things I need to fix
   # 'java',

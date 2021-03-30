@@ -2,15 +2,16 @@ name = 'watson'
 from = 'base'
 
 # https://github.com/TailorDev/Watson/releases
-version = '1.10.0'
+version = '06bdbc8828b14afa6d5a6b22e1ac8c36ae9fdefc'
 
 devDependencies = [
   'python3-pip',
   'pipx',
+  'git',
 ]
 
 build = """
-pipx install td-watson=='{{VERSION}}'
+pipx install git+git://github.com/TailorDev/Watson@{{VERSION}}
 """
 
 exports = [
