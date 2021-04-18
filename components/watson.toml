@@ -2,7 +2,7 @@ name = 'watson'
 from = 'base'
 
 # https://github.com/TailorDev/Watson/releases
-version = '06bdbc8828b14afa6d5a6b22e1ac8c36ae9fdefc'
+version = 'edf9fef4a22aa17176a6b9eb83e895a9e0bac319'
 
 devDependencies = [
   'python3-pip',

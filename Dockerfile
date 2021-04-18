@@ -1344,7 +1344,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install git+git://github.com/TailorDev/Watson@06bdbc8828b14afa6d5a6b22e1ac8c36ae9fdefc
+  pipx install git+git://github.com/TailorDev/Watson@edf9fef4a22aa17176a6b9eb83e895a9e0bac319
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
