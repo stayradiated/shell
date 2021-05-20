@@ -1,0 +1,34 @@
+name = 'mbsync'
+from = 'base'
+
+version = '1.4.1'
+
+devDependencies = [
+  'wget',
+  'tar',
+  'apteryx',
+  'build-essential',
+]
+
+build = """
+# required for SSL
+apteryx libssl-dev
+
+wget -O /tmp/isync.tgz \
+  "https://sourceforge.net/projects/isync/files/isync/{{VERSION}}/isync-{{VERSION}}.tar.gz/download"
+tar xzvf /tmp/isync.tgz -C /tmp
+rm /tmp/isync.tgz
+
+cd "/tmp/isync-{{VERSION}}"
+ls -alh
+
+./configure
+make
+mv src/mbsync /usr/local/bin/mbsync
+
+rm -r "/tmp/isync-{{VERSION}}"
+"""
+
+exports = [
+  '/usr/local/bin/mbsync'
+]

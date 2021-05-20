@@ -4,7 +4,7 @@ from = 'base'
 # https://www.npmjs.com/package/@stayradiated/shoebox
 version = '1.4.0'
 
-dependencies = [
+devDependencies = [
   'node'
 ]
 
@@ -13,5 +13,6 @@ npm install -g '@stayradiated/shoebox@{{VERSION}}'
 """
 
 exports = [
-  '/usr/local/lib/node/'
+  '/usr/local/bin/shoebox',
+  '/usr/local/lib/node_modules/@stayradiated/shoebox/'
 ]

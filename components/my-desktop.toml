@@ -115,6 +115,10 @@ dependencies = [
 
   'mycli',
   'xdo',
+  'zx',
+
+  'mbsync',
+  'autotag',
 
   # things I need to fix
   # 'java',

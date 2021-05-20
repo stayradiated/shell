@@ -10,6 +10,9 @@ apteryx moreutils='{{VERSION}}'
 """
 
 exports = [
+  '/usr/share/perl',
+  '/usr/share/perl5/IPC/',
+
   # chronic: runs a command quietly unless it fails
   '/usr/bin/chronic',
 

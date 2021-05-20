@@ -2,9 +2,9 @@ name = 'np'
 from = 'base'
 
 # https://npmjs.com/package/np
-version = '7.0.0'
+version = '7.4.0'
 
-dependencies = [
+devDependencies = [
   'node'
 ]
 
@@ -13,5 +13,6 @@ npm install -g 'np@{{VERSION}}'
 """
 
 exports = [
-  '/usr/local/lib/node/',
+  '/usr/local/bin/np',
+  '/usr/local/lib/node_modules/np/',
 ]

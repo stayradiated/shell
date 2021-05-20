@@ -1,0 +1,18 @@
+name = 'zx'
+from = 'base'
+
+# https://npmjs.com/package/zx
+version = '1.2.2'
+
+devDependencies = [
+  'node'
+]
+
+build = """
+npm install -g 'zx@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/bin/zx',
+  '/usr/local/lib/node_modules/zx/',
+]

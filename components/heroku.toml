@@ -2,7 +2,7 @@ name = 'heroku'
 from = 'base'
 
 # https://www.npmjs.com/package/heroku
-version = '7.47.3'
+version = '7.52.0'
 
 devDependencies = [
   'node',
@@ -13,6 +13,7 @@ npm install -g 'heroku@{{VERSION}}'
 """
 
 exports = [
-  '/usr/local/lib/node/'
+  '/usr/local/bin/heroku',
+  '/usr/local/lib/node_modules/heroku'
 ]
 

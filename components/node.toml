@@ -2,26 +2,22 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = '14.15.1'
+version = '16.0.0'
 
-devDependencies = [
-  'nvm'
-]
+dependencies = ['n']
 
 build = """
-bash -c 'source $NVM_DIR/nvm.sh && nvm install {{VERSION}}'
-mv "${NVM_DIR}/versions/node/v{{VERSION}}" /usr/local/lib/node
+n lts
 
-PATH="/usr/local/lib/node/bin:${PATH}"
-
-npm config set user root
-npm config set save-exact true
+n {{VERSION}}
+npm install -g npm
 """
 
 exports = [
-  '/usr/local/lib/node/'
-]
-
-exportEnv = [
-  ['PATH', '/usr/local/lib/node/bin:${PATH}']
+  '/usr/local/n/',
+  '/usr/local/bin/node',
+  '/usr/local/bin/npm',
+  '/usr/local/bin/npx',
+  '/usr/local/include/node/',
+  '/usr/local/lib/node_modules/',
 ]

@@ -159,7 +159,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.44.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.50.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -169,16 +169,14 @@ RUN \
   mkdir -p /exports/root/ && \
   mv /root/dotfiles /exports/root/
 
-# NVM
-FROM base AS nvm
-COPY --from=clone /exports/ /
+# N
+FROM base AS n
 RUN \
-  clone --https --shallow --tag 'v0.37.0' https://github.com/nvm-sh/nvm && \
-  mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm && \
-  rm -rf /root/src
+  curl -L https://raw.githubusercontent.com/tj/n/v7.2.2/bin/n -o /usr/local/bin/n && \
+  chmod +x /usr/local/bin/n
 RUN \
-  mkdir -p /exports/usr/local/share/ && \
-  mv /usr/local/share/nvm /exports/usr/local/share/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/n /exports/usr/local/bin/
 
 # PYTHON3-PIP
 FROM base AS python3-pip
@@ -234,18 +232,17 @@ RUN \
 
 # NODE
 FROM base AS node
-COPY --from=nvm /exports/ /
-ENV \
-  NVM_DIR=/usr/local/share/nvm
+COPY --from=n /exports/ /
 RUN \
-  bash -c 'source $NVM_DIR/nvm.sh && nvm install 14.15.1' && \
-  mv "${NVM_DIR}/versions/node/v14.15.1" /usr/local/lib/node && \
-  PATH="/usr/local/lib/node/bin:${PATH}" && \
-  npm config set user root && \
-  npm config set save-exact true
+  n lts && \
+  n 16.0.0 && \
+  npm install -g npm
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
+  mv /usr/local/bin/n /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /exports/usr/local/bin/ && \
+  mv /usr/local/include/node /exports/usr/local/include/ && \
+  mv /usr/local/lib/node_modules /exports/usr/local/lib/ && \
+  mv /usr/local/n /exports/usr/local/
 
 # PIPX
 FROM base AS pipx
@@ -403,13 +400,12 @@ RUN \
 # YARN
 FROM base AS yarn
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'yarn@1.22.10'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/yarn /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/yarn /exports/usr/local/lib/node_modules/
 
 # SXHKD
 FROM base AS sxhkd
@@ -541,13 +537,12 @@ RUN \
 # DIFF-SO-FANCY
 FROM base AS diff-so-fancy
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g 'diff-so-fancy@1.3.0'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
 
 # FFMPEG
 FROM base AS ffmpeg
@@ -584,6 +579,50 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
+
+# AUTOTAG
+FROM base AS autotag
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+RUN \
+  wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.9/autotag_linux_amd64.tar.gz" && \
+  tar xzvf /tmp/autotag.tgz autotag && \
+  mv autotag /usr/local/bin/autotag && \
+  rm /tmp/autotag.tgz
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/autotag /exports/usr/local/bin/
+
+# MBSYNC
+FROM base AS mbsync
+COPY --from=wget /exports/ /
+COPY --from=tar /exports/ /
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+RUN \
+  apteryx libssl-dev && \
+  wget -O /tmp/isync.tgz "https://sourceforge.net/projects/isync/files/isync/1.4.1/isync-1.4.1.tar.gz/download" && \
+  tar xzvf /tmp/isync.tgz -C /tmp && \
+  rm /tmp/isync.tgz && \
+  cd "/tmp/isync-1.4.1" && \
+  ls -alh && \
+  ./configure && \
+  make && \
+  mv src/mbsync /usr/local/bin/mbsync && \
+  rm -r "/tmp/isync-1.4.1"
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/mbsync /exports/usr/local/bin/
+
+# ZX
+FROM base AS zx
+COPY --from=node /exports/ /
+RUN \
+  npm install -g 'zx@1.2.2'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/zx /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/zx /exports/usr/local/lib/node_modules/
 
 # XDO
 FROM base AS xdo
@@ -950,8 +989,9 @@ FROM shell-admin AS shell-yarn
 COPY --from=yarn /exports/ /
 USER root
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/yarn /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/yarn /exports/usr/local/lib/node_modules/
 
 # SHELL-WM
 FROM shell-admin AS shell-wm
@@ -1060,8 +1100,6 @@ RUN \
 FROM shell-admin AS shell-npm
 COPY --from=make /exports/ /
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   cd dotfiles && \
   make npm && \
@@ -1072,8 +1110,11 @@ RUN \
   mv /home/admin/.npmrc /home/admin/exports/home/admin/
 USER root
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
+  mv /usr/local/bin/n /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /exports/usr/local/bin/ && \
+  mv /usr/local/include/node /exports/usr/local/include/ && \
+  mv /usr/local/lib/node_modules /exports/usr/local/lib/ && \
+  mv /usr/local/n /exports/usr/local/
 
 # SHELL-GIT
 FROM shell-admin AS shell-git
@@ -1089,12 +1130,12 @@ RUN \
   mv /home/admin/.gitconfig /home/admin/exports/home/admin/
 USER root
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/ /exports/usr/share/perl5/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libpcre2-8.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/ && \
+  mv /usr/local/bin/diff-so-fancy /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/ && \
   mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
   mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
 
@@ -1327,13 +1368,11 @@ RUN \
 # WITHEXEDITORHOST
 FROM base AS withexeditorhost
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'withexeditorhost@5.5.0'
+  npm install -g 'withexeditorhost@6.1.0'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/lib/node_modules/withexeditorhost /exports/usr/local/lib/node_modules/
 
 # WATSON
 FROM base AS watson
@@ -1410,13 +1449,12 @@ RUN \
 # SHOEBOX
 FROM base AS shoebox
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
   npm install -g '@stayradiated/shoebox@1.4.0'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@stayradiated/ && \
+  mv /usr/local/bin/shoebox /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/@stayradiated/shoebox /exports/usr/local/lib/node_modules/@stayradiated/
 
 # SD
 FROM base AS sd
@@ -1515,13 +1553,12 @@ RUN \
 # NP
 FROM base AS np
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'np@7.0.0'
+  npm install -g 'np@7.4.0'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/np /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/np /exports/usr/local/lib/node_modules/
 
 # NGROK
 FROM base AS ngrok
@@ -1539,13 +1576,12 @@ RUN \
 # NCU
 FROM base AS ncu
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'npm-check-updates@10.2.2'
+  npm install -g 'npm-check-updates@11.5.1'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/ncu /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/npm-check-updates /exports/usr/local/lib/node_modules/
 
 # MOREUTILS
 FROM base AS moreutils
@@ -1553,7 +1589,9 @@ COPY --from=apteryx /exports/ /
 RUN \
   apteryx moreutils='0.60-*'
 RUN \
-  mkdir -p /exports/usr/bin/ && \
+  mkdir -p /exports/usr/share/ /exports/usr/share/perl5/ /exports/usr/bin/ && \
+  mv /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/IPC /exports/usr/share/perl5/ && \
   mv /usr/bin/chronic /usr/bin/combine /usr/bin/errno /usr/bin/ifdata /usr/bin/ifne /usr/bin/isutf8 /usr/bin/lckdo /usr/bin/mispipe /usr/bin/parallel /usr/bin/pee /usr/bin/sponge /usr/bin/ts /usr/bin/vidir /usr/bin/vipe /usr/bin/zrun /exports/usr/bin/
 
 # MEDIAINFO
@@ -1616,25 +1654,21 @@ RUN \
 # HEROKU
 FROM base AS heroku
 COPY --from=node /exports/ /
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 RUN \
-  npm install -g 'heroku@7.47.3'
+  npm install -g 'heroku@7.52.0'
 RUN \
-  mkdir -p /exports/usr/local/lib/ && \
-  mv /usr/local/lib/node /exports/usr/local/lib/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/heroku /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/heroku /exports/usr/local/lib/node_modules/
 
 # GIFSKI
 FROM base AS gifski
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
-COPY --from=tar /exports/ /
 COPY --from=xz /exports/ /
 RUN \
-  wget -O gifski.txz "https://github.com/ImageOptim/gifski/releases/download/1.2.3/gifski-1.2.3.tar.xz"
-RUN \
-  tar -xvf gifski.txz debian && \
-  apteryx ./debian/gifski*.deb && \
+  wget -O gifski.deb "https://github.com/ImageOptim/gifski/releases/download/1.4.0/gifski_1.4.0_amd64.deb" && \
+  apteryx ./gifski.deb && \
   rm -rf debian
 RUN \
   mkdir -p /exports/usr/bin/ && \
@@ -1688,7 +1722,7 @@ RUN \
 FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' && \
+  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64' && \
   chmod +x /usr/local/bin/docker-compose
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
@@ -1702,7 +1736,7 @@ RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
-  apteryx docker-ce='5:19.03.13*'
+  apteryx docker-ce='5:20.10.6*'
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/docker /exports/usr/bin/
@@ -1918,12 +1952,13 @@ COPY --from=libglib /exports/ /
 COPY --from=bandwhich /exports/ /
 COPY --from=mycli /exports/ /
 COPY --from=xdo /exports/ /
+COPY --from=zx /exports/ /
+COPY --from=mbsync /exports/ /
+COPY --from=autotag /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
   GO111MODULE=auto
-ENV \
-  PATH=/usr/local/lib/node/bin:${PATH}
 ENV \
   PATH=${PATH}:/home/admin/.cache/npm/bin
 ENV \

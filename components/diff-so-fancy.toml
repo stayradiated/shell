@@ -4,7 +4,7 @@ from = 'base'
 # https://www.npmjs.com/package/diff-so-fancy
 version = '1.3.0'
 
-dependencies = [
+devDependencies = [
   'node'
 ]
 
@@ -13,5 +13,6 @@ npm install -g 'diff-so-fancy@{{VERSION}}'
 """
 
 exports = [
-  '/usr/local/lib/node/',
+  '/usr/local/bin/diff-so-fancy',
+  '/usr/local/lib/node_modules/diff-so-fancy/',
 ]

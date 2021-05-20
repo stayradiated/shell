@@ -2,9 +2,9 @@ name = 'ncu'
 from = 'base'
 
 # https://www.npmjs.com/package/npm-check-updates
-version = '10.2.2'
+version = '11.5.1'
 
-dependencies = [
+devDependencies = [
   'node'
 ]
 
@@ -13,5 +13,6 @@ npm install -g 'npm-check-updates@{{VERSION}}'
 """
 
 exports = [
-  '/usr/local/lib/node/'
+  '/usr/local/bin/ncu',
+  '/usr/local/lib/node_modules/npm-check-updates'
 ]
