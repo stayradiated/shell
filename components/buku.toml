@@ -1,0 +1,20 @@
+name = "buku"
+from = "base"
+
+# https://github.com/jarun/buku/releases/
+version = "4.5"
+
+devDependencies = [
+  'python3-pip',
+  'pipx'
+]
+
+build = """
+pipx install buku=='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/pipx/',
+  '/usr/local/bin/buku',
+  '/usr/local/bin/bukuserver',
+]

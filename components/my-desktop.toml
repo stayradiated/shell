@@ -119,6 +119,7 @@ dependencies = [
 
   'mbsync',
   'autotag',
+  'buku',
 
   # things I need to fix
   # 'java',

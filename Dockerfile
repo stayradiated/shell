@@ -159,7 +159,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.51.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.59.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -579,6 +579,20 @@ RUN \
   mkdir -p /exports/bin/ /exports/lib/x86_64-linux-gnu/ && \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
+
+# BUKU
+FROM base AS buku
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install buku=='4.5'
+RUN \
+  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/ && \
+  mv /usr/local/bin/buku /usr/local/bin/bukuserver /exports/usr/local/bin/
 
 # AUTOTAG
 FROM base AS autotag
@@ -1955,6 +1969,7 @@ COPY --from=xdo /exports/ /
 COPY --from=zx /exports/ /
 COPY --from=mbsync /exports/ /
 COPY --from=autotag /exports/ /
+COPY --from=buku /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
