@@ -1,0 +1,21 @@
+name = 'miller'
+from = 'base'
+
+# https://github.com/johnkerl/miller/releases
+version = 'v5.10.2'
+
+devDependencies = [
+  'wget',
+]
+
+build = """
+wget \
+  -O /usr/local/bin/mlr \
+  https://github.com/johnkerl/miller/releases/download/{{VERSION}}/mlr.linux.x86_64
+
+chmod +x /usr/local/bin/mlr
+"""
+
+exports = [
+  '/usr/local/bin/mlr',
+]

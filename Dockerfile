@@ -580,19 +580,15 @@ RUN \
   mv /bin/ping /exports/bin/ && \
   mv /lib/x86_64-linux-gnu/libidn.so.* /exports/lib/x86_64-linux-gnu/
 
-# BUKU
-FROM base AS buku
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+# MILLER
+FROM base AS miller
+COPY --from=wget /exports/ /
 RUN \
-  pipx install buku=='4.5'
+  wget -O /usr/local/bin/mlr https://github.com/johnkerl/miller/releases/download/v5.10.2/mlr.linux.x86_64 && \
+  chmod +x /usr/local/bin/mlr
 RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/buku /usr/local/bin/bukuserver /exports/usr/local/bin/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/mlr /exports/usr/local/bin/
 
 # AUTOTAG
 FROM base AS autotag
@@ -1193,7 +1189,7 @@ RUN \
   curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
   echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
   apt-get -q update && \
-  apteryx signal-desktop='1.38.1'
+  apteryx signal-desktop='5.3.0'
 RUN \
   mkdir -p /exports/opt/ /exports/usr/bin/ && \
   mv /opt/Signal /exports/opt/ && \
@@ -1969,7 +1965,7 @@ COPY --from=xdo /exports/ /
 COPY --from=zx /exports/ /
 COPY --from=mbsync /exports/ /
 COPY --from=autotag /exports/ /
-COPY --from=buku /exports/ /
+COPY --from=miller /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
