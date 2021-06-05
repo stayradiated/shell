@@ -21,9 +21,6 @@ make install
 """
 
 exports = [
-  '/usr/local/bin/light'
-]
-
-docs = [
+  '/usr/local/bin/light',
   '/usr/local/share/man/man1/light.1'
 ]

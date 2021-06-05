@@ -6,7 +6,6 @@ version = '0.1.11458'
 
 devDependencies = [
   'wget',
-  'tar',
 ]
 
 build = """

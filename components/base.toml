@@ -1,5 +1,5 @@
 name = 'base'
-fromImage = 'phusion/baseimage:bionic-1.0.0'
+fromImage = 'phusion/baseimage:focal-1.0.0'
 
 baseExportDir = '/exports/'
 

@@ -26,9 +26,6 @@ mv man/man1/git-crypt.1 /usr/local/share/man/man1/git-crypt.1
 """
 
 exports = [
-  '/usr/local/bin/git-crypt'
-]
-
-docs = [
+  '/usr/local/bin/git-crypt',
   '/usr/local/share/man/man1/git-crypt.1'
 ]

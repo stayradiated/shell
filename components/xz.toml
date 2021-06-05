@@ -13,8 +13,6 @@ apteryx xz-utils='{{VERSION}}'
 
 exports = [
   '/usr/bin/xz',
-]
 
-docs = [
   '/usr/share/man/man1/xz.1.gz'
 ]

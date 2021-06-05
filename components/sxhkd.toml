@@ -24,9 +24,6 @@ rm -rf /root/src
 """
 
 exports = [
-  '/usr/local/bin/sxhkd'
-]
-
-docs = [
-  '/usr/local/share/man/man1/sxhkd.1'
+  '/usr/local/bin/sxhkd',
+  '/usr/local/share/man/man1/sxhkd.1',
 ]

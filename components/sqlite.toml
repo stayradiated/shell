@@ -7,7 +7,7 @@ version = '3330000'
 devDependencies = [
   'build-essential',
   'wget',
-  'tar',
+  
   'make',
 ]
 

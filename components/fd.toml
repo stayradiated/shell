@@ -6,7 +6,6 @@ version = 'v8.1.1'
 
 devDependencies = [
   'wget',
-  'tar',
 ]
 
 build = """
@@ -23,9 +22,6 @@ rm -r fd
 """
 
 exports = [
-  '/usr/local/bin/fd'
-]
-
-docs = [
+  '/usr/local/bin/fd',
   '/usr/local/share/man/man1/fd.1'
 ]

@@ -1,7 +1,7 @@
 name = "zsh"
 from = "base"
 
-version = "5.4.2-*"
+version = "5.8-*"
 
 devDependencies = [
   "apteryx"
@@ -13,12 +13,40 @@ apteryx zsh='{{VERSION}}'
 """
 
 exports = [
-  '/bin/zsh',
-  '/etc/zsh/',
-  '/usr/lib/x86_64-linux-gnu/zsh/',
-  '/usr/share/zsh/',
-]
-
-docs = [
-  "/usr/share/man/man1/zsh.1.gz"
+  "/etc/shells",
+  "/etc/zsh/",
+  "/usr/bin/rzsh",
+  "/usr/bin/zsh",
+  "/usr/bin/zsh5",
+  "/usr/lib/x86_64-linux-gnu/zsh/",
+  "/usr/local/bin/apteryx",
+  "/usr/local/share/zsh/",
+  "/usr/share/bug/zsh",
+  "/usr/share/bug/zsh-common",
+  "/usr/share/doc/zsh-common/",
+  "/usr/share/doc/zsh/",
+  "/usr/share/lintian/overrides/zsh",
+  "/usr/share/lintian/overrides/zsh-common",
+  "/usr/share/man/man1/rzsh.1.gz",
+  "/usr/share/man/man1/zsh.1.gz",
+  "/usr/share/man/man1/zshall.1.gz",
+  "/usr/share/man/man1/zshbuiltins.1.gz",
+  "/usr/share/man/man1/zshcalsys.1.gz",
+  "/usr/share/man/man1/zshcompctl.1.gz",
+  "/usr/share/man/man1/zshcompsys.1.gz",
+  "/usr/share/man/man1/zshcompwid.1.gz",
+  "/usr/share/man/man1/zshcontrib.1.gz",
+  "/usr/share/man/man1/zshexpn.1.gz",
+  "/usr/share/man/man1/zshmisc.1.gz",
+  "/usr/share/man/man1/zshmodules.1.gz",
+  "/usr/share/man/man1/zshoptions.1.gz",
+  "/usr/share/man/man1/zshparam.1.gz",
+  "/usr/share/man/man1/zshroadmap.1.gz",
+  "/usr/share/man/man1/zshtcpsys.1.gz",
+  "/usr/share/man/man1/zshzftpsys.1.gz",
+  "/usr/share/man/man1/zshzle.1.gz",
+  "/usr/share/menu/zsh-common",
+  "/usr/share/zsh/5.8/",
+  "/usr/share/zsh/functions/",
+  "/usr/share/zsh/help/",
 ]

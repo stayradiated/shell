@@ -33,9 +33,7 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/',
   '/usr/local/bin/bspc',
   '/usr/local/bin/bspwm',
-]
 
-docs = [
   '/usr/local/share/man/man1/bspwm.1',
   '/usr/local/share/man/man1/bspc.1',
 ]

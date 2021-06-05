@@ -6,7 +6,6 @@ version = '12.1.1'
 
 devDependencies = [
   'wget',
-  'tar'
 ]
 
 build = """
@@ -23,9 +22,6 @@ rm -r ripgrep
 """
 
 exports = [
-  '/usr/local/bin/rg'
-]
-
-docs = [
-  '/usr/local/share/man/man1/rg.1'
+  '/usr/local/bin/rg',
+  '/usr/local/share/man/man1/rg.1',
 ]

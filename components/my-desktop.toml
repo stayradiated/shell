@@ -121,6 +121,8 @@ dependencies = [
   'autotag',
   'miller',
 
+  # 'etcher',
+
   # things I need to fix
   # 'java',
   # 'gthumb',

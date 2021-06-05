@@ -2,7 +2,7 @@ name = 'pipx'
 from = 'base'
 
 # https://github.com/pipxproject/pipx/releases/
-version = '0.15.6.0'
+version = '0.16.3'
 
 devDependencies = [
   'apteryx',
@@ -19,6 +19,23 @@ exportEnv = [
 ]
 
 exports = [
-  '/usr/local/bin/pipx',
-  '/usr/local/lib/python3.6/',
+  "/usr/local/bin/activate-global-python-argcomplete",
+  "/usr/local/bin/pipx",
+  "/usr/local/bin/python-argcomplete-check-easy-install-script",
+  "/usr/local/bin/python-argcomplete-tcsh",
+  "/usr/local/bin/register-python-argcomplete",
+  "/usr/local/bin/userpath",
+  "/usr/local/lib/python3.8/dist-packages/__pycache__/",
+  "/usr/local/lib/python3.8/dist-packages/argcomplete-1.12.3.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/argcomplete/",
+  "/usr/local/lib/python3.8/dist-packages/click-8.0.1.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/click/",
+  "/usr/local/lib/python3.8/dist-packages/packaging-20.9.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/packaging/",
+  "/usr/local/lib/python3.8/dist-packages/pipx-0.16.3.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/pipx/",
+  "/usr/local/lib/python3.8/dist-packages/pyparsing-2.4.7.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/pyparsing.py",
+  "/usr/local/lib/python3.8/dist-packages/userpath-1.6.0.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/userpath/",
 ]

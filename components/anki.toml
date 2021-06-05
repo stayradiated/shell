@@ -9,7 +9,6 @@ version = '2.1.19'
 devDependencies = [
   'build-essential',
   'wget',
-  'tar',
   'make',
 ]
 

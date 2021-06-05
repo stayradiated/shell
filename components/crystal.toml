@@ -6,7 +6,6 @@ version = "0.35.1"
 
 dependencies = [
   "wget",
-  "tar"
 ]
 
 build = """

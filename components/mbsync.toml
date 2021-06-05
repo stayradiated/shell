@@ -5,7 +5,7 @@ version = '1.4.1'
 
 devDependencies = [
   'wget',
-  'tar',
+  
   'apteryx',
   'build-essential',
 ]

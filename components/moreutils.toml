@@ -1,7 +1,7 @@
 name = 'moreutils'
 from = 'base'
 
-version = '0.60-*'
+version = '0.63-*'
 
 devDependencies = [ 'apteryx' ]
 
@@ -57,9 +57,7 @@ exports = [
 
   # zrun: automatically uncompress arguments to command
   '/usr/bin/zrun',
-]
 
-docs = [
   '/usr/share/doc/moreutils/',
   '/usr/share/man/man1/chronic.1.gz',
   '/usr/share/man/man1/combine.1.gz',

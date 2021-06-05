@@ -12,9 +12,6 @@ apteryx unzip='{{VERSION}}'
 """
 
 exports = [
-  '/usr/bin/unzip'
-]
-
-docs = [
+  '/usr/bin/unzip',
   '/usr/share/man/man1/unzip.1.gz'
 ]

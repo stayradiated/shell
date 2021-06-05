@@ -1,10 +1,10 @@
-name = "wget"
-from = "base"
+name = 'wget'
+from = 'base'
 
-version = "1.19.4-*"
+version = '1.20.3-*'
 
 devDependencies = [
-  "apteryx"
+  'apteryx'
 ]
 
 build = """
@@ -12,9 +12,7 @@ apteryx wget='{{VERSION}}'
 """
 
 exports = [
-  "/usr/bin/wget"
-]
-
-docs = [
-  "/usr/share/man/man1/wget.1.gz"
+  '/usr/bin/wget',
+  '/usr/share/doc/wget/',
+  '/usr/share/man/man1/wget.1.gz'
 ]

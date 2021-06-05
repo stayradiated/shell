@@ -3,7 +3,7 @@ from = "base"
 
 version = "v1.11.0"
 
-devDependencies = [ "wget", "tar" ]
+devDependencies = [ "wget" ]
 
 build = """
 wget \

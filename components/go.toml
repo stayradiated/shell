@@ -2,11 +2,10 @@ name = "go"
 from = "base"
 
 # https://golang.org/dl/
-version = "go1.16"
+version = "go1.16.5"
 
 devDependencies = [
   "wget",
-  "tar"
 ]
 
 build = """
@@ -26,7 +25,3 @@ exportEnv = [
   ["GOPATH", "/root"],
   ["GO111MODULE", "auto"],
 ]
-
-latest_version = """
-https://golang.org/dl/
-"""

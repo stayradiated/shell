@@ -5,7 +5,6 @@ from = 'base'
 version = '0.20.0'
 
 devDependencies = [
-  'tar',
   'wget',
 ]
 

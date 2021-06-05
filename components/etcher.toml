@@ -2,7 +2,7 @@ name = 'etcher'
 from = 'base'
 
 # https://github.com/balena-io/etcher/releases
-version = '1.5.110'
+version = '1.5.120'
 
 devDependencies = [
   'wget',
@@ -17,6 +17,8 @@ unzip /tmp/etcher.zip
 mv balenaEtcher-*.AppImage /usr/local/bin/etcher
 rm /tmp/etcher.zip
 """
+
+# NOTE: requires fuse to be installed
 
 exports = [
   "/usr/local/bin/etcher"

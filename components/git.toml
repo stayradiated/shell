@@ -2,7 +2,7 @@ name = "git"
 from = "base"
 
 # https://launchpad.net/~git-core/+archive/ubuntu/ppa
-version = "1:2.29.2-*"
+version = "1:2.31.1-*"
 
 devDependencies = [
   "apteryx"
@@ -17,15 +17,16 @@ exports = [
   "/usr/bin/git",
   "/usr/lib/git-core/",
   "/usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.*",
-  "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.*",
+  "/usr/lib/x86_64-linux-gnu/libgdbm_compat.so.*",
+  "/usr/lib/x86_64-linux-gnu/libgdbm.so.*",
+  "/usr/lib/x86_64-linux-gnu/libperl.so.*",
+  "/usr/lib/x86_64-linux-gnu/perl/",
   "/usr/share/git-core/",
   "/usr/share/perl/",
   "/usr/share/perl5/Error.pm",
   "/usr/share/perl5/Error/",
   "/usr/share/perl5/Git.pm",
   "/usr/share/perl5/Git/",
-]
 
-docs = [
-  "/usr/share/doc/git/"
+  "/usr/share/man/"
 ]

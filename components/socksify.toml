@@ -3,7 +3,7 @@ from = "base"
 
 version = "1.4.2"
 
-devDependencies = [ "build-essential", "wget", "tar" ]
+devDependencies = [ "build-essential", "wget" ]
 
 build = """
 wget "https://www.inet.no/dante/files/dante-{{VERSION}}.tar.gz"

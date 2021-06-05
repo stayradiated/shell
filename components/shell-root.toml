@@ -18,9 +18,10 @@ adduser admin sudo
 
 mv /root/dotfiles /home/admin/dotfiles
 
-mkdir -p /home/admin/.cache
-mkdir -p /home/admin/.config
-mkdir -p /home/admin/.local/share
+mkdir -p \
+  /home/admin/.cache \
+  /home/admin/.config \
+  /home/admin/.local/share
 
 chown -R admin:admin /home/admin
 """

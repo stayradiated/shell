@@ -1,7 +1,7 @@
 name = 'sudo'
 from = 'base'
 
-version = '1.8.21p2*'
+version = '1.8.31-*'
 
 devDependencies = [
   'apteryx'
@@ -16,9 +16,6 @@ exports = [
   '/usr/bin/sudo',
   '/usr/lib/sudo/',
   '/var/lib/sudo/',
-]
-
-docs = [
   '/usr/share/doc/sudo/',
   '/usr/share/man/man5/sudo.conf.5.gz',
   '/usr/share/man/man5/sudoers.5.gz',

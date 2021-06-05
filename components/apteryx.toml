@@ -10,6 +10,7 @@ echo '#!/usr/bin/env sh' >> ${EXPORT}
 echo 'set -e' >> ${EXPORT}
 echo 'export DEBIAN_FRONTEND="noninteractive"' >> ${EXPORT}
 echo 'if [ ! "$(find /var/lib/apt/lists/ -mmin -1440)" ]; then apt-get -q update; fi' >> ${EXPORT}
+echo 'apt-cache show $(echo "${@}" | sed s/=.\\*//) | grep "^Version:"' >> ${EXPORT}
 echo 'apt-get install -y --no-install-recommends --auto-remove "${@}"' >> ${EXPORT}
 echo 'apt-get -q clean' >> ${EXPORT}
 echo 'rm -rf /var/tmp/* /tmp/*' >> ${EXPORT}

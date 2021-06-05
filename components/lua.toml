@@ -12,9 +12,6 @@ apteryx lua5.3='{{VERSION}}'
 """
 
 exports = [
-  '/usr/bin/lua5.3'
-]
-
-docs = [
+  '/usr/bin/lua5.3',
   '/usr/share/man/man1/lua5.3.1.gz'
 ]
