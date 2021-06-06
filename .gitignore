@@ -1,2 +1,2 @@
-secret/admin-passwd
-secret/dotfiles-key
+/secret
+!/secret/README.md
