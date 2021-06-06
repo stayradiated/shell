@@ -463,7 +463,6 @@ exports = [
   "/usr/lib/python2.7/xmlrpclib.pyc",
   "/usr/lib/python2.7/zipfile.py",
   "/usr/lib/python2.7/zipfile.pyc",
-  "/usr/local/bin/apteryx",
   "/usr/local/lib/python2.7/",
   "/usr/share/applications/python2.7.desktop",
   "/usr/share/binfmts/python2.7",

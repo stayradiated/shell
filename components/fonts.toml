@@ -1,7 +1,7 @@
 name = 'fonts'
 from = 'base'
 
-version = '2.12.6-*'
+version = '2.13.1-*'
 
 devDependencies = [
   'clone',
@@ -11,12 +11,12 @@ devDependencies = [
 
 build = """
 apteryx \
-  fonts-noto='20171026-2' \
-  fonts-noto-cjk='1:20190409+*' \
-  fonts-noto-color-emoji='0~20180810-*' \
-  ttf-ubuntu-font-family='1:0.83-2' \
-  xfonts-utils='1:7.7+6' \
-  fontconfig='{{VERSION}}'
+  fontconfig='{{VERSION}}' \
+  fonts-noto \
+  fonts-noto-cjk \
+  fonts-noto-color-emoji \
+  ttf-ubuntu-font-family \
+  xfonts-utils
 
 mkdir -p /usr/share/fonts/X11/bitmap
 wget \

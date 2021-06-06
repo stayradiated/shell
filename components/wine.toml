@@ -151,7 +151,6 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0',
   '/usr/lib/x86_64-linux-gnu/pulseaudio/',
   '/usr/lib/x86_64-linux-gnu/wine/',
-  # '/usr/local/bin/apteryx',
   # '/usr/local/share/fonts',
   # '/usr/share/alsa/',
   # '/usr/share/bug/libwine/',

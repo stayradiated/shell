@@ -174,11 +174,10 @@ COPY --from=apteryx /exports/ /
 RUN \
   apteryx zsh='5.8-*'
 RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ /exports/usr/share/zsh/ && \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ /exports/usr/share/zsh/ && \
   mv /etc/shells /etc/zsh /exports/etc/ && \
   mv /usr/bin/rzsh /usr/bin/zsh /usr/bin/zsh5 /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
   mv /usr/local/share/zsh /exports/usr/local/share/ && \
   mv /usr/share/bug/zsh /usr/share/bug/zsh-common /exports/usr/share/bug/ && \
   mv /usr/share/doc/zsh-common /usr/share/doc/zsh /exports/usr/share/doc/ && \
@@ -243,16 +242,6 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/n /exports/usr/local/bin/
 
-# LUA
-FROM base AS lua
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx lua5.3='5.3.3-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
-  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
-  mv /usr/share/man/man1/lua5.3.1.gz /exports/usr/share/man/man1/
-
 # SHELL-ROOT
 FROM base AS shell-root
 COPY --from=apteryx /exports/ /
@@ -266,6 +255,16 @@ RUN \
   mv /root/dotfiles /home/admin/dotfiles && \
   mkdir -p /home/admin/.cache /home/admin/.config /home/admin/.local/share && \
   chown -R admin:admin /home/admin
+
+# LUA
+FROM base AS lua
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx lua5.3='5.3.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
+  mv /usr/share/man/man1/lua5.3.1.gz /exports/usr/share/man/man1/
 
 # PIPX
 FROM base AS pipx
@@ -292,6 +291,92 @@ RUN \
   mv /usr/local/lib/node_modules /exports/usr/local/lib/ && \
   mv /usr/local/n /exports/usr/local/
 
+# FIREFOX
+FROM base AS firefox
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx firefox='89.0+*'
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /exports/usr/bin/ && \
+  mv /usr/include/X11 /exports/usr/include/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
+  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
+  mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
+  mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
+  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
+  mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
+  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
+  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/
+
+# GOOGLE-CHROME
+FROM base AS google-chrome
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+  apt-get update && \
+  apteryx google-chrome-stable='91.0.4472.77-*'
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
+  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/X11/xkb /exports/etc/X11/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/ && \
+  mv /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/doc/google-chrome-stable /exports/usr/share/doc/ && \
+  mv /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/
+
+# XDG-UTILS
+FROM base AS xdg-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xdg-utils='1.1.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
+
+# SHELL-ADMIN
+FROM shell-root AS shell-admin
+USER admin
+WORKDIR /home/admin
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  mkdir -p /home/admin/exports && \
+  mkdir -p /home/admin/.local/tmp
+
 # Z.LUA
 FROM base AS z.lua
 COPY --from=wget /exports/ /
@@ -311,13 +396,12 @@ RUN \
   apteryx python2.7='2.7.18-1~*' && \
   update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
 RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/python2.7/ /exports/usr/lib/python2.7/dist-packages/ /exports/usr/local/bin/ /exports/usr/local/lib/ /exports/usr/share/applications/ /exports/usr/share/binfmts/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/pixmaps/ && \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/python2.7/ /exports/usr/lib/python2.7/dist-packages/ /exports/usr/local/lib/ /exports/usr/share/applications/ /exports/usr/share/binfmts/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/pixmaps/ && \
   mv /etc/alternatives/python /exports/etc/alternatives/ && \
   mv /etc/python2.7 /exports/etc/ && \
   mv /usr/bin/2to3-2.7 /usr/bin/pdb2.7 /usr/bin/pydoc2.7 /usr/bin/pygettext2.7 /usr/bin/python /usr/bin/python2.7 /exports/usr/bin/ && \
   mv /usr/lib/python2.7/__future__.py /usr/lib/python2.7/__future__.pyc /usr/lib/python2.7/__phello__.foo.py /usr/lib/python2.7/__phello__.foo.pyc /usr/lib/python2.7/_abcoll.py /usr/lib/python2.7/_abcoll.pyc /usr/lib/python2.7/_LWPCookieJar.py /usr/lib/python2.7/_LWPCookieJar.pyc /usr/lib/python2.7/_MozillaCookieJar.py /usr/lib/python2.7/_MozillaCookieJar.pyc /usr/lib/python2.7/_osx_support.py /usr/lib/python2.7/_osx_support.pyc /usr/lib/python2.7/_pyio.py /usr/lib/python2.7/_pyio.pyc /usr/lib/python2.7/_strptime.py /usr/lib/python2.7/_strptime.pyc /usr/lib/python2.7/_sysconfigdata.py /usr/lib/python2.7/_sysconfigdata.pyc /usr/lib/python2.7/_threading_local.py /usr/lib/python2.7/_threading_local.pyc /usr/lib/python2.7/_weakrefset.py /usr/lib/python2.7/_weakrefset.pyc /usr/lib/python2.7/abc.py /usr/lib/python2.7/abc.pyc /usr/lib/python2.7/aifc.py /usr/lib/python2.7/aifc.pyc /usr/lib/python2.7/antigravity.py /usr/lib/python2.7/antigravity.pyc /usr/lib/python2.7/anydbm.py /usr/lib/python2.7/anydbm.pyc /usr/lib/python2.7/argparse.egg-info /usr/lib/python2.7/argparse.py /usr/lib/python2.7/argparse.pyc /usr/lib/python2.7/ast.py /usr/lib/python2.7/ast.pyc /usr/lib/python2.7/asynchat.py /usr/lib/python2.7/asynchat.pyc /usr/lib/python2.7/asyncore.py /usr/lib/python2.7/asyncore.pyc /usr/lib/python2.7/atexit.py /usr/lib/python2.7/atexit.pyc /usr/lib/python2.7/audiodev.py /usr/lib/python2.7/audiodev.pyc /usr/lib/python2.7/base64.py /usr/lib/python2.7/base64.pyc /usr/lib/python2.7/BaseHTTPServer.py /usr/lib/python2.7/BaseHTTPServer.pyc /usr/lib/python2.7/Bastion.py /usr/lib/python2.7/Bastion.pyc /usr/lib/python2.7/bdb.py /usr/lib/python2.7/bdb.pyc /usr/lib/python2.7/binhex.py /usr/lib/python2.7/binhex.pyc /usr/lib/python2.7/bisect.py /usr/lib/python2.7/bisect.pyc /usr/lib/python2.7/bsddb /usr/lib/python2.7/calendar.py /usr/lib/python2.7/calendar.pyc /usr/lib/python2.7/cgi.py /usr/lib/python2.7/cgi.pyc /usr/lib/python2.7/CGIHTTPServer.py /usr/lib/python2.7/CGIHTTPServer.pyc /usr/lib/python2.7/cgitb.py /usr/lib/python2.7/cgitb.pyc /usr/lib/python2.7/chunk.py /usr/lib/python2.7/chunk.pyc /usr/lib/python2.7/cmd.py /usr/lib/python2.7/cmd.pyc /usr/lib/python2.7/code.py /usr/lib/python2.7/code.pyc /usr/lib/python2.7/codecs.py /usr/lib/python2.7/codecs.pyc /usr/lib/python2.7/codeop.py /usr/lib/python2.7/codeop.pyc /usr/lib/python2.7/collections.py /usr/lib/python2.7/collections.pyc /usr/lib/python2.7/colorsys.py /usr/lib/python2.7/colorsys.pyc /usr/lib/python2.7/commands.py /usr/lib/python2.7/commands.pyc /usr/lib/python2.7/compileall.py /usr/lib/python2.7/compileall.pyc /usr/lib/python2.7/compiler /usr/lib/python2.7/ConfigParser.py /usr/lib/python2.7/ConfigParser.pyc /usr/lib/python2.7/contextlib.py /usr/lib/python2.7/contextlib.pyc /usr/lib/python2.7/Cookie.py /usr/lib/python2.7/Cookie.pyc /usr/lib/python2.7/cookielib.py /usr/lib/python2.7/cookielib.pyc /usr/lib/python2.7/copy_reg.py /usr/lib/python2.7/copy_reg.pyc /usr/lib/python2.7/copy.py /usr/lib/python2.7/copy.pyc /usr/lib/python2.7/cProfile.py /usr/lib/python2.7/cProfile.pyc /usr/lib/python2.7/csv.py /usr/lib/python2.7/csv.pyc /usr/lib/python2.7/ctypes /usr/lib/python2.7/curses /usr/lib/python2.7/dbhash.py /usr/lib/python2.7/dbhash.pyc /usr/lib/python2.7/decimal.py /usr/lib/python2.7/decimal.pyc /usr/lib/python2.7/difflib.py /usr/lib/python2.7/difflib.pyc /usr/lib/python2.7/dircache.py /usr/lib/python2.7/dircache.pyc /usr/lib/python2.7/dis.py /usr/lib/python2.7/dis.pyc /usr/lib/python2.7/distutils /usr/lib/python2.7/doctest.py /usr/lib/python2.7/doctest.pyc /usr/lib/python2.7/DocXMLRPCServer.py /usr/lib/python2.7/DocXMLRPCServer.pyc /usr/lib/python2.7/dumbdbm.py /usr/lib/python2.7/dumbdbm.pyc /usr/lib/python2.7/dummy_thread.py /usr/lib/python2.7/dummy_thread.pyc /usr/lib/python2.7/dummy_threading.py /usr/lib/python2.7/dummy_threading.pyc /usr/lib/python2.7/email /usr/lib/python2.7/encodings /usr/lib/python2.7/ensurepip /usr/lib/python2.7/filecmp.py /usr/lib/python2.7/filecmp.pyc /usr/lib/python2.7/fileinput.py /usr/lib/python2.7/fileinput.pyc /usr/lib/python2.7/fnmatch.py /usr/lib/python2.7/fnmatch.pyc /usr/lib/python2.7/formatter.py /usr/lib/python2.7/formatter.pyc /usr/lib/python2.7/fpformat.py /usr/lib/python2.7/fpformat.pyc /usr/lib/python2.7/fractions.py /usr/lib/python2.7/fractions.pyc /usr/lib/python2.7/ftplib.py /usr/lib/python2.7/ftplib.pyc /usr/lib/python2.7/functools.py /usr/lib/python2.7/functools.pyc /usr/lib/python2.7/genericpath.py /usr/lib/python2.7/genericpath.pyc /usr/lib/python2.7/getopt.py /usr/lib/python2.7/getopt.pyc /usr/lib/python2.7/getpass.py /usr/lib/python2.7/getpass.pyc /usr/lib/python2.7/gettext.py /usr/lib/python2.7/gettext.pyc /usr/lib/python2.7/glob.py /usr/lib/python2.7/glob.pyc /usr/lib/python2.7/gzip.py /usr/lib/python2.7/gzip.pyc /usr/lib/python2.7/hashlib.py /usr/lib/python2.7/hashlib.pyc /usr/lib/python2.7/heapq.py /usr/lib/python2.7/heapq.pyc /usr/lib/python2.7/hmac.py /usr/lib/python2.7/hmac.pyc /usr/lib/python2.7/hotshot /usr/lib/python2.7/htmlentitydefs.py /usr/lib/python2.7/htmlentitydefs.pyc /usr/lib/python2.7/htmllib.py /usr/lib/python2.7/htmllib.pyc /usr/lib/python2.7/HTMLParser.py /usr/lib/python2.7/HTMLParser.pyc /usr/lib/python2.7/httplib.py /usr/lib/python2.7/httplib.pyc /usr/lib/python2.7/ihooks.py /usr/lib/python2.7/ihooks.pyc /usr/lib/python2.7/imaplib.py /usr/lib/python2.7/imaplib.pyc /usr/lib/python2.7/imghdr.py /usr/lib/python2.7/imghdr.pyc /usr/lib/python2.7/importlib /usr/lib/python2.7/imputil.py /usr/lib/python2.7/imputil.pyc /usr/lib/python2.7/inspect.py /usr/lib/python2.7/inspect.pyc /usr/lib/python2.7/io.py /usr/lib/python2.7/io.pyc /usr/lib/python2.7/json /usr/lib/python2.7/keyword.py /usr/lib/python2.7/keyword.pyc /usr/lib/python2.7/lib-dynload /usr/lib/python2.7/lib-tk /usr/lib/python2.7/lib2to3 /usr/lib/python2.7/LICENSE.txt /usr/lib/python2.7/linecache.py /usr/lib/python2.7/linecache.pyc /usr/lib/python2.7/locale.py /usr/lib/python2.7/locale.pyc /usr/lib/python2.7/logging /usr/lib/python2.7/macpath.py /usr/lib/python2.7/macpath.pyc /usr/lib/python2.7/macurl2path.py /usr/lib/python2.7/macurl2path.pyc /usr/lib/python2.7/mailbox.py /usr/lib/python2.7/mailbox.pyc /usr/lib/python2.7/mailcap.py /usr/lib/python2.7/mailcap.pyc /usr/lib/python2.7/markupbase.py /usr/lib/python2.7/markupbase.pyc /usr/lib/python2.7/md5.py /usr/lib/python2.7/md5.pyc /usr/lib/python2.7/mhlib.py /usr/lib/python2.7/mhlib.pyc /usr/lib/python2.7/mimetools.py /usr/lib/python2.7/mimetools.pyc /usr/lib/python2.7/mimetypes.py /usr/lib/python2.7/mimetypes.pyc /usr/lib/python2.7/MimeWriter.py /usr/lib/python2.7/MimeWriter.pyc /usr/lib/python2.7/mimify.py /usr/lib/python2.7/mimify.pyc /usr/lib/python2.7/modulefinder.py /usr/lib/python2.7/modulefinder.pyc /usr/lib/python2.7/multifile.py /usr/lib/python2.7/multifile.pyc /usr/lib/python2.7/multiprocessing /usr/lib/python2.7/mutex.py /usr/lib/python2.7/mutex.pyc /usr/lib/python2.7/netrc.py /usr/lib/python2.7/netrc.pyc /usr/lib/python2.7/new.py /usr/lib/python2.7/new.pyc /usr/lib/python2.7/nntplib.py /usr/lib/python2.7/nntplib.pyc /usr/lib/python2.7/ntpath.py /usr/lib/python2.7/ntpath.pyc /usr/lib/python2.7/nturl2path.py /usr/lib/python2.7/nturl2path.pyc /usr/lib/python2.7/numbers.py /usr/lib/python2.7/numbers.pyc /usr/lib/python2.7/opcode.py /usr/lib/python2.7/opcode.pyc /usr/lib/python2.7/optparse.py /usr/lib/python2.7/optparse.pyc /usr/lib/python2.7/os.py /usr/lib/python2.7/os.pyc /usr/lib/python2.7/os2emxpath.py /usr/lib/python2.7/os2emxpath.pyc /usr/lib/python2.7/pdb.doc /usr/lib/python2.7/pdb.py /usr/lib/python2.7/pdb.pyc /usr/lib/python2.7/pickle.py /usr/lib/python2.7/pickle.pyc /usr/lib/python2.7/pickletools.py /usr/lib/python2.7/pickletools.pyc /usr/lib/python2.7/pipes.py /usr/lib/python2.7/pipes.pyc /usr/lib/python2.7/pkgutil.py /usr/lib/python2.7/pkgutil.pyc /usr/lib/python2.7/plat-x86_64-linux-gnu /usr/lib/python2.7/platform.py /usr/lib/python2.7/platform.pyc /usr/lib/python2.7/plistlib.py /usr/lib/python2.7/plistlib.pyc /usr/lib/python2.7/popen2.py /usr/lib/python2.7/popen2.pyc /usr/lib/python2.7/poplib.py /usr/lib/python2.7/poplib.pyc /usr/lib/python2.7/posixfile.py /usr/lib/python2.7/posixfile.pyc /usr/lib/python2.7/posixpath.py /usr/lib/python2.7/posixpath.pyc /usr/lib/python2.7/pprint.py /usr/lib/python2.7/pprint.pyc /usr/lib/python2.7/profile.py /usr/lib/python2.7/profile.pyc /usr/lib/python2.7/pstats.py /usr/lib/python2.7/pstats.pyc /usr/lib/python2.7/pty.py /usr/lib/python2.7/pty.pyc /usr/lib/python2.7/py_compile.py /usr/lib/python2.7/py_compile.pyc /usr/lib/python2.7/pyclbr.py /usr/lib/python2.7/pyclbr.pyc /usr/lib/python2.7/pydoc_data /usr/lib/python2.7/pydoc.py /usr/lib/python2.7/pydoc.pyc /usr/lib/python2.7/Queue.py /usr/lib/python2.7/Queue.pyc /usr/lib/python2.7/quopri.py /usr/lib/python2.7/quopri.pyc /usr/lib/python2.7/random.py /usr/lib/python2.7/random.pyc /usr/lib/python2.7/re.py /usr/lib/python2.7/re.pyc /usr/lib/python2.7/repr.py /usr/lib/python2.7/repr.pyc /usr/lib/python2.7/rexec.py /usr/lib/python2.7/rexec.pyc /usr/lib/python2.7/rfc822.py /usr/lib/python2.7/rfc822.pyc /usr/lib/python2.7/rlcompleter.py /usr/lib/python2.7/rlcompleter.pyc /usr/lib/python2.7/robotparser.py /usr/lib/python2.7/robotparser.pyc /usr/lib/python2.7/runpy.py /usr/lib/python2.7/runpy.pyc /usr/lib/python2.7/sched.py /usr/lib/python2.7/sched.pyc /usr/lib/python2.7/sets.py /usr/lib/python2.7/sets.pyc /usr/lib/python2.7/sgmllib.py /usr/lib/python2.7/sgmllib.pyc /usr/lib/python2.7/sha.py /usr/lib/python2.7/sha.pyc /usr/lib/python2.7/shelve.py /usr/lib/python2.7/shelve.pyc /usr/lib/python2.7/shlex.py /usr/lib/python2.7/shlex.pyc /usr/lib/python2.7/shutil.py /usr/lib/python2.7/shutil.pyc /usr/lib/python2.7/SimpleHTTPServer.py /usr/lib/python2.7/SimpleHTTPServer.pyc /usr/lib/python2.7/SimpleXMLRPCServer.py /usr/lib/python2.7/SimpleXMLRPCServer.pyc /usr/lib/python2.7/site.py /usr/lib/python2.7/site.pyc /usr/lib/python2.7/sitecustomize.py /usr/lib/python2.7/sitecustomize.pyc /usr/lib/python2.7/smtpd.py /usr/lib/python2.7/smtpd.pyc /usr/lib/python2.7/smtplib.py /usr/lib/python2.7/smtplib.pyc /usr/lib/python2.7/sndhdr.py /usr/lib/python2.7/sndhdr.pyc /usr/lib/python2.7/socket.py /usr/lib/python2.7/socket.pyc /usr/lib/python2.7/SocketServer.py /usr/lib/python2.7/SocketServer.pyc /usr/lib/python2.7/sqlite3 /usr/lib/python2.7/sre_compile.py /usr/lib/python2.7/sre_compile.pyc /usr/lib/python2.7/sre_constants.py /usr/lib/python2.7/sre_constants.pyc /usr/lib/python2.7/sre_parse.py /usr/lib/python2.7/sre_parse.pyc /usr/lib/python2.7/sre.py /usr/lib/python2.7/sre.pyc /usr/lib/python2.7/ssl.py /usr/lib/python2.7/ssl.pyc /usr/lib/python2.7/stat.py /usr/lib/python2.7/stat.pyc /usr/lib/python2.7/statvfs.py /usr/lib/python2.7/statvfs.pyc /usr/lib/python2.7/string.py /usr/lib/python2.7/string.pyc /usr/lib/python2.7/StringIO.py /usr/lib/python2.7/StringIO.pyc /usr/lib/python2.7/stringold.py /usr/lib/python2.7/stringold.pyc /usr/lib/python2.7/stringprep.py /usr/lib/python2.7/stringprep.pyc /usr/lib/python2.7/struct.py /usr/lib/python2.7/struct.pyc /usr/lib/python2.7/subprocess.py /usr/lib/python2.7/subprocess.pyc /usr/lib/python2.7/sunau.py /usr/lib/python2.7/sunau.pyc /usr/lib/python2.7/sunaudio.py /usr/lib/python2.7/sunaudio.pyc /usr/lib/python2.7/symbol.py /usr/lib/python2.7/symbol.pyc /usr/lib/python2.7/symtable.py /usr/lib/python2.7/symtable.pyc /usr/lib/python2.7/sysconfig.py /usr/lib/python2.7/sysconfig.pyc /usr/lib/python2.7/tabnanny.py /usr/lib/python2.7/tabnanny.pyc /usr/lib/python2.7/tarfile.py /usr/lib/python2.7/tarfile.pyc /usr/lib/python2.7/telnetlib.py /usr/lib/python2.7/telnetlib.pyc /usr/lib/python2.7/tempfile.py /usr/lib/python2.7/tempfile.pyc /usr/lib/python2.7/test /usr/lib/python2.7/textwrap.py /usr/lib/python2.7/textwrap.pyc /usr/lib/python2.7/this.py /usr/lib/python2.7/this.pyc /usr/lib/python2.7/threading.py /usr/lib/python2.7/threading.pyc /usr/lib/python2.7/timeit.py /usr/lib/python2.7/timeit.pyc /usr/lib/python2.7/toaiff.py /usr/lib/python2.7/toaiff.pyc /usr/lib/python2.7/token.py /usr/lib/python2.7/token.pyc /usr/lib/python2.7/tokenize.py /usr/lib/python2.7/tokenize.pyc /usr/lib/python2.7/trace.py /usr/lib/python2.7/trace.pyc /usr/lib/python2.7/traceback.py /usr/lib/python2.7/traceback.pyc /usr/lib/python2.7/tty.py /usr/lib/python2.7/tty.pyc /usr/lib/python2.7/types.py /usr/lib/python2.7/types.pyc /usr/lib/python2.7/unittest /usr/lib/python2.7/urllib.py /usr/lib/python2.7/urllib.pyc /usr/lib/python2.7/urllib2.py /usr/lib/python2.7/urllib2.pyc /usr/lib/python2.7/urlparse.py /usr/lib/python2.7/urlparse.pyc /usr/lib/python2.7/user.py /usr/lib/python2.7/user.pyc /usr/lib/python2.7/UserDict.py /usr/lib/python2.7/UserDict.pyc /usr/lib/python2.7/UserList.py /usr/lib/python2.7/UserList.pyc /usr/lib/python2.7/UserString.py /usr/lib/python2.7/UserString.pyc /usr/lib/python2.7/uu.py /usr/lib/python2.7/uu.pyc /usr/lib/python2.7/uuid.py /usr/lib/python2.7/uuid.pyc /usr/lib/python2.7/warnings.py /usr/lib/python2.7/warnings.pyc /usr/lib/python2.7/wave.py /usr/lib/python2.7/wave.pyc /usr/lib/python2.7/weakref.py /usr/lib/python2.7/weakref.pyc /usr/lib/python2.7/webbrowser.py /usr/lib/python2.7/webbrowser.pyc /usr/lib/python2.7/whichdb.py /usr/lib/python2.7/whichdb.pyc /usr/lib/python2.7/wsgiref.egg-info /usr/lib/python2.7/wsgiref /usr/lib/python2.7/xdrlib.py /usr/lib/python2.7/xdrlib.pyc /usr/lib/python2.7/xml /usr/lib/python2.7/xmllib.py /usr/lib/python2.7/xmllib.pyc /usr/lib/python2.7/xmlrpclib.py /usr/lib/python2.7/xmlrpclib.pyc /usr/lib/python2.7/zipfile.py /usr/lib/python2.7/zipfile.pyc /exports/usr/lib/python2.7/ && \
   mv /usr/lib/python2.7/dist-packages/README /exports/usr/lib/python2.7/dist-packages/ && \
-  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
   mv /usr/local/lib/python2.7 /exports/usr/local/lib/ && \
   mv /usr/share/applications/python2.7.desktop /exports/usr/share/applications/ && \
   mv /usr/share/binfmts/python2.7 /exports/usr/share/binfmts/ && \
@@ -349,15 +433,43 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/antibody /exports/usr/local/bin/
 
-# SHELL-ADMIN
-FROM shell-root AS shell-admin
-USER admin
-WORKDIR /home/admin
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
+# SXHKD
+FROM base AS sxhkd
+COPY --from=build-essential /exports/ /
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
 RUN \
-  mkdir -p /home/admin/exports && \
-  mkdir -p /home/admin/.local/tmp
+  apteryx libxcb-util-dev libxcb-keysyms1-dev && \
+  clone --https --shallow --tag '0.6.2' https://github.com/baskerville/sxhkd && \
+  cd /root/src/github.com/baskerville/sxhkd && \
+  make all && \
+  make install && \
+  rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/bin/sxhkd /exports/usr/local/bin/ && \
+  mv /usr/local/share/man/man1/sxhkd.1 /exports/usr/local/share/man/man1/
+
+# BSPWM
+FROM base AS bspwm
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=make /exports/ /
+RUN \
+  apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev && \
+  clone --https --shallow --tag '0.9.10' https://github.com/baskerville/bspwm && \
+  cd /root/src/github.com/baskerville/bspwm && \
+  make all && \
+  make install && \
+  rm -rf /root/src
+RUN \
+  mkdir -p /exports/usr/include/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/pkgconfig/ /exports/usr/local/bin/ && \
+  mv /usr/include/GL /usr/include/X11 /usr/include/xcb /exports/usr/include/ && \
+  mv /usr/lib/x86_64-linux-gnu/libXau.a /usr/lib/x86_64-linux-gnu/libXau.so /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-ewmh.a /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so.2 /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so.2.0.0 /usr/lib/x86_64-linux-gnu/libxcb-icccm.a /usr/lib/x86_64-linux-gnu/libxcb-icccm.so /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4.0.0 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.a /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.a /usr/lib/x86_64-linux-gnu/libxcb-randr.so /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-render.a /usr/lib/x86_64-linux-gnu/libxcb-render.so /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.a /usr/lib/x86_64-linux-gnu/libxcb-shape.so /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.a /usr/lib/x86_64-linux-gnu/libxcb-util.so /usr/lib/x86_64-linux-gnu/libxcb-util.so.1 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.a /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.a /usr/lib/x86_64-linux-gnu/libxcb.so /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.a /usr/lib/x86_64-linux-gnu/libXdmcp.so /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/lib/x86_64-linux-gnu/pkgconfig/pthread-stubs.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xau.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-atom.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-aux.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-event.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-ewmh.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-icccm.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-keysyms.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-randr.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-render.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-shape.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-util.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-xinerama.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xdmcp.pc /exports/usr/lib/x86_64-linux-gnu/pkgconfig/ && \
+  mv /usr/local/bin/bspc /usr/local/bin/bspwm /exports/usr/local/bin/
 
 # NEOVIM
 FROM base AS neovim
@@ -429,36 +541,6 @@ RUN \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
 
-# ONE-PW
-FROM base AS one-pw
-COPY --from=go /exports/ /
-COPY --from=clone /exports/ /
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root \
-  GO111MODULE=auto
-RUN \
-  clone --https --shallow --tag 'master' https://github.com/special/1pw && \
-  cd /root/src/github.com/special/1pw && \
-  go get -v && \
-  go build && \
-  mv 1pw /usr/local/bin/1pw && \
-  rm -rf /root/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/1pw /exports/usr/local/bin/
-
-# DBXCLI
-FROM base AS dbxcli
-COPY --from=wget /exports/ /
-RUN \
-  wget -O dbxcli 'https://github.com/dropbox/dbxcli/releases/download/v3.0.0/dbxcli-linux-amd64' && \
-  chmod +x dbxcli && \
-  mv dbxcli /usr/local/bin/dbxcli
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/dbxcli /exports/usr/local/bin/
-
 # DIFF-SO-FANCY
 FROM base AS diff-so-fancy
 COPY --from=node /exports/ /
@@ -468,6 +550,17 @@ RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ && \
   mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
+
+# RUST
+FROM base AS rust
+COPY --from=wget /exports/ /
+RUN \
+  wget -O rust.sh 'https://sh.rustup.rs' && \
+  sh rust.sh -y --default-toolchain '1.48.0' && \
+  rm rust.sh
+RUN \
+  mkdir -p /exports/root/ && \
+  mv /root/.cargo /root/.rustup /exports/root/
 
 # UNZIP
 FROM base AS unzip
@@ -489,6 +582,60 @@ RUN \
   mv /usr/bin/ping /usr/bin/ping4 /usr/bin/ping6 /exports/usr/bin/ && \
   mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ && \
   mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
+
+# SHELL-BROWSER
+FROM shell-admin AS shell-browser
+COPY --from=make /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=google-chrome /exports/ /
+COPY --from=firefox /exports/ /
+ENV \
+  PATH=${PATH}:/opt/google/chrome
+RUN \
+  cd dotfiles && \
+  make firefox
+RUN \
+  mkdir -p /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
+USER root
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
+  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/include/X11 /exports/usr/include/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/appdata /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/applications/firefox.desktop /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
+  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/google-chrome-stable /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
+  mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
+  mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
+  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
+  mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
+  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
+  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/ && \
+  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -520,7 +667,7 @@ RUN \
   mv /usr/lib/python2.7/__future__.py /usr/lib/python2.7/__future__.pyc /usr/lib/python2.7/__phello__.foo.py /usr/lib/python2.7/__phello__.foo.pyc /usr/lib/python2.7/_abcoll.py /usr/lib/python2.7/_abcoll.pyc /usr/lib/python2.7/_LWPCookieJar.py /usr/lib/python2.7/_LWPCookieJar.pyc /usr/lib/python2.7/_MozillaCookieJar.py /usr/lib/python2.7/_MozillaCookieJar.pyc /usr/lib/python2.7/_osx_support.py /usr/lib/python2.7/_osx_support.pyc /usr/lib/python2.7/_pyio.py /usr/lib/python2.7/_pyio.pyc /usr/lib/python2.7/_strptime.py /usr/lib/python2.7/_strptime.pyc /usr/lib/python2.7/_sysconfigdata.py /usr/lib/python2.7/_sysconfigdata.pyc /usr/lib/python2.7/_threading_local.py /usr/lib/python2.7/_threading_local.pyc /usr/lib/python2.7/_weakrefset.py /usr/lib/python2.7/_weakrefset.pyc /usr/lib/python2.7/abc.py /usr/lib/python2.7/abc.pyc /usr/lib/python2.7/aifc.py /usr/lib/python2.7/aifc.pyc /usr/lib/python2.7/antigravity.py /usr/lib/python2.7/antigravity.pyc /usr/lib/python2.7/anydbm.py /usr/lib/python2.7/anydbm.pyc /usr/lib/python2.7/argparse.egg-info /usr/lib/python2.7/argparse.py /usr/lib/python2.7/argparse.pyc /usr/lib/python2.7/ast.py /usr/lib/python2.7/ast.pyc /usr/lib/python2.7/asynchat.py /usr/lib/python2.7/asynchat.pyc /usr/lib/python2.7/asyncore.py /usr/lib/python2.7/asyncore.pyc /usr/lib/python2.7/atexit.py /usr/lib/python2.7/atexit.pyc /usr/lib/python2.7/audiodev.py /usr/lib/python2.7/audiodev.pyc /usr/lib/python2.7/base64.py /usr/lib/python2.7/base64.pyc /usr/lib/python2.7/BaseHTTPServer.py /usr/lib/python2.7/BaseHTTPServer.pyc /usr/lib/python2.7/Bastion.py /usr/lib/python2.7/Bastion.pyc /usr/lib/python2.7/bdb.py /usr/lib/python2.7/bdb.pyc /usr/lib/python2.7/binhex.py /usr/lib/python2.7/binhex.pyc /usr/lib/python2.7/bisect.py /usr/lib/python2.7/bisect.pyc /usr/lib/python2.7/bsddb /usr/lib/python2.7/calendar.py /usr/lib/python2.7/calendar.pyc /usr/lib/python2.7/cgi.py /usr/lib/python2.7/cgi.pyc /usr/lib/python2.7/CGIHTTPServer.py /usr/lib/python2.7/CGIHTTPServer.pyc /usr/lib/python2.7/cgitb.py /usr/lib/python2.7/cgitb.pyc /usr/lib/python2.7/chunk.py /usr/lib/python2.7/chunk.pyc /usr/lib/python2.7/cmd.py /usr/lib/python2.7/cmd.pyc /usr/lib/python2.7/code.py /usr/lib/python2.7/code.pyc /usr/lib/python2.7/codecs.py /usr/lib/python2.7/codecs.pyc /usr/lib/python2.7/codeop.py /usr/lib/python2.7/codeop.pyc /usr/lib/python2.7/collections.py /usr/lib/python2.7/collections.pyc /usr/lib/python2.7/colorsys.py /usr/lib/python2.7/colorsys.pyc /usr/lib/python2.7/commands.py /usr/lib/python2.7/commands.pyc /usr/lib/python2.7/compileall.py /usr/lib/python2.7/compileall.pyc /usr/lib/python2.7/compiler /usr/lib/python2.7/ConfigParser.py /usr/lib/python2.7/ConfigParser.pyc /usr/lib/python2.7/contextlib.py /usr/lib/python2.7/contextlib.pyc /usr/lib/python2.7/Cookie.py /usr/lib/python2.7/Cookie.pyc /usr/lib/python2.7/cookielib.py /usr/lib/python2.7/cookielib.pyc /usr/lib/python2.7/copy_reg.py /usr/lib/python2.7/copy_reg.pyc /usr/lib/python2.7/copy.py /usr/lib/python2.7/copy.pyc /usr/lib/python2.7/cProfile.py /usr/lib/python2.7/cProfile.pyc /usr/lib/python2.7/csv.py /usr/lib/python2.7/csv.pyc /usr/lib/python2.7/ctypes /usr/lib/python2.7/curses /usr/lib/python2.7/dbhash.py /usr/lib/python2.7/dbhash.pyc /usr/lib/python2.7/decimal.py /usr/lib/python2.7/decimal.pyc /usr/lib/python2.7/difflib.py /usr/lib/python2.7/difflib.pyc /usr/lib/python2.7/dircache.py /usr/lib/python2.7/dircache.pyc /usr/lib/python2.7/dis.py /usr/lib/python2.7/dis.pyc /usr/lib/python2.7/distutils /usr/lib/python2.7/doctest.py /usr/lib/python2.7/doctest.pyc /usr/lib/python2.7/DocXMLRPCServer.py /usr/lib/python2.7/DocXMLRPCServer.pyc /usr/lib/python2.7/dumbdbm.py /usr/lib/python2.7/dumbdbm.pyc /usr/lib/python2.7/dummy_thread.py /usr/lib/python2.7/dummy_thread.pyc /usr/lib/python2.7/dummy_threading.py /usr/lib/python2.7/dummy_threading.pyc /usr/lib/python2.7/email /usr/lib/python2.7/encodings /usr/lib/python2.7/ensurepip /usr/lib/python2.7/filecmp.py /usr/lib/python2.7/filecmp.pyc /usr/lib/python2.7/fileinput.py /usr/lib/python2.7/fileinput.pyc /usr/lib/python2.7/fnmatch.py /usr/lib/python2.7/fnmatch.pyc /usr/lib/python2.7/formatter.py /usr/lib/python2.7/formatter.pyc /usr/lib/python2.7/fpformat.py /usr/lib/python2.7/fpformat.pyc /usr/lib/python2.7/fractions.py /usr/lib/python2.7/fractions.pyc /usr/lib/python2.7/ftplib.py /usr/lib/python2.7/ftplib.pyc /usr/lib/python2.7/functools.py /usr/lib/python2.7/functools.pyc /usr/lib/python2.7/genericpath.py /usr/lib/python2.7/genericpath.pyc /usr/lib/python2.7/getopt.py /usr/lib/python2.7/getopt.pyc /usr/lib/python2.7/getpass.py /usr/lib/python2.7/getpass.pyc /usr/lib/python2.7/gettext.py /usr/lib/python2.7/gettext.pyc /usr/lib/python2.7/glob.py /usr/lib/python2.7/glob.pyc /usr/lib/python2.7/gzip.py /usr/lib/python2.7/gzip.pyc /usr/lib/python2.7/hashlib.py /usr/lib/python2.7/hashlib.pyc /usr/lib/python2.7/heapq.py /usr/lib/python2.7/heapq.pyc /usr/lib/python2.7/hmac.py /usr/lib/python2.7/hmac.pyc /usr/lib/python2.7/hotshot /usr/lib/python2.7/htmlentitydefs.py /usr/lib/python2.7/htmlentitydefs.pyc /usr/lib/python2.7/htmllib.py /usr/lib/python2.7/htmllib.pyc /usr/lib/python2.7/HTMLParser.py /usr/lib/python2.7/HTMLParser.pyc /usr/lib/python2.7/httplib.py /usr/lib/python2.7/httplib.pyc /usr/lib/python2.7/ihooks.py /usr/lib/python2.7/ihooks.pyc /usr/lib/python2.7/imaplib.py /usr/lib/python2.7/imaplib.pyc /usr/lib/python2.7/imghdr.py /usr/lib/python2.7/imghdr.pyc /usr/lib/python2.7/importlib /usr/lib/python2.7/imputil.py /usr/lib/python2.7/imputil.pyc /usr/lib/python2.7/inspect.py /usr/lib/python2.7/inspect.pyc /usr/lib/python2.7/io.py /usr/lib/python2.7/io.pyc /usr/lib/python2.7/json /usr/lib/python2.7/keyword.py /usr/lib/python2.7/keyword.pyc /usr/lib/python2.7/lib-dynload /usr/lib/python2.7/lib-tk /usr/lib/python2.7/lib2to3 /usr/lib/python2.7/LICENSE.txt /usr/lib/python2.7/linecache.py /usr/lib/python2.7/linecache.pyc /usr/lib/python2.7/locale.py /usr/lib/python2.7/locale.pyc /usr/lib/python2.7/logging /usr/lib/python2.7/macpath.py /usr/lib/python2.7/macpath.pyc /usr/lib/python2.7/macurl2path.py /usr/lib/python2.7/macurl2path.pyc /usr/lib/python2.7/mailbox.py /usr/lib/python2.7/mailbox.pyc /usr/lib/python2.7/mailcap.py /usr/lib/python2.7/mailcap.pyc /usr/lib/python2.7/markupbase.py /usr/lib/python2.7/markupbase.pyc /usr/lib/python2.7/md5.py /usr/lib/python2.7/md5.pyc /usr/lib/python2.7/mhlib.py /usr/lib/python2.7/mhlib.pyc /usr/lib/python2.7/mimetools.py /usr/lib/python2.7/mimetools.pyc /usr/lib/python2.7/mimetypes.py /usr/lib/python2.7/mimetypes.pyc /usr/lib/python2.7/MimeWriter.py /usr/lib/python2.7/MimeWriter.pyc /usr/lib/python2.7/mimify.py /usr/lib/python2.7/mimify.pyc /usr/lib/python2.7/modulefinder.py /usr/lib/python2.7/modulefinder.pyc /usr/lib/python2.7/multifile.py /usr/lib/python2.7/multifile.pyc /usr/lib/python2.7/multiprocessing /usr/lib/python2.7/mutex.py /usr/lib/python2.7/mutex.pyc /usr/lib/python2.7/netrc.py /usr/lib/python2.7/netrc.pyc /usr/lib/python2.7/new.py /usr/lib/python2.7/new.pyc /usr/lib/python2.7/nntplib.py /usr/lib/python2.7/nntplib.pyc /usr/lib/python2.7/ntpath.py /usr/lib/python2.7/ntpath.pyc /usr/lib/python2.7/nturl2path.py /usr/lib/python2.7/nturl2path.pyc /usr/lib/python2.7/numbers.py /usr/lib/python2.7/numbers.pyc /usr/lib/python2.7/opcode.py /usr/lib/python2.7/opcode.pyc /usr/lib/python2.7/optparse.py /usr/lib/python2.7/optparse.pyc /usr/lib/python2.7/os.py /usr/lib/python2.7/os.pyc /usr/lib/python2.7/os2emxpath.py /usr/lib/python2.7/os2emxpath.pyc /usr/lib/python2.7/pdb.doc /usr/lib/python2.7/pdb.py /usr/lib/python2.7/pdb.pyc /usr/lib/python2.7/pickle.py /usr/lib/python2.7/pickle.pyc /usr/lib/python2.7/pickletools.py /usr/lib/python2.7/pickletools.pyc /usr/lib/python2.7/pipes.py /usr/lib/python2.7/pipes.pyc /usr/lib/python2.7/pkgutil.py /usr/lib/python2.7/pkgutil.pyc /usr/lib/python2.7/plat-x86_64-linux-gnu /usr/lib/python2.7/platform.py /usr/lib/python2.7/platform.pyc /usr/lib/python2.7/plistlib.py /usr/lib/python2.7/plistlib.pyc /usr/lib/python2.7/popen2.py /usr/lib/python2.7/popen2.pyc /usr/lib/python2.7/poplib.py /usr/lib/python2.7/poplib.pyc /usr/lib/python2.7/posixfile.py /usr/lib/python2.7/posixfile.pyc /usr/lib/python2.7/posixpath.py /usr/lib/python2.7/posixpath.pyc /usr/lib/python2.7/pprint.py /usr/lib/python2.7/pprint.pyc /usr/lib/python2.7/profile.py /usr/lib/python2.7/profile.pyc /usr/lib/python2.7/pstats.py /usr/lib/python2.7/pstats.pyc /usr/lib/python2.7/pty.py /usr/lib/python2.7/pty.pyc /usr/lib/python2.7/py_compile.py /usr/lib/python2.7/py_compile.pyc /usr/lib/python2.7/pyclbr.py /usr/lib/python2.7/pyclbr.pyc /usr/lib/python2.7/pydoc_data /usr/lib/python2.7/pydoc.py /usr/lib/python2.7/pydoc.pyc /usr/lib/python2.7/Queue.py /usr/lib/python2.7/Queue.pyc /usr/lib/python2.7/quopri.py /usr/lib/python2.7/quopri.pyc /usr/lib/python2.7/random.py /usr/lib/python2.7/random.pyc /usr/lib/python2.7/re.py /usr/lib/python2.7/re.pyc /usr/lib/python2.7/repr.py /usr/lib/python2.7/repr.pyc /usr/lib/python2.7/rexec.py /usr/lib/python2.7/rexec.pyc /usr/lib/python2.7/rfc822.py /usr/lib/python2.7/rfc822.pyc /usr/lib/python2.7/rlcompleter.py /usr/lib/python2.7/rlcompleter.pyc /usr/lib/python2.7/robotparser.py /usr/lib/python2.7/robotparser.pyc /usr/lib/python2.7/runpy.py /usr/lib/python2.7/runpy.pyc /usr/lib/python2.7/sched.py /usr/lib/python2.7/sched.pyc /usr/lib/python2.7/sets.py /usr/lib/python2.7/sets.pyc /usr/lib/python2.7/sgmllib.py /usr/lib/python2.7/sgmllib.pyc /usr/lib/python2.7/sha.py /usr/lib/python2.7/sha.pyc /usr/lib/python2.7/shelve.py /usr/lib/python2.7/shelve.pyc /usr/lib/python2.7/shlex.py /usr/lib/python2.7/shlex.pyc /usr/lib/python2.7/shutil.py /usr/lib/python2.7/shutil.pyc /usr/lib/python2.7/SimpleHTTPServer.py /usr/lib/python2.7/SimpleHTTPServer.pyc /usr/lib/python2.7/SimpleXMLRPCServer.py /usr/lib/python2.7/SimpleXMLRPCServer.pyc /usr/lib/python2.7/site.py /usr/lib/python2.7/site.pyc /usr/lib/python2.7/sitecustomize.py /usr/lib/python2.7/sitecustomize.pyc /usr/lib/python2.7/smtpd.py /usr/lib/python2.7/smtpd.pyc /usr/lib/python2.7/smtplib.py /usr/lib/python2.7/smtplib.pyc /usr/lib/python2.7/sndhdr.py /usr/lib/python2.7/sndhdr.pyc /usr/lib/python2.7/socket.py /usr/lib/python2.7/socket.pyc /usr/lib/python2.7/SocketServer.py /usr/lib/python2.7/SocketServer.pyc /usr/lib/python2.7/sqlite3 /usr/lib/python2.7/sre_compile.py /usr/lib/python2.7/sre_compile.pyc /usr/lib/python2.7/sre_constants.py /usr/lib/python2.7/sre_constants.pyc /usr/lib/python2.7/sre_parse.py /usr/lib/python2.7/sre_parse.pyc /usr/lib/python2.7/sre.py /usr/lib/python2.7/sre.pyc /usr/lib/python2.7/ssl.py /usr/lib/python2.7/ssl.pyc /usr/lib/python2.7/stat.py /usr/lib/python2.7/stat.pyc /usr/lib/python2.7/statvfs.py /usr/lib/python2.7/statvfs.pyc /usr/lib/python2.7/string.py /usr/lib/python2.7/string.pyc /usr/lib/python2.7/StringIO.py /usr/lib/python2.7/StringIO.pyc /usr/lib/python2.7/stringold.py /usr/lib/python2.7/stringold.pyc /usr/lib/python2.7/stringprep.py /usr/lib/python2.7/stringprep.pyc /usr/lib/python2.7/struct.py /usr/lib/python2.7/struct.pyc /usr/lib/python2.7/subprocess.py /usr/lib/python2.7/subprocess.pyc /usr/lib/python2.7/sunau.py /usr/lib/python2.7/sunau.pyc /usr/lib/python2.7/sunaudio.py /usr/lib/python2.7/sunaudio.pyc /usr/lib/python2.7/symbol.py /usr/lib/python2.7/symbol.pyc /usr/lib/python2.7/symtable.py /usr/lib/python2.7/symtable.pyc /usr/lib/python2.7/sysconfig.py /usr/lib/python2.7/sysconfig.pyc /usr/lib/python2.7/tabnanny.py /usr/lib/python2.7/tabnanny.pyc /usr/lib/python2.7/tarfile.py /usr/lib/python2.7/tarfile.pyc /usr/lib/python2.7/telnetlib.py /usr/lib/python2.7/telnetlib.pyc /usr/lib/python2.7/tempfile.py /usr/lib/python2.7/tempfile.pyc /usr/lib/python2.7/test /usr/lib/python2.7/textwrap.py /usr/lib/python2.7/textwrap.pyc /usr/lib/python2.7/this.py /usr/lib/python2.7/this.pyc /usr/lib/python2.7/threading.py /usr/lib/python2.7/threading.pyc /usr/lib/python2.7/timeit.py /usr/lib/python2.7/timeit.pyc /usr/lib/python2.7/toaiff.py /usr/lib/python2.7/toaiff.pyc /usr/lib/python2.7/token.py /usr/lib/python2.7/token.pyc /usr/lib/python2.7/tokenize.py /usr/lib/python2.7/tokenize.pyc /usr/lib/python2.7/trace.py /usr/lib/python2.7/trace.pyc /usr/lib/python2.7/traceback.py /usr/lib/python2.7/traceback.pyc /usr/lib/python2.7/tty.py /usr/lib/python2.7/tty.pyc /usr/lib/python2.7/types.py /usr/lib/python2.7/types.pyc /usr/lib/python2.7/unittest /usr/lib/python2.7/urllib.py /usr/lib/python2.7/urllib.pyc /usr/lib/python2.7/urllib2.py /usr/lib/python2.7/urllib2.pyc /usr/lib/python2.7/urlparse.py /usr/lib/python2.7/urlparse.pyc /usr/lib/python2.7/user.py /usr/lib/python2.7/user.pyc /usr/lib/python2.7/UserDict.py /usr/lib/python2.7/UserDict.pyc /usr/lib/python2.7/UserList.py /usr/lib/python2.7/UserList.pyc /usr/lib/python2.7/UserString.py /usr/lib/python2.7/UserString.pyc /usr/lib/python2.7/uu.py /usr/lib/python2.7/uu.pyc /usr/lib/python2.7/uuid.py /usr/lib/python2.7/uuid.pyc /usr/lib/python2.7/warnings.py /usr/lib/python2.7/warnings.pyc /usr/lib/python2.7/wave.py /usr/lib/python2.7/wave.pyc /usr/lib/python2.7/weakref.py /usr/lib/python2.7/weakref.pyc /usr/lib/python2.7/webbrowser.py /usr/lib/python2.7/webbrowser.pyc /usr/lib/python2.7/whichdb.py /usr/lib/python2.7/whichdb.pyc /usr/lib/python2.7/wsgiref.egg-info /usr/lib/python2.7/wsgiref /usr/lib/python2.7/xdrlib.py /usr/lib/python2.7/xdrlib.pyc /usr/lib/python2.7/xml /usr/lib/python2.7/xmllib.py /usr/lib/python2.7/xmllib.pyc /usr/lib/python2.7/xmlrpclib.py /usr/lib/python2.7/xmlrpclib.pyc /usr/lib/python2.7/zipfile.py /usr/lib/python2.7/zipfile.pyc /exports/usr/lib/python2.7/ && \
   mv /usr/lib/python2.7/dist-packages/README /exports/usr/lib/python2.7/dist-packages/ && \
   mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/apteryx /usr/local/bin/z.lua /exports/usr/local/bin/ && \
+  mv /usr/local/bin/z.lua /exports/usr/local/bin/ && \
   mv /usr/local/lib/python2.7 /exports/usr/local/lib/ && \
   mv /usr/local/share/fzf /usr/local/share/zsh /exports/usr/local/share/ && \
   mv /usr/share/applications/python2.7.desktop /exports/usr/share/applications/ && \
@@ -532,6 +679,28 @@ RUN \
   mv /usr/share/menu/zsh-common /exports/usr/share/menu/ && \
   mv /usr/share/pixmaps/python2.7.xpm /exports/usr/share/pixmaps/ && \
   mv /usr/share/zsh/5.8 /usr/share/zsh/functions /usr/share/zsh/help /exports/usr/share/zsh/
+
+# SHELL-WM
+FROM shell-admin AS shell-wm
+COPY --from=make /exports/ /
+COPY --from=git /exports/ /
+COPY --from=bspwm /exports/ /
+COPY --from=sxhkd /exports/ /
+RUN \
+  cd dotfiles && \
+  make bspwm sxhkd x11
+RUN \
+  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
+  mv /home/admin/.config/bspwm /home/admin/.config/sxhkd /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.xinitrc /home/admin/exports/home/admin/
+USER root
+RUN \
+  mkdir -p /exports/usr/include/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/pkgconfig/ /exports/usr/local/bin/ /exports/usr/local/share/man/man1/ && \
+  mv /usr/include/GL /usr/include/X11 /usr/include/xcb /exports/usr/include/ && \
+  mv /usr/lib/x86_64-linux-gnu/libXau.a /usr/lib/x86_64-linux-gnu/libXau.so /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-ewmh.a /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so.2 /usr/lib/x86_64-linux-gnu/libxcb-ewmh.so.2.0.0 /usr/lib/x86_64-linux-gnu/libxcb-icccm.a /usr/lib/x86_64-linux-gnu/libxcb-icccm.so /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4.0.0 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.a /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.a /usr/lib/x86_64-linux-gnu/libxcb-randr.so /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-render.a /usr/lib/x86_64-linux-gnu/libxcb-render.so /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.a /usr/lib/x86_64-linux-gnu/libxcb-shape.so /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.a /usr/lib/x86_64-linux-gnu/libxcb-util.so /usr/lib/x86_64-linux-gnu/libxcb-util.so.1 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.a /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.a /usr/lib/x86_64-linux-gnu/libxcb.so /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.a /usr/lib/x86_64-linux-gnu/libXdmcp.so /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/lib/x86_64-linux-gnu/pkgconfig/pthread-stubs.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xau.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-atom.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-aux.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-event.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-ewmh.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-icccm.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-keysyms.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-randr.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-render.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-shape.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-util.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb-xinerama.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xcb.pc /usr/lib/x86_64-linux-gnu/pkgconfig/xdmcp.pc /exports/usr/lib/x86_64-linux-gnu/pkgconfig/ && \
+  mv /usr/local/bin/bspc /usr/local/bin/bspwm /usr/local/bin/sxhkd /exports/usr/local/bin/ && \
+  mv /usr/local/share/man/man1/sxhkd.1 /exports/usr/local/share/man/man1/
 
 # SHELL-VIM
 FROM shell-admin AS shell-vim
@@ -608,24 +777,6 @@ RUN \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
 
-# SHELL-PASSWORDS
-FROM shell-admin AS shell-passwords
-COPY --from=make /exports/ /
-COPY --from=dbxcli /exports/ /
-COPY --from=one-pw /exports/ /
-RUN \
-  cd dotfiles && \
-  make dbxcli && \
-  1pw-pull
-RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
-  mv /home/admin/.config/dbxcli /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/vaults /home/admin/exports/home/admin/
-USER root
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/1pw /usr/local/bin/dbxcli /exports/usr/local/bin/
-
 # SHELL-GIT
 FROM shell-admin AS shell-git
 COPY --from=make /exports/ /
@@ -650,17 +801,131 @@ RUN \
   mv /usr/share/git-core /usr/share/man /usr/share/perl /exports/usr/share/ && \
   mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
 
-# XSV
-FROM base AS xsv
+# XSECURELOCK
+FROM base AS xsecurelock
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx apache2-utils autoconf autotools-dev automake binutils gcc libc6-dev libpam-dev libx11-dev libxcomposite-dev libxext-dev libxfixes-dev libxft-dev libxmuu-dev libxrandr-dev libxss-dev make mplayer mpv pamtester pkg-config x11proto-core-dev xscreensaver && \
+  clone --https --shallow --tag 'v1.7.0' https://github.com/google/xsecurelock && \
+  cd ~/src/github.com/google/xsecurelock && \
+  sh autogen.sh && \
+  ./configure --with-pam-service-name=xscreensaver && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/etc/pam.d/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/lib/systemd/user/ /exports/usr/local/bin/ /exports/usr/local/libexec/ && \
+  mv /etc/pam.d/xscreensaver /exports/etc/pam.d/ && \
+  mv /usr/bin/xscreensaver /usr/bin/xscreensaver-* /exports/usr/bin/ && \
+  mv /usr/lib/xscreensaver /exports/usr/lib/ && \
+  mv /usr/share/xscreensaver /exports/usr/share/ && \
+  mv /usr/lib/systemd/user/xscreensaver.service /exports/usr/lib/systemd/user/ && \
+  mv /usr/local/bin/xsecurelock /exports/usr/local/bin/ && \
+  mv /usr/local/libexec/xsecurelock /exports/usr/local/libexec/
+
+# XCLIP
+FROM base AS xclip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xclip='0.13-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/xclip /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libXmu.so.* /usr/lib/x86_64-linux-gnu/libXt.so.* /exports/usr/lib/x86_64-linux-gnu/
+
+# ROFI
+FROM base AS rofi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx rofi='1.5.4-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/rofi /usr/bin/rofi-sensible-terminal /usr/bin/rofi-theme-selector /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# REDSHIFT
+FROM base AS redshift
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx redshift='1.12-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ && \
+  mv /usr/bin/redshift /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# LIGHT
+FROM base AS light
+COPY --from=build-essential /exports/ /
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  apteryx automake autoconf && \
+  clone --https --shallow --tag 'v1.2.2' https://github.com/haikarainen/light && \
+  cd /root/src/github.com/haikarainen/light && \
+  ./autogen.sh && \
+  ./configure && \
+  make && \
+  make install
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/bin/light /exports/usr/local/bin/ && \
+  mv /usr/local/share/man/man1/light.1 /exports/usr/local/share/man/man1/
+
+# FONTS
+FROM base AS fonts
+COPY --from=clone /exports/ /
+COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/xsv.tgz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-i686-unknown-linux-musl.tar.gz && \
-  tar xzvf /tmp/xsv.tgz -C /tmp && \
-  mv /tmp/xsv /usr/local/bin && \
-  rm -r /tmp/xsv*
+  apteryx fontconfig='2.13.1-*' fonts-noto fonts-noto-cjk fonts-noto-color-emoji ttf-ubuntu-font-family xfonts-utils && \
+  mkdir -p /usr/share/fonts/X11/bitmap && \
+  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
+  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
+  clone --shallow --https https://github.com/blaisck/sfwin && \
+  cd /root/src/github.com/blaisck/sfwin && \
+  mv SFCompact/TrueType /usr/share/fonts/SFCompact && \
+  mv SFMono/TrueType /usr/share/fonts/SFMono && \
+  mv SFPro/TrueType /usr/share/fonts/SFPro && \
+  cd /etc/fonts/conf.d && \
+  rm 10* 70-no-bitmaps.conf && \
+  ln -s ../conf.avail/70-yes-bitmaps.conf . && \
+  dpkg-reconfigure fontconfig && \
+  fc-cache -fv
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/xsv /exports/usr/local/bin/
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/aclocal/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/lib/ && \
+  mv /etc/fonts /exports/etc/ && \
+  mv /usr/bin/bdftopcf /usr/bin/bdftruncate /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/fonttosfnt /usr/bin/mkfontdir /usr/bin/mkfontscale /usr/bin/ucs2any /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libfontconfig.so.* /usr/lib/x86_64-linux-gnu/libfontenc.so.* /usr/lib/x86_64-linux-gnu/libfreetype.so.* /usr/lib/x86_64-linux-gnu/libpng16.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-fonts-alias /usr/sbin/update-fonts-dir /usr/sbin/update-fonts-scale /exports/usr/sbin/ && \
+  mv /usr/share/aclocal/fontutil.m4 /exports/usr/share/aclocal/ && \
+  mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/fonts /exports/usr/share/ && \
+  mv /usr/share/pkgconfig/fontutil.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
+  mv /var/cache/fontconfig /exports/var/cache/ && \
+  mv /var/lib/xfonts /exports/var/lib/
+
+# ALACRITTY
+FROM base AS alacritty
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=rust /exports/ /
+ENV \
+  PATH=/root/.cargo/bin:$PATH
+RUN \
+  apteryx cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3 && \
+  clone --https --shallow --tag 'v0.8.0' https://github.com/alacritty/alacritty && \
+  cd /root/src/github.com/alacritty/alacritty && \
+  cargo build --release && \
+  mv target/release/alacritty /usr/local/bin/alacritty && \
+  rm -r /root/src/
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/alacritty /exports/usr/local/bin/ && \
+  mv /usr/lib/bfd-plugins /usr/lib/compat-ld /usr/lib/cpp /usr/lib/emacsen-common /usr/lib/gcc /usr/lib/gold-ld /usr/lib/pkgconfig /usr/lib/pkg-config.multiarch /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/crt1.o /usr/lib/x86_64-linux-gnu/crti.o /usr/lib/x86_64-linux-gnu/crtn.o /usr/lib/x86_64-linux-gnu/gcrt1.o /usr/lib/x86_64-linux-gnu/grcrt1.o /usr/lib/x86_64-linux-gnu/ldscripts /usr/lib/x86_64-linux-gnu/libanl.a /usr/lib/x86_64-linux-gnu/libanl.so /usr/lib/x86_64-linux-gnu/libarchive.so.13 /usr/lib/x86_64-linux-gnu/libarchive.so.13.4.0 /usr/lib/x86_64-linux-gnu/libasan.so.5 /usr/lib/x86_64-linux-gnu/libasan.so.5.0.0 /usr/lib/x86_64-linux-gnu/libatomic.so.1 /usr/lib/x86_64-linux-gnu/libatomic.so.1.2.0 /usr/lib/x86_64-linux-gnu/libbfd-2.34-system.so /usr/lib/x86_64-linux-gnu/libBrokenLocale.a /usr/lib/x86_64-linux-gnu/libBrokenLocale.so /usr/lib/x86_64-linux-gnu/libc.a /usr/lib/x86_64-linux-gnu/libcc1.so.0 /usr/lib/x86_64-linux-gnu/libcc1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib/x86_64-linux-gnu/libcrypt.a /usr/lib/x86_64-linux-gnu/libcrypt.so /usr/lib/x86_64-linux-gnu/libc.so /usr/lib/x86_64-linux-gnu/libctf-nobfd.so.0 /usr/lib/x86_64-linux-gnu/libctf-nobfd.so.0.0.0 /usr/lib/x86_64-linux-gnu/libctf.so.0 /usr/lib/x86_64-linux-gnu/libctf.so.0.0.0 /usr/lib/x86_64-linux-gnu/libdl.a /usr/lib/x86_64-linux-gnu/libdl.so /usr/lib/x86_64-linux-gnu/libexpat.a /usr/lib/x86_64-linux-gnu/libexpat.so /usr/lib/x86_64-linux-gnu/libexpatw.a /usr/lib/x86_64-linux-gnu/libexpatw.so /usr/lib/x86_64-linux-gnu/libfontconfig.a /usr/lib/x86_64-linux-gnu/libfontconfig.so /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.a /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libg.a /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libisl.so.22 /usr/lib/x86_64-linux-gnu/libisl.so.22.0.1 /usr/lib/x86_64-linux-gnu/libitm.so.1 /usr/lib/x86_64-linux-gnu/libitm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1.7.4 /usr/lib/x86_64-linux-gnu/liblsan.so.0 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0 /usr/lib/x86_64-linux-gnu/libm-2.31.a /usr/lib/x86_64-linux-gnu/libm.a /usr/lib/x86_64-linux-gnu/libmcheck.a /usr/lib/x86_64-linux-gnu/libmpc.so.3 /usr/lib/x86_64-linux-gnu/libmpc.so.3.1.0 /usr/lib/x86_64-linux-gnu/libmpfr.so.6 /usr/lib/x86_64-linux-gnu/libmpfr.so.6.0.2 /usr/lib/x86_64-linux-gnu/libm.so /usr/lib/x86_64-linux-gnu/libmvec.a /usr/lib/x86_64-linux-gnu/libmvec.so /usr/lib/x86_64-linux-gnu/libnsl.a /usr/lib/x86_64-linux-gnu/libnsl.so /usr/lib/x86_64-linux-gnu/libnss_compat.so /usr/lib/x86_64-linux-gnu/libnss_dns.so /usr/lib/x86_64-linux-gnu/libnss_files.so /usr/lib/x86_64-linux-gnu/libnss_hesiod.so /usr/lib/x86_64-linux-gnu/libnss_nisplus.so /usr/lib/x86_64-linux-gnu/libnss_nis.so /usr/lib/x86_64-linux-gnu/libopcodes-2.34-system.so /usr/lib/x86_64-linux-gnu/libpng16.a /usr/lib/x86_64-linux-gnu/libpng16.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libpng.a /usr/lib/x86_64-linux-gnu/libpng.so /usr/lib/x86_64-linux-gnu/libpthread.a /usr/lib/x86_64-linux-gnu/libpthread.so /usr/lib/x86_64-linux-gnu/libquadmath.so.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0 /usr/lib/x86_64-linux-gnu/libresolv.a /usr/lib/x86_64-linux-gnu/libresolv.so /usr/lib/x86_64-linux-gnu/librhash.so.0 /usr/lib/x86_64-linux-gnu/librpcsvc.a /usr/lib/x86_64-linux-gnu/librt.a /usr/lib/x86_64-linux-gnu/librt.so /usr/lib/x86_64-linux-gnu/libthread_db.so /usr/lib/x86_64-linux-gnu/libtsan_preinit.o /usr/lib/x86_64-linux-gnu/libtsan.so.0 /usr/lib/x86_64-linux-gnu/libtsan.so.0.0.0 /usr/lib/x86_64-linux-gnu/libubsan.so.1 /usr/lib/x86_64-linux-gnu/libubsan.so.1.0.0 /usr/lib/x86_64-linux-gnu/libutil.a /usr/lib/x86_64-linux-gnu/libutil.so /usr/lib/x86_64-linux-gnu/libuuid.a /usr/lib/x86_64-linux-gnu/libuuid.so /usr/lib/x86_64-linux-gnu/libuv.so.1 /usr/lib/x86_64-linux-gnu/libuv.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXau.a /usr/lib/x86_64-linux-gnu/libXau.so /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb.a /usr/lib/x86_64-linux-gnu/libxcb-render.a /usr/lib/x86_64-linux-gnu/libxcb-render.so /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.a /usr/lib/x86_64-linux-gnu/libxcb-shape.so /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.a /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXdmcp.a /usr/lib/x86_64-linux-gnu/libXdmcp.so /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libz.a /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/x86_64-linux-gnu/Mcrt1.o /usr/lib/x86_64-linux-gnu/pkgconfig /usr/lib/x86_64-linux-gnu/rcrt1.o /usr/lib/x86_64-linux-gnu/Scrt1.o /exports/usr/lib/x86_64-linux-gnu/
 
 # TREE
 FROM base AS tree
@@ -785,20 +1050,6 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/jq /exports/usr/local/bin/
 
-# HTTPIE
-FROM base AS httpie
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN \
-  pipx install httpie=='2.3.0'
-RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/
-
 # HTOP
 FROM base AS htop
 COPY --from=apteryx /exports/ /
@@ -809,19 +1060,6 @@ RUN \
   mv /usr/bin/htop /exports/usr/bin/ && \
   mv /usr/share/doc/htop /exports/usr/share/doc/ && \
   mv /usr/share/man/man1/htop.1.gz /exports/usr/share/man/man1/
-
-# GH
-FROM base AS gh
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v1.2.1/gh_1.2.1_linux_amd64.tar.gz' && \
-  tar xzvf /tmp/gh.tgz && \
-  rm /tmp/gh.tgz && \
-  mv 'gh_1.2.1_linux_amd64/bin/gh' /usr/local/bin/gh && \
-  rm -r 'gh_1.2.1_linux_amd64'
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/gh /exports/usr/local/bin/
 
 # FILE
 FROM base AS file
@@ -880,9 +1118,64 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/bat /exports/usr/local/bin/
 
-# MY-CHROMEBOOK
-FROM shell-admin AS my-chromebook
+# ACPI
+FROM base AS acpi
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx acpi='1.7-1.1'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/acpi /exports/usr/bin/
+
+# X11-UTILS
+FROM base AS x11-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx x11-utils='7.7+*' x11-xkb-utils x11-xserver-utils xkb-data
+RUN \
+  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/usr/ && \
+  mv /etc/X11 /etc/sensors.d /etc/sensors3.conf /exports/etc/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /usr/bin /usr/lib /usr/share /exports/usr/
+
+# MESA
+FROM base AS mesa
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx mesa-utils='8.4.0-*' mesa-utils-extra='8.4.0-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ && \
+  mv /etc/vulkan /exports/etc/ && \
+  mv /usr/bin/eglinfo /usr/bin/es2_info /usr/bin/es2gears /usr/bin/es2gears_wayland /usr/bin/es2gears_x11 /usr/bin/es2tri /usr/bin/glxdemo /usr/bin/glxgears /usr/bin/glxheads /usr/bin/glxinfo /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLESv2.so.2 /usr/lib/x86_64-linux-gnu/libGLESv2.so.2.1.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/bug/libegl-mesa0 /usr/share/bug/libegl1 /usr/share/bug/libgbm1 /usr/share/bug/libgl1-mesa-dri /usr/share/bug/libgl1 /usr/share/bug/libglapi-mesa /usr/share/bug/libgles2 /usr/share/bug/libglvnd0 /usr/share/bug/libglx-mesa0 /usr/share/bug/libglx0 /exports/usr/share/bug/ && \
+  mv /usr/share/doc/libdrm-amdgpu1 /usr/share/doc/libdrm-common /usr/share/doc/libdrm-intel1 /usr/share/doc/libdrm-nouveau2 /usr/share/doc/libdrm-radeon1 /usr/share/doc/libdrm2 /usr/share/doc/libegl-mesa0 /usr/share/doc/libegl1 /usr/share/doc/libgbm1 /usr/share/doc/libgl1-mesa-dri /usr/share/doc/libgl1 /usr/share/doc/libglapi-mesa /usr/share/doc/libgles2 /usr/share/doc/libglvnd0 /usr/share/doc/libglx-mesa0 /usr/share/doc/libglx0 /usr/share/doc/libllvm11 /usr/share/doc/libpciaccess0 /usr/share/doc/libsensors-config /usr/share/doc/libsensors5 /usr/share/doc/libvulkan1 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwayland-server0 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-dri2-0 /usr/share/doc/libxcb-dri3-0 /usr/share/doc/libxcb-glx0 /usr/share/doc/libxcb-present0 /usr/share/doc/libxcb-sync1 /usr/share/doc/libxcb-xfixes0 /usr/share/doc/libxcb1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxshmfence1 /usr/share/doc/libxxf86vm1 /usr/share/doc/mesa-utils-extra /usr/share/doc/mesa-utils /exports/usr/share/doc/ && \
+  mv /usr/share/drirc.d /usr/share/glvnd /usr/share/libdrm /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/lintian/overrides/libdrm-nouveau2 /usr/share/lintian/overrides/libgbm1 /usr/share/lintian/overrides/libglapi-mesa /usr/share/lintian/overrides/libgles2 /usr/share/lintian/overrides/libglvnd0 /usr/share/lintian/overrides/libllvm11 /usr/share/lintian/overrides/libx11-6 /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/es2_info.1.gz /usr/share/man/man1/es2gears_wayland.1.gz /usr/share/man/man1/es2gears_x11.1.gz /usr/share/man/man1/es2gears.1.gz /usr/share/man/man1/es2tri.1.gz /usr/share/man/man1/glxdemo.1.gz /usr/share/man/man1/glxgears.1.gz /usr/share/man/man1/glxheads.1.gz /usr/share/man/man1/glxinfo.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/XCompose.5.gz /exports/usr/share/man/man5/
+
+# LIBXV1
+FROM base AS libxv1
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx libxv1='2:1.0.11-1'
+RUN \
+  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man5/ /exports/usr/share/ && \
+  mv /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXv.so.1 /usr/lib/x86_64-linux-gnu/libXv.so.1.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libxau6 /usr/share/doc/libxcb1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxv1 /exports/usr/share/doc/ && \
+  mv /usr/share/lintian/overrides/libx11-6 /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/XCompose.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/X11 /exports/usr/share/
+
+# MY-DESKTOP-MINIMAL
+FROM shell-admin AS my-desktop-minimal
+COPY --from=libxv1 /exports/ /
+COPY --from=mesa /exports/ /
+COPY --from=x11-utils /exports/ /
 COPY --from=python3-pip /exports/ /
+COPY --from=acpi /exports/ /
 COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
 COPY --from=clone /exports/ /
@@ -890,9 +1183,8 @@ COPY --from=docker /exports/ /
 COPY --from=fd /exports/ /
 COPY --from=file /exports/ /
 COPY --from=fzf /exports/ /
-COPY --from=gh /exports/ /
+COPY --from=go /exports/ /
 COPY --from=htop /exports/ /
-COPY --from=httpie /exports/ /
 COPY --from=jq /exports/ /
 COPY --from=make /exports/ /
 COPY --from=moreutils /exports/ /
@@ -905,11 +1197,16 @@ COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=unzip /exports/ /
 COPY --from=wget /exports/ /
-COPY --from=xsv /exports/ /
+COPY --from=alacritty /exports/ /
+COPY --from=fonts /exports/ /
+COPY --from=light /exports/ /
+COPY --from=redshift /exports/ /
+COPY --from=rofi /exports/ /
+COPY --from=xclip /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=xsecurelock /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
 COPY --from=shell-git /exports/ /
-COPY --from=shell-passwords --chown=admin /home/admin/exports/ /
-COPY --from=shell-passwords /exports/ /
 COPY --from=shell-ranger --chown=admin /home/admin/exports/ /
 COPY --from=shell-ranger /exports/ /
 COPY --from=shell-ssh --chown=admin /home/admin/exports/ /
@@ -917,7 +1214,18 @@ COPY --from=shell-tmux --chown=admin /home/admin/exports/ /
 COPY --from=shell-tmux /exports/ /
 COPY --from=shell-vim --chown=admin /home/admin/exports/ /
 COPY --from=shell-vim /exports/ /
+COPY --from=shell-wm --chown=admin /home/admin/exports/ /
+COPY --from=shell-wm /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=shell-browser --chown=admin /home/admin/exports/ /
+COPY --from=shell-browser /exports/ /
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root \
+  GO111MODULE=auto
+ENV \
+  PATH=${PATH}:/opt/google/chrome
 RUN \
   chmod 0600 /home/admin/.ssh/*
+CMD /home/admin/.xinitrc

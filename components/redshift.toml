@@ -1,7 +1,7 @@
 name = 'redshift'
 from = 'base'
 
-version = '1.11-1ubuntu1'
+version = '1.12-*'
 
 devDependencies = [ 'apteryx' ]
 

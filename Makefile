@@ -11,3 +11,6 @@ benji:
 
 chromebook:
 	shoebox build my-chromebook --tag stayradiated/chromebook:latest --build-dir . --verbose
+
+desktop-minimal:
+	shoebox build my-desktop-minimal --tag stayradiated/desktop-minimal:latest --build-dir . --verbose

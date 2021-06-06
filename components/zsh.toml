@@ -19,7 +19,6 @@ exports = [
   "/usr/bin/zsh",
   "/usr/bin/zsh5",
   "/usr/lib/x86_64-linux-gnu/zsh/",
-  "/usr/local/bin/apteryx",
   "/usr/local/share/zsh/",
   "/usr/share/bug/zsh",
   "/usr/share/bug/zsh-common",

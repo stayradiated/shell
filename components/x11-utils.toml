@@ -8,9 +8,9 @@ devDependencies = [ 'apteryx' ]
 build = """
 apteryx \
   x11-utils='{{VERSION}}' \
-  x11-xkb-utils='{{VERSION}}' \
-  x11-xserver-utils='{{VERSION}}' \
-  xkb-data='2.23.1-*'
+  x11-xkb-utils \
+  x11-xserver-utils \
+  xkb-data
 """
 
 exports = [
