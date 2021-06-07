@@ -919,32 +919,6 @@ RUN \
   mv /usr/share/glib-2.0/schemas /exports/usr/share/glib-2.0/ && \
   mv /usr/share/icons /usr/share/xournalpp /exports/usr/share/
 
-# PEACLOCK
-FROM base AS peaclock
-COPY --from=clone /exports/ /
-COPY --from=build-essential /exports/ /
-RUN \
-  add-apt-repository ppa:ubuntu-toolchain-r/test && \
-  apt-get update -q && \
-  apt-get install -y --no-install-recommends --auto-remove cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
-  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
-  cd /root/src/github.com/octobanana/peaclock && \
-  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 && \
-  ./RUNME.sh install --release && \
-  rm -rf /root/src && \
-  apt purge -y cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
-  apt autoremove -y && \
-  apt-get -q clean
-RUN \
-  mkdir -p /exports/etc/ /exports/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/ /exports/var/cache/ldconfig/ && \
-  mv /etc/perl /exports/etc/ && \
-  mv /lib/x86_64-linux-gnu/libgcc_s.so.1 /exports/lib/x86_64-linux-gnu/ && \
-  mv /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/peaclock /exports/usr/local/bin/ && \
-  mv /usr/share/gcc-10 /exports/usr/share/ && \
-  mv /usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28-gdb.py /exports/usr/share/gdb/auto-load/usr/lib/x86_64-linux-gnu/ && \
-  mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/
-
 # BSDMAINUTILS
 FROM base AS bsdmainutils
 COPY --from=apteryx /exports/ /
@@ -2333,7 +2307,6 @@ COPY --from=xinput /exports/ /
 COPY --from=weechat /exports/ /
 COPY --from=urlview /exports/ /
 COPY --from=bsdmainutils /exports/ /
-COPY --from=peaclock /exports/ /
 COPY --from=xournalpp /exports/ /
 COPY --from=clang-format /exports/ /
 COPY --from=man /exports/ /

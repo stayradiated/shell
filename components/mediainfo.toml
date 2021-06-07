@@ -15,7 +15,6 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/libmms.so.*',
   '/usr/lib/x86_64-linux-gnu/libtinyxml2.so.*',
   '/usr/lib/x86_64-linux-gnu/libzen.so.*',
-
   '/usr/share/man/man1/mediainfo.1.gz'
 ]
 
