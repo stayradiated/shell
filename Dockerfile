@@ -347,7 +347,7 @@ RUN \
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
@@ -393,7 +393,7 @@ RUN \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
   mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
   mv /etc/default/google-chrome /exports/etc/default/ && \
-  mv /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
   mv /etc/X11/xkb /exports/etc/X11/ && \
   mv /opt/google /exports/opt/ && \
   mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
@@ -919,6 +919,26 @@ RUN \
   mv /usr/share/glib-2.0/schemas /exports/usr/share/glib-2.0/ && \
   mv /usr/share/icons /usr/share/xournalpp /exports/usr/share/
 
+# PEACLOCK
+FROM base AS peaclock
+COPY --from=clone /exports/ /
+COPY --from=build-essential /exports/ /
+RUN \
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+  apt-get update -q && \
+  apt-get install -y --no-install-recommends --auto-remove cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
+  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
+  cd /root/src/github.com/octobanana/peaclock && \
+  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 && \
+  ./RUNME.sh install --release && \
+  rm -rf /root/src && \
+  apt purge -y cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
+  apt autoremove -y && \
+  apt-get -q clean
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/peaclock /exports/usr/local/bin/
+
 # BSDMAINUTILS
 FROM base AS bsdmainutils
 COPY --from=apteryx /exports/ /
@@ -1093,7 +1113,7 @@ USER root
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
   mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
   mv /etc/default/google-chrome /exports/etc/default/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
@@ -1426,7 +1446,7 @@ RUN \
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gstreamer-1.0/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/icons/hicolor/scalable/apps/ /exports/usr/share/lintian/overrides/ /exports/usr/share/locale/ar/LC_MESSAGES/ /exports/usr/share/locale/ca/LC_MESSAGES/ /exports/usr/share/locale/cs/LC_MESSAGES/ /exports/usr/share/locale/de/LC_MESSAGES/ /exports/usr/share/locale/el/LC_MESSAGES/ /exports/usr/share/locale/ /exports/usr/share/locale/eo/LC_MESSAGES/ /exports/usr/share/locale/es/LC_MESSAGES/ /exports/usr/share/locale/eu/LC_MESSAGES/ /exports/usr/share/locale/fi/LC_MESSAGES/ /exports/usr/share/locale/fr/LC_MESSAGES/ /exports/usr/share/locale/he/LC_MESSAGES/ /exports/usr/share/locale/hr/LC_MESSAGES/ /exports/usr/share/locale/id/LC_MESSAGES/ /exports/usr/share/locale/it/LC_MESSAGES/ /exports/usr/share/locale/ja/LC_MESSAGES/ /exports/usr/share/locale/kn/LC_MESSAGES/ /exports/usr/share/locale/ko/LC_MESSAGES/ /exports/usr/share/locale/lt/LC_MESSAGES/ /exports/usr/share/locale/nb/LC_MESSAGES/ /exports/usr/share/locale/nl/LC_MESSAGES/ /exports/usr/share/locale/pl/LC_MESSAGES/ /exports/usr/share/locale/pt_BR/LC_MESSAGES/ /exports/usr/share/locale/ru/LC_MESSAGES/ /exports/usr/share/locale/sr/LC_MESSAGES/ /exports/usr/share/locale/sv/LC_MESSAGES/ /exports/usr/share/locale/tr/LC_MESSAGES/ /exports/usr/share/locale/zh_CN/LC_MESSAGES/ /exports/usr/share/locale/zh_TW/LC_MESSAGES/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/x-cursor-theme /exports/etc/alternatives/ && \
-  mv /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/openal /etc/pulse /etc/sensors.d /etc/sensors3.conf /etc/vdpau_wrapper.cfg /etc/vulkan /exports/etc/ && \
+  mv /etc/gtk-3.0 /etc/ld.so.cache /etc/openal /etc/pulse /etc/sensors.d /etc/sensors3.conf /etc/vdpau_wrapper.cfg /etc/vulkan /exports/etc/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
@@ -1597,7 +1617,7 @@ RUN \
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/mime/packages/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/icons/hicolor/scalable/apps/ /exports/usr/share/lintian/overrides/ /exports/usr/share/locale/af/LC_MESSAGES/ /exports/usr/share/locale/ar/LC_MESSAGES/ /exports/usr/share/locale/be/LC_MESSAGES/ /exports/usr/share/locale/bg/LC_MESSAGES/ /exports/usr/share/locale/bn/LC_MESSAGES/ /exports/usr/share/locale/bs/LC_MESSAGES/ /exports/usr/share/locale/ /exports/usr/share/locale/ca/LC_MESSAGES/ /exports/usr/share/locale/cs/LC_MESSAGES/ /exports/usr/share/locale/cy/LC_MESSAGES/ /exports/usr/share/locale/da/LC_MESSAGES/ /exports/usr/share/locale/de/LC_MESSAGES/ /exports/usr/share/locale/el/LC_MESSAGES/ /exports/usr/share/locale/es/LC_MESSAGES/ /exports/usr/share/locale/eu/LC_MESSAGES/ /exports/usr/share/locale/fa/LC_MESSAGES/ /exports/usr/share/locale/fi/LC_MESSAGES/ /exports/usr/share/locale/fr/LC_MESSAGES/ /exports/usr/share/locale/ga/LC_MESSAGES/ /exports/usr/share/locale/gl/LC_MESSAGES/ /exports/usr/share/locale/he/LC_MESSAGES/ /exports/usr/share/locale/hi/LC_MESSAGES/ /exports/usr/share/locale/hr/LC_MESSAGES/ /exports/usr/share/locale/hu/LC_MESSAGES/ /exports/usr/share/locale/hy/LC_MESSAGES/ /exports/usr/share/locale/id/LC_MESSAGES/ /exports/usr/share/locale/it/LC_MESSAGES/ /exports/usr/share/locale/ja/LC_MESSAGES/ /exports/usr/share/locale/ka/LC_MESSAGES/ /exports/usr/share/locale/km/LC_MESSAGES/ /exports/usr/share/locale/ko/LC_MESSAGES/ /exports/usr/share/locale/lt/LC_MESSAGES/ /exports/usr/share/locale/mk/LC_MESSAGES/ /exports/usr/share/locale/my/LC_MESSAGES/ /exports/usr/share/locale/nb/LC_MESSAGES/ /exports/usr/share/locale/nl/LC_MESSAGES/ /exports/usr/share/locale/oc/LC_MESSAGES/ /exports/usr/share/locale/pl/LC_MESSAGES/ /exports/usr/share/locale/pt_BR/LC_MESSAGES/ /exports/usr/share/locale/ro/LC_MESSAGES/ /exports/usr/share/locale/ru/LC_MESSAGES/ /exports/usr/share/locale/sk/LC_MESSAGES/ /exports/usr/share/locale/sl/LC_MESSAGES/ /exports/usr/share/locale/sv/LC_MESSAGES/ /exports/usr/share/locale/ta/LC_MESSAGES/ /exports/usr/share/locale/tg/LC_MESSAGES/ /exports/usr/share/locale/tr/LC_MESSAGES/ /exports/usr/share/locale/uk/LC_MESSAGES/ /exports/usr/share/locale/vi/LC_MESSAGES/ /exports/usr/share/locale/zh_CN/LC_MESSAGES/ /exports/usr/share/locale/zh_TW/LC_MESSAGES/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pixmaps/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/x-cursor-theme /exports/etc/alternatives/ && \
-  mv /etc/fonts /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /etc/sensors.d /etc/sensors3.conf /etc/vdpau_wrapper.cfg /etc/vulkan /exports/etc/ && \
+  mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /etc/sensors.d /etc/sensors3.conf /etc/vdpau_wrapper.cfg /etc/vulkan /exports/etc/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
@@ -2307,6 +2327,7 @@ COPY --from=xinput /exports/ /
 COPY --from=weechat /exports/ /
 COPY --from=urlview /exports/ /
 COPY --from=bsdmainutils /exports/ /
+COPY --from=peaclock /exports/ /
 COPY --from=xournalpp /exports/ /
 COPY --from=clang-format /exports/ /
 COPY --from=man /exports/ /

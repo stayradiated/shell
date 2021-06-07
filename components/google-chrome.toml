@@ -24,7 +24,7 @@ exports = [
   "/etc/alternatives/x-www-browser",
   "/etc/cron.daily/google-chrome",
   "/etc/default/google-chrome",
-  "/etc/fonts/",
+  # "/etc/fonts/",
   "/etc/gtk-3.0/",
   "/etc/ld.so.cache",
   "/etc/mailcap",

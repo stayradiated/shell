@@ -22,7 +22,7 @@ exports = [
   # "/etc/apt/sources.list.d/peek-developers-ubuntu-stable-focal.list",
   # "/etc/apt/sources.list.save",
   # "/etc/apt/trusted.gpg.d/peek-developers_ubuntu_stable.gpg",
-  "/etc/fonts/",
+  # "/etc/fonts/",
   "/etc/gtk-3.0/",
   "/etc/init.d/x11-common",
   "/etc/ld.so.cache",

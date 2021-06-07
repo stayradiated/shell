@@ -17,7 +17,7 @@ exports = [
   "/etc/apparmor.d/",
   "/etc/apport/",
   "/etc/firefox/",
-  "/etc/fonts/",
+  # "/etc/fonts/",
   "/etc/gtk-3.0/",
   "/etc/init.d/x11-common",
   "/etc/ld.so.cache",

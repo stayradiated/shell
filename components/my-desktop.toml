@@ -95,7 +95,7 @@ dependencies = [
   'weechat',
   'urlview',
   'bsdmainutils',
-  # 'peaclock',
+  'peaclock',
   'xournalpp',
 
   'clang-format',
