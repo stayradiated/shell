@@ -2,32 +2,30 @@ name = 'chs'
 from = 'base'
 
 # https://github.com/nickzuber/chs
-version = 'c3eda7c33bc59bd9624f83c7a8c387d6ca1af358'
+version = 'v3.0.0'
 
 devDependencies = [
   'clone',
   'python3-pip',
+  'build-essential',
 ]
 
 build = """
-clone --shallow --https 'https://github.com/nickzuber/chs'
-cd ~/src/github.com/nickzuber/chs
-git fetch
-git reset --hard {{VERSION}}
+clone --shallow --https --tag '{{VERSION}}' 'https://github.com/nickzuber/chs'
+cd /root/src/github.com/nickzuber/chs
 pip3 install -r requirements.txt
 
 # run with python3
 sed -i 's/python/python3/' chs.py
 
-cd
-mv ~/src/github.com/nickzuber/chs /usr/local/lib/python3.6/dist-packages/
-ln -s /usr/local/lib/python3.6/dist-packages/chs/chs.py /usr/local/bin/chs
+mv /root/src/github.com/nickzuber/chs /usr/local/lib/python3.*/dist-packages/
+ln -s /usr/local/lib/python3.*/dist-packages/chs/chs.py /usr/local/bin/chs
 chmod +x /usr/local/bin/chs
 """
 
 exports = [
   '/usr/local/bin/chs',
-  '/usr/local/lib/python3.6/dist-packages/chess/',
-  '/usr/local/lib/python3.6/dist-packages/chs/',
-  '/usr/local/lib/python3.6/dist-packages/editdistance/',
+  '/usr/local/lib/python3.*/dist-packages/chess/',
+  '/usr/local/lib/python3.*/dist-packages/chs/',
+  '/usr/local/lib/python3.*/dist-packages/editdistance/',
 ]

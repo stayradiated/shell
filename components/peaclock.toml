@@ -4,9 +4,10 @@ from = "base"
 # https://github.com/octobanana/peaclock/releases
 version = "0.4.3"
 
-devDependencies = [ "clone" ]
+devDependencies = [ "clone", "build-essential" ]
 
 build = """
+# manually install dependencies
 add-apt-repository ppa:ubuntu-toolchain-r/test
 apt-get update -q
 apt-get install -y --no-install-recommends --auto-remove \
@@ -15,9 +16,11 @@ apt-get install -y --no-install-recommends --auto-remove \
 clone --https --shallow --tag '{{VERSION}}' https://github.com/octobanana/peaclock
 cd /root/src/github.com/octobanana/peaclock
 
-./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=$(which g++-9)
+# build/install
+./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9
 ./RUNME.sh install --release
 
+# cleanup
 rm -rf /root/src
 apt purge -y \
   cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9

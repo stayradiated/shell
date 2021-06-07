@@ -1,7 +1,7 @@
 name = 'xz'
 from = 'base'
 
-version = '5.2.2-*'
+version = '5.2.4-*'
 
 devDependencies = [
   'apteryx'
@@ -13,6 +13,5 @@ apteryx xz-utils='{{VERSION}}'
 
 exports = [
   '/usr/bin/xz',
-
   '/usr/share/man/man1/xz.1.gz'
 ]

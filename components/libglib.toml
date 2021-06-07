@@ -1,7 +1,7 @@
 name = "libglib"
 from = "base"
 
-version = "2.56.4-*"
+version = "2.64.6-*"
 
 devDependencies = [ "apteryx" ]
 
@@ -17,6 +17,6 @@ exports = [
   "/usr/bin/glib-compile-schemas",
   "/usr/bin/gresource",
   "/usr/bin/gsettings",
-  "/usr/lib/x86_64-linux-gnu/libelf-0.170.so",
+  "/usr/lib/x86_64-linux-gnu/libelf-*.so",
   "/usr/lib/x86_64-linux-gnu/libelf.so.1",
 ]
