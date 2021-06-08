@@ -52,6 +52,7 @@ chown root:root /
 chmod 755 /
 passwd root
 echo voidvm > /etc/hostname
+echo '127.0.1.1 voidvm.localdomain voidvm' >> /etc/hosts
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "en_US.UTF-8 UTF-8" >> /etc/default/libc-locales
 xbps-reconfigure -f glibc-locales

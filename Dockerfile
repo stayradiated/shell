@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.63.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.65.1' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -1747,12 +1747,12 @@ RUN \
 FROM base AS watson
 COPY --from=python3-pip /exports/ /
 COPY --from=pipx /exports/ /
-COPY --from=git /exports/ /
 ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install git+git://github.com/TailorDev/Watson@edf9fef4a22aa17176a6b9eb83e895a9e0bac319
+  pipx install td-watson==2.0.1 && \
+  rm -rf /root/.cache/pip
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
