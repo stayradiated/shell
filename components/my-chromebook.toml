@@ -4,6 +4,7 @@ from = 'shell-admin'
 dependencies = [
   # needs to be loaded before other apps
   'python3-pip',
+  'node',
 
   'bat',
   'build-essential',
@@ -22,6 +23,7 @@ dependencies = [
   'ripgrep',
   'safe-rm',
   'sd',
+  'shoebox',
   'sudo',
   'tig',
   'tree',

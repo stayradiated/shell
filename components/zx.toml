@@ -2,7 +2,7 @@ name = 'zx'
 from = 'base'
 
 # https://npmjs.com/package/zx
-version = '1.2.2'
+version = '1.14.1'
 
 devDependencies = [
   'node'

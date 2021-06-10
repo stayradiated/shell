@@ -121,6 +121,8 @@ dependencies = [
   'autotag',
   'miller',
 
+  'electrum',
+
   # 'etcher',
 
   # things I need to fix

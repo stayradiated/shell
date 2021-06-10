@@ -10,8 +10,10 @@ devDependencies = [
 ]
 
 build = """
-# pipx install git+git://github.com/TailorDev/Watson@{{VERSION}}
+# temporary fix for click v8
 pipx install td-watson=={{VERSION}}
+# fix for https://github.com/TailorDev/Watson/issues/430
+pipx inject td-watson click==7.1.2
 rm -rf /root/.cache/pip
 """
 
