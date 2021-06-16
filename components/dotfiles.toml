@@ -2,7 +2,7 @@ name = 'dotfiles'
 from = 'base'
 
 # https://github.com/stayradiated/dotfiles/releases
-version = 'v1.65.1'
+version = 'v1.72.0'
 
 devDependencies = [
   'clone',

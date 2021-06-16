@@ -1,0 +1,19 @@
+name = "greenclip"
+from = "base"
+
+# https://github.com/erebe/greenclip/releases
+version = "v4.2"
+
+devDependencies = [
+  "wget"
+]
+
+build = """
+wget -O /usr/local/bin/greenclip \
+  https://github.com/erebe/greenclip/releases/download/{{VERSION}}/greenclip
+chmod +x /usr/local/bin/greenclip
+"""
+
+exports = [
+  "/usr/local/bin/greenclip"
+]

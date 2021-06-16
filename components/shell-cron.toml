@@ -1,0 +1,13 @@
+name = 'shell-cron'
+from = 'base'
+
+build = """
+echo '*/5 * * * * admin chronic mbsync --config ~/src/mail/czabania.com.config primary' >> /etc/crontab
+echo '*/5 * * * * admin chronic mbsync --config ~/src/mail/stayradiated.com.config primary' >> /etc/crontab
+echo 'service cron start' >> /etc/rc.local
+"""
+
+exports = [
+  '/etc/crontab',
+  '/etc/rc.local'
+]

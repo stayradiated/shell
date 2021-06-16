@@ -44,7 +44,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
-  apteryx git='1:2.31.1-*'
+  apteryx git='1:2.32.0-*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.65.1' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.72.0' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -242,6 +242,16 @@ RUN \
   mv /usr/share/man/man3/crypt_checksalt.3.gz /usr/share/man/man3/crypt_gensalt_ra.3.gz /usr/share/man/man3/crypt_gensalt_rn.3.gz /usr/share/man/man3/crypt_gensalt.3.gz /usr/share/man/man3/crypt_preferred_method.3.gz /usr/share/man/man3/crypt_r.3.gz /usr/share/man/man3/crypt_ra.3.gz /usr/share/man/man3/crypt_rn.3.gz /usr/share/man/man3/crypt.3.gz /usr/share/man/man3/zlib.3.gz /exports/usr/share/man/man3/ && \
   mv /usr/share/man/man5/crypt.5.gz /exports/usr/share/man/man5/
 
+# LUA
+FROM base AS lua
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx lua5.3='5.3.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
+  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
+  mv /usr/share/man/man1/lua5.3.1.gz /exports/usr/share/man/man1/
+
 # SHELL-ROOT
 FROM base AS shell-root
 COPY --from=apteryx /exports/ /
@@ -255,16 +265,6 @@ RUN \
   mv /root/dotfiles /home/admin/dotfiles && \
   mkdir -p /home/admin/.cache /home/admin/.config /home/admin/.local/share && \
   chown -R admin:admin /home/admin
-
-# LUA
-FROM base AS lua
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx lua5.3='5.3.3-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
-  mv /usr/bin/lua5.3 /exports/usr/bin/ && \
-  mv /usr/share/man/man1/lua5.3.1.gz /exports/usr/share/man/man1/
 
 # NODE
 FROM base AS node
@@ -300,130 +300,6 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
   mv /usr/bin/xz /exports/usr/bin/ && \
   mv /usr/share/man/man1/xz.1.gz /exports/usr/share/man/man1/
-
-# SOCKSIFY
-FROM base AS socksify
-COPY --from=build-essential /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget "https://www.inet.no/dante/files/dante-1.4.2.tar.gz" && \
-  tar xzvf "dante-1.4.2.tar.gz" && \
-  cd "dante-1.4.2" && \
-  ./configure && \
-  make && \
-  make check && \
-  make install && \
-  cd .. && \
-  rm -rf "dante-1.4.2.tar.gz" "dante-1.4.2"
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man8/ && \
-  mv /usr/local/bin/socksify /exports/usr/local/bin/ && \
-  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
-  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
-  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
-  mv /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
-  mv /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
-  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
-
-# SCDOC
-FROM base AS scdoc
-COPY --from=build-essential /exports/ /
-COPY --from=clone /exports/ /
-RUN \
-  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/scdoc && \
-  cd ~/src/git.sr.ht/~sircmpwn/scdoc && \
-  make && \
-  make install && \
-  rm -rf ~/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/scdoc /exports/usr/local/bin/
-
-# FIREFOX
-FROM base AS firefox
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx firefox='89.0+*'
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
-  mv /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
-  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
-  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /exports/usr/bin/ && \
-  mv /usr/include/X11 /exports/usr/include/ && \
-  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
-  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/share/fonts /exports/usr/local/share/ && \
-  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
-  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
-  mv /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
-  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
-  mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
-  mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
-  mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
-  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
-  mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
-  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
-  mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
-  mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
-  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
-  mv /usr/share/xml/fontconfig /exports/usr/share/xml/
-
-# GOOGLE-CHROME
-FROM base AS google-chrome
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN \
-  curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
-  apt-get update && \
-  apteryx google-chrome-stable='91.0.4472.77-*'
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ && \
-  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
-  mv /etc/default/google-chrome /exports/etc/default/ && \
-  mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
-  mv /etc/X11/xkb /exports/etc/X11/ && \
-  mv /opt/google /exports/opt/ && \
-  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/share/fonts /exports/usr/local/share/ && \
-  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/ && \
-  mv /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/doc/google-chrome-stable /exports/usr/share/doc/ && \
-  mv /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/
-
-# XDG-UTILS
-FROM base AS xdg-utils
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xdg-utils='1.1.3-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
-
-# SHELL-ADMIN
-FROM shell-root AS shell-admin
-USER admin
-WORKDIR /home/admin
-ENV \
-  PATH=/home/admin/dotfiles/bin:${PATH}
-RUN \
-  mkdir -p /home/admin/exports && \
-  mkdir -p /home/admin/.local/tmp
 
 # Z.LUA
 FROM base AS z.lua
@@ -480,6 +356,16 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/antibody /exports/usr/local/bin/
+
+# SHELL-ADMIN
+FROM shell-root AS shell-admin
+USER admin
+WORKDIR /home/admin
+ENV \
+  PATH=/home/admin/dotfiles/bin:${PATH}
+RUN \
+  mkdir -p /home/admin/exports && \
+  mkdir -p /home/admin/.local/tmp
 
 # YARN
 FROM base AS yarn
@@ -639,6 +525,82 @@ RUN \
   mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ && \
   mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
 
+# FIREFOX
+FROM base AS firefox
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx firefox='89.0+*'
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /exports/usr/bin/ && \
+  mv /usr/include/X11 /exports/usr/include/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
+  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
+  mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
+  mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
+  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
+  mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
+  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
+  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/
+
+# GOOGLE-CHROME
+FROM base AS google-chrome
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+  apt-get update && \
+  apteryx google-chrome-stable='91.0.4472.77-*'
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
+  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/X11/xkb /exports/etc/X11/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/ && \
+  mv /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/doc/google-chrome-stable /exports/usr/share/doc/ && \
+  mv /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/
+
+# XDG-UTILS
+FROM base AS xdg-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xdg-utils='1.1.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
+
 # FFMPEG
 FROM base AS ffmpeg
 COPY --from=wget /exports/ /
@@ -687,491 +649,92 @@ RUN \
   mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ && \
   mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
-# ELECTRUM
-FROM base AS electrum
-COPY --from=apteryx /exports/ /
-COPY --from=python3-pip /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget https://raw.githubusercontent.com/spesmilo/electrum/master/pubkeys/ThomasV.asc && \
-  gpg --import ThomasV.asc && \
-  wget https://download.electrum.org/4.1.2/Electrum-4.1.2.tar.gz && \
-  wget https://download.electrum.org/4.1.2/Electrum-4.1.2.tar.gz.asc && \
-  gpg --verify Electrum-4.1.2.tar.gz.asc && \
-  apteryx python3-pyqt5 libsecp256k1-0 python3-cryptography && \
-  python3 -m pip install ./Electrum-4.1.2.tar.gz && \
-  rm ThomasV.asc && \
-  rm Electrum-4.1.2.tar.gz && \
-  rm Electrum-4.1.2.tar.gz.asc
-RUN \
-  mkdir -p /exports/usr/lib/python3/dist-packages/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ && \
-  mv /usr/lib/python3/dist-packages/_cffi_backend.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/cryptography-2.8.egg-info /usr/lib/python3/dist-packages/cryptography /usr/lib/python3/dist-packages/PyQt5-5.14.1.dist-info /usr/lib/python3/dist-packages/PyQt5 /usr/lib/python3/dist-packages/sip-4.19.21.dist-info /usr/lib/python3/dist-packages/sip.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/sip.pyi /usr/lib/python3/dist-packages/sipconfig_nd8.py /usr/lib/python3/dist-packages/sipconfig.py /exports/usr/lib/python3/dist-packages/ && \
-  mv /usr/lib/udev/libinput-device-group /usr/lib/udev/libinput-fuzz-extract /usr/lib/udev/libinput-fuzz-to-zero /exports/usr/lib/udev/ && \
-  mv /usr/lib/udev/rules.d/65-libwacom.rules /usr/lib/udev/rules.d/80-libinput-device-groups.rules /usr/lib/udev/rules.d/90-libinput-fuzz-override.rules /exports/usr/lib/udev/rules.d/ && \
-  mv /usr/lib/X11 /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libevdev.so.2 /usr/lib/x86_64-linux-gnu/libevdev.so.2.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0.2.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libinput.so.10 /usr/lib/x86_64-linux-gnu/libinput.so.10.13.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/libmtdev.so.1 /usr/lib/x86_64-linux-gnu/libmtdev.so.1.0.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0.9.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5.12.8 /usr/lib/x86_64-linux-gnu/libsecp256k1.so.0 /usr/lib/x86_64-linux-gnu/libsecp256k1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwacom.so.2 /usr/lib/x86_64-linux-gnu/libwacom.so.2.6.1 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4.0.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/qt-default /usr/lib/x86_64-linux-gnu/qt5 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/electrum /usr/local/bin/helpdev /usr/local/bin/qdarkstyle /usr/local/bin/qr /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.8/dist-packages/__pycache__ /usr/local/lib/python3.8/dist-packages/aiohttp_socks-0.6.0.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp_socks /usr/local/lib/python3.8/dist-packages/aiohttp-3.7.4.post0.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp /usr/local/lib/python3.8/dist-packages/aiorpcX-0.18.7.dist-info /usr/local/lib/python3.8/dist-packages/aiorpcx /usr/local/lib/python3.8/dist-packages/async_timeout-3.0.1.dist-info /usr/local/lib/python3.8/dist-packages/async_timeout /usr/local/lib/python3.8/dist-packages/attr /usr/local/lib/python3.8/dist-packages/attrs-21.2.0.dist-info /usr/local/lib/python3.8/dist-packages/bitstring-3.1.7.dist-info /usr/local/lib/python3.8/dist-packages/bitstring.py /usr/local/lib/python3.8/dist-packages/dns /usr/local/lib/python3.8/dist-packages/dnspython-2.0.0.dist-info /usr/local/lib/python3.8/dist-packages/Electrum-4.1.2.dist-info /usr/local/lib/python3.8/dist-packages/electrum /usr/local/lib/python3.8/dist-packages/google /usr/local/lib/python3.8/dist-packages/helpdev-0.7.1.dist-info /usr/local/lib/python3.8/dist-packages/helpdev /usr/local/lib/python3.8/dist-packages/multidict-5.1.0.dist-info /usr/local/lib/python3.8/dist-packages/multidict /usr/local/lib/python3.8/dist-packages/protobuf-3.17.3-py3.8-nspkg.pth /usr/local/lib/python3.8/dist-packages/protobuf-3.17.3.dist-info /usr/local/lib/python3.8/dist-packages/python_socks-1.2.4.dist-info /usr/local/lib/python3.8/dist-packages/python_socks /usr/local/lib/python3.8/dist-packages/QDarkStyle-2.8.1.dist-info /usr/local/lib/python3.8/dist-packages/qdarkstyle /usr/local/lib/python3.8/dist-packages/qrcode-6.1.dist-info /usr/local/lib/python3.8/dist-packages/qrcode /usr/local/lib/python3.8/dist-packages/QtPy-1.9.0.dist-info /usr/local/lib/python3.8/dist-packages/qtpy /usr/local/lib/python3.8/dist-packages/typing_extensions-3.10.0.0.dist-info /usr/local/lib/python3.8/dist-packages/typing_extensions.py /usr/local/lib/python3.8/dist-packages/usr /usr/local/lib/python3.8/dist-packages/yarl-1.6.3.dist-info /usr/local/lib/python3.8/dist-packages/yarl /exports/usr/local/lib/python3.8/dist-packages/
-
-# MILLER
-FROM base AS miller
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /usr/local/bin/mlr https://github.com/johnkerl/miller/releases/download/v5.10.2/mlr.linux.x86_64 && \
-  chmod +x /usr/local/bin/mlr
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/mlr /exports/usr/local/bin/
-
-# AUTOTAG
-FROM base AS autotag
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.9/autotag_linux_amd64.tar.gz" && \
-  tar xzvf /tmp/autotag.tgz autotag && \
-  mv autotag /usr/local/bin/autotag && \
-  rm /tmp/autotag.tgz
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/autotag /exports/usr/local/bin/
-
-# MBSYNC
-FROM base AS mbsync
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
+# SOCKSIFY
+FROM base AS socksify
 COPY --from=build-essential /exports/ /
+COPY --from=wget /exports/ /
 RUN \
-  apteryx libssl-dev && \
-  wget -O /tmp/isync.tgz "https://sourceforge.net/projects/isync/files/isync/1.4.1/isync-1.4.1.tar.gz/download" && \
-  tar xzvf /tmp/isync.tgz -C /tmp && \
-  rm /tmp/isync.tgz && \
-  cd "/tmp/isync-1.4.1" && \
-  ls -alh && \
+  wget "https://www.inet.no/dante/files/dante-1.4.2.tar.gz" && \
+  tar xzvf "dante-1.4.2.tar.gz" && \
+  cd "dante-1.4.2" && \
   ./configure && \
   make && \
-  mv src/mbsync /usr/local/bin/mbsync && \
-  rm -r "/tmp/isync-1.4.1"
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/mbsync /exports/usr/local/bin/
-
-# ZX
-FROM base AS zx
-COPY --from=node /exports/ /
-RUN \
-  npm install -g 'zx@1.14.1'
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
-  mv /usr/local/bin/zx /exports/usr/local/bin/ && \
-  mv /usr/local/lib/node_modules/zx /exports/usr/local/lib/node_modules/
-
-# XDO
-FROM base AS xdo
-COPY --from=apteryx /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=clone /exports/ /
-COPY --from=make /exports/ /
-RUN \
-  apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xtest0-dev && \
-  clone --https --shallow --tag '0.5.7' https://github.com/baskerville/xdo && \
-  cd /root/src/github.com/baskerville/xdo && \
-  make all && \
+  make check && \
   make install && \
-  rm -rf /root/src
+  cd .. && \
+  rm -rf "dante-1.4.2.tar.gz" "dante-1.4.2"
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/xdo /exports/usr/local/bin/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man8/ && \
+  mv /usr/local/bin/socksify /exports/usr/local/bin/ && \
+  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
+  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
+  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
+  mv /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
+  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
 
-# MYCLI
-FROM base AS mycli
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN \
-  pipx install mycli==1.24.1
-RUN \
-  mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
-  mv /usr/local/pipx /exports/usr/local/ && \
-  mv /usr/local/bin/mycli /exports/usr/local/bin/
-
-# BANDWHICH
-FROM base AS bandwhich
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/0.20.0/bandwhich-v0.20.0-x86_64-unknown-linux-musl.tar.gz' && \
-  tar -xvf /tmp/bandwhich.tgz && \
-  rm /tmp/bandwhich.tgz && \
-  mv bandwhich /usr/local/bin/bandwhich
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/bandwhich /exports/usr/local/bin/
-
-# LIBGLIB
-FROM base AS libglib
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx libglib2.0-bin='2.64.6-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/bin/gapplication /usr/bin/gdbus /usr/bin/gio /usr/bin/gio-querymodules /usr/bin/glib-compile-schemas /usr/bin/gresource /usr/bin/gsettings /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu/libelf-*.so /usr/lib/x86_64-linux-gnu/libelf.so.1 /exports/usr/lib/x86_64-linux-gnu/
-
-# YOUTUBE-DL
-FROM base AS youtube-dl
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /usr/local/bin/youtube-dl "https://github.com/ytdl-org/youtube-dl/releases/download/2020.12.14/youtube-dl" && \
-  chmod a+rx /usr/local/bin/youtube-dl
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/youtube-dl /exports/usr/local/bin/
-
-# CHS
-FROM base AS chs
-COPY --from=clone /exports/ /
-COPY --from=python3-pip /exports/ /
-COPY --from=build-essential /exports/ /
-RUN \
-  clone --shallow --https --tag 'v3.0.0' 'https://github.com/nickzuber/chs' && \
-  cd /root/src/github.com/nickzuber/chs && \
-  pip3 install -r requirements.txt && \
-  sed -i 's/python/python3/' chs.py && \
-  mv /root/src/github.com/nickzuber/chs /usr/local/lib/python3.*/dist-packages/ && \
-  ln -s /usr/local/lib/python3.*/dist-packages/chs/chs.py /usr/local/bin/chs && \
-  chmod +x /usr/local/bin/chs
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.*/dist-packages/ && \
-  mv /usr/local/bin/chs /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.*/dist-packages/chess /usr/local/lib/python3.*/dist-packages/chs /usr/local/lib/python3.*/dist-packages/editdistance /exports/usr/local/lib/python3.*/dist-packages/
-
-# HYPERFINE
-FROM base AS hyperfine
-COPY --from=wget /exports/ /
-RUN \
-  wget -O hyperfine.tgz https://github.com/sharkdp/hyperfine/releases/download/v1.11.0/hyperfine-v1.11.0-x86_64-unknown-linux-musl.tar.gz && \
-  tar xzf ./hyperfine.tgz && \
-  mkdir -p /usr/local/man/man1 && \
-  mv ./hyperfine-v1.11.0-x86_64-unknown-linux-musl/hyperfine /usr/local/bin/ && \
-  mv ./hyperfine-v1.11.0-x86_64-unknown-linux-musl/hyperfine.1 /usr/local/man/man1/ && \
-  rm -r ./hyperfine.tgz ./hyperfine-v1.11.0-x86_64-unknown-linux-musl
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/man/man1/ && \
-  mv /usr/local/bin/hyperfine /exports/usr/local/bin/ && \
-  mv /usr/local/man/man1/hyperfine.1 /exports/usr/local/man/man1/
-
-# W3M
-FROM base AS w3m
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx w3m='0.5.3-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/mime/packages/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /etc/w3m /exports/etc/ && \
-  mv /usr/bin/w3m /usr/bin/w3mman /usr/bin/www-browser /exports/usr/bin/ && \
-  mv /usr/lib/mime/packages/w3m /exports/usr/lib/mime/packages/ && \
-  mv /usr/lib/w3m /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libgc.so.* /usr/lib/x86_64-linux-gnu/libgccpp.so.* /usr/lib/x86_64-linux-gnu/libgpm.so.* /exports/usr/lib/x86_64-linux-gnu/
-
-# AERC
-FROM base AS aerc
+# SCDOC
+FROM base AS scdoc
 COPY --from=build-essential /exports/ /
 COPY --from=clone /exports/ /
-COPY --from=go /exports/ /
-COPY --from=scdoc /exports/ /
-COPY --from=socksify /exports/ /
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root \
-  GO111MODULE=auto
 RUN \
-  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc && \
-  cd ~/src/git.sr.ht/~sircmpwn/aerc && \
+  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/scdoc && \
+  cd ~/src/git.sr.ht/~sircmpwn/scdoc && \
   make && \
   make install && \
   rm -rf ~/src
 RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/man/man8/ && \
-  mv /usr/local/bin/aerc /usr/local/bin/socksify /exports/usr/local/bin/ && \
-  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
-  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
-  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
-  mv /usr/local/share/aerc /exports/usr/local/share/ && \
-  mv /usr/local/share/man/man1/aerc-* /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
-  mv /usr/local/share/man/man5/aerc-* /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
-  mv /usr/local/share/man/man7/aerc-* /exports/usr/local/share/man/man7/ && \
-  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/scdoc /exports/usr/local/bin/
 
-# MAN
-FROM base AS man
-COPY --from=apteryx /exports/ /
+# GREENCLIP
+FROM base AS greenclip
+COPY --from=wget /exports/ /
 RUN \
-  apteryx man-db='2.9.1-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/tmpfiles.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/var/cache/ && \
-  mv /etc/groff /etc/manpath.config /exports/etc/ && \
-  mv /usr/bin/apropos /usr/bin/bsd-from /usr/bin/bsd-write /usr/bin/cal /usr/bin/calendar /usr/bin/catman /usr/bin/col /usr/bin/colcrt /usr/bin/colrm /usr/bin/column /usr/bin/eqn /usr/bin/from /usr/bin/geqn /usr/bin/gpic /usr/bin/groff /usr/bin/grog /usr/bin/grops /usr/bin/grotty /usr/bin/gtbl /usr/bin/hd /usr/bin/hexdump /usr/bin/lexgrog /usr/bin/look /usr/bin/lorder /usr/bin/man /usr/bin/mandb /usr/bin/manpath /usr/bin/ncal /usr/bin/neqn /usr/bin/nroff /usr/bin/pic /usr/bin/preconv /usr/bin/printerbanner /usr/bin/soelim /usr/bin/tbl /usr/bin/troff /usr/bin/ul /usr/bin/whatis /usr/bin/write /exports/usr/bin/ && \
-  mv /usr/lib/man-db /usr/lib/groff /exports/usr/lib/ && \
-  mv /usr/lib/tmpfiles.d/man-db.conf /exports/usr/lib/tmpfiles.d/ && \
-  mv /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libpipeline.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/groff /usr/share/man /usr/share/man-db /exports/usr/share/ && \
-  mv /var/cache/man /exports/var/cache/
-
-# CLANG-FORMAT
-FROM base AS clang-format
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx clang-format-10='1:10.0.0-*' && \
-  mv /usr/bin/clang-format-10 /usr/bin/clang-format
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
-  mv /usr/bin/clang-format /exports/usr/bin/ && \
-  mv /usr/lib/llvm-10 /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libclang-cpp.so.10 /usr/lib/x86_64-linux-gnu/libLLVM-10.so /usr/lib/x86_64-linux-gnu/libLLVM-10.so.1 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/clang /exports/usr/share/
-
-# XOURNALPP
-FROM base AS xournalpp
-COPY --from=apteryx /exports/ /
-RUN \
-  add-apt-repository ppa:apandada1/xournalpp-stable && \
-  apteryx xournalpp='1.0.20-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/glib-2.0/ /exports/usr/share/ && \
-  mv /etc/gtk-3.0 /exports/etc/ && \
-  mv /usr/bin/xournalpp /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.* /usr/lib/x86_64-linux-gnu/liblua5.3.so.* /usr/lib/x86_64-linux-gnu/libpoppler-glib.so.* /usr/lib/x86_64-linux-gnu/libportaudiocpp.so.* /usr/lib/x86_64-linux-gnu/libzip.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/glib-2.0/schemas /exports/usr/share/glib-2.0/ && \
-  mv /usr/share/icons /usr/share/xournalpp /exports/usr/share/
-
-# PEACLOCK
-FROM base AS peaclock
-COPY --from=clone /exports/ /
-COPY --from=build-essential /exports/ /
-RUN \
-  add-apt-repository ppa:ubuntu-toolchain-r/test && \
-  apt-get update -q && \
-  apt-get install -y --no-install-recommends --auto-remove cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
-  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
-  cd /root/src/github.com/octobanana/peaclock && \
-  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 && \
-  ./RUNME.sh install --release && \
-  rm -rf /root/src && \
-  apt purge -y cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
-  apt autoremove -y && \
-  apt-get -q clean
+  wget -O /usr/local/bin/greenclip https://github.com/erebe/greenclip/releases/download/v4.2/greenclip && \
+  chmod +x /usr/local/bin/greenclip
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/peaclock /exports/usr/local/bin/
+  mv /usr/local/bin/greenclip /exports/usr/local/bin/
 
-# BSDMAINUTILS
-FROM base AS bsdmainutils
+# PNPM
+FROM base AS pnpm
+COPY --from=node /exports/ /
+RUN \
+  npm install -g 'pnpm@6.7.6'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/pnpm /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/pnpm /exports/usr/local/lib/node_modules/
+
+# GNUPLOT
+FROM base AS gnuplot
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx bsdmainutils='11.1.2*'
+  apteryx gnuplot='5.2.8+*'
 RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/column /exports/usr/bin/
-
-# URLVIEW
-FROM base AS urlview
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx urlview='0.9-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ && \
-  mv /etc/urlview /exports/etc/ && \
-  mv /usr/bin/urlview /exports/usr/bin/
-
-# WEECHAT
-FROM base AS weechat
-COPY --from=apteryx /exports/ /
-COPY --from=python3-pip /exports/ /
-RUN \
-  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && add-apt-repository "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main" && \
-  apteryx weechat-curses weechat-perl weechat-plugins weechat-python && \
-  pip3 install websocket-client
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/locale/cs/LC_MESSAGES/ /exports/usr/share/locale/de/LC_MESSAGES/ /exports/usr/share/locale/es/LC_MESSAGES/ /exports/usr/share/locale/fr/LC_MESSAGES/ /exports/usr/share/locale/hu/LC_MESSAGES/ /exports/usr/share/locale/it/LC_MESSAGES/ /exports/usr/share/locale/ja/LC_MESSAGES/ /exports/usr/share/locale/pl/LC_MESSAGES/ /exports/usr/share/locale/pt_BR/LC_MESSAGES/ /exports/usr/share/locale/pt/LC_MESSAGES/ /exports/usr/share/locale/ru/LC_MESSAGES/ /exports/usr/share/locale/tr/LC_MESSAGES/ /exports/usr/share/man/cs/man1/ /exports/usr/share/man/de/man1/ /exports/usr/share/man/fr/man1/ /exports/usr/share/man/it/man1/ /exports/usr/share/man/ja/man1/ /exports/usr/share/man/man1/ /exports/usr/share/man/pl/man1/ /exports/usr/share/man/ru/man1/ /exports/usr/share/menu/ /exports/usr/share/ /exports/usr/share/pixmaps/ && \
-  mv /usr/bin/cpan5.30-x86_64-linux-gnu /usr/bin/perl5.30-x86_64-linux-gnu /usr/bin/weechat /usr/bin/weechat-curses /exports/usr/bin/ && \
-  mv /usr/lib/aspell /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libaspell.so.15 /usr/lib/x86_64-linux-gnu/libaspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.3 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4.6.0 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4.0.0 /usr/lib/x86_64-linux-gnu/libgdbm.so.6 /usr/lib/x86_64-linux-gnu/libgdbm.so.6.0.0 /usr/lib/x86_64-linux-gnu/libperl.so.5.30 /usr/lib/x86_64-linux-gnu/libperl.so.5.30.0 /usr/lib/x86_64-linux-gnu/libpspell.so.15 /usr/lib/x86_64-linux-gnu/libpspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/perl /usr/lib/x86_64-linux-gnu/weechat /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/__pycache__ /usr/local/bin/wsdump.py /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.8/dist-packages/websocket_client-1.0.1.dist-info /usr/local/lib/python3.8/dist-packages/websocket /exports/usr/local/lib/python3.8/dist-packages/ && \
-  mv /usr/share/doc/libaspell15 /usr/share/doc/libcurl3-gnutls /usr/share/doc/libgdbm-compat4 /usr/share/doc/libgdbm6 /usr/share/doc/libperl5.30 /usr/share/doc/perl-modules-5.30 /usr/share/doc/weechat-core /usr/share/doc/weechat-curses /usr/share/doc/weechat-perl /usr/share/doc/weechat-plugins /usr/share/doc/weechat-python /exports/usr/share/doc/ && \
-  mv /usr/share/lintian/overrides/libcurl3-gnutls /usr/share/lintian/overrides/perl-modules-5.30 /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/locale/cs/LC_MESSAGES/weechat.mo /exports/usr/share/locale/cs/LC_MESSAGES/ && \
-  mv /usr/share/locale/de/LC_MESSAGES/weechat.mo /exports/usr/share/locale/de/LC_MESSAGES/ && \
-  mv /usr/share/locale/es/LC_MESSAGES/weechat.mo /exports/usr/share/locale/es/LC_MESSAGES/ && \
-  mv /usr/share/locale/fr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/fr/LC_MESSAGES/ && \
-  mv /usr/share/locale/hu/LC_MESSAGES/weechat.mo /exports/usr/share/locale/hu/LC_MESSAGES/ && \
-  mv /usr/share/locale/it/LC_MESSAGES/weechat.mo /exports/usr/share/locale/it/LC_MESSAGES/ && \
-  mv /usr/share/locale/ja/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ja/LC_MESSAGES/ && \
-  mv /usr/share/locale/pl/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pl/LC_MESSAGES/ && \
-  mv /usr/share/locale/pt_BR/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt_BR/LC_MESSAGES/ && \
-  mv /usr/share/locale/pt/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt/LC_MESSAGES/ && \
-  mv /usr/share/locale/ru/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ru/LC_MESSAGES/ && \
-  mv /usr/share/locale/tr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/tr/LC_MESSAGES/ && \
-  mv /usr/share/man/cs/man1/weechat-curses.1.gz /usr/share/man/cs/man1/weechat.1.gz /exports/usr/share/man/cs/man1/ && \
-  mv /usr/share/man/de/man1/weechat-curses.1.gz /usr/share/man/de/man1/weechat.1.gz /exports/usr/share/man/de/man1/ && \
-  mv /usr/share/man/fr/man1/weechat-curses.1.gz /usr/share/man/fr/man1/weechat.1.gz /exports/usr/share/man/fr/man1/ && \
-  mv /usr/share/man/it/man1/weechat-curses.1.gz /usr/share/man/it/man1/weechat.1.gz /exports/usr/share/man/it/man1/ && \
-  mv /usr/share/man/ja/man1/weechat-curses.1.gz /usr/share/man/ja/man1/weechat.1.gz /exports/usr/share/man/ja/man1/ && \
-  mv /usr/share/man/man1/cpan5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/perl5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/weechat-curses.1.gz /usr/share/man/man1/weechat.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/pl/man1/weechat-curses.1.gz /usr/share/man/pl/man1/weechat.1.gz /exports/usr/share/man/pl/man1/ && \
-  mv /usr/share/man/ru/man1/weechat-curses.1.gz /usr/share/man/ru/man1/weechat.1.gz /exports/usr/share/man/ru/man1/ && \
-  mv /usr/share/menu/weechat-curses /exports/usr/share/menu/ && \
-  mv /usr/share/perl /exports/usr/share/ && \
-  mv /usr/share/pixmaps/weechat.xpm /exports/usr/share/pixmaps/
-
-# XINPUT
-FROM base AS xinput
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xinput='1.6.3-*'
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/xinput /exports/usr/bin/
-
-# ALSA-UTILS
-FROM base AS alsa-utils
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx alsa-utils='1.2.2-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rc0.d/ /exports/etc/rc1.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/usr/bin/ /exports/usr/lib/modprobe.d/ /exports/usr/lib/systemd/system/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/bash-completion/completions/ /exports/usr/share/doc/ /exports/usr/share/doc/libkmod2/ /exports/usr/share/man/fr/man5/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ && \
-  mv /etc/depmod.d /etc/ld.so.cache /etc/modprobe.d /etc/modules /exports/etc/ && \
-  mv /etc/init.d/alsa-utils /etc/init.d/kmod /exports/etc/init.d/ && \
-  mv /etc/rc0.d/K01alsa-utils /exports/etc/rc0.d/ && \
-  mv /etc/rc1.d/K01alsa-utils /exports/etc/rc1.d/ && \
-  mv /etc/rc6.d/K01alsa-utils /exports/etc/rc6.d/ && \
-  mv /etc/rcS.d/S01alsa-utils /etc/rcS.d/S01kmod /exports/etc/rcS.d/ && \
-  mv /usr/bin/aconnect /usr/bin/alsabat /usr/bin/alsaloop /usr/bin/alsamixer /usr/bin/alsatplg /usr/bin/alsaucm /usr/bin/amidi /usr/bin/amixer /usr/bin/aplay /usr/bin/aplaymidi /usr/bin/arecord /usr/bin/arecordmidi /usr/bin/aseqdump /usr/bin/aseqnet /usr/bin/axfer /usr/bin/iecset /usr/bin/kmod /usr/bin/lsmod /usr/bin/speaker-test /exports/usr/bin/ && \
-  mv /usr/lib/modprobe.d/aliases.conf /exports/usr/lib/modprobe.d/ && \
-  mv /usr/lib/systemd/system/alsa-restore.service /usr/lib/systemd/system/alsa-state.service /usr/lib/systemd/system/alsa-utils.service /usr/lib/systemd/system/sound.target.wants /exports/usr/lib/systemd/system/ && \
-  mv /usr/lib/udev/rules.d/90-alsa-restore.rules /exports/usr/lib/udev/rules.d/ && \
-  mv /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatopology.so.2 /usr/lib/x86_64-linux-gnu/libatopology.so.2.0.0 /usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3f.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f.so.3.5.8 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0.1.8 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/sbin/alsa-info /usr/sbin/alsabat-test /usr/sbin/alsactl /usr/sbin/depmod /usr/sbin/insmod /usr/sbin/lsmod /usr/sbin/modinfo /usr/sbin/modprobe /usr/sbin/rmmod /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/initramfs-tools /usr/share/sounds /exports/usr/share/ && \
-  mv /usr/share/bash-completion/completions/kmod /exports/usr/share/bash-completion/completions/ && \
-  mv /usr/share/doc/alsa-utils /usr/share/doc/kmod /usr/share/doc/libasound2-data /usr/share/doc/libasound2 /usr/share/doc/libatopology2 /usr/share/doc/libfftw3-single3 /usr/share/doc/libgomp1 /usr/share/doc/libsamplerate0 /exports/usr/share/doc/ && \
-  mv /usr/share/doc/libkmod2/README /usr/share/doc/libkmod2/TODO /exports/usr/share/doc/libkmod2/ && \
-  mv /usr/share/man/fr/man5/modules.5.gz /exports/usr/share/man/fr/man5/ && \
-  mv /usr/share/man/man1/aconnect.1.gz /usr/share/man/man1/alsabat.1.gz /usr/share/man/man1/alsactl.1.gz /usr/share/man/man1/alsaloop.1.gz /usr/share/man/man1/alsamixer.1.gz /usr/share/man/man1/alsatplg.1.gz /usr/share/man/man1/alsaucm.1.gz /usr/share/man/man1/amidi.1.gz /usr/share/man/man1/amixer.1.gz /usr/share/man/man1/aplay.1.gz /usr/share/man/man1/aplaymidi.1.gz /usr/share/man/man1/arecord.1.gz /usr/share/man/man1/arecordmidi.1.gz /usr/share/man/man1/aseqdump.1.gz /usr/share/man/man1/aseqnet.1.gz /usr/share/man/man1/axfer-list.1.gz /usr/share/man/man1/axfer-transfer.1.gz /usr/share/man/man1/axfer.1.gz /usr/share/man/man1/iecset.1.gz /usr/share/man/man1/speaker-test.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/man5/depmod.d.5.gz /usr/share/man/man5/modprobe.d.5.gz /usr/share/man/man5/modules.5.gz /usr/share/man/man5/modules.dep.5.gz /usr/share/man/man5/modules.dep.bin.5.gz /exports/usr/share/man/man5/ && \
-  mv /usr/share/man/man7/alsactl_init.7.gz /exports/usr/share/man/man7/ && \
-  mv /usr/share/man/man8/alsa-info.8.gz /usr/share/man/man8/depmod.8.gz /usr/share/man/man8/insmod.8.gz /usr/share/man/man8/kmod.8.gz /usr/share/man/man8/lsmod.8.gz /usr/share/man/man8/modinfo.8.gz /usr/share/man/man8/modprobe.8.gz /usr/share/man/man8/rmmod.8.gz /exports/usr/share/man/man8/
-
-# APULSE
-FROM base AS apulse
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx apulse='0.1.12-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ && \
-  mv /usr/bin/apulse /exports/usr/bin/ && \
-  mv /usr/lib/x86_64-linux-gnu/apulse /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/alsa /exports/usr/share/ && \
-  mv /usr/share/doc/apulse /usr/share/doc/libasound2-data /usr/share/doc/libasound2 /exports/usr/share/doc/ && \
-  mv /usr/share/man/man1/apulse.1.gz /exports/usr/share/man/man1/
-
-# WACOM
-FROM base AS wacom
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xserver-xorg-input-wacom='1:0.39.0-*'
-RUN \
-  mkdir -p /exports/etc/default/ /exports/etc/init.d/ /exports/etc/ /exports/etc/rc0.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/modprobe.d/ /exports/usr/lib/systemd/network/ /exports/usr/lib/systemd/system/sockets.target.wants/ /exports/usr/lib/systemd/system/sysinit.target.wants/ /exports/usr/lib/systemd/system/ /exports/usr/lib/systemd/ /exports/usr/lib/tmpfiles.d/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bash-completion/completions/ /exports/usr/share/bug/ /exports/usr/share/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man3/ /exports/usr/share/man/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/zsh/vendor-completions/ && \
-  mv /etc/default/keyboard /exports/etc/default/ && \
-  mv /etc/init.d/udev /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/ld.so.cache /etc/sensors.d /etc/sensors3.conf /etc/udev /etc/vulkan /exports/etc/ && \
-  mv /etc/rc0.d/K01udev /exports/etc/rc0.d/ && \
-  mv /etc/rc6.d/K01udev /exports/etc/rc6.d/ && \
-  mv /etc/rcS.d/S01udev /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
-  mv /usr/bin/cvt /usr/bin/gtf /usr/bin/isdv4-serial-debugger /usr/bin/isdv4-serial-inputattach /usr/bin/setxkbmap /usr/bin/systemd-hwdb /usr/bin/udevadm /usr/bin/X /usr/bin/X11 /usr/bin/xkbbell /usr/bin/xkbcomp /usr/bin/xkbevd /usr/bin/xkbprint /usr/bin/xkbvleds /usr/bin/xkbwatch /usr/bin/Xorg /usr/bin/xsetwacom /exports/usr/bin/ && \
-  mv /usr/include/X11 /usr/include/xorg /exports/usr/include/ && \
-  mv /usr/lib/modprobe.d/fbdev-blacklist.conf /exports/usr/lib/modprobe.d/ && \
-  mv /usr/lib/systemd/network/73-usb-net-by-mac.link /usr/lib/systemd/network/99-default.link /exports/usr/lib/systemd/network/ && \
-  mv /usr/lib/systemd/system/sockets.target.wants/systemd-udevd-control.socket /usr/lib/systemd/system/sockets.target.wants/systemd-udevd-kernel.socket /exports/usr/lib/systemd/system/sockets.target.wants/ && \
-  mv /usr/lib/systemd/system/sysinit.target.wants/systemd-hwdb-update.service /usr/lib/systemd/system/sysinit.target.wants/systemd-udev-trigger.service /usr/lib/systemd/system/sysinit.target.wants/systemd-udevd.service /exports/usr/lib/systemd/system/sysinit.target.wants/ && \
-  mv /usr/lib/systemd/system/systemd-hwdb-update.service /usr/lib/systemd/system/systemd-udev-settle.service /usr/lib/systemd/system/systemd-udev-trigger.service /usr/lib/systemd/system/systemd-udevd-control.socket /usr/lib/systemd/system/systemd-udevd-kernel.socket /usr/lib/systemd/system/systemd-udevd.service /usr/lib/systemd/system/udev.service /usr/lib/systemd/system/wacom-inputattach@.service /exports/usr/lib/systemd/system/ && \
-  mv /usr/lib/systemd/systemd-udevd /exports/usr/lib/systemd/ && \
-  mv /usr/lib/tmpfiles.d/static-nodes-permissions.conf /exports/usr/lib/tmpfiles.d/ && \
-  mv /usr/lib/udev/ata_id /usr/lib/udev/cdrom_id /usr/lib/udev/fido_id /usr/lib/udev/hwdb.bin /usr/lib/udev/hwdb.d /usr/lib/udev/mtd_probe /usr/lib/udev/scsi_id /usr/lib/udev/v4l_id /exports/usr/lib/udev/ && \
-  mv /usr/lib/udev/rules.d/40-vm-hotadd.rules /usr/lib/udev/rules.d/50-firmware.rules /usr/lib/udev/rules.d/50-udev-default.rules /usr/lib/udev/rules.d/60-autosuspend-chromiumos.rules /usr/lib/udev/rules.d/60-block.rules /usr/lib/udev/rules.d/60-cdrom_id.rules /usr/lib/udev/rules.d/60-drm.rules /usr/lib/udev/rules.d/60-evdev.rules /usr/lib/udev/rules.d/60-fido-id.rules /usr/lib/udev/rules.d/60-input-id.rules /usr/lib/udev/rules.d/60-persistent-alsa.rules /usr/lib/udev/rules.d/60-persistent-input.rules /usr/lib/udev/rules.d/60-persistent-storage-tape.rules /usr/lib/udev/rules.d/60-persistent-storage.rules /usr/lib/udev/rules.d/60-persistent-v4l.rules /usr/lib/udev/rules.d/60-sensor.rules /usr/lib/udev/rules.d/60-serial.rules /usr/lib/udev/rules.d/61-autosuspend-manual.rules /usr/lib/udev/rules.d/61-persistent-storage-android.rules /usr/lib/udev/rules.d/64-btrfs.rules /usr/lib/udev/rules.d/64-xorg-xkb.rules /usr/lib/udev/rules.d/69-wacom.rules /usr/lib/udev/rules.d/70-joystick.rules /usr/lib/udev/rules.d/70-mouse.rules /usr/lib/udev/rules.d/70-power-switch.rules /usr/lib/udev/rules.d/70-touchpad.rules /usr/lib/udev/rules.d/71-power-switch-proliant.rules /usr/lib/udev/rules.d/73-special-net-names.rules /usr/lib/udev/rules.d/75-net-description.rules /usr/lib/udev/rules.d/75-probe_mtd.rules /usr/lib/udev/rules.d/78-graphics-card.rules /usr/lib/udev/rules.d/78-sound-card.rules /usr/lib/udev/rules.d/80-debian-compat.rules /usr/lib/udev/rules.d/80-drivers.rules /usr/lib/udev/rules.d/80-net-setup-link.rules /exports/usr/lib/udev/rules.d/ && \
-  mv /usr/lib/X11 /usr/lib/xorg /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontenc.so.1 /usr/lib/x86_64-linux-gnu/libfontenc.so.1.0.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libunwind-coredump.so.0 /usr/lib/x86_64-linux-gnu/libunwind-coredump.so.0.0.0 /usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0 /usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0.0.0 /usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8 /usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8.0.1 /usr/lib/x86_64-linux-gnu/libunwind.so.8 /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXaw.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXfont2.so.2 /usr/lib/x86_64-linux-gnu/libXfont2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbfile.so.1 /usr/lib/x86_64-linux-gnu/libxkbfile.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXmu.so.6 /usr/lib/x86_64-linux-gnu/libXmu.so.6.2.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/perl5 /usr/lib/x86_64-linux-gnu/pkgconfig /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
-  mv /usr/share/apport/package-hooks/source_console-setup.py /usr/share/apport/package-hooks/udev.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/bash-completion/completions/udevadm /exports/usr/share/bash-completion/completions/ && \
-  mv /usr/share/bug/keyboard-configuration /usr/share/bug/libegl-mesa0 /usr/share/bug/libegl1 /usr/share/bug/libgbm1 /usr/share/bug/libgl1-mesa-dri /usr/share/bug/libgl1 /usr/share/bug/libglapi-mesa /usr/share/bug/libglvnd0 /usr/share/bug/libglx-mesa0 /usr/share/bug/libglx0 /usr/share/bug/udev /usr/share/bug/xserver-xorg-core /exports/usr/share/bug/ && \
-  mv /usr/share/console-setup /usr/share/drirc.d /usr/share/glvnd /usr/share/initramfs-tools /usr/share/libdrm /usr/share/X11 /exports/usr/share/ && \
-  mv /usr/share/doc-base/libpng16 /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/keyboard-configuration /usr/share/doc/libdrm-amdgpu1 /usr/share/doc/libdrm-common /usr/share/doc/libdrm-intel1 /usr/share/doc/libdrm-nouveau2 /usr/share/doc/libdrm-radeon1 /usr/share/doc/libdrm2 /usr/share/doc/libegl-mesa0 /usr/share/doc/libegl1 /usr/share/doc/libepoxy0 /usr/share/doc/libfontenc1 /usr/share/doc/libfreetype6 /usr/share/doc/libgbm1 /usr/share/doc/libgl1-mesa-dri /usr/share/doc/libgl1 /usr/share/doc/libglapi-mesa /usr/share/doc/libglvnd0 /usr/share/doc/libglx-mesa0 /usr/share/doc/libglx0 /usr/share/doc/libice6 /usr/share/doc/libllvm11 /usr/share/doc/liblocale-gettext-perl /usr/share/doc/libpciaccess0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/libsensors-config /usr/share/doc/libsensors5 /usr/share/doc/libsm6 /usr/share/doc/libunwind8 /usr/share/doc/libvulkan1 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-server0 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxaw7 /usr/share/doc/libxcb-dri2-0 /usr/share/doc/libxcb-dri3-0 /usr/share/doc/libxcb-glx0 /usr/share/doc/libxcb-present0 /usr/share/doc/libxcb-sync1 /usr/share/doc/libxcb-xfixes0 /usr/share/doc/libxcb1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxfont2 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbfile1 /usr/share/doc/libxmu6 /usr/share/doc/libxpm4 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxshmfence1 /usr/share/doc/libxt6 /usr/share/doc/libxxf86vm1 /usr/share/doc/udev /usr/share/doc/x11-common /usr/share/doc/x11-xkb-utils /usr/share/doc/xkb-data /usr/share/doc/xserver-common /usr/share/doc/xserver-xorg-core /usr/share/doc/xserver-xorg-input-wacom /exports/usr/share/doc/ && \
-  mv /usr/share/lintian/overrides/keyboard-configuration /usr/share/lintian/overrides/libdrm-nouveau2 /usr/share/lintian/overrides/libgbm1 /usr/share/lintian/overrides/libglapi-mesa /usr/share/lintian/overrides/libglvnd0 /usr/share/lintian/overrides/libllvm11 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/udev /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/man/man1/cvt.1.gz /usr/share/man/man1/gtf.1.gz /usr/share/man/man1/setxkbmap.1.gz /usr/share/man/man1/xkbbell.1.gz /usr/share/man/man1/xkbcomp.1.gz /usr/share/man/man1/xkbevd.1.gz /usr/share/man/man1/xkbprint.1.gz /usr/share/man/man1/xkbvleds.1.gz /usr/share/man/man1/xkbwatch.1.gz /usr/share/man/man1/Xorg.1.gz /usr/share/man/man1/Xserver.1.gz /usr/share/man/man1/xsetwacom.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/man3/Locale::gettext.3pm.gz /exports/usr/share/man/man3/ && \
-  mv /usr/share/man/man4 /exports/usr/share/man/ && \
-  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/keyboard.5.gz /usr/share/man/man5/systemd.link.5.gz /usr/share/man/man5/udev.conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/xorg.conf.5.gz /usr/share/man/man5/xorg.conf.d.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
-  mv /usr/share/man/man7/hwdb.7.gz /usr/share/man/man7/udev.7.gz /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
-  mv /usr/share/man/man8/systemd-hwdb.8.gz /usr/share/man/man8/systemd-udevd-control.socket.8.gz /usr/share/man/man8/systemd-udevd-kernel.socket.8.gz /usr/share/man/man8/systemd-udevd.8.gz /usr/share/man/man8/systemd-udevd.service.8.gz /usr/share/man/man8/udevadm.8.gz /exports/usr/share/man/man8/ && \
-  mv /usr/share/pkgconfig/udev.pc /usr/share/pkgconfig/xkbcomp.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
-  mv /usr/share/zsh/vendor-completions/_udevadm /exports/usr/share/zsh/vendor-completions/
-
-# SHELL-BROWSER
-FROM shell-admin AS shell-browser
-COPY --from=make /exports/ /
-COPY --from=xdg-utils /exports/ /
-COPY --from=google-chrome /exports/ /
-COPY --from=firefox /exports/ /
-ENV \
-  PATH=${PATH}:/opt/google/chrome
-RUN \
-  cd dotfiles && \
-  make firefox
-RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
-USER root
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
-  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
-  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
-  mv /etc/default/google-chrome /exports/etc/default/ && \
-  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
-  mv /opt/google /exports/opt/ && \
-  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
-  mv /usr/include/X11 /exports/usr/include/ && \
-  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
-  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
+  mkdir -p /exports/etc/alternatives/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mv /etc/alternatives/gnuplot /etc/alternatives/gnuplot.1.gz /etc/alternatives/gnuplot.gih /exports/etc/alternatives/ && \
+  mv /usr/bin/gnuplot /usr/bin/gnuplot-qt /exports/usr/bin/ && \
+  mv /usr/lib/gnuplot /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libevdev.so.2 /usr/lib/x86_64-linux-gnu/libevdev.so.2.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.5 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0.2.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libinput.so.10 /usr/lib/x86_64-linux-gnu/libinput.so.10.13.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/liblua5.3-c++.so.0 /usr/lib/x86_64-linux-gnu/liblua5.3-c++.so.0.0.0 /usr/lib/x86_64-linux-gnu/liblua5.3.so.0 /usr/lib/x86_64-linux-gnu/liblua5.3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libmtdev.so.1 /usr/lib/x86_64-linux-gnu/libmtdev.so.1.0.0 /usr/lib/x86_64-linux-gnu/libnotify.so.4 /usr/lib/x86_64-linux-gnu/libnotify.so.4.0.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0.9.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Svg.so.5 /usr/lib/x86_64-linux-gnu/libQt5Svg.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Svg.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12.8 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwacom.so.2 /usr/lib/x86_64-linux-gnu/libwacom.so.2.6.1 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libwx_baseu_net-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_baseu_net-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_baseu_xml-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_baseu_xml-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_baseu-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_baseu-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_adv-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_adv-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_aui-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_aui-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_core-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_core-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_gl-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_gl-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_html-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_html-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_propgrid-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_propgrid-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_qa-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_qa-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_ribbon-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_ribbon-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_richtext-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_richtext-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_stc-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_stc-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_xrc-3.0.so.0 /usr/lib/x86_64-linux-gnu/libwx_gtk3u_xrc-3.0.so.0.4.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4.0.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/qt-default /usr/lib/x86_64-linux-gnu/qt5 /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/share/fonts /exports/usr/local/share/ && \
   mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/appdata /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
-  mv /usr/share/applications/firefox.desktop /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
+  mv /usr/share/aglfn /usr/share/drirc.d /usr/share/fonts /usr/share/glvnd /usr/share/gnuplot /usr/share/libdrm /usr/share/libinput /usr/share/libthai /usr/share/libwacom /usr/share/mime /usr/share/texmf /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/apport/package-hooks/source_fontconfig.py /usr/share/apport/package-hooks/source_mtdev.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/libegl-mesa0 /usr/share/bug/libegl1 /usr/share/bug/libgbm1 /usr/share/bug/libgl1-mesa-dri /usr/share/bug/libgl1 /usr/share/bug/libglapi-mesa /usr/share/bug/libglvnd0 /usr/share/bug/libglx-mesa0 /usr/share/bug/libglx0 /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
   mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/google-chrome-stable /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/aglfn /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/gnuplot-data /usr/share/doc/gnuplot-qt /usr/share/doc/gnuplot /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdouble-conversion3 /usr/share/doc/libdrm-amdgpu1 /usr/share/doc/libdrm-common /usr/share/doc/libdrm-intel1 /usr/share/doc/libdrm-nouveau2 /usr/share/doc/libdrm-radeon1 /usr/share/doc/libdrm2 /usr/share/doc/libegl-mesa0 /usr/share/doc/libegl1 /usr/share/doc/libepoxy0 /usr/share/doc/libevdev2 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgbm1 /usr/share/doc/libgd3 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgl1-mesa-dri /usr/share/doc/libgl1 /usr/share/doc/libglapi-mesa /usr/share/doc/libglvnd0 /usr/share/doc/libglx-mesa0 /usr/share/doc/libglx0 /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libgudev-1.0-0 /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libinput-bin /usr/share/doc/libinput10 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libllvm11 /usr/share/doc/liblua5.3-0 /usr/share/doc/libmtdev1 /usr/share/doc/libnotify4 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpciaccess0 /usr/share/doc/libpcre2-16-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/libqt5core5a /usr/share/doc/libqt5dbus5 /usr/share/doc/libqt5gui5 /usr/share/doc/libqt5network5 /usr/share/doc/libqt5printsupport5 /usr/share/doc/libqt5svg5 /usr/share/doc/libqt5widgets5 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsensors-config /usr/share/doc/libsensors5 /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libvulkan1 /usr/share/doc/libwacom-common /usr/share/doc/libwacom2 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwayland-server0 /usr/share/doc/libwebp6 /usr/share/doc/libwxbase3.0-0v5 /usr/share/doc/libwxgtk3.0-gtk3-0v5 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-dri2-0 /usr/share/doc/libxcb-dri3-0 /usr/share/doc/libxcb-glx0 /usr/share/doc/libxcb-icccm4 /usr/share/doc/libxcb-image0 /usr/share/doc/libxcb-keysyms1 /usr/share/doc/libxcb-present0 /usr/share/doc/libxcb-randr0 /usr/share/doc/libxcb-render-util0 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shape0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb-sync1 /usr/share/doc/libxcb-util1 /usr/share/doc/libxcb-xfixes0 /usr/share/doc/libxcb-xinerama0 /usr/share/doc/libxcb-xinput0 /usr/share/doc/libxcb-xkb1 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon-x11-0 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxpm4 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxshmfence1 /usr/share/doc/libxxf86vm1 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
   mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
   mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
   mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
   mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
-  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
   mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
-  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdrm-nouveau2 /usr/share/lintian/overrides/libgbm1 /usr/share/lintian/overrides/libgd3 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libglapi-mesa /usr/share/lintian/overrides/libglvnd0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libllvm11 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/libqt5core5a /usr/share/lintian/overrides/libqt5dbus5 /usr/share/lintian/overrides/libqt5gui5 /usr/share/lintian/overrides/libqt5network5 /usr/share/lintian/overrides/libqt5printsupport5 /usr/share/lintian/overrides/libqt5widgets5 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libwxbase3.0-0v5 /usr/share/lintian/overrides/libwxgtk3.0-gtk3-0v5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/gnuplot-qt.1.gz /usr/share/man/man1/gnuplot.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
   mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
   mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
   mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
-  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/ && \
   mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
   mv /usr/share/xml/fontconfig /exports/usr/share/xml/
 
@@ -1385,6 +948,70 @@ RUN \
   mv /usr/local/share/man/man1/git-crypt.1 /exports/usr/local/share/man/man1/ && \
   mv /usr/share/git-core /usr/share/man /usr/share/perl /exports/usr/share/ && \
   mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
+
+# SHELL-CRON
+FROM base AS shell-cron
+RUN \
+  echo '*/5 * * * * admin chronic mbsync --config ~/src/mail/czabania.com.config primary' >> /etc/crontab && \
+  echo '*/5 * * * * admin chronic mbsync --config ~/src/mail/stayradiated.com.config primary' >> /etc/crontab && \
+  echo 'service cron start' >> /etc/rc.local
+RUN \
+  mkdir -p /exports/etc/ && \
+  mv /etc/crontab /etc/rc.local /exports/etc/
+
+# SHELL-BROWSER
+FROM shell-admin AS shell-browser
+COPY --from=make /exports/ /
+COPY --from=xdg-utils /exports/ /
+COPY --from=google-chrome /exports/ /
+COPY --from=firefox /exports/ /
+ENV \
+  PATH=${PATH}:/opt/google/chrome
+RUN \
+  cd dotfiles && \
+  make firefox
+RUN \
+  mkdir -p /home/admin/exports/home/admin/.config/ && \
+  mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
+USER root
+RUN \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
+  mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
+  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
+  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /opt/google /exports/opt/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/include/X11 /exports/usr/include/ && \
+  mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2 /usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.2.3.4 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/share/fonts /exports/usr/local/share/ && \
+  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/appdata /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/applications/firefox.desktop /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
+  mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/google-chrome-stable /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
+  mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
+  mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
+  mv /usr/share/icons/hicolor/48x48/actions /usr/share/icons/hicolor/48x48/animations /usr/share/icons/hicolor/48x48/categories /usr/share/icons/hicolor/48x48/devices /usr/share/icons/hicolor/48x48/emblems /usr/share/icons/hicolor/48x48/emotes /usr/share/icons/hicolor/48x48/filesystems /usr/share/icons/hicolor/48x48/intl /usr/share/icons/hicolor/48x48/mimetypes /usr/share/icons/hicolor/48x48/places /usr/share/icons/hicolor/48x48/status /usr/share/icons/hicolor/48x48/stock /exports/usr/share/icons/hicolor/48x48/ && \
+  mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
+  mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
+  mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
+  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/ && \
+  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/xml/fontconfig /exports/usr/share/xml/
 
 # XSECURELOCK
 FROM base AS xsecurelock
@@ -1630,6 +1257,32 @@ RUN \
   mv /usr/local/share/feh /exports/usr/local/share/ && \
   mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
 
+# ELECTRUM
+FROM base AS electrum
+COPY --from=apteryx /exports/ /
+COPY --from=python3-pip /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget https://raw.githubusercontent.com/spesmilo/electrum/master/pubkeys/ThomasV.asc && \
+  gpg --import ThomasV.asc && \
+  wget https://download.electrum.org/4.1.2/Electrum-4.1.2.tar.gz && \
+  wget https://download.electrum.org/4.1.2/Electrum-4.1.2.tar.gz.asc && \
+  gpg --verify Electrum-4.1.2.tar.gz.asc && \
+  apteryx python3-pyqt5 libsecp256k1-0 python3-cryptography && \
+  python3 -m pip install ./Electrum-4.1.2.tar.gz && \
+  rm ThomasV.asc && \
+  rm Electrum-4.1.2.tar.gz && \
+  rm Electrum-4.1.2.tar.gz.asc
+RUN \
+  mkdir -p /exports/usr/lib/python3/dist-packages/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ && \
+  mv /usr/lib/python3/dist-packages/_cffi_backend.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/cryptography-2.8.egg-info /usr/lib/python3/dist-packages/cryptography /usr/lib/python3/dist-packages/PyQt5-5.14.1.dist-info /usr/lib/python3/dist-packages/PyQt5 /usr/lib/python3/dist-packages/sip-4.19.21.dist-info /usr/lib/python3/dist-packages/sip.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/sip.pyi /usr/lib/python3/dist-packages/sipconfig_nd8.py /usr/lib/python3/dist-packages/sipconfig.py /exports/usr/lib/python3/dist-packages/ && \
+  mv /usr/lib/udev/libinput-device-group /usr/lib/udev/libinput-fuzz-extract /usr/lib/udev/libinput-fuzz-to-zero /exports/usr/lib/udev/ && \
+  mv /usr/lib/udev/rules.d/65-libwacom.rules /usr/lib/udev/rules.d/80-libinput-device-groups.rules /usr/lib/udev/rules.d/90-libinput-fuzz-override.rules /exports/usr/lib/udev/rules.d/ && \
+  mv /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3 /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libevdev.so.2 /usr/lib/x86_64-linux-gnu/libevdev.so.2.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0.2.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libinput.so.10 /usr/lib/x86_64-linux-gnu/libinput.so.10.13.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/libmtdev.so.1 /usr/lib/x86_64-linux-gnu/libmtdev.so.1.0.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0 /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0.9.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5DBus.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Designer.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Help.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Test.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.5.12.8 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5.12 /usr/lib/x86_64-linux-gnu/libQt5Xml.so.5.12.8 /usr/lib/x86_64-linux-gnu/libsecp256k1.so.0 /usr/lib/x86_64-linux-gnu/libsecp256k1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwacom.so.2 /usr/lib/x86_64-linux-gnu/libwacom.so.2.6.1 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4 /usr/lib/x86_64-linux-gnu/libxcb-icccm.so.4.0.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0 /usr/lib/x86_64-linux-gnu/libxcb-image.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1 /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0 /usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render-util.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1 /usr/lib/x86_64-linux-gnu/libxcb-util.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xinput.so.0.1.0 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1 /usr/lib/x86_64-linux-gnu/libxcb-xkb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/qt-default /usr/lib/x86_64-linux-gnu/qt5 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/electrum /usr/local/bin/helpdev /usr/local/bin/qdarkstyle /usr/local/bin/qr /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.8/dist-packages/__pycache__ /usr/local/lib/python3.8/dist-packages/aiohttp_socks-0.6.0.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp_socks /usr/local/lib/python3.8/dist-packages/aiohttp-3.7.4.post0.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp /usr/local/lib/python3.8/dist-packages/aiorpcX-0.18.7.dist-info /usr/local/lib/python3.8/dist-packages/aiorpcx /usr/local/lib/python3.8/dist-packages/async_timeout-3.0.1.dist-info /usr/local/lib/python3.8/dist-packages/async_timeout /usr/local/lib/python3.8/dist-packages/attr /usr/local/lib/python3.8/dist-packages/attrs-21.2.0.dist-info /usr/local/lib/python3.8/dist-packages/bitstring-3.1.7.dist-info /usr/local/lib/python3.8/dist-packages/bitstring.py /usr/local/lib/python3.8/dist-packages/dns /usr/local/lib/python3.8/dist-packages/dnspython-2.0.0.dist-info /usr/local/lib/python3.8/dist-packages/Electrum-4.1.2.dist-info /usr/local/lib/python3.8/dist-packages/electrum /usr/local/lib/python3.8/dist-packages/google /usr/local/lib/python3.8/dist-packages/helpdev-0.7.1.dist-info /usr/local/lib/python3.8/dist-packages/helpdev /usr/local/lib/python3.8/dist-packages/multidict-5.1.0.dist-info /usr/local/lib/python3.8/dist-packages/multidict /usr/local/lib/python3.8/dist-packages/protobuf-3.17.3-py3.8-nspkg.pth /usr/local/lib/python3.8/dist-packages/protobuf-3.17.3.dist-info /usr/local/lib/python3.8/dist-packages/python_socks-1.2.4.dist-info /usr/local/lib/python3.8/dist-packages/python_socks /usr/local/lib/python3.8/dist-packages/QDarkStyle-2.8.1.dist-info /usr/local/lib/python3.8/dist-packages/qdarkstyle /usr/local/lib/python3.8/dist-packages/qrcode-6.1.dist-info /usr/local/lib/python3.8/dist-packages/qrcode /usr/local/lib/python3.8/dist-packages/QtPy-1.9.0.dist-info /usr/local/lib/python3.8/dist-packages/qtpy /usr/local/lib/python3.8/dist-packages/typing_extensions-3.10.0.0.dist-info /usr/local/lib/python3.8/dist-packages/typing_extensions.py /usr/local/lib/python3.8/dist-packages/usr /usr/local/lib/python3.8/dist-packages/yarl-1.6.3.dist-info /usr/local/lib/python3.8/dist-packages/yarl /exports/usr/local/lib/python3.8/dist-packages/
+
 # CHARLES
 FROM base AS charles
 COPY --from=wget /exports/ /
@@ -1759,6 +1412,16 @@ RUN \
   mv /usr/lib/bfd-plugins /usr/lib/compat-ld /usr/lib/cpp /usr/lib/emacsen-common /usr/lib/gcc /usr/lib/gold-ld /usr/lib/pkgconfig /usr/lib/pkg-config.multiarch /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/crt1.o /usr/lib/x86_64-linux-gnu/crti.o /usr/lib/x86_64-linux-gnu/crtn.o /usr/lib/x86_64-linux-gnu/gcrt1.o /usr/lib/x86_64-linux-gnu/grcrt1.o /usr/lib/x86_64-linux-gnu/ldscripts /usr/lib/x86_64-linux-gnu/libanl.a /usr/lib/x86_64-linux-gnu/libanl.so /usr/lib/x86_64-linux-gnu/libarchive.so.13 /usr/lib/x86_64-linux-gnu/libarchive.so.13.4.0 /usr/lib/x86_64-linux-gnu/libasan.so.5 /usr/lib/x86_64-linux-gnu/libasan.so.5.0.0 /usr/lib/x86_64-linux-gnu/libatomic.so.1 /usr/lib/x86_64-linux-gnu/libatomic.so.1.2.0 /usr/lib/x86_64-linux-gnu/libbfd-2.34-system.so /usr/lib/x86_64-linux-gnu/libBrokenLocale.a /usr/lib/x86_64-linux-gnu/libBrokenLocale.so /usr/lib/x86_64-linux-gnu/libc.a /usr/lib/x86_64-linux-gnu/libcc1.so.0 /usr/lib/x86_64-linux-gnu/libcc1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib/x86_64-linux-gnu/libcrypt.a /usr/lib/x86_64-linux-gnu/libcrypt.so /usr/lib/x86_64-linux-gnu/libc.so /usr/lib/x86_64-linux-gnu/libctf-nobfd.so.0 /usr/lib/x86_64-linux-gnu/libctf-nobfd.so.0.0.0 /usr/lib/x86_64-linux-gnu/libctf.so.0 /usr/lib/x86_64-linux-gnu/libctf.so.0.0.0 /usr/lib/x86_64-linux-gnu/libdl.a /usr/lib/x86_64-linux-gnu/libdl.so /usr/lib/x86_64-linux-gnu/libexpat.a /usr/lib/x86_64-linux-gnu/libexpat.so /usr/lib/x86_64-linux-gnu/libexpatw.a /usr/lib/x86_64-linux-gnu/libexpatw.so /usr/lib/x86_64-linux-gnu/libfontconfig.a /usr/lib/x86_64-linux-gnu/libfontconfig.so /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.a /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libg.a /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libisl.so.22 /usr/lib/x86_64-linux-gnu/libisl.so.22.0.1 /usr/lib/x86_64-linux-gnu/libitm.so.1 /usr/lib/x86_64-linux-gnu/libitm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1.7.4 /usr/lib/x86_64-linux-gnu/liblsan.so.0 /usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0 /usr/lib/x86_64-linux-gnu/libm-2.31.a /usr/lib/x86_64-linux-gnu/libm.a /usr/lib/x86_64-linux-gnu/libmcheck.a /usr/lib/x86_64-linux-gnu/libmpc.so.3 /usr/lib/x86_64-linux-gnu/libmpc.so.3.1.0 /usr/lib/x86_64-linux-gnu/libmpfr.so.6 /usr/lib/x86_64-linux-gnu/libmpfr.so.6.0.2 /usr/lib/x86_64-linux-gnu/libm.so /usr/lib/x86_64-linux-gnu/libmvec.a /usr/lib/x86_64-linux-gnu/libmvec.so /usr/lib/x86_64-linux-gnu/libnsl.a /usr/lib/x86_64-linux-gnu/libnsl.so /usr/lib/x86_64-linux-gnu/libnss_compat.so /usr/lib/x86_64-linux-gnu/libnss_dns.so /usr/lib/x86_64-linux-gnu/libnss_files.so /usr/lib/x86_64-linux-gnu/libnss_hesiod.so /usr/lib/x86_64-linux-gnu/libnss_nisplus.so /usr/lib/x86_64-linux-gnu/libnss_nis.so /usr/lib/x86_64-linux-gnu/libopcodes-2.34-system.so /usr/lib/x86_64-linux-gnu/libpng16.a /usr/lib/x86_64-linux-gnu/libpng16.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libpng.a /usr/lib/x86_64-linux-gnu/libpng.so /usr/lib/x86_64-linux-gnu/libpthread.a /usr/lib/x86_64-linux-gnu/libpthread.so /usr/lib/x86_64-linux-gnu/libquadmath.so.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0 /usr/lib/x86_64-linux-gnu/libresolv.a /usr/lib/x86_64-linux-gnu/libresolv.so /usr/lib/x86_64-linux-gnu/librhash.so.0 /usr/lib/x86_64-linux-gnu/librpcsvc.a /usr/lib/x86_64-linux-gnu/librt.a /usr/lib/x86_64-linux-gnu/librt.so /usr/lib/x86_64-linux-gnu/libthread_db.so /usr/lib/x86_64-linux-gnu/libtsan_preinit.o /usr/lib/x86_64-linux-gnu/libtsan.so.0 /usr/lib/x86_64-linux-gnu/libtsan.so.0.0.0 /usr/lib/x86_64-linux-gnu/libubsan.so.1 /usr/lib/x86_64-linux-gnu/libubsan.so.1.0.0 /usr/lib/x86_64-linux-gnu/libutil.a /usr/lib/x86_64-linux-gnu/libutil.so /usr/lib/x86_64-linux-gnu/libuuid.a /usr/lib/x86_64-linux-gnu/libuuid.so /usr/lib/x86_64-linux-gnu/libuv.so.1 /usr/lib/x86_64-linux-gnu/libuv.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXau.a /usr/lib/x86_64-linux-gnu/libXau.so /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb.a /usr/lib/x86_64-linux-gnu/libxcb-render.a /usr/lib/x86_64-linux-gnu/libxcb-render.so /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.a /usr/lib/x86_64-linux-gnu/libxcb-shape.so /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.a /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXdmcp.a /usr/lib/x86_64-linux-gnu/libXdmcp.so /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libz.a /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/x86_64-linux-gnu/Mcrt1.o /usr/lib/x86_64-linux-gnu/pkgconfig /usr/lib/x86_64-linux-gnu/rcrt1.o /usr/lib/x86_64-linux-gnu/Scrt1.o /exports/usr/lib/x86_64-linux-gnu/
 
+# ZX
+FROM base AS zx
+COPY --from=node /exports/ /
+RUN \
+  npm install -g 'zx@1.14.1'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
+  mv /usr/local/bin/zx /exports/usr/local/bin/ && \
+  mv /usr/local/lib/node_modules/zx /exports/usr/local/lib/node_modules/
+
 # XSV
 FROM base AS xsv
 COPY --from=wget /exports/ /
@@ -1771,6 +1434,15 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/xsv /exports/usr/local/bin/
 
+# XINPUT
+FROM base AS xinput
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xinput='1.6.3-*'
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/xinput /exports/usr/bin/
+
 # WITHEXEDITORHOST
 FROM base AS withexeditorhost
 COPY --from=node /exports/ /
@@ -1779,6 +1451,47 @@ RUN \
 RUN \
   mkdir -p /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/lib/node_modules/withexeditorhost /exports/usr/local/lib/node_modules/
+
+# WEECHAT
+FROM base AS weechat
+COPY --from=apteryx /exports/ /
+COPY --from=python3-pip /exports/ /
+RUN \
+  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && add-apt-repository "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main" && \
+  apteryx weechat-curses weechat-perl weechat-plugins weechat-python && \
+  pip3 install websocket-client
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/locale/cs/LC_MESSAGES/ /exports/usr/share/locale/de/LC_MESSAGES/ /exports/usr/share/locale/es/LC_MESSAGES/ /exports/usr/share/locale/fr/LC_MESSAGES/ /exports/usr/share/locale/hu/LC_MESSAGES/ /exports/usr/share/locale/it/LC_MESSAGES/ /exports/usr/share/locale/ja/LC_MESSAGES/ /exports/usr/share/locale/pl/LC_MESSAGES/ /exports/usr/share/locale/pt_BR/LC_MESSAGES/ /exports/usr/share/locale/pt/LC_MESSAGES/ /exports/usr/share/locale/ru/LC_MESSAGES/ /exports/usr/share/locale/tr/LC_MESSAGES/ /exports/usr/share/man/cs/man1/ /exports/usr/share/man/de/man1/ /exports/usr/share/man/fr/man1/ /exports/usr/share/man/it/man1/ /exports/usr/share/man/ja/man1/ /exports/usr/share/man/man1/ /exports/usr/share/man/pl/man1/ /exports/usr/share/man/ru/man1/ /exports/usr/share/menu/ /exports/usr/share/ /exports/usr/share/pixmaps/ && \
+  mv /usr/bin/cpan5.30-x86_64-linux-gnu /usr/bin/perl5.30-x86_64-linux-gnu /usr/bin/weechat /usr/bin/weechat-curses /exports/usr/bin/ && \
+  mv /usr/lib/aspell /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libaspell.so.15 /usr/lib/x86_64-linux-gnu/libaspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.3 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4.6.0 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4.0.0 /usr/lib/x86_64-linux-gnu/libgdbm.so.6 /usr/lib/x86_64-linux-gnu/libgdbm.so.6.0.0 /usr/lib/x86_64-linux-gnu/libperl.so.5.30 /usr/lib/x86_64-linux-gnu/libperl.so.5.30.0 /usr/lib/x86_64-linux-gnu/libpspell.so.15 /usr/lib/x86_64-linux-gnu/libpspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/perl /usr/lib/x86_64-linux-gnu/weechat /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/__pycache__ /usr/local/bin/wsdump.py /exports/usr/local/bin/ && \
+  mv /usr/local/lib/python3.8/dist-packages/websocket_client-1.0.1.dist-info /usr/local/lib/python3.8/dist-packages/websocket /exports/usr/local/lib/python3.8/dist-packages/ && \
+  mv /usr/share/doc/libaspell15 /usr/share/doc/libcurl3-gnutls /usr/share/doc/libgdbm-compat4 /usr/share/doc/libgdbm6 /usr/share/doc/libperl5.30 /usr/share/doc/perl-modules-5.30 /usr/share/doc/weechat-core /usr/share/doc/weechat-curses /usr/share/doc/weechat-perl /usr/share/doc/weechat-plugins /usr/share/doc/weechat-python /exports/usr/share/doc/ && \
+  mv /usr/share/lintian/overrides/libcurl3-gnutls /usr/share/lintian/overrides/perl-modules-5.30 /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/locale/cs/LC_MESSAGES/weechat.mo /exports/usr/share/locale/cs/LC_MESSAGES/ && \
+  mv /usr/share/locale/de/LC_MESSAGES/weechat.mo /exports/usr/share/locale/de/LC_MESSAGES/ && \
+  mv /usr/share/locale/es/LC_MESSAGES/weechat.mo /exports/usr/share/locale/es/LC_MESSAGES/ && \
+  mv /usr/share/locale/fr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/fr/LC_MESSAGES/ && \
+  mv /usr/share/locale/hu/LC_MESSAGES/weechat.mo /exports/usr/share/locale/hu/LC_MESSAGES/ && \
+  mv /usr/share/locale/it/LC_MESSAGES/weechat.mo /exports/usr/share/locale/it/LC_MESSAGES/ && \
+  mv /usr/share/locale/ja/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ja/LC_MESSAGES/ && \
+  mv /usr/share/locale/pl/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pl/LC_MESSAGES/ && \
+  mv /usr/share/locale/pt_BR/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt_BR/LC_MESSAGES/ && \
+  mv /usr/share/locale/pt/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt/LC_MESSAGES/ && \
+  mv /usr/share/locale/ru/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ru/LC_MESSAGES/ && \
+  mv /usr/share/locale/tr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/tr/LC_MESSAGES/ && \
+  mv /usr/share/man/cs/man1/weechat-curses.1.gz /usr/share/man/cs/man1/weechat.1.gz /exports/usr/share/man/cs/man1/ && \
+  mv /usr/share/man/de/man1/weechat-curses.1.gz /usr/share/man/de/man1/weechat.1.gz /exports/usr/share/man/de/man1/ && \
+  mv /usr/share/man/fr/man1/weechat-curses.1.gz /usr/share/man/fr/man1/weechat.1.gz /exports/usr/share/man/fr/man1/ && \
+  mv /usr/share/man/it/man1/weechat-curses.1.gz /usr/share/man/it/man1/weechat.1.gz /exports/usr/share/man/it/man1/ && \
+  mv /usr/share/man/ja/man1/weechat-curses.1.gz /usr/share/man/ja/man1/weechat.1.gz /exports/usr/share/man/ja/man1/ && \
+  mv /usr/share/man/man1/cpan5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/perl5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/weechat-curses.1.gz /usr/share/man/man1/weechat.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/pl/man1/weechat-curses.1.gz /usr/share/man/pl/man1/weechat.1.gz /exports/usr/share/man/pl/man1/ && \
+  mv /usr/share/man/ru/man1/weechat-curses.1.gz /usr/share/man/ru/man1/weechat.1.gz /exports/usr/share/man/ru/man1/ && \
+  mv /usr/share/menu/weechat-curses /exports/usr/share/menu/ && \
+  mv /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/pixmaps/weechat.xpm /exports/usr/share/pixmaps/
 
 # WATSON
 FROM base AS watson
@@ -1796,6 +1509,19 @@ RUN \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/watson /exports/usr/local/bin/
 
+# W3M
+FROM base AS w3m
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx w3m='0.5.3-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/mime/packages/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /etc/w3m /exports/etc/ && \
+  mv /usr/bin/w3m /usr/bin/w3mman /usr/bin/www-browser /exports/usr/bin/ && \
+  mv /usr/lib/mime/packages/w3m /exports/usr/lib/mime/packages/ && \
+  mv /usr/lib/w3m /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libgc.so.* /usr/lib/x86_64-linux-gnu/libgccpp.so.* /usr/lib/x86_64-linux-gnu/libgpm.so.* /exports/usr/lib/x86_64-linux-gnu/
+
 # VDIRSYNCER
 FROM base AS vdirsyncer
 COPY --from=python3-pip /exports/ /
@@ -1811,6 +1537,16 @@ RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/vdirsyncer /exports/usr/local/bin/
+
+# URLVIEW
+FROM base AS urlview
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx urlview='0.9-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ && \
+  mv /etc/urlview /exports/etc/ && \
+  mv /usr/bin/urlview /exports/usr/bin/
 
 # TREE
 FROM base AS tree
@@ -1917,20 +1653,6 @@ RUN \
   mv /usr/local/bin/rg /exports/usr/local/bin/ && \
   mv /usr/local/share/man/man1/rg.1 /exports/usr/local/share/man/man1/
 
-# PROLOG
-FROM base AS prolog
-COPY --from=apteryx /exports/ /
-RUN \
-  apt-add-repository ppa:swi-prolog/stable && \
-  apteryx swi-prolog
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/share/ /exports/usr/local/share/ && \
-  mv /etc/alternatives/prolog /exports/etc/alternatives/ && \
-  mv /usr/bin/swipl /usr/bin/prolog /exports/usr/bin/ && \
-  mv /usr/lib/swi-prolog /exports/usr/lib/ && \
-  mv /usr/share/swi-prolog /exports/usr/share/ && \
-  mv /usr/local/share/swi-prolog /exports/usr/local/share/
-
 # PRETTYPING
 FROM base AS prettyping
 COPY --from=wget /exports/ /
@@ -1963,28 +1685,25 @@ RUN \
   mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/
 
-# NP
-FROM base AS np
-COPY --from=node /exports/ /
+# PEACLOCK
+FROM base AS peaclock
+COPY --from=clone /exports/ /
+COPY --from=build-essential /exports/ /
 RUN \
-  npm install -g 'np@7.4.0'
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
-  mv /usr/local/bin/np /exports/usr/local/bin/ && \
-  mv /usr/local/lib/node_modules/np /exports/usr/local/lib/node_modules/
-
-# NGROK
-FROM base AS ngrok
-COPY --from=wget /exports/ /
-COPY --from=unzip /exports/ /
-RUN \
-  wget -O /tmp/ngrok.zip 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip' && \
-  unzip /tmp/ngrok.zip && \
-  rm /tmp/ngrok.zip && \
-  mv ngrok /usr/local/bin/ngrok
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+  apt-get update -q && \
+  apt-get install -y --no-install-recommends --auto-remove cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
+  clone --https --shallow --tag '0.4.3' https://github.com/octobanana/peaclock && \
+  cd /root/src/github.com/octobanana/peaclock && \
+  ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 && \
+  ./RUNME.sh install --release && \
+  rm -rf /root/src && \
+  apt purge -y cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 && \
+  apt autoremove -y && \
+  apt-get -q clean
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ngrok /exports/usr/local/bin/
+  mv /usr/local/bin/peaclock /exports/usr/local/bin/
 
 # NCU
 FROM base AS ncu
@@ -2009,6 +1728,16 @@ RUN \
   mv /usr/share/doc/moreutils /exports/usr/share/doc/ && \
   mv /usr/share/man/man1/chronic.1.gz /usr/share/man/man1/combine.1.gz /usr/share/man/man1/errno.1.gz /usr/share/man/man1/ifdata.1.gz /usr/share/man/man1/ifne.1.gz /usr/share/man/man1/isutf8.1.gz /usr/share/man/man1/lckdo.1.gz /usr/share/man/man1/mispipe.1.gz /usr/share/man/man1/parallel.1.gz /usr/share/man/man1/pee.1.gz /usr/share/man/man1/sponge.1.gz /usr/share/man/man1/ts.1.gz /usr/share/man/man1/vidir.1.gz /usr/share/man/man1/vipe.1.gz /usr/share/man/man1/zrun.1.gz /exports/usr/share/man/man1/
 
+# MILLER
+FROM base AS miller
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /usr/local/bin/mlr https://github.com/johnkerl/miller/releases/download/v5.10.2/mlr.linux.x86_64 && \
+  chmod +x /usr/local/bin/mlr
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/mlr /exports/usr/local/bin/
+
 # MEDIAINFO
 FROM base AS mediainfo
 COPY --from=apteryx /exports/ /
@@ -2019,6 +1748,51 @@ RUN \
   mv /usr/bin/mediainfo /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libmediainfo.so.* /usr/lib/x86_64-linux-gnu/libmms.so.* /usr/lib/x86_64-linux-gnu/libtinyxml2.so.* /usr/lib/x86_64-linux-gnu/libzen.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/share/man/man1/mediainfo.1.gz /exports/usr/share/man/man1/
+
+# MBSYNC
+FROM base AS mbsync
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+COPY --from=build-essential /exports/ /
+RUN \
+  apteryx libssl-dev && \
+  wget -O /tmp/isync.tgz "https://sourceforge.net/projects/isync/files/isync/1.4.1/isync-1.4.1.tar.gz/download" && \
+  tar xzvf /tmp/isync.tgz -C /tmp && \
+  rm /tmp/isync.tgz && \
+  cd "/tmp/isync-1.4.1" && \
+  ls -alh && \
+  ./configure && \
+  make && \
+  mv src/mbsync /usr/local/bin/mbsync && \
+  rm -r "/tmp/isync-1.4.1"
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/mbsync /exports/usr/local/bin/
+
+# MAN
+FROM base AS man
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx man-db='2.9.1-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/tmpfiles.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/var/cache/ && \
+  mv /etc/groff /etc/manpath.config /exports/etc/ && \
+  mv /usr/bin/apropos /usr/bin/bsd-from /usr/bin/bsd-write /usr/bin/cal /usr/bin/calendar /usr/bin/catman /usr/bin/col /usr/bin/colcrt /usr/bin/colrm /usr/bin/column /usr/bin/eqn /usr/bin/from /usr/bin/geqn /usr/bin/gpic /usr/bin/groff /usr/bin/grog /usr/bin/grops /usr/bin/grotty /usr/bin/gtbl /usr/bin/hd /usr/bin/hexdump /usr/bin/lexgrog /usr/bin/look /usr/bin/lorder /usr/bin/man /usr/bin/mandb /usr/bin/manpath /usr/bin/ncal /usr/bin/neqn /usr/bin/nroff /usr/bin/pic /usr/bin/preconv /usr/bin/printerbanner /usr/bin/soelim /usr/bin/tbl /usr/bin/troff /usr/bin/ul /usr/bin/whatis /usr/bin/write /exports/usr/bin/ && \
+  mv /usr/lib/man-db /usr/lib/groff /exports/usr/lib/ && \
+  mv /usr/lib/tmpfiles.d/man-db.conf /exports/usr/lib/tmpfiles.d/ && \
+  mv /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libpipeline.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/groff /usr/share/man /usr/share/man-db /exports/usr/share/ && \
+  mv /var/cache/man /exports/var/cache/
+
+# LIBGLIB
+FROM base AS libglib
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx libglib2.0-bin='2.64.6-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/bin/gapplication /usr/bin/gdbus /usr/bin/gio /usr/bin/gio-querymodules /usr/bin/glib-compile-schemas /usr/bin/gresource /usr/bin/gsettings /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/libelf-*.so /usr/lib/x86_64-linux-gnu/libelf.so.1 /exports/usr/lib/x86_64-linux-gnu/
 
 # KHAL
 FROM base AS khal
@@ -2078,19 +1852,6 @@ RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/heroku /exports/usr/local/bin/ && \
   mv /usr/local/lib/node_modules/heroku /exports/usr/local/lib/node_modules/
-
-# GIFSKI
-FROM base AS gifski
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O gifski.deb "https://github.com/ImageOptim/gifski/releases/download/1.4.0/gifski_1.4.0_amd64.deb" && \
-  apteryx ./gifski.deb && \
-  rm -rf debian
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/gifski /exports/usr/bin/
 
 # GH
 FROM base AS gh
@@ -2159,19 +1920,6 @@ RUN \
   mv /usr/bin/docker /exports/usr/bin/ && \
   mv /usr/share/zsh/vendor-completions/_docker /exports/usr/share/zsh/vendor-completions/
 
-# DENO
-FROM base AS deno
-COPY --from=wget /exports/ /
-COPY --from=unzip /exports/ /
-RUN \
-  wget -O /tmp/deno.zip 'https://github.com/denoland/deno/releases/download/v1.5.3/deno-x86_64-unknown-linux-gnu.zip' && \
-  cd /usr/local/bin && \
-  unzip /tmp/deno.zip && \
-  rm /tmp/deno.zip
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/deno /exports/usr/local/bin/
-
 # CONTAINER-DIFF
 FROM base AS container-diff
 COPY --from=wget /exports/ /
@@ -2183,15 +1931,14 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/container-diff /exports/usr/local/bin/
 
-# CADDY
-FROM base AS caddy
-COPY --from=wget /exports/ /
+# BSDMAINUTILS
+FROM base AS bsdmainutils
+COPY --from=apteryx /exports/ /
 RUN \
-  wget -O /usr/local/bin/caddy 'https://caddyserver.com/api/download?os=linux&arch=amd64&idempotency=72866995282326' && \
-  chmod +x /usr/local/bin/caddy
+  apteryx bsdmainutils='11.1.2*'
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/caddy /exports/usr/local/bin/
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/column /exports/usr/bin/
 
 # BAT
 FROM base AS bat
@@ -2206,19 +1953,88 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/bat /exports/usr/local/bin/
 
-# ADB
-FROM base AS adb
+# AUTOTAG
+FROM base AS autotag
 COPY --from=wget /exports/ /
-COPY --from=unzip /exports/ /
 RUN \
-  wget -O tools.zip 'https://dl.google.com/android/repository/platform-tools_r29.0.5-linux.zip' && \
-  unzip tools.zip && \
-  rm tools.zip && \
-  mv platform-tools/adb /usr/local/bin/adb && \
-  rm -rf platform-tools
+  wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.9/autotag_linux_amd64.tar.gz" && \
+  tar xzvf /tmp/autotag.tgz autotag && \
+  mv autotag /usr/local/bin/autotag && \
+  rm /tmp/autotag.tgz
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/adb /exports/usr/local/bin/
+  mv /usr/local/bin/autotag /exports/usr/local/bin/
+
+# APULSE
+FROM base AS apulse
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx apulse='0.1.12-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ && \
+  mv /usr/bin/apulse /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/apulse /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/alsa /exports/usr/share/ && \
+  mv /usr/share/doc/apulse /usr/share/doc/libasound2-data /usr/share/doc/libasound2 /exports/usr/share/doc/ && \
+  mv /usr/share/man/man1/apulse.1.gz /exports/usr/share/man/man1/
+
+# ALSA-UTILS
+FROM base AS alsa-utils
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx alsa-utils='1.2.2-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/etc/init.d/ /exports/etc/rc0.d/ /exports/etc/rc1.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/usr/bin/ /exports/usr/lib/modprobe.d/ /exports/usr/lib/systemd/system/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/bash-completion/completions/ /exports/usr/share/doc/ /exports/usr/share/doc/libkmod2/ /exports/usr/share/man/fr/man5/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ && \
+  mv /etc/depmod.d /etc/ld.so.cache /etc/modprobe.d /etc/modules /exports/etc/ && \
+  mv /etc/init.d/alsa-utils /etc/init.d/kmod /exports/etc/init.d/ && \
+  mv /etc/rc0.d/K01alsa-utils /exports/etc/rc0.d/ && \
+  mv /etc/rc1.d/K01alsa-utils /exports/etc/rc1.d/ && \
+  mv /etc/rc6.d/K01alsa-utils /exports/etc/rc6.d/ && \
+  mv /etc/rcS.d/S01alsa-utils /etc/rcS.d/S01kmod /exports/etc/rcS.d/ && \
+  mv /usr/bin/aconnect /usr/bin/alsabat /usr/bin/alsaloop /usr/bin/alsamixer /usr/bin/alsatplg /usr/bin/alsaucm /usr/bin/amidi /usr/bin/amixer /usr/bin/aplay /usr/bin/aplaymidi /usr/bin/arecord /usr/bin/arecordmidi /usr/bin/aseqdump /usr/bin/aseqnet /usr/bin/axfer /usr/bin/iecset /usr/bin/kmod /usr/bin/lsmod /usr/bin/speaker-test /exports/usr/bin/ && \
+  mv /usr/lib/modprobe.d/aliases.conf /exports/usr/lib/modprobe.d/ && \
+  mv /usr/lib/systemd/system/alsa-restore.service /usr/lib/systemd/system/alsa-state.service /usr/lib/systemd/system/alsa-utils.service /usr/lib/systemd/system/sound.target.wants /exports/usr/lib/systemd/system/ && \
+  mv /usr/lib/udev/rules.d/90-alsa-restore.rules /exports/usr/lib/udev/rules.d/ && \
+  mv /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatopology.so.2 /usr/lib/x86_64-linux-gnu/libatopology.so.2.0.0 /usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f_omp.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f_threads.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3f.so.3 /usr/lib/x86_64-linux-gnu/libfftw3f.so.3.5.8 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0.1.8 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/sbin/alsa-info /usr/sbin/alsabat-test /usr/sbin/alsactl /usr/sbin/depmod /usr/sbin/insmod /usr/sbin/lsmod /usr/sbin/modinfo /usr/sbin/modprobe /usr/sbin/rmmod /exports/usr/sbin/ && \
+  mv /usr/share/alsa /usr/share/initramfs-tools /usr/share/sounds /exports/usr/share/ && \
+  mv /usr/share/bash-completion/completions/kmod /exports/usr/share/bash-completion/completions/ && \
+  mv /usr/share/doc/alsa-utils /usr/share/doc/kmod /usr/share/doc/libasound2-data /usr/share/doc/libasound2 /usr/share/doc/libatopology2 /usr/share/doc/libfftw3-single3 /usr/share/doc/libgomp1 /usr/share/doc/libsamplerate0 /exports/usr/share/doc/ && \
+  mv /usr/share/doc/libkmod2/README /usr/share/doc/libkmod2/TODO /exports/usr/share/doc/libkmod2/ && \
+  mv /usr/share/man/fr/man5/modules.5.gz /exports/usr/share/man/fr/man5/ && \
+  mv /usr/share/man/man1/aconnect.1.gz /usr/share/man/man1/alsabat.1.gz /usr/share/man/man1/alsactl.1.gz /usr/share/man/man1/alsaloop.1.gz /usr/share/man/man1/alsamixer.1.gz /usr/share/man/man1/alsatplg.1.gz /usr/share/man/man1/alsaucm.1.gz /usr/share/man/man1/amidi.1.gz /usr/share/man/man1/amixer.1.gz /usr/share/man/man1/aplay.1.gz /usr/share/man/man1/aplaymidi.1.gz /usr/share/man/man1/arecord.1.gz /usr/share/man/man1/arecordmidi.1.gz /usr/share/man/man1/aseqdump.1.gz /usr/share/man/man1/aseqnet.1.gz /usr/share/man/man1/axfer-list.1.gz /usr/share/man/man1/axfer-transfer.1.gz /usr/share/man/man1/axfer.1.gz /usr/share/man/man1/iecset.1.gz /usr/share/man/man1/speaker-test.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man5/depmod.d.5.gz /usr/share/man/man5/modprobe.d.5.gz /usr/share/man/man5/modules.5.gz /usr/share/man/man5/modules.dep.5.gz /usr/share/man/man5/modules.dep.bin.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/alsactl_init.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/alsa-info.8.gz /usr/share/man/man8/depmod.8.gz /usr/share/man/man8/insmod.8.gz /usr/share/man/man8/kmod.8.gz /usr/share/man/man8/lsmod.8.gz /usr/share/man/man8/modinfo.8.gz /usr/share/man/man8/modprobe.8.gz /usr/share/man/man8/rmmod.8.gz /exports/usr/share/man/man8/
+
+# AERC
+FROM base AS aerc
+COPY --from=build-essential /exports/ /
+COPY --from=clone /exports/ /
+COPY --from=go /exports/ /
+COPY --from=scdoc /exports/ /
+COPY --from=socksify /exports/ /
+ENV \
+  PATH=/usr/local/go/bin:${PATH} \
+  GOPATH=/root \
+  GO111MODULE=auto
+RUN \
+  clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc && \
+  cd ~/src/git.sr.ht/~sircmpwn/aerc && \
+  make && \
+  make install && \
+  rm -rf ~/src
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/man/man8/ && \
+  mv /usr/local/bin/aerc /usr/local/bin/socksify /exports/usr/local/bin/ && \
+  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
+  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
+  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
+  mv /usr/local/share/aerc /exports/usr/local/share/ && \
+  mv /usr/local/share/man/man1/aerc-* /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
+  mv /usr/local/share/man/man5/aerc-* /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
+  mv /usr/local/share/man/man7/aerc-* /exports/usr/local/share/man/man7/ && \
+  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
 
 # ACPI
 FROM base AS acpi
@@ -2278,37 +2094,39 @@ COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
 COPY --from=python3-pip /exports/ /
 COPY --from=acpi /exports/ /
-COPY --from=adb /exports/ /
+COPY --from=aerc /exports/ /
+COPY --from=alsa-utils /exports/ /
+COPY --from=apulse /exports/ /
+COPY --from=autotag /exports/ /
 COPY --from=bat /exports/ /
+COPY --from=bsdmainutils /exports/ /
 COPY --from=build-essential /exports/ /
-COPY --from=caddy /exports/ /
 COPY --from=clone /exports/ /
 COPY --from=container-diff /exports/ /
-COPY --from=deno /exports/ /
 COPY --from=docker /exports/ /
 COPY --from=docker-compose /exports/ /
 COPY --from=fd /exports/ /
-COPY --from=ffmpeg /exports/ /
 COPY --from=file /exports/ /
 COPY --from=fzf /exports/ /
 COPY --from=gh /exports/ /
-COPY --from=gifski /exports/ /
 COPY --from=go /exports/ /
 COPY --from=heroku /exports/ /
 COPY --from=htop /exports/ /
 COPY --from=httpie /exports/ /
 COPY --from=jq /exports/ /
 COPY --from=khal /exports/ /
+COPY --from=libglib /exports/ /
 COPY --from=make /exports/ /
+COPY --from=man /exports/ /
+COPY --from=mbsync /exports/ /
 COPY --from=mediainfo /exports/ /
+COPY --from=miller /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
-COPY --from=ngrok /exports/ /
 COPY --from=node /exports/ /
-COPY --from=np /exports/ /
+COPY --from=peaclock /exports/ /
 COPY --from=pgcli /exports/ /
 COPY --from=prettyping /exports/ /
-COPY --from=prolog /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=rsync /exports/ /
 COPY --from=safe-rm /exports/ /
@@ -2318,14 +2136,20 @@ COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=unzip /exports/ /
+COPY --from=urlview /exports/ /
 COPY --from=vdirsyncer /exports/ /
+COPY --from=w3m /exports/ /
 COPY --from=watson /exports/ /
+COPY --from=weechat /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=withexeditorhost /exports/ /
+COPY --from=xinput /exports/ /
 COPY --from=xsv /exports/ /
+COPY --from=zx /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
 COPY --from=charles /exports/ /
+COPY --from=electrum /exports/ /
 COPY --from=feh /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=fonts /exports/ /
@@ -2338,6 +2162,9 @@ COPY --from=signal /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
 COPY --from=xsecurelock /exports/ /
+COPY --from=shell-browser --chown=admin /home/admin/exports/ /
+COPY --from=shell-browser /exports/ /
+COPY --from=shell-cron /exports/ /
 COPY --from=shell-git --chown=admin /home/admin/exports/ /
 COPY --from=shell-git /exports/ /
 COPY --from=shell-npm --chown=admin /home/admin/exports/ /
@@ -2356,43 +2183,19 @@ COPY --from=shell-wm /exports/ /
 COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
-COPY --from=shell-browser --chown=admin /home/admin/exports/ /
-COPY --from=shell-browser /exports/ /
-COPY --from=wacom /exports/ /
-COPY --from=apulse /exports/ /
-COPY --from=alsa-utils /exports/ /
-COPY --from=xinput /exports/ /
-COPY --from=weechat /exports/ /
-COPY --from=urlview /exports/ /
-COPY --from=bsdmainutils /exports/ /
-COPY --from=peaclock /exports/ /
-COPY --from=xournalpp /exports/ /
-COPY --from=clang-format /exports/ /
-COPY --from=man /exports/ /
-COPY --from=aerc /exports/ /
-COPY --from=w3m /exports/ /
-COPY --from=hyperfine /exports/ /
-COPY --from=chs /exports/ /
-COPY --from=youtube-dl /exports/ /
-COPY --from=libglib /exports/ /
-COPY --from=bandwhich /exports/ /
-COPY --from=mycli /exports/ /
-COPY --from=xdo /exports/ /
-COPY --from=zx /exports/ /
-COPY --from=mbsync /exports/ /
-COPY --from=autotag /exports/ /
-COPY --from=miller /exports/ /
-COPY --from=electrum /exports/ /
+COPY --from=gnuplot /exports/ /
+COPY --from=pnpm /exports/ /
+COPY --from=greenclip /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
   GO111MODULE=auto
 ENV \
+  PATH=${PATH}:/opt/google/chrome
+ENV \
   PATH=${PATH}:/home/admin/.cache/npm/bin
 ENV \
   PATH=/home/admin/.yarn/bin:${PATH}
-ENV \
-  PATH=${PATH}:/opt/google/chrome
 RUN \
   chmod 0600 /home/admin/.ssh/*
 CMD /home/admin/.xinitrc
