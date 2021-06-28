@@ -1,0 +1,20 @@
+name = "trousseau"
+from = "base"
+
+version = "0.4.1"
+
+devDependencies = [
+  "wget",
+  "apteryx",
+]
+
+build = """
+wget -O /tmp/trousseau.deb \
+  https://github.com/oleiade/trousseau/releases/download/v{{VERSION}}/trousseau_{{VERSION}}_linux_amd64.deb
+
+apteryx /tmp/trousseau.deb
+"""
+
+exports = [
+  "/usr/local/bin/trousseau",
+]
