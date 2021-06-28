@@ -14,5 +14,6 @@ npm install -g 'pnpm@{{VERSION}}'
 
 exports = [
   '/usr/local/bin/pnpm',
+  '/usr/local/bin/pnpx',
   '/usr/local/lib/node_modules/pnpm/',
 ]
