@@ -9,7 +9,7 @@ devDependencies = [
   'unzip',
 ]
 
-build  ="""
+build = """
 wget \
   -O /tmp/ngrok.zip \
   'https://bin.equinox.io/c/{{VERSION}}/ngrok-stable-linux-amd64.zip'
