@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.72.0' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --tag 'v1.75.8' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -271,7 +271,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN \
   n lts && \
-  n 16.3.0 && \
+  n 16.4.0 && \
   npm install -g npm
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
@@ -300,6 +300,16 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
   mv /usr/bin/xz /exports/usr/bin/ && \
   mv /usr/share/man/man1/xz.1.gz /exports/usr/share/man/man1/
+
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx unzip='6.0-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
+  mv /usr/bin/unzip /exports/usr/bin/ && \
+  mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
 
 # Z.LUA
 FROM base AS z.lua
@@ -628,16 +638,6 @@ RUN \
   mkdir -p /exports/root/ && \
   mv /root/.cargo /root/.rustup /exports/root/
 
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx unzip='6.0-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
-  mv /usr/bin/unzip /exports/usr/bin/ && \
-  mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
-
 # PING
 FROM base AS ping
 COPY --from=apteryx /exports/ /
@@ -687,6 +687,101 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/scdoc /exports/usr/local/bin/
 
+# XOURNALPP
+FROM base AS xournalpp
+COPY --from=apteryx /exports/ /
+RUN \
+  add-apt-repository ppa:apandada1/xournalpp-stable && \
+  apteryx xournalpp='1.0.20-*'
+RUN \
+  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/glib-2.0/ /exports/usr/share/ /exports/usr/share/pkgconfig/ && \
+  mv /etc/gtk-3.0 /exports/etc/ && \
+  mv /usr/bin/xournalpp /exports/usr/bin/ && \
+  mv /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.* /usr/lib/x86_64-linux-gnu/liblua5.3.so.* /usr/lib/x86_64-linux-gnu/libpoppler-glib.so.* /usr/lib/x86_64-linux-gnu/libportaudiocpp.so.* /usr/lib/x86_64-linux-gnu/libzip.so.* /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/glib-2.0/schemas /exports/usr/share/glib-2.0/ && \
+  mv /usr/share/icons /usr/share/themes /usr/share/xournalpp /exports/usr/share/ && \
+  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /exports/usr/share/pkgconfig/
+
+# WACOM
+FROM base AS wacom
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx xserver-xorg-input-wacom='1:0.39.0-*'
+RUN \
+  mkdir -p /exports/etc/default/ /exports/etc/init.d/ /exports/etc/ /exports/etc/rc0.d/ /exports/etc/rc6.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/modprobe.d/ /exports/usr/lib/systemd/network/ /exports/usr/lib/systemd/system/sockets.target.wants/ /exports/usr/lib/systemd/system/sysinit.target.wants/ /exports/usr/lib/systemd/system/ /exports/usr/lib/systemd/ /exports/usr/lib/tmpfiles.d/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bash-completion/completions/ /exports/usr/share/bug/ /exports/usr/share/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man3/ /exports/usr/share/man/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/zsh/vendor-completions/ && \
+  mv /etc/default/keyboard /exports/etc/default/ && \
+  mv /etc/init.d/udev /etc/init.d/x11-common /exports/etc/init.d/ && \
+  mv /etc/ld.so.cache /etc/sensors.d /etc/sensors3.conf /etc/udev /etc/vulkan /exports/etc/ && \
+  mv /etc/rc0.d/K01udev /exports/etc/rc0.d/ && \
+  mv /etc/rc6.d/K01udev /exports/etc/rc6.d/ && \
+  mv /etc/rcS.d/S01udev /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /usr/bin/cvt /usr/bin/gtf /usr/bin/isdv4-serial-debugger /usr/bin/isdv4-serial-inputattach /usr/bin/setxkbmap /usr/bin/systemd-hwdb /usr/bin/udevadm /usr/bin/X /usr/bin/X11 /usr/bin/xkbbell /usr/bin/xkbcomp /usr/bin/xkbevd /usr/bin/xkbprint /usr/bin/xkbvleds /usr/bin/xkbwatch /usr/bin/Xorg /usr/bin/xsetwacom /exports/usr/bin/ && \
+  mv /usr/include/X11 /usr/include/xorg /exports/usr/include/ && \
+  mv /usr/lib/modprobe.d/fbdev-blacklist.conf /exports/usr/lib/modprobe.d/ && \
+  mv /usr/lib/systemd/network/73-usb-net-by-mac.link /usr/lib/systemd/network/99-default.link /exports/usr/lib/systemd/network/ && \
+  mv /usr/lib/systemd/system/sockets.target.wants/systemd-udevd-control.socket /usr/lib/systemd/system/sockets.target.wants/systemd-udevd-kernel.socket /exports/usr/lib/systemd/system/sockets.target.wants/ && \
+  mv /usr/lib/systemd/system/sysinit.target.wants/systemd-hwdb-update.service /usr/lib/systemd/system/sysinit.target.wants/systemd-udev-trigger.service /usr/lib/systemd/system/sysinit.target.wants/systemd-udevd.service /exports/usr/lib/systemd/system/sysinit.target.wants/ && \
+  mv /usr/lib/systemd/system/systemd-hwdb-update.service /usr/lib/systemd/system/systemd-udev-settle.service /usr/lib/systemd/system/systemd-udev-trigger.service /usr/lib/systemd/system/systemd-udevd-control.socket /usr/lib/systemd/system/systemd-udevd-kernel.socket /usr/lib/systemd/system/systemd-udevd.service /usr/lib/systemd/system/udev.service /usr/lib/systemd/system/wacom-inputattach@.service /exports/usr/lib/systemd/system/ && \
+  mv /usr/lib/systemd/systemd-udevd /exports/usr/lib/systemd/ && \
+  mv /usr/lib/tmpfiles.d/static-nodes-permissions.conf /exports/usr/lib/tmpfiles.d/ && \
+  mv /usr/lib/udev/ata_id /usr/lib/udev/cdrom_id /usr/lib/udev/fido_id /usr/lib/udev/hwdb.bin /usr/lib/udev/hwdb.d /usr/lib/udev/mtd_probe /usr/lib/udev/scsi_id /usr/lib/udev/v4l_id /exports/usr/lib/udev/ && \
+  mv /usr/lib/udev/rules.d/40-vm-hotadd.rules /usr/lib/udev/rules.d/50-firmware.rules /usr/lib/udev/rules.d/50-udev-default.rules /usr/lib/udev/rules.d/60-autosuspend-chromiumos.rules /usr/lib/udev/rules.d/60-block.rules /usr/lib/udev/rules.d/60-cdrom_id.rules /usr/lib/udev/rules.d/60-drm.rules /usr/lib/udev/rules.d/60-evdev.rules /usr/lib/udev/rules.d/60-fido-id.rules /usr/lib/udev/rules.d/60-input-id.rules /usr/lib/udev/rules.d/60-persistent-alsa.rules /usr/lib/udev/rules.d/60-persistent-input.rules /usr/lib/udev/rules.d/60-persistent-storage-tape.rules /usr/lib/udev/rules.d/60-persistent-storage.rules /usr/lib/udev/rules.d/60-persistent-v4l.rules /usr/lib/udev/rules.d/60-sensor.rules /usr/lib/udev/rules.d/60-serial.rules /usr/lib/udev/rules.d/61-autosuspend-manual.rules /usr/lib/udev/rules.d/61-persistent-storage-android.rules /usr/lib/udev/rules.d/64-btrfs.rules /usr/lib/udev/rules.d/64-xorg-xkb.rules /usr/lib/udev/rules.d/69-wacom.rules /usr/lib/udev/rules.d/70-joystick.rules /usr/lib/udev/rules.d/70-mouse.rules /usr/lib/udev/rules.d/70-power-switch.rules /usr/lib/udev/rules.d/70-touchpad.rules /usr/lib/udev/rules.d/71-power-switch-proliant.rules /usr/lib/udev/rules.d/73-special-net-names.rules /usr/lib/udev/rules.d/75-net-description.rules /usr/lib/udev/rules.d/75-probe_mtd.rules /usr/lib/udev/rules.d/78-graphics-card.rules /usr/lib/udev/rules.d/78-sound-card.rules /usr/lib/udev/rules.d/80-debian-compat.rules /usr/lib/udev/rules.d/80-drivers.rules /usr/lib/udev/rules.d/80-net-setup-link.rules /exports/usr/lib/udev/rules.d/ && \
+  mv /usr/lib/X11 /usr/lib/xorg /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1 /usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0 /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libEGL.so.1 /usr/lib/x86_64-linux-gnu/libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontenc.so.1 /usr/lib/x86_64-linux-gnu/libfontenc.so.1.0.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libLLVM-11.so /usr/lib/x86_64-linux-gnu/libLLVM-11.so.1 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libunwind-coredump.so.0 /usr/lib/x86_64-linux-gnu/libunwind-coredump.so.0.0.0 /usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0 /usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0.0.0 /usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8 /usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8.0.1 /usr/lib/x86_64-linux-gnu/libunwind.so.8 /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.2.131 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXaw.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXfont2.so.2 /usr/lib/x86_64-linux-gnu/libXfont2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbfile.so.1 /usr/lib/x86_64-linux-gnu/libxkbfile.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXmu.so.6 /usr/lib/x86_64-linux-gnu/libXmu.so.6.2.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/perl5 /usr/lib/x86_64-linux-gnu/pkgconfig /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
+  mv /usr/share/apport/package-hooks/source_console-setup.py /usr/share/apport/package-hooks/udev.py /exports/usr/share/apport/package-hooks/ && \
+  mv /usr/share/bash-completion/completions/udevadm /exports/usr/share/bash-completion/completions/ && \
+  mv /usr/share/bug/keyboard-configuration /usr/share/bug/libegl-mesa0 /usr/share/bug/libegl1 /usr/share/bug/libgbm1 /usr/share/bug/libgl1-mesa-dri /usr/share/bug/libgl1 /usr/share/bug/libglapi-mesa /usr/share/bug/libglvnd0 /usr/share/bug/libglx-mesa0 /usr/share/bug/libglx0 /usr/share/bug/udev /usr/share/bug/xserver-xorg-core /exports/usr/share/bug/ && \
+  mv /usr/share/console-setup /usr/share/drirc.d /usr/share/glvnd /usr/share/initramfs-tools /usr/share/libdrm /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/doc-base/libpng16 /exports/usr/share/doc-base/ && \
+  mv /usr/share/doc/keyboard-configuration /usr/share/doc/libdrm-amdgpu1 /usr/share/doc/libdrm-common /usr/share/doc/libdrm-intel1 /usr/share/doc/libdrm-nouveau2 /usr/share/doc/libdrm-radeon1 /usr/share/doc/libdrm2 /usr/share/doc/libegl-mesa0 /usr/share/doc/libegl1 /usr/share/doc/libepoxy0 /usr/share/doc/libfontenc1 /usr/share/doc/libfreetype6 /usr/share/doc/libgbm1 /usr/share/doc/libgl1-mesa-dri /usr/share/doc/libgl1 /usr/share/doc/libglapi-mesa /usr/share/doc/libglvnd0 /usr/share/doc/libglx-mesa0 /usr/share/doc/libglx0 /usr/share/doc/libice6 /usr/share/doc/libllvm11 /usr/share/doc/liblocale-gettext-perl /usr/share/doc/libpciaccess0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/libsensors-config /usr/share/doc/libsensors5 /usr/share/doc/libsm6 /usr/share/doc/libunwind8 /usr/share/doc/libvulkan1 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-server0 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxaw7 /usr/share/doc/libxcb-dri2-0 /usr/share/doc/libxcb-dri3-0 /usr/share/doc/libxcb-glx0 /usr/share/doc/libxcb-present0 /usr/share/doc/libxcb-sync1 /usr/share/doc/libxcb-xfixes0 /usr/share/doc/libxcb1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxfont2 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbfile1 /usr/share/doc/libxmu6 /usr/share/doc/libxpm4 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxshmfence1 /usr/share/doc/libxt6 /usr/share/doc/libxxf86vm1 /usr/share/doc/udev /usr/share/doc/x11-common /usr/share/doc/x11-xkb-utils /usr/share/doc/xkb-data /usr/share/doc/xserver-common /usr/share/doc/xserver-xorg-core /usr/share/doc/xserver-xorg-input-wacom /exports/usr/share/doc/ && \
+  mv /usr/share/lintian/overrides/keyboard-configuration /usr/share/lintian/overrides/libdrm-nouveau2 /usr/share/lintian/overrides/libgbm1 /usr/share/lintian/overrides/libglapi-mesa /usr/share/lintian/overrides/libglvnd0 /usr/share/lintian/overrides/libllvm11 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/udev /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
+  mv /usr/share/man/man1/cvt.1.gz /usr/share/man/man1/gtf.1.gz /usr/share/man/man1/setxkbmap.1.gz /usr/share/man/man1/xkbbell.1.gz /usr/share/man/man1/xkbcomp.1.gz /usr/share/man/man1/xkbevd.1.gz /usr/share/man/man1/xkbprint.1.gz /usr/share/man/man1/xkbvleds.1.gz /usr/share/man/man1/xkbwatch.1.gz /usr/share/man/man1/Xorg.1.gz /usr/share/man/man1/Xserver.1.gz /usr/share/man/man1/xsetwacom.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man3/Locale::gettext.3pm.gz /exports/usr/share/man/man3/ && \
+  mv /usr/share/man/man4 /exports/usr/share/man/ && \
+  mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/keyboard.5.gz /usr/share/man/man5/systemd.link.5.gz /usr/share/man/man5/udev.conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/xorg.conf.5.gz /usr/share/man/man5/xorg.conf.d.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
+  mv /usr/share/man/man7/hwdb.7.gz /usr/share/man/man7/udev.7.gz /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
+  mv /usr/share/man/man8/systemd-hwdb.8.gz /usr/share/man/man8/systemd-udevd-control.socket.8.gz /usr/share/man/man8/systemd-udevd-kernel.socket.8.gz /usr/share/man/man8/systemd-udevd.8.gz /usr/share/man/man8/systemd-udevd.service.8.gz /usr/share/man/man8/udevadm.8.gz /exports/usr/share/man/man8/ && \
+  mv /usr/share/pkgconfig/udev.pc /usr/share/pkgconfig/xkbcomp.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
+  mv /usr/share/zsh/vendor-completions/_udevadm /exports/usr/share/zsh/vendor-completions/
+
+# NGROK
+FROM base AS ngrok
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+RUN \
+  wget -O /tmp/ngrok.zip 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip' && \
+  unzip /tmp/ngrok.zip && \
+  rm /tmp/ngrok.zip && \
+  mv ngrok /usr/local/bin/ngrok
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/ngrok /exports/usr/local/bin/
+
+# SC
+FROM base AS sc
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx sc='7.16-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ && \
+  mv /usr/bin/sc /usr/bin/psc /usr/bin/scqref /exports/usr/bin/ && \
+  mv /usr/share/doc/sc /exports/usr/share/doc/ && \
+  mv /usr/share/man/man1/psc.1.gz /usr/share/man/man1/sc.1.gz /exports/usr/share/man/man1/
+
+# TROUSSEAU
+FROM base AS trousseau
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  wget -O /tmp/trousseau.deb https://github.com/oleiade/trousseau/releases/download/v0.4.1/trousseau_0.4.1_linux_amd64.deb && \
+  apteryx /tmp/trousseau.deb
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/trousseau /exports/usr/local/bin/
+
 # GREENCLIP
 FROM base AS greenclip
 COPY --from=wget /exports/ /
@@ -704,7 +799,7 @@ RUN \
   npm install -g 'pnpm@6.7.6'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
-  mv /usr/local/bin/pnpm /exports/usr/local/bin/ && \
+  mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ && \
   mv /usr/local/lib/node_modules/pnpm /exports/usr/local/lib/node_modules/
 
 # GNUPLOT
@@ -2186,6 +2281,11 @@ COPY --from=shell-zsh /exports/ /
 COPY --from=gnuplot /exports/ /
 COPY --from=pnpm /exports/ /
 COPY --from=greenclip /exports/ /
+COPY --from=trousseau /exports/ /
+COPY --from=sc /exports/ /
+COPY --from=ngrok /exports/ /
+COPY --from=wacom /exports/ /
+COPY --from=xournalpp /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

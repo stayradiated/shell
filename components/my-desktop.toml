@@ -94,6 +94,11 @@ dependencies = [
   'gnuplot',
   'pnpm',
   'greenclip',
+  'trousseau',
+  'sc',
+  'ngrok',
+  'wacom',
+  'xournalpp',
 
   # unused
   # ======
@@ -110,13 +115,10 @@ dependencies = [
   # 'gifski',
   # 'hyperfine',
   # 'mycli',
-  # 'ngrok',
   # 'np',
   # 'prolog',
   # 'rexpaint',
-  # 'wacom',
   # 'wine',
-  # 'xournalpp',
   # 'youtube-dl',
 
   # broken
