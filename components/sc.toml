@@ -1,0 +1,21 @@
+name = 'sc'
+from = 'base'
+
+version = '7.16-*'
+
+devDependencies = [
+  'apteryx'
+]
+
+build = """
+apteryx sc='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/sc',
+  '/usr/bin/psc',
+  '/usr/bin/scqref',
+  '/usr/share/doc/sc/',
+  '/usr/share/man/man1/psc.1.gz',
+  '/usr/share/man/man1/sc.1.gz',
+]
