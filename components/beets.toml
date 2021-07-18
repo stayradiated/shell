@@ -1,15 +1,19 @@
 name = 'beets'
 from = 'base'
 
+# https://github.com/beetbox/beets/releases
+version = '1.4.9'
+
 devDependencies = [
-  'python3-pip'
+  'python3-pip',
+  'pipx',
 ]
 
 build = """
-pip3 install beets
+pipx install beets=='{{VERSION}}'
 """
 
 exports = [
   '/usr/local/bin/beet',
-  '/usr/local/lib/python3.6/',
+  '/usr/local/pipx/',
 ]

@@ -30,7 +30,7 @@ exports = [
   "/usr/local/lib/python3.8/dist-packages/argcomplete/",
   "/usr/local/lib/python3.8/dist-packages/click-8.0.1.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/click/",
-  "/usr/local/lib/python3.8/dist-packages/packaging-20.9.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/packaging-*.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/packaging/",
   "/usr/local/lib/python3.8/dist-packages/pipx-0.16.3.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/pipx/",
