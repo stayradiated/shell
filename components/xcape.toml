@@ -1,0 +1,31 @@
+name = 'xcape'
+from = 'base'
+
+# https://github.com/alols/xcape
+version = 'a34d6bae27bbd55506852f5ed3c27045a3c0bd9e'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'clone',
+]
+
+build = """
+apteryx \
+  pkg-config libx11-dev libxtst-dev libxi-dev
+
+clone --https --shallow --ref={{VERSION}} https://github.com/alols/xcape
+cd /root/src/github.com/alols/xcape
+make
+make install
+
+rm -rf /root/src
+apt purge -y \
+  pkg-config libx11-dev libxtst-dev libxi-dev
+apt autoremove -y
+apt-get -q clean
+"""
+
+exports = [
+  "/usr/bin/xcape",
+]

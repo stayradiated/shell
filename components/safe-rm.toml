@@ -9,7 +9,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --tag '{{VERSION}}' https://github.com/kaelzhang/shell-safe-rm
+clone --https --shallow --ref '{{VERSION}}' https://github.com/kaelzhang/shell-safe-rm
 cd /root/src/github.com/kaelzhang/shell-safe-rm
 cp ./bin/rm.sh /usr/local/bin/safe-rm
 rm -rf /root/src/

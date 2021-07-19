@@ -15,7 +15,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --tag "${VERSION}" https://git.sr.ht/~sircmpwn/aerc
+clone --https --shallow --ref "${VERSION}" https://git.sr.ht/~sircmpwn/aerc
 cd ~/src/git.sr.ht/~sircmpwn/aerc
 make
 make install

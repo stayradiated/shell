@@ -1,0 +1,37 @@
+name = 'rofi-calc'
+from = 'base'
+
+version = '2.0.0'
+
+devDependencies = [ 'build-essential', 'clone', 'apteryx' ]
+
+build = """
+clone --https --shallow --ref {{VERSION}} https://github.com/svenstaro/rofi-calc
+apteryx rofi-dev qalc libtool autoconf automake
+
+cd /root/src/github.com/svenstaro/rofi-calc
+autoreconf -i
+
+mkdir build
+cd build/
+../configure
+
+make
+make install
+
+apt-get remove --purge -y rofi-dev libtool autoconf automake
+rm -r /root/src
+"""
+
+exports = [
+  "/usr/bin/qalc",
+  "/usr/lib/x86_64-linux-gnu/libqalculate.so.20",
+  "/usr/lib/x86_64-linux-gnu/libqalculate.so.20.0.2",
+  "/usr/share/doc/libqalculate20-data/",
+  "/usr/share/doc/libqalculate20/",
+  "/usr/share/doc/qalc/",
+  "/usr/share/man/man1/qalc.1.gz",
+  "/usr/share/qalculate/",
+  "/usr/share/rofi/",
+]
+

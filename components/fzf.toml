@@ -9,7 +9,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --tag '{{VERSION}}' https://github.com/junegunn/fzf
+clone --https --shallow --ref '{{VERSION}}' https://github.com/junegunn/fzf
 mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf
 rm -rf /root/src
 /usr/local/share/fzf/install --bin

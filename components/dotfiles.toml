@@ -2,7 +2,7 @@ name = 'dotfiles'
 from = 'base'
 
 # https://github.com/stayradiated/dotfiles/releases
-version = 'v1.75.8'
+version = 'v1.81.3'
 
 devDependencies = [
   'clone',
@@ -14,7 +14,7 @@ mount = [
 ]
 
 build = """
-clone --https --shallow --tag '{{VERSION}}' https://github.com/stayradiated/dotfiles
+clone --https --shallow --ref '{{VERSION}}' https://github.com/stayradiated/dotfiles
 
 cd /root/src/github.com/stayradiated/dotfiles
 git-crypt unlock /tmp/dotfiles-key

@@ -10,7 +10,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --tag '{{VERSION}}' https://github.com/special/1pw
+clone --https --shallow --ref '{{VERSION}}' https://github.com/special/1pw
 cd /root/src/github.com/special/1pw
 go get -v
 go build

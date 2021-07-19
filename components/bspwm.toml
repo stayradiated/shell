@@ -21,7 +21,7 @@ apteryx \
   libxcb-util-dev \
   libxcb-xinerama0-dev
 
-clone --https --shallow --tag '{{VERSION}}' https://github.com/baskerville/bspwm
+clone --https --shallow --ref '{{VERSION}}' https://github.com/baskerville/bspwm
 
 cd /root/src/github.com/baskerville/bspwm
 make all

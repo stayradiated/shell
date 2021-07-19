@@ -36,7 +36,7 @@ apteryx \
   x11proto-core-dev \
   xscreensaver
 
-clone --https --shallow --tag '{{VERSION}}' https://github.com/google/xsecurelock
+clone --https --shallow --ref '{{VERSION}}' https://github.com/google/xsecurelock
 
 cd ~/src/github.com/google/xsecurelock
 sh autogen.sh

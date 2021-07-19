@@ -12,7 +12,7 @@ devDependencies = [
 build = """
 apteryx \
   cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3
-clone --https --shallow --tag '{{VERSION}}' https://github.com/alacritty/alacritty
+clone --https --shallow --ref '{{VERSION}}' https://github.com/alacritty/alacritty
 cd /root/src/github.com/alacritty/alacritty
 cargo build --release
 mv target/release/alacritty /usr/local/bin/alacritty

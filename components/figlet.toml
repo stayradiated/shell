@@ -1,0 +1,20 @@
+name = "figlet"
+from = "base"
+
+version = "2.2.5-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx figlet='{{VERSION}}'
+"""
+
+exports = [
+  '/usr/bin/chkfont',
+  '/usr/bin/figlet',
+  '/usr/bin/figlet-figlet',
+  '/usr/bin/figlist',
+  '/usr/bin/showfigfonts',
+  "/usr/share/doc/figlet/",
+  "/usr/share/figlet/",
+]

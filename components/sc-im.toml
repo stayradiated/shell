@@ -1,0 +1,29 @@
+name = 'sc-im'
+from = 'base'
+
+version = 'v0.8.2'
+
+devDependencies = [
+  'clone',
+  'build-essential',
+  'apteryx'
+]
+
+build = """
+clone --https --shallow --ref '{{VERSION}}' https://github.com/andmarti1424/sc-im
+apteryx bison libncurses-dev pkg-config
+
+cd /root/src/github.com/andmarti1424/sc-im
+make -C src
+make -C src install
+
+apt-get remove --purge -y bison libncurses-dev pkg-config
+rm -r /root/src
+"""
+
+exports = [
+  "/usr/local/bin/sc-im",
+  "/usr/local/bin/scopen",
+  "/usr/local/share/man/man1/",
+  "/usr/local/share/sc-im/",
+]

@@ -14,7 +14,7 @@ devDependencies = [
 build = """
 apteryx libssl-dev xsltproc
 
-clone --https --shallow --tag '{{VERSION}}' https://github.com/AGWA/git-crypt
+clone --https --shallow --ref '{{VERSION}}' https://github.com/AGWA/git-crypt
 cd /root/src/github.com/AGWA/git-crypt
 
 ENABLE_MAN=yes make

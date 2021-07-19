@@ -88,8 +88,8 @@ RUN \
   cd /root/src/github.com/stayradiated && \
   git clone --depth 1 https://github.com/stayradiated/clone && \
   cd clone && \
-  git fetch --depth 1 origin tag 'v1.3.0' && \
-  git reset --hard 'v1.3.0' && \
+  git fetch --depth 1 origin tag 'v1.4.0' && \
+  git reset --hard 'v1.4.0' && \
   go install && \
   mv /root/bin/clone /usr/local/bin/clone && \
   cd /root && \
@@ -156,7 +156,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx libssl-dev xsltproc && \
-  clone --https --shallow --tag '0.6.0' https://github.com/AGWA/git-crypt && \
+  clone --https --shallow --ref '0.6.0' https://github.com/AGWA/git-crypt && \
   cd /root/src/github.com/AGWA/git-crypt && \
   ENABLE_MAN=yes make && \
   make install && \
@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --shallow --tag 'v1.75.8' https://github.com/stayradiated/dotfiles && \
+  clone --https --shallow --ref 'v1.81.3' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -328,7 +328,7 @@ RUN \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN \
-  clone --https --shallow --tag '0.24.3' https://github.com/junegunn/fzf && \
+  clone --https --shallow --ref '0.24.3' https://github.com/junegunn/fzf && \
   mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
   rm -rf /root/src && \
   /usr/local/share/fzf/install --bin
@@ -373,12 +373,12 @@ RUN \
   rm -r squashfs-root && \
   find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775 && \
   find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664 && \
-  pip3 install neovim msgpack
+  pip3 install neovim msgpack neovim-remote
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/local/share/man/ /exports/usr/local/share/ && \
-  mv /usr/local/bin/nvim /exports/usr/local/bin/ && \
+  mv /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ && \
   mv /usr/local/include/python3.8 /exports/usr/local/include/ && \
-  mv /usr/local/lib/python3.8/dist-packages/greenlet-1.1.0.dist-info /usr/local/lib/python3.8/dist-packages/greenlet /usr/local/lib/python3.8/dist-packages/msgpack-1.0.2.dist-info /usr/local/lib/python3.8/dist-packages/msgpack /usr/local/lib/python3.8/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.8/dist-packages/neovim /usr/local/lib/python3.8/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.8/dist-packages/pynvim /exports/usr/local/lib/python3.8/dist-packages/ && \
+  mv /usr/local/lib/python3.8/dist-packages/greenlet-1.1.0.dist-info /usr/local/lib/python3.8/dist-packages/greenlet /usr/local/lib/python3.8/dist-packages/msgpack-1.0.2.dist-info /usr/local/lib/python3.8/dist-packages/msgpack /usr/local/lib/python3.8/dist-packages/neovim_remote-2.4.0.dist-info /usr/local/lib/python3.8/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.8/dist-packages/neovim /usr/local/lib/python3.8/dist-packages/nvr /usr/local/lib/python3.8/dist-packages/psutil-5.8.0.dist-info /usr/local/lib/python3.8/dist-packages/psutil /usr/local/lib/python3.8/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.8/dist-packages/pynvim /exports/usr/local/lib/python3.8/dist-packages/ && \
   mv /usr/local/share/man/man1 /exports/usr/local/share/man/ && \
   mv /usr/local/share/nvim /exports/usr/local/share/
 
@@ -436,7 +436,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN \
-  clone --https --shallow --tag 'master' https://github.com/special/1pw && \
+  clone --https --shallow --ref 'master' https://github.com/special/1pw && \
   cd /root/src/github.com/special/1pw && \
   go get -v && \
   go build && \
@@ -555,7 +555,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
-  clone --https --shallow --tag 'tig-2.5.1' https://github.com/jonas/tig && \
+  clone --https --shallow --ref 'tig-2.5.1' https://github.com/jonas/tig && \
   cd /root/src/github.com/jonas/tig && \
   make configure && \
   ./configure && \
@@ -643,9 +643,9 @@ RUN \
 USER root
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/local/share/man/ /exports/usr/local/share/ && \
-  mv /usr/local/bin/nvim /exports/usr/local/bin/ && \
+  mv /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ && \
   mv /usr/local/include/python3.8 /exports/usr/local/include/ && \
-  mv /usr/local/lib/python3.8/dist-packages/greenlet-1.1.0.dist-info /usr/local/lib/python3.8/dist-packages/greenlet /usr/local/lib/python3.8/dist-packages/msgpack-1.0.2.dist-info /usr/local/lib/python3.8/dist-packages/msgpack /usr/local/lib/python3.8/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.8/dist-packages/neovim /usr/local/lib/python3.8/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.8/dist-packages/pynvim /exports/usr/local/lib/python3.8/dist-packages/ && \
+  mv /usr/local/lib/python3.8/dist-packages/greenlet-1.1.0.dist-info /usr/local/lib/python3.8/dist-packages/greenlet /usr/local/lib/python3.8/dist-packages/msgpack-1.0.2.dist-info /usr/local/lib/python3.8/dist-packages/msgpack /usr/local/lib/python3.8/dist-packages/neovim_remote-2.4.0.dist-info /usr/local/lib/python3.8/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.8/dist-packages/neovim /usr/local/lib/python3.8/dist-packages/nvr /usr/local/lib/python3.8/dist-packages/psutil-5.8.0.dist-info /usr/local/lib/python3.8/dist-packages/psutil /usr/local/lib/python3.8/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.8/dist-packages/pynvim /exports/usr/local/lib/python3.8/dist-packages/ && \
   mv /usr/local/share/man/man1 /exports/usr/local/share/man/ && \
   mv /usr/local/share/nvim /exports/usr/local/share/
 
@@ -794,7 +794,7 @@ RUN \
 FROM base AS safe-rm
 COPY --from=clone /exports/ /
 RUN \
-  clone --https --shallow --tag '1.0.7' https://github.com/kaelzhang/shell-safe-rm && \
+  clone --https --shallow --ref '1.0.7' https://github.com/kaelzhang/shell-safe-rm && \
   cd /root/src/github.com/kaelzhang/shell-safe-rm && \
   cp ./bin/rm.sh /usr/local/bin/safe-rm && \
   rm -rf /root/src/

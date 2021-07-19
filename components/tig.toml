@@ -19,7 +19,7 @@ apteryx \
   libreadline-dev \
   libncursesw5-dev
 
-clone --https --shallow --tag '{{VERSION}}' https://github.com/jonas/tig
+clone --https --shallow --ref '{{VERSION}}' https://github.com/jonas/tig
 cd /root/src/github.com/jonas/tig
 
 make configure
