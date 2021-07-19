@@ -1,12 +1,12 @@
 name = 'rofi-calc'
 from = 'base'
 
-version = '2.0.0'
+version = 'v2.0.0'
 
 devDependencies = [ 'build-essential', 'clone', 'apteryx' ]
 
 build = """
-clone --https --shallow --ref {{VERSION}} https://github.com/svenstaro/rofi-calc
+clone --https --tag='{{VERSION}}' https://github.com/svenstaro/rofi-calc
 apteryx rofi-dev qalc libtool autoconf automake
 
 cd /root/src/github.com/svenstaro/rofi-calc

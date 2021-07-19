@@ -12,7 +12,8 @@ devDependencies = [
 
 build = """
 apteryx automake autoconf
-clone --https --shallow --ref '{{VERSION}}' https://github.com/haikarainen/light
+#RUN
+clone --https --tag='{{VERSION}}' https://github.com/haikarainen/light
 cd /root/src/github.com/haikarainen/light
 ./autogen.sh
 ./configure

@@ -14,7 +14,7 @@ mount = [
 ]
 
 build = """
-clone --https --shallow --ref '{{VERSION}}' https://github.com/stayradiated/dotfiles
+clone --https --tag='{{VERSION}}' https://github.com/stayradiated/dotfiles
 
 cd /root/src/github.com/stayradiated/dotfiles
 git-crypt unlock /tmp/dotfiles-key

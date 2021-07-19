@@ -1,6 +1,8 @@
 name = 'weechat'
 from = 'base'
 
+# https://github.com/weechat/weechat
+# https://weechat.org/download/debian/
 devDependencies = [
   'apteryx',
   'python3-pip',
@@ -8,10 +10,11 @@ devDependencies = [
 
 build = """
 apt-key adv \
-  --keyserver hkp://p80.pool.sks-keyservers.net:80 \
-  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && \
-  add-apt-repository \
-    "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main"
+  --keyserver hkps://keys.openpgp.org \
+  --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E
+
+add-apt-repository \
+  "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main"
 
 apteryx \
   weechat-curses \
@@ -45,7 +48,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/weechat/",
   "/usr/local/bin/__pycache__/",
   "/usr/local/bin/wsdump.py",
-  "/usr/local/lib/python3.8/dist-packages/websocket_client-1.0.1.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/websocket_client-*.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/websocket/",
   "/usr/share/doc/libaspell15/",
   "/usr/share/doc/libcurl3-gnutls/",

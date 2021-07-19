@@ -299,7 +299,7 @@ exports = [
   "/usr/local/lib/python3.8/dist-packages/python_socks/",
   "/usr/local/lib/python3.8/dist-packages/QDarkStyle-2.8.1.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/qdarkstyle/",
-  "/usr/local/lib/python3.8/dist-packages/qrcode-6.1.dist-info/",
+  "/usr/local/lib/python3.8/dist-packages/qrcode-*.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/qrcode/",
   "/usr/local/lib/python3.8/dist-packages/QtPy-1.9.0.dist-info/",
   "/usr/local/lib/python3.8/dist-packages/qtpy/",

@@ -13,7 +13,7 @@ apt-get update -q
 apt-get install -y --no-install-recommends --auto-remove \
   cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9
 
-clone --https --shallow --ref '{{VERSION}}' https://github.com/octobanana/peaclock
+clone --https --tag='{{VERSION}}' https://github.com/octobanana/peaclock
 cd /root/src/github.com/octobanana/peaclock
 
 # build/install

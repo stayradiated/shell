@@ -16,7 +16,7 @@ apteryx \
   libxcb-util-dev \
   libxcb-keysyms1-dev
 
-clone --https --shallow --ref '{{VERSION}}' https://github.com/baskerville/sxhkd
+clone --https --tag='{{VERSION}}' https://github.com/baskerville/sxhkd
 cd /root/src/github.com/baskerville/sxhkd
 make all
 make install

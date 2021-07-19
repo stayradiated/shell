@@ -9,7 +9,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --ref '{{VERSION}}' https://github.com/nvm-sh/nvm
+clone --https --tag='{{VERSION}}' https://github.com/nvm-sh/nvm
 
 mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm
 rm -rf /root/src

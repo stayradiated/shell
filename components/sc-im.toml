@@ -10,7 +10,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --ref '{{VERSION}}' https://github.com/andmarti1424/sc-im
+clone --https --tag='{{VERSION}}' https://github.com/andmarti1424/sc-im
 apteryx bison libncurses-dev pkg-config
 
 cd /root/src/github.com/andmarti1424/sc-im

@@ -1,6 +1,7 @@
 name = "aerc"
 from = "base"
 
+# https://git.sr.ht/~sircmpwn/aerc/refs
 version = "0.5.2"
 
 dependencies = [
@@ -15,7 +16,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --ref "${VERSION}" https://git.sr.ht/~sircmpwn/aerc
+clone --https --tag='{{VERSION}}' https://git.sr.ht/~sircmpwn/aerc
 cd ~/src/git.sr.ht/~sircmpwn/aerc
 make
 make install

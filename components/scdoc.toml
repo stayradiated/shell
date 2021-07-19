@@ -10,7 +10,7 @@ devDependencies = [
 ]
 
 build = """
-clone --https --shallow --ref "${VERSION}" https://git.sr.ht/~sircmpwn/scdoc
+clone --https --tag='{{VERSION}}' https://git.sr.ht/~sircmpwn/scdoc
 cd ~/src/git.sr.ht/~sircmpwn/scdoc
 make
 make install
