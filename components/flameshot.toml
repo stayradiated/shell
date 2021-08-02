@@ -1,13 +1,14 @@
 name = 'flameshot'
 from = 'base'
 
-version = '0.9.0'
+# https://github.com/flameshot-org/flameshot/releases
+version = '0.10.0'
 
 devDependencies = [ 'wget', 'apteryx' ]
 
 build = """
 wget -O flameshot.deb \
-  https://github.com/flameshot-org/flameshot/releases/download/v{{VERSION}}/flameshot-{{VERSION}}-1.ubuntu-20.04.amd64.deb
+  https://github.com/flameshot-org/flameshot/releases/download/v{{VERSION}}/flameshot-{{VERSION}}.rc1-1.ubuntu-20.04.amd64.deb
 apteryx ./flameshot.deb
 rm flameshot.deb
 """

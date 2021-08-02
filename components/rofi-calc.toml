@@ -29,6 +29,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libqalculate.so.20.0.2",
   "/usr/share/doc/libqalculate20-data/",
   "/usr/share/doc/libqalculate20/",
+  "/usr/lib/x86_64-linux-gnu/rofi/",
   "/usr/share/doc/qalc/",
   "/usr/share/man/man1/qalc.1.gz",
   "/usr/share/qalculate/",
