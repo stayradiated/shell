@@ -99,8 +99,12 @@ dependencies = [
   'rofi',
   'rofi-calc',
 
+  'caddy',
+
   'one-password',
   'fonts',
+  'glow',
+  'dive',
 
   # 'wacom',
   # 'adb',
@@ -112,7 +116,6 @@ dependencies = [
   # ======
   # 'trousseau',
   # 'bandwhich',
-  # 'caddy',
   # 'calibre',
   # 'chs',
   # 'clang-format',

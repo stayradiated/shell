@@ -1,0 +1,19 @@
+name = "dive"
+from = "base"
+
+# https://github.com/wagoodman/dive/release
+version = "0.10.0"
+
+devDependencies = [ "apteryx", "wget" ]
+
+build = """
+wget \
+  "https://github.com/wagoodman/dive/releases/download/v{{VERSION}}/dive_{{VERSION}}_linux_amd64.deb" \
+  -O /tmp/dive.deb
+
+apteryx /tmp/dive.deb
+"""
+
+exports = [
+  '/usr/local/bin/dive'
+]

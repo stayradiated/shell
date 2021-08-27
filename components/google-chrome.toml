@@ -2,7 +2,7 @@ name = 'google-chrome'
 from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
-version = '91.0.4472.77-*'
+version = '93.0.4577.51-1'
 
 devDependencies = [
   'wget',
@@ -14,7 +14,7 @@ curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 apt-get update
 
-apteryx google-chrome-stable='{{VERSION}}'
+apteryx google-chrome-beta='{{VERSION}}'
 """
 
 exports = [
@@ -22,8 +22,8 @@ exports = [
   "/etc/alternatives/google-chrome",
   "/etc/alternatives/x-cursor-theme",
   "/etc/alternatives/x-www-browser",
-  "/etc/cron.daily/google-chrome",
-  "/etc/default/google-chrome",
+  # "/etc/cron.daily/google-chrome",
+  "/etc/default/google-chrome-beta",
   # "/etc/fonts/",
   "/etc/gtk-3.0/",
   "/etc/ld.so.cache",
@@ -42,7 +42,7 @@ exports = [
   "/usr/bin/fc-validate",
   "/usr/bin/gnome-www-browser",
   "/usr/bin/google-chrome",
-  "/usr/bin/google-chrome-stable",
+  "/usr/bin/google-chrome-beta",
   "/usr/bin/gtk-update-icon-cache",
   "/usr/bin/update-mime-database",
   "/usr/bin/x-www-browser",
@@ -193,11 +193,11 @@ exports = [
   "/usr/sbin/update-icon-caches",
   "/usr/share/alsa/",
   "/usr/share/appdata/",
-  "/usr/share/applications/google-chrome.desktop",
-  "/usr/share/doc/google-chrome-stable/",
-  "/usr/share/man/man1/google-chrome-stable.1.gz",
-  "/usr/share/man/man1/google-chrome.1.gz",
-  "/usr/share/menu/google-chrome.menu",
+  # "/usr/share/applications/google-chrome.desktop",
+  # "/usr/share/doc/google-chrome-beta/",
+  # "/usr/share/man/man1/google-chrome-beta.1.gz",
+  # "/usr/share/man/man1/google-chrome.1.gz",
+  # "/usr/share/menu/google-chrome.menu",
 ]
 
 exportEnv = [

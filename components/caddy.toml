@@ -1,7 +1,8 @@
 name = 'caddy'
 from = 'base'
 
-version = '72866995282326'
+# https://github.com/caddyserver/caddy/releases
+version = '2.4.3'
 
 devDependencies = [
   'wget'
@@ -9,10 +10,13 @@ devDependencies = [
 
 build = """
 wget \
-  -O /usr/local/bin/caddy \
-  'https://caddyserver.com/api/download?os=linux&arch=amd64&idempotency={{VERSION}}'
+  -O /tmp/caddy.tgz \
+  'https://github.com/caddyserver/caddy/releases/download/v{{VERSION}}/caddy_{{VERSION}}_linux_amd64.tar.gz'
 
-chmod +x /usr/local/bin/caddy
+tar xzvf /tmp/caddy.tgz
+
+mv caddy /usr/local/bin/caddy
+rm /tmp/caddy.tgz
 """
 
 exports = [

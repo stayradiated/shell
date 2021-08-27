@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.82.5' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.84.3' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -583,24 +583,19 @@ RUN \
   curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
   apt-get update && \
-  apteryx google-chrome-stable='91.0.4472.77-*'
+  apteryx google-chrome-beta='93.0.4577.51-1'
 RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ && \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
-  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/default/google-chrome-beta /exports/etc/default/ && \
   mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
   mv /etc/X11/xkb /exports/etc/X11/ && \
   mv /opt/google /exports/opt/ && \
-  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-beta /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23510.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.3 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.3.5 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf_xlib-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4000.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.16 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20600.4 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.400.4 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.8 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.4400.7 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.38.4 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0 /usr/lib/x86_64-linux-gnu/librest-0.7.so.0.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.47.0 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-gnome-2.4.so.1.9.0 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.5.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.0.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.1.0 /usr/lib/x86_64-linux-gnu/libwebp.so.6 /usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/share/fonts /exports/usr/local/share/ && \
   mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/ && \
-  mv /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/doc/google-chrome-stable /exports/usr/share/doc/ && \
-  mv /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/
+  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/
 
 # XDG-UTILS
 FROM base AS xdg-utils
@@ -687,6 +682,28 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/scdoc /exports/usr/local/bin/
 
+# DIVE
+FROM base AS dive
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget "https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb" -O /tmp/dive.deb && \
+  apteryx /tmp/dive.deb
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/dive /exports/usr/local/bin/
+
+# GLOW
+FROM base AS glow
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN \
+  wget "https://github.com/charmbracelet/glow/releases/download/v1.4.1/glow_1.4.1_linux_amd64.deb" -O /tmp/glow.deb && \
+  apteryx /tmp/glow.deb
+RUN \
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/glow /exports/usr/bin/
+
 # FONTS
 FROM base AS fonts
 COPY --from=clone /exports/ /
@@ -754,6 +771,18 @@ RUN \
   mv /usr/share/info/gnupg-card-architecture.png /usr/share/info/gnupg-module-overview.png /usr/share/info/gnupg.info-1.gz /usr/share/info/gnupg.info-2.gz /usr/share/info/gnupg.info.gz /exports/usr/share/info/ && \
   mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
   mv /var/cache/fontconfig /exports/var/cache/
+
+# CADDY
+FROM base AS caddy
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.4.3/caddy_2.4.3_linux_amd64.tar.gz' && \
+  tar xzvf /tmp/caddy.tgz && \
+  mv caddy /usr/local/bin/caddy && \
+  rm /tmp/caddy.tgz
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/caddy /exports/usr/local/bin/
 
 # ROFI-CALC
 FROM base AS rofi-calc
@@ -1123,17 +1152,16 @@ RUN \
   mv /home/admin/.config/mimeapps.list /home/admin/exports/home/admin/.config/
 USER root
 RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/default/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
   mv /etc/apparmor.d /etc/apport /etc/firefox /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /exports/etc/ && \
-  mv /etc/cron.daily/google-chrome /exports/etc/cron.daily/ && \
-  mv /etc/default/google-chrome /exports/etc/default/ && \
+  mv /etc/default/google-chrome-beta /exports/etc/default/ && \
   mv /etc/init.d/x11-common /exports/etc/init.d/ && \
   mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
   mv /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_localhost /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
   mv /opt/google /exports/opt/ && \
-  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
+  mv /usr/bin/browse /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/firefox /usr/bin/gnome-www-browser /usr/bin/google-chrome /usr/bin/google-chrome-beta /usr/bin/gtk-update-icon-cache /usr/bin/update-mime-database /usr/bin/x-www-browser /usr/bin/X11 /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/ && \
   mv /usr/include/X11 /exports/usr/include/ && \
   mv /usr/lib/firefox-addons /usr/lib/firefox /usr/lib/X11 /exports/usr/lib/ && \
   mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-38.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
@@ -1141,11 +1169,11 @@ RUN \
   mv /usr/local/share/fonts /exports/usr/local/share/ && \
   mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
   mv /usr/share/alsa /usr/share/appdata /usr/share/fonts /usr/share/libthai /usr/share/mime /usr/share/themes /usr/share/thumbnailers /usr/share/X11 /exports/usr/share/ && \
-  mv /usr/share/applications/firefox.desktop /usr/share/applications/google-chrome.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/applications/firefox.desktop /exports/usr/share/applications/ && \
   mv /usr/share/apport/package-hooks/source_firefox.py /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
   mv /usr/share/bug/libgtk-3-0 /exports/usr/share/bug/ && \
   mv /usr/share/doc-base/fontconfig-user /usr/share/doc-base/libpng16 /usr/share/doc-base/shared-mime-info /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/google-chrome-stable /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
+  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/firefox /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdbus-glib-1-2 /usr/share/doc/libepoxy0 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgdk-pixbuf2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgraphite2-3 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libharfbuzz0b /usr/share/doc/libice6 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libjson-glib-1.0-0 /usr/share/doc/libjson-glib-1.0-common /usr/share/doc/liblcms2-2 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/librest-0.7-0 /usr/share/doc/librsvg2-2 /usr/share/doc/librsvg2-common /usr/share/doc/libsm6 /usr/share/doc/libsoup-gnome2.4-1 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtiff5 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwebp6 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libxau6 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxt6 /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
   mv /usr/share/glib-2.0/schemas/gschemas.compiled /usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml /usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml /exports/usr/share/glib-2.0/schemas/ && \
   mv /usr/share/icons/Adwaita /usr/share/icons/default /usr/share/icons/Humanity-Dark /usr/share/icons/Humanity /usr/share/icons/LoginIcons /usr/share/icons/ubuntu-mono-dark /usr/share/icons/ubuntu-mono-light /exports/usr/share/icons/ && \
   mv /usr/share/icons/hicolor/128x128 /usr/share/icons/hicolor/16x16 /usr/share/icons/hicolor/192x192 /usr/share/icons/hicolor/22x22 /usr/share/icons/hicolor/24x24 /usr/share/icons/hicolor/256x256 /usr/share/icons/hicolor/32x32 /usr/share/icons/hicolor/36x36 /usr/share/icons/hicolor/512x512 /usr/share/icons/hicolor/64x64 /usr/share/icons/hicolor/72x72 /usr/share/icons/hicolor/96x96 /usr/share/icons/hicolor/icon-theme.cache /usr/share/icons/hicolor/index.theme /usr/share/icons/hicolor/symbolic /exports/usr/share/icons/hicolor/ && \
@@ -1153,11 +1181,10 @@ RUN \
   mv /usr/share/icons/hicolor/48x48/apps/firefox.png /exports/usr/share/icons/hicolor/48x48/apps/ && \
   mv /usr/share/icons/hicolor/scalable/actions /usr/share/icons/hicolor/scalable/animations /usr/share/icons/hicolor/scalable/categories /usr/share/icons/hicolor/scalable/devices /usr/share/icons/hicolor/scalable/emblems /usr/share/icons/hicolor/scalable/emotes /usr/share/icons/hicolor/scalable/filesystems /usr/share/icons/hicolor/scalable/intl /usr/share/icons/hicolor/scalable/mimetypes /usr/share/icons/hicolor/scalable/places /usr/share/icons/hicolor/scalable/status /usr/share/icons/hicolor/scalable/stock /exports/usr/share/icons/hicolor/scalable/ && \
   mv /usr/share/lintian/overrides/firefox /usr/share/lintian/overrides/fontconfig /usr/share/lintian/overrides/hicolor-icon-theme /usr/share/lintian/overrides/libdbus-glib-1-2 /usr/share/lintian/overrides/libgdk-pixbuf2.0-0 /usr/share/lintian/overrides/libjpeg-turbo8 /usr/share/lintian/overrides/libpixman-1-0 /usr/share/lintian/overrides/librsvg2-2 /usr/share/lintian/overrides/librsvg2-common /usr/share/lintian/overrides/libsoup-gnome2.4-1 /usr/share/lintian/overrides/libtiff5 /usr/share/lintian/overrides/libx11-6 /usr/share/lintian/overrides/x11-common /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/google-chrome-stable.1.gz /usr/share/man/man1/google-chrome.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
+  mv /usr/share/man/man1/fc-cache.1.gz /usr/share/man/man1/fc-cat.1.gz /usr/share/man/man1/fc-conflist.1.gz /usr/share/man/man1/fc-list.1.gz /usr/share/man/man1/fc-match.1.gz /usr/share/man/man1/fc-pattern.1.gz /usr/share/man/man1/fc-query.1.gz /usr/share/man/man1/fc-scan.1.gz /usr/share/man/man1/fc-validate.1.gz /usr/share/man/man1/firefox.1.gz /usr/share/man/man1/gtk-update-icon-cache.1.gz /usr/share/man/man1/update-mime-database.1.gz /exports/usr/share/man/man1/ && \
   mv /usr/share/man/man5/Compose.5.gz /usr/share/man/man5/fonts-conf.5.gz /usr/share/man/man5/XCompose.5.gz /usr/share/man/man5/Xsession.5.gz /usr/share/man/man5/Xsession.options.5.gz /exports/usr/share/man/man5/ && \
   mv /usr/share/man/man7/xkeyboard-config.7.gz /exports/usr/share/man/man7/ && \
   mv /usr/share/man/man8/update-icon-caches.8.gz /exports/usr/share/man/man8/ && \
-  mv /usr/share/menu/google-chrome.menu /exports/usr/share/menu/ && \
   mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
   mv /usr/share/xml/fontconfig /exports/usr/share/xml/
 
@@ -2296,8 +2323,11 @@ COPY --from=gifski /exports/ /
 COPY --from=greenclip /exports/ /
 COPY --from=rofi /exports/ /
 COPY --from=rofi-calc /exports/ /
+COPY --from=caddy /exports/ /
 COPY --from=one-password /exports/ /
 COPY --from=fonts /exports/ /
+COPY --from=glow /exports/ /
+COPY --from=dive /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

@@ -1,0 +1,19 @@
+name = "glow"
+from = "base"
+
+# https://github.com/charmbracelet/glow/releases
+version = "1.4.1"
+
+devDependencies = [ "apteryx", "wget" ]
+
+build = """
+wget \
+  "https://github.com/charmbracelet/glow/releases/download/v{{VERSION}}/glow_{{VERSION}}_linux_amd64.deb" \
+  -O /tmp/glow.deb
+
+apteryx /tmp/glow.deb
+"""
+
+exports = [
+  '/usr/bin/glow'
+]
