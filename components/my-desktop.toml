@@ -94,6 +94,7 @@ dependencies = [
   'sc-im',
   'ngrok',
   'gifski',
+  'net-tools',
 
   'greenclip',
   'rofi',
@@ -103,8 +104,9 @@ dependencies = [
 
   'one-password',
   'fonts',
-  'glow',
-  'dive',
+
+  # 'glow',
+  # 'dive',
 
   # 'wacom',
   # 'adb',
