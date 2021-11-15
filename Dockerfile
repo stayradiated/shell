@@ -192,7 +192,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.85.10' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.85.26' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -727,7 +727,7 @@ RUN \
   curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol && \
   mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
   curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
-  apteryx 1password='8.1.1'
+  apteryx 1password='8.2.0'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/xml/ /exports/var/cache/ && \
   mv /etc/gtk-3.0 /etc/mailcap /exports/etc/ && \
@@ -1410,7 +1410,7 @@ RUN \
 FROM base AS charles
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.6.1/charles-proxy-4.6.1_amd64.tar.gz' && \
+  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.6.2/charles-proxy-4.6.2_amd64.tar.gz' && \
   tar -xzvf /tmp/charles.tgz && \
   rm /tmp/charles.tgz && \
   mv ./charles/bin/charles /usr/local/bin/charles && \
