@@ -2,7 +2,7 @@ name = 'google-chrome'
 from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
-version = '93.0.4577.51-1'
+version = '97.0.4692.20-1'
 
 devDependencies = [
   'wget',
@@ -186,8 +186,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0",
   "/usr/lib/x86_64-linux-gnu/libXrender.so.1",
   "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0",
-  "/usr/lib/x86_64-linux-gnu/libxshmfence.so.1",
-  "/usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0",
+  # "/usr/lib/x86_64-linux-gnu/libxshmfence.so.*",
   "/usr/lib/x86_64-linux-gnu/nss/",
   "/usr/local/share/fonts/",
   "/usr/sbin/update-icon-caches",

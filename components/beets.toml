@@ -2,7 +2,7 @@ name = 'beets'
 from = 'base'
 
 # https://github.com/beetbox/beets/releases
-version = '1.4.9'
+version = '1.6.0'
 
 devDependencies = [
   'python3-pip',

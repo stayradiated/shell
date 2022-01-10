@@ -1,8 +1,8 @@
 name = 'pgcli'
 from = 'base'
 
-# https://github.com/dbcli/pgcli/releases
-version = '3.0.0'
+# https://github.com/dbcli/pgcli/tags
+version = '3.2.0'
 
 devDependencies = [
   'apteryx',
