@@ -1,11 +1,15 @@
 name = 'base'
 fromImage = 'phusion/baseimage:focal-1.0.0'
 
+# https://github.com/phusion/baseimage-docker
+
 baseExportDir = '/exports/'
 
-version = '1.0.0'
+version = '2022-03-15'
 
 build = """
+echo {{VERSION}}
+
 export LANG=en_NZ.UTF-8
 locale-gen en_NZ.UTF-8
 

@@ -1,7 +1,8 @@
 name = 'mbsync'
 from = 'base'
 
-version = '1.4.1'
+# https://sourceforge.net/projects/isync/files/isync/
+version = '1.4.4'
 
 devDependencies = [
   'wget',

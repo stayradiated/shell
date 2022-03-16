@@ -2,7 +2,7 @@ name = 'google-chrome'
 from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
-version = '97.0.4692.20-1'
+version = '100.0.4896.30-1'
 
 devDependencies = [
   'wget',

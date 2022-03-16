@@ -1,7 +1,7 @@
 name = 'sxhkd'
 from = 'base'
 
-# https://github.com/baskerville/sxhkd/releases
+# https://github.com/baskerville/sxhkd/tags
 version = '0.6.2'
 
 devDependencies = [

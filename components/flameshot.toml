@@ -2,7 +2,7 @@ name = 'flameshot'
 from = 'base'
 
 # https://github.com/flameshot-org/flameshot/releases
-version = '0.10.1'
+version = '11.0.0'
 
 devDependencies = [ 'wget', 'apteryx' ]
 
@@ -106,7 +106,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libinput.so.10.13.0",
   "/usr/lib/x86_64-linux-gnu/libjpeg.so.8",
   "/usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2",
-  # "/usr/lib/x86_64-linux-gnu/libLLVM-11.so*",
+  # "/usr/lib/x86_64-linux-gnu/libLLVM-*.so*",
   "/usr/lib/x86_64-linux-gnu/libmtdev.so.1",
   "/usr/lib/x86_64-linux-gnu/libmtdev.so.1.0.0",
   "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0",

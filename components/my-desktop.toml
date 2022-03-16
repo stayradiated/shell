@@ -56,7 +56,7 @@ dependencies = [
   'watson',
   'weechat',
   'wget',
-  'withexeditorhost',
+  # 'withexeditorhost',
   'xinput',
   'xsv',
   'zx',
@@ -89,10 +89,10 @@ dependencies = [
   'shell-yarn',
   'shell-zsh',
 
-  'gnuplot',
+  # 'gnuplot',
   'pnpm',
   'sc-im',
-  'ngrok',
+  # 'ngrok',
   'gifski',
   'net-tools',
 

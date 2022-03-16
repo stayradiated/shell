@@ -1,7 +1,7 @@
 name = 'bspwm'
 from = 'base'
 
-# https://github.com/baskerville/bspwm/releases
+# https://github.com/baskerville/bspwm/tags
 version = '0.9.10'
 
 devDependencies = [

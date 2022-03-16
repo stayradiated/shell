@@ -1,8 +1,8 @@
 name = "scdoc"
 from = "base"
 
-# https://git.sr.ht/~sircmpwn/scdoc
-version = "1.11.1"
+# https://git.sr.ht/~sircmpwn/scdoc/refs
+version = "1.11.2"
 
 devDependencies = [
   "build-essential",

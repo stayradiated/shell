@@ -1,7 +1,7 @@
 name = 'ranger'
 from = 'base'
 
-# https://github.com/ranger/ranger/releases
+# https://github.com/ranger/ranger/tags
 version = '1.9.3'
 
 devDependencies = [

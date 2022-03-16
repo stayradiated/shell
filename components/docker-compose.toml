@@ -2,7 +2,7 @@ name = 'docker-compose'
 from = 'base'
 
 # https://github.com/docker/compose/releases
-version = '1.29.2'
+version = 'v2.3.3'
 
 devDependencies = [
   'wget'
@@ -11,7 +11,7 @@ devDependencies = [
 build = """
 wget \
   -O /usr/local/bin/docker-compose \
-  'https://github.com/docker/compose/releases/download/{{VERSION}}/docker-compose-Linux-x86_64'
+  'https://github.com/docker/compose/releases/download/{{VERSION}}/docker-compose-linux-x86_64'
 
 chmod +x /usr/local/bin/docker-compose
 """

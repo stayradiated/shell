@@ -1,7 +1,7 @@
 name = 'git-crypt'
 from = 'base'
 
-# https://github.com/AGWA/git-crypt/releases
+# https://github.com/AGWA/git-crypt/tags
 version = '0.6.0'
 
 devDependencies = [

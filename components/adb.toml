@@ -3,7 +3,7 @@ from = 'base'
 
 # 'https://developer.android.com/studio/releases/platform-tools'
 
-version = '29.0.5'
+version = '31.0.3'
 
 devDependencies = [
   'wget',
