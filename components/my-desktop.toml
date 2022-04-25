@@ -104,6 +104,7 @@ dependencies = [
 
   'one-password',
   'fonts',
+  'brave',
 
   # 'glow',
   # 'dive',
