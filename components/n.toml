@@ -4,8 +4,12 @@ from = 'base'
 # https://www.npmjs.com/package/n
 version = '7.2.2'
 
+devDependencies = [
+  'wget'
+]
+
 build = """
-curl -L https://raw.githubusercontent.com/tj/n/v{{VERSION}}/bin/n -o /usr/local/bin/n
+wget "https://raw.githubusercontent.com/tj/n/v{{VERSION}}/bin/n" -O /usr/local/bin/n
 chmod +x /usr/local/bin/n
 """
 

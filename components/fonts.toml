@@ -18,13 +18,17 @@ apteryx \
   ttf-ubuntu-font-family \
   xfonts-utils
 
+#RUN
+
 mkdir -p /usr/share/fonts/X11/bitmap
+
 wget \
   -O /usr/share/fonts/X11/bitmap/gomme.bdf \
-  'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf'
+  'http://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf'
+
 wget \
   -O /usr/share/fonts/X11/bitmap/terminal.bdf \
-  'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf'
+  'http://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf'
 
 clone --shallow --https https://github.com/blaisck/sfwin
 cd /root/src/github.com/blaisck/sfwin

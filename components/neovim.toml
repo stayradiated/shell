@@ -2,7 +2,7 @@ name = 'neovim'
 from = 'base'
 
 # https://github.com/neovim/neovim/releases
-version = 'v0.6.1'
+version = 'v0.7.0'
 
 devDependencies = [
   'wget',

@@ -2,7 +2,7 @@ name = 'alacritty'
 from = 'base'
 
 # https://github.com/alacritty/alacritty/releases
-version = 'v0.8.0'
+version = 'v0.10.1'
 
 devDependencies = [
   'apteryx',

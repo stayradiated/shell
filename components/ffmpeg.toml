@@ -2,7 +2,7 @@ name = 'ffmpeg'
 from = 'base'
 
 # https://www.johnvansickle.com/ffmpeg/
-version = '5.0'
+version = '5.0.1'
 
 devDependencies = [
   'wget',
@@ -12,7 +12,7 @@ devDependencies = [
 build = """
 wget \
   -O /tmp/ffmpeg.txz \
-  'https://www.johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'
+  'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'
 tar -xvf /tmp/ffmpeg.txz
 rm /tmp/ffmpeg.txz
 mv 'ffmpeg-{{VERSION}}-amd64-static' ffmpeg

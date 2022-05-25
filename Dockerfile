@@ -1,9 +1,9 @@
 
 
 # BASE
-FROM phusion/baseimage:focal-1.0.0 AS base
+FROM phusion/baseimage:focal-1.2.0 AS base
 RUN \
-  echo 2022-03-15 && \
+  echo 2022-05-25 && \
   export LANG=en_NZ.UTF-8 && \
   locale-gen en_NZ.UTF-8 && \
   rm /etc/dpkg/dpkg.cfg.d/excludes && \
@@ -45,7 +45,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
-  apteryx git='1:2.35.1-*'
+  apteryx git='1:2.36.1-*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
@@ -58,7 +58,7 @@ RUN \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.17.8.linux-amd64.tar.gz" && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.18.2.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
@@ -193,7 +193,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.85.61' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.85.69' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -205,8 +205,9 @@ RUN \
 
 # N
 FROM base AS n
+COPY --from=wget /exports/ /
 RUN \
-  curl -L https://raw.githubusercontent.com/tj/n/v7.2.2/bin/n -o /usr/local/bin/n && \
+  wget "https://raw.githubusercontent.com/tj/n/v7.2.2/bin/n" -O /usr/local/bin/n && \
   chmod +x /usr/local/bin/n
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
@@ -272,7 +273,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN \
   n lts && \
-  n 16.14.0 && \
+  n 16.15.0 && \
   npm install -g npm
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
@@ -421,7 +422,7 @@ FROM base AS neovim
 COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
-  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.6.1/nvim.appimage' && \
+  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.7.0/nvim.appimage' && \
   chmod +x /tmp/nvim.appimage && \
   /tmp/nvim.appimage --appimage-extract && \
   rm /tmp/nvim.appimage && \
@@ -530,7 +531,7 @@ RUN \
 FROM base AS firefox
 COPY --from=apteryx /exports/ /
 RUN \
-  apteryx firefox='98.0+*'
+  apteryx firefox='100.0.2+*'
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/X11/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
@@ -570,7 +571,7 @@ RUN \
   curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
   apt-get update && \
-  apteryx google-chrome-beta='100.0.4896.30-1'
+  apteryx google-chrome-beta='102.0.5005.61-1'
 RUN \
   mkdir -p /exports/etc/alternatives/ /exports/etc/default/ /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ && \
   mv /etc/alternatives/gnome-www-browser /etc/alternatives/google-chrome /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
@@ -598,10 +599,10 @@ FROM base AS ffmpeg
 COPY --from=wget /exports/ /
 COPY --from=xz /exports/ /
 RUN \
-  wget -O /tmp/ffmpeg.txz 'https://www.johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' && \
+  wget -O /tmp/ffmpeg.txz 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' && \
   tar -xvf /tmp/ffmpeg.txz && \
   rm /tmp/ffmpeg.txz && \
-  mv 'ffmpeg-5.0-amd64-static' ffmpeg && \
+  mv 'ffmpeg-5.0.1-amd64-static' ffmpeg && \
   mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
   mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
   rm -r ffmpeg
@@ -614,7 +615,7 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN \
   wget -O rust.sh 'https://sh.rustup.rs' && \
-  sh rust.sh -y --default-toolchain '1.48.0' && \
+  sh rust.sh -y --default-toolchain '1.61.0' && \
   rm rust.sh
 RUN \
   mkdir -p /exports/root/ && \
@@ -709,10 +710,11 @@ COPY --from=clone /exports/ /
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN \
-  apteryx fontconfig='2.13.1-*' fonts-noto fonts-noto-cjk fonts-noto-color-emoji ttf-ubuntu-font-family xfonts-utils && \
+  apteryx fontconfig='2.13.1-*' fonts-noto fonts-noto-cjk fonts-noto-color-emoji ttf-ubuntu-font-family xfonts-utils
+RUN \
   mkdir -p /usr/share/fonts/X11/bitmap && \
-  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
-  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'https://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
+  wget -O /usr/share/fonts/X11/bitmap/gomme.bdf 'http://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/gomme/Gomme10x20n.bdf' && \
+  wget -O /usr/share/fonts/X11/bitmap/terminal.bdf 'http://raw.githubusercontent.com/Tecate/bitmap-fonts/master/bitmap/dylex/7x13.bdf' && \
   clone --shallow --https https://github.com/blaisck/sfwin && \
   cd /root/src/github.com/blaisck/sfwin && \
   mv SFCompact/TrueType /usr/share/fonts/SFCompact && \
@@ -749,7 +751,7 @@ RUN \
   mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
   curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
   apt update && \
-  apteryx 1password='8.6.0'
+  apteryx 1password='8.7.0'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/xml/ /exports/var/cache/ && \
   mv /etc/gtk-3.0 /etc/mailcap /exports/etc/ && \
@@ -771,18 +773,6 @@ RUN \
   mv /usr/share/info/gnupg-card-architecture.png /usr/share/info/gnupg-module-overview.png /usr/share/info/gnupg.info-1.gz /usr/share/info/gnupg.info-2.gz /usr/share/info/gnupg.info.gz /exports/usr/share/info/ && \
   mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
   mv /var/cache/fontconfig /exports/var/cache/
-
-# CADDY
-FROM base AS caddy
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.4.3/caddy_2.4.3_linux_amd64.tar.gz' && \
-  tar xzvf /tmp/caddy.tgz && \
-  mv caddy /usr/local/bin/caddy && \
-  rm /tmp/caddy.tgz
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/caddy /exports/usr/local/bin/
 
 # ROFI-CALC
 FROM base AS rofi-calc
@@ -1185,19 +1175,6 @@ RUN \
   mv /usr/bin/xclip /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libICE.so.* /usr/lib/x86_64-linux-gnu/libSM.so.* /usr/lib/x86_64-linux-gnu/libX11.so.* /usr/lib/x86_64-linux-gnu/libXau.so.* /usr/lib/x86_64-linux-gnu/libxcb.so.* /usr/lib/x86_64-linux-gnu/libXdmcp.so.* /usr/lib/x86_64-linux-gnu/libXext.so.* /usr/lib/x86_64-linux-gnu/libXmu.so.* /usr/lib/x86_64-linux-gnu/libXt.so.* /exports/usr/lib/x86_64-linux-gnu/
 
-# SIGNAL
-FROM base AS signal
-COPY --from=apteryx /exports/ /
-RUN \
-  curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - && \
-  echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-xenial.list && \
-  apt-get -q update && \
-  apteryx signal-desktop='5.35.0'
-RUN \
-  mkdir -p /exports/opt/ /exports/usr/bin/ && \
-  mv /opt/Signal /exports/opt/ && \
-  mv /usr/bin/signal-desktop /exports/usr/bin/
-
 # REDSHIFT
 FROM base AS redshift
 COPY --from=apteryx /exports/ /
@@ -1352,34 +1329,6 @@ RUN \
   mv /usr/local/share/feh /exports/usr/local/share/ && \
   mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
 
-# ELECTRUM
-FROM base AS electrum
-COPY --from=apteryx /exports/ /
-COPY --from=python3-pip /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget https://raw.githubusercontent.com/spesmilo/electrum/master/pubkeys/ThomasV.asc && \
-  gpg --import ThomasV.asc && \
-  wget https://raw.githubusercontent.com/spesmilo/electrum/master/pubkeys/sombernight_releasekey.asc && \
-  gpg --import sombernight_releasekey.asc && \
-  wget https://download.electrum.org/4.1.5/Electrum-4.1.5.tar.gz && \
-  wget https://download.electrum.org/4.1.5/Electrum-4.1.5.tar.gz.ThomasV.asc && \
-  gpg --verify Electrum-4.1.5.tar.gz.ThomasV.asc Electrum-4.1.5.tar.gz && \
-  wget https://download.electrum.org/4.1.5/Electrum-4.1.5.tar.gz.sombernight_releasekey.asc && \
-  gpg --verify Electrum-4.1.5.tar.gz.sombernight_releasekey.asc Electrum-4.1.5.tar.gz && \
-  apteryx python3-pyqt5 libsecp256k1-0 python3-cryptography && \
-  python3 -m pip install ./Electrum-4.1.5.tar.gz && \
-  rm *.tar.gz *.asc
-RUN \
-  mkdir -p /exports/usr/lib/python3/dist-packages/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ && \
-  mv /usr/lib/python3/dist-packages/_cffi_backend.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/cryptography /usr/lib/python3/dist-packages/cryptography-2.8.egg-info /usr/lib/python3/dist-packages/PyQt5 /usr/lib/python3/dist-packages/PyQt5-*.dist-info /usr/lib/python3/dist-packages/sipconfig_nd8.py /usr/lib/python3/dist-packages/sipconfig.py /usr/lib/python3/dist-packages/sip.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/sip-*.dist-info /usr/lib/python3/dist-packages/sip.pyi /exports/usr/lib/python3/dist-packages/ && \
-  mv /usr/lib/udev/libinput-device-group /usr/lib/udev/libinput-fuzz-extract /usr/lib/udev/libinput-fuzz-to-zero /exports/usr/lib/udev/ && \
-  mv /usr/lib/udev/rules.d/65-libwacom.rules /usr/lib/udev/rules.d/80-libinput-device-groups.rules /usr/lib/udev/rules.d/90-libinput-fuzz-override.rules /exports/usr/lib/udev/rules.d/ && \
-  mv /usr/lib/X11 /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/libavahi-client.so* /usr/lib/x86_64-linux-gnu/libavahi-common.so* /usr/lib/x86_64-linux-gnu/libcups.so.* /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.* /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* /usr/lib/x86_64-linux-gnu/libdrm_intel.so* /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so* /usr/lib/x86_64-linux-gnu/libdrm_radeon.so* /usr/lib/x86_64-linux-gnu/libdrm.so* /usr/lib/x86_64-linux-gnu/libEGL_mesa.so* /usr/lib/x86_64-linux-gnu/libEGL.so* /usr/lib/x86_64-linux-gnu/libevdev.so* /usr/lib/x86_64-linux-gnu/libfontconfig.so.* /usr/lib/x86_64-linux-gnu/libfreetype.so.* /usr/lib/x86_64-linux-gnu/libgbm.so* /usr/lib/x86_64-linux-gnu/libglapi.so* /usr/lib/x86_64-linux-gnu/libGLdispatch.so* /usr/lib/x86_64-linux-gnu/libGL.so* /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.* /usr/lib/x86_64-linux-gnu/libGLX_mesa.so* /usr/lib/x86_64-linux-gnu/libGLX.so* /usr/lib/x86_64-linux-gnu/libgraphite2.so* /usr/lib/x86_64-linux-gnu/libgudev-1.0.so* /usr/lib/x86_64-linux-gnu/libharfbuzz.so.* /usr/lib/x86_64-linux-gnu/libICE.so* /usr/lib/x86_64-linux-gnu/libinput.so.* /usr/lib/x86_64-linux-gnu/libjpeg.so* /usr/lib/x86_64-linux-gnu/libLLVM-*.so /usr/lib/x86_64-linux-gnu/libLLVM-*.so.* /usr/lib/x86_64-linux-gnu/libmtdev.so* /usr/lib/x86_64-linux-gnu/libpciaccess.so.* /usr/lib/x86_64-linux-gnu/libpcre2-16.so* /usr/lib/x86_64-linux-gnu/libpng16.so.* /usr/lib/x86_64-linux-gnu/libQt5Core.so.* /usr/lib/x86_64-linux-gnu/libQt5DBus.so.* /usr/lib/x86_64-linux-gnu/libQt5Designer.so.* /usr/lib/x86_64-linux-gnu/libQt5EglFSDeviceIntegration.so.* /usr/lib/x86_64-linux-gnu/libQt5EglFsKmsSupport.so.* /usr/lib/x86_64-linux-gnu/libQt5Gui.so.* /usr/lib/x86_64-linux-gnu/libQt5Help.so.* /usr/lib/x86_64-linux-gnu/libQt5Network.so.* /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so.* /usr/lib/x86_64-linux-gnu/libQt5Sql.so.* /usr/lib/x86_64-linux-gnu/libQt5Test.so.* /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.* /usr/lib/x86_64-linux-gnu/libQt5XcbQpa.so.* /usr/lib/x86_64-linux-gnu/libQt5Xml.so.* /usr/lib/x86_64-linux-gnu/libsecp256k1.so* /usr/lib/x86_64-linux-gnu/libsensors.so* /usr/lib/x86_64-linux-gnu/libSM.so* /usr/lib/x86_64-linux-gnu/libvulkan.so* /usr/lib/x86_64-linux-gnu/libwacom.so* /usr/lib/x86_64-linux-gnu/libwayland-client.so* /usr/lib/x86_64-linux-gnu/libwayland-server.so* /usr/lib/x86_64-linux-gnu/libX11.so* /usr/lib/x86_64-linux-gnu/libX11-xcb.so* /usr/lib/x86_64-linux-gnu/libXau.so* /usr/lib/x86_64-linux-gnu/libxcb-dri2.so* /usr/lib/x86_64-linux-gnu/libxcb-dri3.so* /usr/lib/x86_64-linux-gnu/libxcb-glx.so* /usr/lib/x86_64-linux-gnu/libxcb-icccm.so* /usr/lib/x86_64-linux-gnu/libxcb-image.so* /usr/lib/x86_64-linux-gnu/libxcb-keysyms.so* /usr/lib/x86_64-linux-gnu/libxcb-present.so* /usr/lib/x86_64-linux-gnu/libxcb-randr.so* /usr/lib/x86_64-linux-gnu/libxcb-render.so* /usr/lib/x86_64-linux-gnu/libxcb-render-util.so* /usr/lib/x86_64-linux-gnu/libxcb-shape.so* /usr/lib/x86_64-linux-gnu/libxcb-shm.so* /usr/lib/x86_64-linux-gnu/libxcb.so* /usr/lib/x86_64-linux-gnu/libxcb-sync.so* /usr/lib/x86_64-linux-gnu/libxcb-util.so* /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so* /usr/lib/x86_64-linux-gnu/libxcb-xinerama.so* /usr/lib/x86_64-linux-gnu/libxcb-xinput.so* /usr/lib/x86_64-linux-gnu/libxcb-xkb.so* /usr/lib/x86_64-linux-gnu/libXdmcp.so* /usr/lib/x86_64-linux-gnu/libXext.so* /usr/lib/x86_64-linux-gnu/libXfixes.so* /usr/lib/x86_64-linux-gnu/libxkbcommon.so* /usr/lib/x86_64-linux-gnu/libxkbcommon-x11.so* /usr/lib/x86_64-linux-gnu/libXrender.so* /usr/lib/x86_64-linux-gnu/libxshmfence.so* /usr/lib/x86_64-linux-gnu/libXxf86vm.so* /usr/lib/x86_64-linux-gnu/qt5 /usr/lib/x86_64-linux-gnu/qt-default /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/electrum /usr/local/bin/helpdev /usr/local/bin/qdarkstyle /usr/local/bin/qr /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.8/dist-packages/__pycache__ /usr/local/lib/python3.8/dist-packages/aiohttp_socks-*.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp_socks /usr/local/lib/python3.8/dist-packages/aiohttp-*.dist-info /usr/local/lib/python3.8/dist-packages/aiohttp /usr/local/lib/python3.8/dist-packages/aiorpcX-*.dist-info /usr/local/lib/python3.8/dist-packages/aiorpcx /usr/local/lib/python3.8/dist-packages/aiosignal-*.dist-info /usr/local/lib/python3.8/dist-packages/aiosignal /usr/local/lib/python3.8/dist-packages/async_timeout-*.dist-info /usr/local/lib/python3.8/dist-packages/async_timeout /usr/local/lib/python3.8/dist-packages/attr /usr/local/lib/python3.8/dist-packages/attrs-*.dist-info /usr/local/lib/python3.8/dist-packages/attrs /usr/local/lib/python3.8/dist-packages/bitstring-*.dist-info /usr/local/lib/python3.8/dist-packages/bitstring.py /usr/local/lib/python3.8/dist-packages/charset_normalizer-*.dist-info /usr/local/lib/python3.8/dist-packages/charset_normalizer /usr/local/lib/python3.8/dist-packages/dns /usr/local/lib/python3.8/dist-packages/dnspython-*.dist-info /usr/local/lib/python3.8/dist-packages/Electrum-*.dist-info /usr/local/lib/python3.8/dist-packages/electrum /usr/local/lib/python3.8/dist-packages/frozenlist-*.dist-info /usr/local/lib/python3.8/dist-packages/frozenlist /usr/local/lib/python3.8/dist-packages/google /usr/local/lib/python3.8/dist-packages/helpdev-*.dist-info /usr/local/lib/python3.8/dist-packages/helpdev /usr/local/lib/python3.8/dist-packages/multidict-*.dist-info /usr/local/lib/python3.8/dist-packages/multidict /usr/local/lib/python3.8/dist-packages/packaging-21.3.dist-info /usr/local/lib/python3.8/dist-packages/packaging /usr/local/lib/python3.8/dist-packages/protobuf-*-py3.8-nspkg.pth /usr/local/lib/python3.8/dist-packages/protobuf-*.dist-info /usr/local/lib/python3.8/dist-packages/pyparsing-*.dist-info /usr/local/lib/python3.8/dist-packages/pyparsing /usr/local/lib/python3.8/dist-packages/python_socks-*.dist-info /usr/local/lib/python3.8/dist-packages/python_socks /usr/local/lib/python3.8/dist-packages/QDarkStyle-*.dist-info /usr/local/lib/python3.8/dist-packages/qdarkstyle /usr/local/lib/python3.8/dist-packages/qrcode-*.dist-info /usr/local/lib/python3.8/dist-packages/qrcode /usr/local/lib/python3.8/dist-packages/QtPy-*.dist-info /usr/local/lib/python3.8/dist-packages/qtpy /usr/local/lib/python3.8/dist-packages/usr /usr/local/lib/python3.8/dist-packages/yarl-*.dist-info /usr/local/lib/python3.8/dist-packages/yarl /exports/usr/local/lib/python3.8/dist-packages/
-
 # CHARLES
 FROM base AS charles
 COPY --from=wget /exports/ /
@@ -1498,7 +1447,7 @@ ENV \
   PATH=/root/.cargo/bin:$PATH
 RUN \
   apteryx cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3 && \
-  clone --https --tag='v0.8.0' https://github.com/alacritty/alacritty && \
+  clone --https --tag='v0.10.1' https://github.com/alacritty/alacritty && \
   cd /root/src/github.com/alacritty/alacritty && \
   cargo build --release && \
   mv target/release/alacritty /usr/local/bin/alacritty && \
@@ -1539,50 +1488,6 @@ RUN \
 RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/xinput /exports/usr/bin/
-
-# WEECHAT
-FROM base AS weechat
-COPY --from=apteryx /exports/ /
-COPY --from=python3-pip /exports/ /
-RUN \
-  apt-key adv --keyserver hkps://keys.openpgp.org --recv-keys 11E9DE8848F2B65222AA75B8D1820DB22A11534E && \
-  add-apt-repository "deb [arch=amd64] https://weechat.org/ubuntu $(lsb_release -cs) main" && \
-  apteryx weechat-curses weechat-perl weechat-plugins weechat-python && \
-  pip3 install websocket-client
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/locale/cs/LC_MESSAGES/ /exports/usr/share/locale/de/LC_MESSAGES/ /exports/usr/share/locale/es/LC_MESSAGES/ /exports/usr/share/locale/fr/LC_MESSAGES/ /exports/usr/share/locale/hu/LC_MESSAGES/ /exports/usr/share/locale/it/LC_MESSAGES/ /exports/usr/share/locale/ja/LC_MESSAGES/ /exports/usr/share/locale/pl/LC_MESSAGES/ /exports/usr/share/locale/pt_BR/LC_MESSAGES/ /exports/usr/share/locale/pt/LC_MESSAGES/ /exports/usr/share/locale/ru/LC_MESSAGES/ /exports/usr/share/locale/sr/LC_MESSAGES/ /exports/usr/share/locale/tr/LC_MESSAGES/ /exports/usr/share/man/cs/man1/ /exports/usr/share/man/de/man1/ /exports/usr/share/man/fr/man1/ /exports/usr/share/man/it/man1/ /exports/usr/share/man/ja/man1/ /exports/usr/share/man/man1/ /exports/usr/share/man/pl/man1/ /exports/usr/share/man/ru/man1/ /exports/usr/share/man/ /exports/usr/share/menu/ /exports/usr/share/ /exports/usr/share/pixmaps/ && \
-  mv /usr/bin/cpan5.30-x86_64-linux-gnu /usr/bin/perl5.30-x86_64-linux-gnu /usr/bin/weechat /usr/bin/weechat-curses /exports/usr/bin/ && \
-  mv /usr/lib/aspell /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libaspell.so.15 /usr/lib/x86_64-linux-gnu/libaspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.3 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4.6.0 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4 /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.4.0.0 /usr/lib/x86_64-linux-gnu/libgdbm.so.6 /usr/lib/x86_64-linux-gnu/libgdbm.so.6.0.0 /usr/lib/x86_64-linux-gnu/libperl.so.5.30 /usr/lib/x86_64-linux-gnu/libperl.so.5.30.0 /usr/lib/x86_64-linux-gnu/libpspell.so.15 /usr/lib/x86_64-linux-gnu/libpspell.so.15.3.1 /usr/lib/x86_64-linux-gnu/perl /usr/lib/x86_64-linux-gnu/weechat /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/wsdump /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.8/dist-packages/websocket_client-1.3.1.dist-info /usr/local/lib/python3.8/dist-packages/websocket /exports/usr/local/lib/python3.8/dist-packages/ && \
-  mv /usr/share/doc/libaspell15 /usr/share/doc/libcurl3-gnutls /usr/share/doc/libgdbm-compat4 /usr/share/doc/libgdbm6 /usr/share/doc/libperl5.30 /usr/share/doc/perl-modules-5.30 /usr/share/doc/weechat-core /usr/share/doc/weechat-curses /usr/share/doc/weechat-perl /usr/share/doc/weechat-plugins /usr/share/doc/weechat-python /exports/usr/share/doc/ && \
-  mv /usr/share/lintian/overrides/libcurl3-gnutls /usr/share/lintian/overrides/perl-modules-5.30 /exports/usr/share/lintian/overrides/ && \
-  mv /usr/share/locale/cs/LC_MESSAGES/weechat.mo /exports/usr/share/locale/cs/LC_MESSAGES/ && \
-  mv /usr/share/locale/de/LC_MESSAGES/weechat.mo /exports/usr/share/locale/de/LC_MESSAGES/ && \
-  mv /usr/share/locale/es/LC_MESSAGES/weechat.mo /exports/usr/share/locale/es/LC_MESSAGES/ && \
-  mv /usr/share/locale/fr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/fr/LC_MESSAGES/ && \
-  mv /usr/share/locale/hu/LC_MESSAGES/weechat.mo /exports/usr/share/locale/hu/LC_MESSAGES/ && \
-  mv /usr/share/locale/it/LC_MESSAGES/weechat.mo /exports/usr/share/locale/it/LC_MESSAGES/ && \
-  mv /usr/share/locale/ja/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ja/LC_MESSAGES/ && \
-  mv /usr/share/locale/pl/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pl/LC_MESSAGES/ && \
-  mv /usr/share/locale/pt_BR/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt_BR/LC_MESSAGES/ && \
-  mv /usr/share/locale/pt/LC_MESSAGES/weechat.mo /exports/usr/share/locale/pt/LC_MESSAGES/ && \
-  mv /usr/share/locale/ru/LC_MESSAGES/weechat.mo /exports/usr/share/locale/ru/LC_MESSAGES/ && \
-  mv /usr/share/locale/sr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/sr/LC_MESSAGES/ && \
-  mv /usr/share/locale/tr/LC_MESSAGES/weechat.mo /exports/usr/share/locale/tr/LC_MESSAGES/ && \
-  mv /usr/share/man/cs/man1/weechat-curses.1.gz /usr/share/man/cs/man1/weechat.1.gz /exports/usr/share/man/cs/man1/ && \
-  mv /usr/share/man/de/man1/weechat-curses.1.gz /usr/share/man/de/man1/weechat.1.gz /exports/usr/share/man/de/man1/ && \
-  mv /usr/share/man/fr/man1/weechat-curses.1.gz /usr/share/man/fr/man1/weechat.1.gz /exports/usr/share/man/fr/man1/ && \
-  mv /usr/share/man/it/man1/weechat-curses.1.gz /usr/share/man/it/man1/weechat.1.gz /exports/usr/share/man/it/man1/ && \
-  mv /usr/share/man/ja/man1/weechat-curses.1.gz /usr/share/man/ja/man1/weechat.1.gz /exports/usr/share/man/ja/man1/ && \
-  mv /usr/share/man/man1/cpan5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/perl5.30-x86_64-linux-gnu.1.gz /usr/share/man/man1/weechat-curses.1.gz /usr/share/man/man1/weechat.1.gz /exports/usr/share/man/man1/ && \
-  mv /usr/share/man/pl/man1/weechat-curses.1.gz /usr/share/man/pl/man1/weechat.1.gz /exports/usr/share/man/pl/man1/ && \
-  mv /usr/share/man/ru/man1/weechat-curses.1.gz /usr/share/man/ru/man1/weechat.1.gz /exports/usr/share/man/ru/man1/ && \
-  mv /usr/share/man/sr /exports/usr/share/man/ && \
-  mv /usr/share/menu/weechat-curses /exports/usr/share/menu/ && \
-  mv /usr/share/perl /exports/usr/share/ && \
-  mv /usr/share/pixmaps/weechat.xpm /exports/usr/share/pixmaps/
 
 # WATSON
 FROM base AS watson
@@ -1769,7 +1674,7 @@ ENV \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
   apteryx libpq-dev && \
-  pipx install pgcli=='3.4.0' --include-deps
+  pipx install pgcli=='3.4.1' --include-deps
 RUN \
   mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ && \
   mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ && \
@@ -1917,7 +1822,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install httpie=='3.1.0'
+  pipx install httpie=='3.2.1'
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
   mv /usr/local/pipx /exports/usr/local/ && \
@@ -1938,7 +1843,7 @@ RUN \
 FROM base AS heroku
 COPY --from=node /exports/ /
 RUN \
-  npm install -g 'heroku@7.59.4'
+  npm install -g 'heroku@7.60.2'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/heroku /exports/usr/local/bin/ && \
@@ -1991,7 +1896,7 @@ RUN \
 FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64' && \
+  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/v2.5.1/docker-compose-linux-x86_64' && \
   chmod +x /usr/local/bin/docker-compose
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
@@ -2232,7 +2137,6 @@ COPY --from=urlview /exports/ /
 COPY --from=vdirsyncer /exports/ /
 COPY --from=w3m /exports/ /
 COPY --from=watson /exports/ /
-COPY --from=weechat /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=xinput /exports/ /
 COPY --from=xsv /exports/ /
@@ -2240,14 +2144,12 @@ COPY --from=zx /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
 COPY --from=charles /exports/ /
-COPY --from=electrum /exports/ /
 COPY --from=feh /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=light /exports/ /
 COPY --from=peek /exports/ /
 COPY --from=qpdfview /exports/ /
 COPY --from=redshift /exports/ /
-COPY --from=signal /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
 COPY --from=xsecurelock /exports/ /
@@ -2279,7 +2181,6 @@ COPY --from=net-tools /exports/ /
 COPY --from=greenclip /exports/ /
 COPY --from=rofi /exports/ /
 COPY --from=rofi-calc /exports/ /
-COPY --from=caddy /exports/ /
 COPY --from=one-password /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=brave /exports/ /
