@@ -1,0 +1,25 @@
+name = "stripe"
+from = "base"
+
+# https://github.com/stripe/stripe-cli/releases
+version = "1.10.3"
+
+devDependencies = [
+  "wget",
+  "apteryx",
+]
+
+build = """
+wget -O /tmp/stripe.tgz \
+  https://github.com/stripe/stripe-cli/releases/download/v{{VERSION}}/stripe_{{VERSION}}_linux_x86_64.tar.gz
+
+tar xzvf /tmp/stripe.tgz
+
+mv ./stripe /usr/local/bin/stripe
+
+rm /tmp/stripe.tgz
+"""
+
+exports = [
+  "/usr/local/bin/stripe",
+]

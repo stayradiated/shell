@@ -1,8 +1,7 @@
 name = 'brave'
 from = 'base'
 
-# https://www.ubuntuupdates.org/ppa/google_chrome
-version = '1.37.116'
+version = '1.40.107'
 
 devDependencies = [
   'apteryx',
@@ -13,7 +12,7 @@ curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-
 
 echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list
 
-apt-get update
+apt update
 apteryx brave-browser='{{VERSION}}'
 """
 
@@ -22,7 +21,7 @@ exports = [
   "/etc/alternatives/gnome-www-browser",
   "/etc/alternatives/x-cursor-theme",
   "/etc/alternatives/x-www-browser",
-  "/etc/apt/sources.list.d/brave-browser-release.list",
+  # "/etc/apt/sources.list.d/brave-browser-release.list",
   "/etc/cron.daily/brave-browser",
   "/etc/default/brave-browser",
   # "/etc/fonts/",

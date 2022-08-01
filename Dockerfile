@@ -193,7 +193,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.85.81' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.85.86' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -487,36 +487,6 @@ RUN \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
 
-# ONE-PW
-FROM base AS one-pw
-COPY --from=go /exports/ /
-COPY --from=clone /exports/ /
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root \
-  GO111MODULE=auto
-RUN \
-  clone --https --ref='07cc81d9eedd7ff75966316a7a0091ffd7bab188' https://github.com/special/1pw && \
-  cd /root/src/github.com/special/1pw && \
-  go get -v && \
-  go build && \
-  mv 1pw /usr/local/bin/1pw && \
-  rm -rf /root/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/1pw /exports/usr/local/bin/
-
-# DBXCLI
-FROM base AS dbxcli
-COPY --from=wget /exports/ /
-RUN \
-  wget -O dbxcli 'https://github.com/dropbox/dbxcli/releases/download/v3.0.0/dbxcli-linux-amd64' && \
-  chmod +x dbxcli && \
-  mv dbxcli /usr/local/bin/dbxcli
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/dbxcli /exports/usr/local/bin/
-
 # DIFF-SO-FANCY
 FROM base AS diff-so-fancy
 COPY --from=node /exports/ /
@@ -680,18 +650,30 @@ RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/scdoc /exports/usr/local/bin/
 
+# STRIPE
+FROM base AS stripe
+COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
+RUN \
+  wget -O /tmp/stripe.tgz https://github.com/stripe/stripe-cli/releases/download/v1.10.3/stripe_1.10.3_linux_x86_64.tar.gz && \
+  tar xzvf /tmp/stripe.tgz && \
+  mv ./stripe /usr/local/bin/stripe && \
+  rm /tmp/stripe.tgz
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/stripe /exports/usr/local/bin/
+
 # BRAVE
 FROM base AS brave
 COPY --from=apteryx /exports/ /
 RUN \
   curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && \
   echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list && \
-  apt-get update && \
-  apteryx brave-browser='1.37.116'
+  apt update && \
+  apteryx brave-browser='1.40.107'
 RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/apt/sources.list.d/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/sysctl.d/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ && \
+  mkdir -p /exports/etc/alternatives/ /exports/etc/cron.daily/ /exports/etc/default/ /exports/etc/ /exports/etc/sysctl.d/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ && \
   mv /etc/alternatives/brave-browser /etc/alternatives/gnome-www-browser /etc/alternatives/x-cursor-theme /etc/alternatives/x-www-browser /exports/etc/alternatives/ && \
-  mv /etc/apt/sources.list.d/brave-browser-release.list /exports/etc/apt/sources.list.d/ && \
   mv /etc/cron.daily/brave-browser /exports/etc/cron.daily/ && \
   mv /etc/default/brave-browser /exports/etc/default/ && \
   mv /etc/gtk-3.0 /etc/ld.so.cache /etc/mailcap /etc/wgetrc /exports/etc/ && \
@@ -745,13 +727,13 @@ FROM base AS one-password
 COPY --from=apteryx /exports/ /
 RUN \
   curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg && \
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | tee /etc/apt/sources.list.d/1password.list && \
+  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 beta main' | tee /etc/apt/sources.list.d/1password.list && \
   mkdir -p /etc/debsig/policies/AC2D62742012EA22/ && \
   curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol && \
   mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
   curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
   apt update && \
-  apteryx 1password='8.7.0'
+  apteryx 1password='8.8.0~165.BETA'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/X11/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/xml/ /exports/var/cache/ && \
   mv /etc/gtk-3.0 /etc/mailcap /exports/etc/ && \
@@ -1025,20 +1007,13 @@ RUN \
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
 COPY --from=make /exports/ /
-COPY --from=dbxcli /exports/ /
-COPY --from=one-pw /exports/ /
 RUN \
   cd dotfiles && \
-  make dbxcli && \
-  1pw-pull
+  make 1password
 RUN \
-  mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/ && \
-  mv /home/admin/.config/dbxcli /home/admin/exports/home/admin/.config/ && \
-  mv /home/admin/vaults /home/admin/exports/home/admin/
-USER root
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/1pw /usr/local/bin/dbxcli /exports/usr/local/bin/
+  mkdir -p /home/admin/exports/home/admin/.config/1Password/settings/ /home/admin/exports/home/admin/.config/1Password/ && \
+  mv /home/admin/.config/1Password/settings/settings.json /home/admin/exports/home/admin/.config/1Password/settings/ && \
+  mv /home/admin/.config/1Password/1password.sqlite /home/admin/exports/home/admin/.config/1Password/
 
 # SHELL-NPM
 FROM shell-admin AS shell-npm
@@ -1896,11 +1871,12 @@ RUN \
 FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /usr/local/bin/docker-compose 'https://github.com/docker/compose/releases/download/v2.5.1/docker-compose-linux-x86_64' && \
-  chmod +x /usr/local/bin/docker-compose
+  mkdir -p /usr/local/lib/docker/cli-plugins && \
+  wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.8.0/docker-compose-linux-x86_64' && \
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/docker-compose /exports/usr/local/bin/
+  mkdir -p /exports/usr/local/lib/docker/cli-plugins/ && \
+  mv /usr/local/lib/docker/cli-plugins/docker-compose /exports/usr/local/lib/docker/cli-plugins/
 
 # DOCKER
 FROM base AS docker
@@ -1910,7 +1886,7 @@ RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
-  apteryx docker-ce='5:20.10.13*'
+  apteryx docker-ce='5:20.10.17*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ && \
   mv /usr/bin/docker /exports/usr/bin/ && \
@@ -2161,7 +2137,6 @@ COPY --from=shell-git /exports/ /
 COPY --from=shell-npm --chown=admin /home/admin/exports/ /
 COPY --from=shell-npm /exports/ /
 COPY --from=shell-passwords --chown=admin /home/admin/exports/ /
-COPY --from=shell-passwords /exports/ /
 COPY --from=shell-ranger --chown=admin /home/admin/exports/ /
 COPY --from=shell-ranger /exports/ /
 COPY --from=shell-ssh --chown=admin /home/admin/exports/ /
@@ -2184,6 +2159,7 @@ COPY --from=rofi-calc /exports/ /
 COPY --from=one-password /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=brave /exports/ /
+COPY --from=stripe /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

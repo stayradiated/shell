@@ -2,20 +2,24 @@ name = 'docker-compose'
 from = 'base'
 
 # https://github.com/docker/compose/releases
-version = 'v2.5.1'
+version = 'v2.8.0'
 
 devDependencies = [
   'wget'
 ]
 
 build = """
+mkdir -p /usr/local/lib/docker/cli-plugins
+
 wget \
-  -O /usr/local/bin/docker-compose \
+  -O /usr/local/lib/docker/cli-plugins/docker-compose \
   'https://github.com/docker/compose/releases/download/{{VERSION}}/docker-compose-linux-x86_64'
 
-chmod +x /usr/local/bin/docker-compose
+# install as a Docker CLI Plugin
+# accessible via `docker compose`
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 """
 
 exports = [
-  '/usr/local/bin/docker-compose'
+  '/usr/local/lib/docker/cli-plugins/docker-compose'
 ]

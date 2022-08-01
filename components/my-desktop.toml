@@ -106,6 +106,8 @@ dependencies = [
   'fonts',
   'brave',
 
+  'stripe',
+
   # 'hey',
 
   # 'glow',
