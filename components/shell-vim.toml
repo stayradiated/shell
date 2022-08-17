@@ -14,7 +14,7 @@ build = """
 cd dotfiles
 make vim
 
-nvim +'call dein#update()' +qall
+nvim +'call dein#install()' +qall
 nvim +UpdateRemotePlugins +qall
 """
 

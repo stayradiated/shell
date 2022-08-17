@@ -2,7 +2,7 @@ name = 'watson'
 from = 'base'
 
 # https://github.com/TailorDev/Watson/releases
-version = '2.0.1'
+version = '2.1.0'
 
 devDependencies = [
   'python3-pip',
@@ -10,10 +10,7 @@ devDependencies = [
 ]
 
 build = """
-# temporary fix for click v8
 pipx install td-watson=={{VERSION}}
-# fix for https://github.com/TailorDev/Watson/issues/430
-pipx inject td-watson click==7.1.2
 rm -rf /root/.cache/pip
 """
 

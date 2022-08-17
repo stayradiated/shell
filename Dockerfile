@@ -45,14 +45,15 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN \
   add-apt-repository ppa:git-core/ppa && \
-  apteryx git='1:2.36.1-*'
+  apteryx git='1:2.37.1-*'
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/share/git-core /usr/share/perl /usr/share/man /exports/usr/share/ && \
-  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
+  mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/ && \
+  mv /var/lib/git /exports/var/lib/
 
 # GO
 FROM base AS go
@@ -96,13 +97,14 @@ RUN \
   cd /root && \
   rm -rf src bin
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/perl5/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/clone /exports/usr/local/bin/ && \
-  mv /usr/share/git-core /usr/share/man /usr/share/perl /exports/usr/share/ && \
-  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/ && \
+  mv /var/lib/git /exports/var/lib/
 
 # BUILD-ESSENTIAL
 FROM base AS build-essential
@@ -157,7 +159,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx libssl-dev xsltproc && \
-  clone --https --tag='0.6.0' https://github.com/AGWA/git-crypt && \
+  clone --https --tag='0.7.0' https://github.com/AGWA/git-crypt && \
   cd /root/src/github.com/AGWA/git-crypt && \
   ENABLE_MAN=yes make && \
   make install && \
@@ -193,7 +195,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.85.86' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.85.108' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -207,7 +209,7 @@ RUN \
 FROM base AS n
 COPY --from=wget /exports/ /
 RUN \
-  wget "https://raw.githubusercontent.com/tj/n/v7.2.2/bin/n" -O /usr/local/bin/n && \
+  wget "https://raw.githubusercontent.com/tj/n/v9.0.0/bin/n" -O /usr/local/bin/n && \
   chmod +x /usr/local/bin/n
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
@@ -219,7 +221,7 @@ COPY --from=apteryx /exports/ /
 RUN \
   apteryx python3-pip python3-dev python3-setuptools python3-venv python3-wheel && \
   pip3 install wheel && \
-  python3 -m pip install -U pip==22.0.4
+  python3 -m pip install -U pip==22.2.1
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/python3.8/ /exports/usr/lib/python3.8/distutils/__pycache__/ /exports/usr/lib/python3.8/distutils/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/python3/dist-packages/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ /exports/usr/share/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/doc/libcrypt1/ /exports/usr/share/doc/python3.8/ /exports/usr/share/gdb/auto-load/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man3/ /exports/usr/share/man/man5/ && \
   mv /usr/bin/gencat /usr/bin/mtrace /usr/bin/pip /usr/bin/pip3 /usr/bin/python3-config /usr/bin/python3.8-config /usr/bin/pyvenv /usr/bin/rpcgen /usr/bin/sotruss /usr/bin/sprof /usr/bin/x86_64-linux-gnu-python3-config /usr/bin/x86_64-linux-gnu-python3.8-config /exports/usr/bin/ && \
@@ -273,7 +275,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN \
   n lts && \
-  n 16.15.0 && \
+  n 16.17.0 && \
   npm install -g npm
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
@@ -287,7 +289,7 @@ FROM base AS pipx
 COPY --from=apteryx /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
-  pip3 install pipx==1.0.0
+  pip3 install pipx==1.1.0
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.8/dist-packages/ && \
   mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/python-argcomplete-tcsh /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ && \
@@ -373,7 +375,7 @@ RUN \
 FROM base AS yarn
 COPY --from=node /exports/ /
 RUN \
-  npm install -g 'yarn@1.22.10'
+  npm install -g 'yarn@1.22.19'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/yarn /exports/usr/local/bin/ && \
@@ -849,7 +851,7 @@ RUN \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN \
-  npm install -g 'pnpm@6.7.6'
+  npm install -g 'pnpm@7.9.0'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ && \
@@ -937,7 +939,7 @@ COPY --from=neovim /exports/ /
 RUN \
   cd dotfiles && \
   make vim && \
-  nvim +'call dein#update()' +qall && \
+  nvim +'call dein#install()' +qall && \
   nvim +UpdateRemotePlugins +qall
 RUN \
   mkdir -p /home/admin/exports/home/admin/.config/ /home/admin/exports/home/admin/.local/share/ /home/admin/exports/home/admin/dotfiles/apps/ && \
@@ -1049,15 +1051,16 @@ RUN \
   mv /home/admin/.gitconfig /home/admin/exports/home/admin/
 USER root
 RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ /exports/usr/local/share/man/man1/ /exports/usr/share/ /exports/usr/share/perl5/ && \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ /exports/usr/local/share/man/man1/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ && \
   mv /usr/bin/git /exports/usr/bin/ && \
   mv /usr/lib/git-core /exports/usr/lib/ && \
   mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/local/bin/diff-so-fancy /usr/local/bin/git-crypt /exports/usr/local/bin/ && \
   mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/share/man/man1/git-crypt.1 /exports/usr/local/share/man/man1/ && \
-  mv /usr/share/git-core /usr/share/man /usr/share/perl /exports/usr/share/ && \
-  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/
+  mv /usr/share/git-core /usr/share/perl /exports/usr/share/ && \
+  mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/ && \
+  mv /var/lib/git /exports/var/lib/
 
 # SHELL-CRON
 FROM base AS shell-cron
@@ -1472,8 +1475,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  pipx install td-watson==2.0.1 && \
-  pipx inject td-watson click==7.1.2 && \
+  pipx install td-watson==2.1.0 && \
   rm -rf /root/.cache/pip
 RUN \
   mkdir -p /exports/usr/local/ /exports/usr/local/bin/ && \
@@ -1828,11 +1830,11 @@ RUN \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.5.2/gh_2.5.2_linux_amd64.tar.gz' && \
+  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.14.4/gh_2.14.4_linux_amd64.tar.gz' && \
   tar xzvf /tmp/gh.tgz && \
   rm /tmp/gh.tgz && \
-  mv 'gh_2.5.2_linux_amd64/bin/gh' /usr/local/bin/gh && \
-  rm -r 'gh_2.5.2_linux_amd64'
+  mv 'gh_2.14.4_linux_amd64/bin/gh' /usr/local/bin/gh && \
+  rm -r 'gh_2.14.4_linux_amd64'
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/gh /exports/usr/local/bin/

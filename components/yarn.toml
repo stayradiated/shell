@@ -2,7 +2,7 @@ name = 'yarn'
 from = 'base'
 
 # https://www.npmjs.com/package/yarn
-version = '1.22.10'
+version = '1.22.19'
 
 devDependencies = [
   'node'

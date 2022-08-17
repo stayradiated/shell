@@ -2,7 +2,7 @@ name = 'pnpm'
 from = 'base'
 
 # https://npmjs.com/package/pnpm
-version = '6.7.6'
+version = '7.9.0'
 
 devDependencies = [
   'node'

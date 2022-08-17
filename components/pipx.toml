@@ -2,7 +2,7 @@ name = 'pipx'
 from = 'base'
 
 # https://github.com/pipxproject/pipx/releases/
-version = '1.0.0'
+version = '1.1.0'
 
 devDependencies = [
   'apteryx',
