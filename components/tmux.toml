@@ -2,7 +2,7 @@ name = 'tmux'
 from = 'base'
 
 # https://github.com/tmux/tmux/releases
-version = '3.2a'
+version = '3.3a'
 
 devDependencies = [
   'apteryx',
@@ -62,24 +62,19 @@ exports = [
   "/usr/lib/valgrind/ncurses.supp",
   "/usr/lib/x86_64-linux-gnu/libcurses.a",
   "/usr/lib/x86_64-linux-gnu/libcurses.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_core-2.1.so.7",
-  "/usr/lib/x86_64-linux-gnu/libevent_core-2.1.so.7.0.0",
+  "/usr/lib/x86_64-linux-gnu/libevent_core-*.so.*",
   "/usr/lib/x86_64-linux-gnu/libevent_core.a",
   "/usr/lib/x86_64-linux-gnu/libevent_core.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_extra-2.1.so.7",
-  "/usr/lib/x86_64-linux-gnu/libevent_extra-2.1.so.7.0.0",
+  "/usr/lib/x86_64-linux-gnu/libevent_extra-*.so.*",
   "/usr/lib/x86_64-linux-gnu/libevent_extra.a",
   "/usr/lib/x86_64-linux-gnu/libevent_extra.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_openssl-2.1.so.7",
-  "/usr/lib/x86_64-linux-gnu/libevent_openssl-2.1.so.7.0.0",
+  "/usr/lib/x86_64-linux-gnu/libevent_openssl-*.so.*",
   "/usr/lib/x86_64-linux-gnu/libevent_openssl.a",
   "/usr/lib/x86_64-linux-gnu/libevent_openssl.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-2.1.so.7",
-  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-2.1.so.7.0.0",
+  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-*.so.*",
   "/usr/lib/x86_64-linux-gnu/libevent_pthreads.a",
   "/usr/lib/x86_64-linux-gnu/libevent_pthreads.so",
-  "/usr/lib/x86_64-linux-gnu/libevent-2.1.so.7",
-  "/usr/lib/x86_64-linux-gnu/libevent-2.1.so.7.0.0",
+  "/usr/lib/x86_64-linux-gnu/libevent-*.so.*",
   "/usr/lib/x86_64-linux-gnu/libevent.a",
   "/usr/lib/x86_64-linux-gnu/libevent.so",
   "/usr/lib/x86_64-linux-gnu/libform.a",

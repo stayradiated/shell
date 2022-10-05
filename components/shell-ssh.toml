@@ -13,6 +13,7 @@ make ssh
 # docker doesn't seem to preserve chmod when copying files :(
 install = """
 chmod 0600 /home/admin/.ssh/*
+chmod +x /home/admin/.ssh/sockets
 """
 
 exports = [

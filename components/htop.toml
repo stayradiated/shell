@@ -1,7 +1,7 @@
 name = 'htop'
 from = 'base'
 
-version = '2.2.0-*'
+version = '3.0.5-*'
 
 devDependencies = [ 'apteryx' ]
 

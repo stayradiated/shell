@@ -1,0 +1,21 @@
+name = 'wifi'
+from = 'base'
+
+# https://github.com/stayradiated/wifi
+version = 'v1.2.0'
+
+devDependencies = [
+  'clone',
+  'go'
+]
+
+build = """
+clone --https --tag={{VERSION}} https://github.com/stayradiated/wifi
+cd /root/src/github.com/stayradiated/wifi
+go build
+mv wifi /usr/local/bin/wifi
+"""
+
+exports = [
+  "/usr/local/bin/wifi"
+]

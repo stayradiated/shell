@@ -15,10 +15,7 @@ apteryx \
   fonts-noto \
   fonts-noto-cjk \
   fonts-noto-color-emoji \
-  ttf-ubuntu-font-family \
   xfonts-utils
-
-#RUN
 
 mkdir -p /usr/share/fonts/X11/bitmap
 

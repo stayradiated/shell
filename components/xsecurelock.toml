@@ -49,7 +49,7 @@ exports = [
   '/etc/pam.d/xscreensaver',
   '/usr/bin/xscreensaver',
   '/usr/bin/xscreensaver-*',
-  '/usr/lib/xscreensaver/',
+  '/usr/libexec/xscreensaver/',
   '/usr/share/xscreensaver/',
   "/usr/lib/systemd/user/xscreensaver.service",
   '/usr/local/bin/xsecurelock',

@@ -1,0 +1,41 @@
+name = 'ruby'
+from = 'base'
+
+version = '2.7.6'
+
+devDependencies = [
+  'apteryx',
+  'clone',
+]
+
+build = """
+# https://github.com/rbenv/ruby-build/wiki#suggested-build-environment
+apteryx \
+  autoconf \
+  bison \
+  build-essential \
+  libssl-dev \
+  libyaml-dev \
+  libreadline6-dev \
+  zlib1g-dev \
+  libncurses5-dev \
+  libffi-dev \
+  libgdbm6 \
+  libgdbm-dev \
+  libdb-dev \
+  uuid-dev
+
+clone --https --shallow https://github.com/rbenv/ruby-build
+cd /root/src/github.com/rbenv/ruby-build
+
+mkdir -p /usr/local/ruby/{{VERSION}}
+./bin/ruby-build --verbose {{VERSION}} /usr/local/ruby/{{VERSION}}
+"""
+
+exports = [
+  "/usr/local/ruby"
+]
+
+exportEnv = [
+  ['PATH', "${PATH}:/usr/local/ruby/2.7.6/bin"]
+]

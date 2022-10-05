@@ -28,7 +28,7 @@ dependencies = [
   'htop',
   'httpie',
   'jq',
-  'khal',
+  # 'khal',
   'libglib',
   'make',
   'man',
@@ -51,7 +51,7 @@ dependencies = [
   'tree',
   'unzip',
   'urlview',
-  'vdirsyncer',
+  # 'vdirsyncer',
   'w3m',
   'watson',
   # 'weechat',
@@ -107,6 +107,8 @@ dependencies = [
   'brave',
 
   'stripe',
+  'ruby',
+  'wifi',
 
   # 'hey',
 

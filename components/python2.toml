@@ -1,7 +1,7 @@
 name = 'python2'
 from = 'base'
 
-version = '2.7.18-1~*'
+version = '2.7.18-*'
 
 devDependencies = [
   'apteryx'

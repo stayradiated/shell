@@ -2,7 +2,7 @@ name = 'autotag'
 from = 'base'
 
 # https://github.com/pantheon-systems/autotag/releases
-version = "v1.3.18"
+version = "v1.3.23"
 
 devDependencies = [ "wget" ]
 

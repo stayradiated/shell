@@ -3,6 +3,7 @@ from = 'shell-admin'
 
 dependencies = [
   'neovim',
+  'node',
 ]
 
 devDependencies = [
@@ -14,7 +15,7 @@ build = """
 cd dotfiles
 make vim
 
-nvim +'call dein#install()' +qall
+nvim +'set display=lastline' +'call dein#install()' +qall || true
 nvim +UpdateRemotePlugins +qall
 """
 

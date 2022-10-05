@@ -2,7 +2,7 @@ name = 'neovim'
 from = 'base'
 
 # https://github.com/neovim/neovim/releases
-version = 'v0.7.0'
+version = 'v0.8.0'
 
 devDependencies = [
   'wget',
@@ -30,21 +30,21 @@ pip3 install neovim msgpack neovim-remote
 """
 
 exports = [
+  "/usr/include/python3.10/greenlet/",
   "/usr/local/bin/nvim",
   "/usr/local/bin/nvr",
-  "/usr/local/include/python3.8/",
-  "/usr/local/lib/python3.8/dist-packages/greenlet-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/greenlet/",
-  "/usr/local/lib/python3.8/dist-packages/msgpack-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/msgpack/",
-  "/usr/local/lib/python3.8/dist-packages/neovim_remote-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/neovim-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/neovim/",
-  "/usr/local/lib/python3.8/dist-packages/nvr/",
-  "/usr/local/lib/python3.8/dist-packages/psutil-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/psutil/",
-  "/usr/local/lib/python3.8/dist-packages/pynvim-*.dist-info/",
-  "/usr/local/lib/python3.8/dist-packages/pynvim/",
+  "/usr/local/lib/python3.10/dist-packages/greenlet-1.1.3.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/greenlet/",
+  "/usr/local/lib/python3.10/dist-packages/msgpack-1.0.4.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/msgpack/",
+  "/usr/local/lib/python3.10/dist-packages/neovim_remote-2.5.1.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/neovim-0.3.1.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/neovim/",
+  "/usr/local/lib/python3.10/dist-packages/nvr/",
+  "/usr/local/lib/python3.10/dist-packages/psutil-5.9.2.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/psutil/",
+  "/usr/local/lib/python3.10/dist-packages/pynvim-0.4.3.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/pynvim/",
   "/usr/local/share/man/man1/",
   "/usr/local/share/nvim/",
 ]

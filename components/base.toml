@@ -1,11 +1,11 @@
 name = 'base'
-fromImage = 'phusion/baseimage:focal-1.2.0'
+fromImage = 'phusion/baseimage:jammy-1.0.1'
 
 # https://github.com/phusion/baseimage-docker
 
 baseExportDir = '/exports/'
 
-version = '2022-05-25'
+version = '2022-10-04'
 
 build = """
 echo {{VERSION}}

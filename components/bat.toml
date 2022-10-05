@@ -2,7 +2,7 @@ name = 'bat'
 from = 'base'
 
 # https://github.com/sharkdp/bat/releases
-version = '0.20.0'
+version = '0.22.1'
 
 devDependencies = [
   'wget',

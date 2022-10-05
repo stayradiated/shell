@@ -2,7 +2,7 @@ name = 'light'
 from = 'base'
 
 # https://github.com/haikarainen/light/releases
-version = 'v1.2.2'
+version = 'c5fb45423ec1ee1080e442e061ccfcdb98b32e4a'
 
 devDependencies = [
   'build-essential',
@@ -12,8 +12,7 @@ devDependencies = [
 
 build = """
 apteryx automake autoconf
-#RUN
-clone --https --tag='{{VERSION}}' https://github.com/haikarainen/light
+clone --https --ref='{{VERSION}}' https://github.com/haikarainen/light
 cd /root/src/github.com/haikarainen/light
 ./autogen.sh
 ./configure
