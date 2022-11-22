@@ -1,0 +1,17 @@
+name = "ar"
+from = "base"
+
+version = "2.38-*"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx binutils='{{VERSION}}'
+mv /usr/bin/x86_64-linux-gnu-ar /usr/bin/ar
+"""
+
+exports = [
+  "/usr/bin/ar",
+  "/usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so"
+]
+

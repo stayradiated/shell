@@ -4,7 +4,7 @@ from = 'base'
 # https://www.mozilla.org/en-US/firefox/releases/
 version = '105.0.2'
 
-devDependencies = [ 'wget', 'bzip2' ]
+devDependencies = [ 'apteryx', 'wget', 'bzip2' ]
 
 build = """
 wget \
@@ -33,10 +33,13 @@ echo "MimeType=text/html;text/xml;application/xhtml+xml;application/xml;applicat
 echo "StartupNotify=true" >> /desktop
 
 mv /desktop /usr/share/applications/firefox.desktop
+
+apteryx libdbus-glib-1-2
 """
 
 exports = [
   '/opt/firefox',
   '/usr/local/bin/firefox',
   '/usr/share/applications/firefox.desktop',
+  '/usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.*',
 ]

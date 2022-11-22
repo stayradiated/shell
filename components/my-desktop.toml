@@ -92,7 +92,7 @@ dependencies = [
   # 'gnuplot',
   'pnpm',
   'sc-im',
-  # 'ngrok',
+  'ngrok',
   'gifski',
   'net-tools',
 
@@ -109,6 +109,12 @@ dependencies = [
   'stripe',
   'ruby',
   'wifi',
+
+  'darktable',
+  'pio',
+  'imgp',
+
+  'kolide',
 
   # 'hey',
 

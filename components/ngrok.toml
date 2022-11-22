@@ -2,19 +2,18 @@ name = 'ngrok'
 from = 'base'
 
 # https://dashboard.ngrok.com/get-started/setup
-version = '4VmDzA7iaHb'
+version = 'bNyj1mQVY4c'
 
 devDependencies = [
   'wget',
-  'unzip',
 ]
 
 build = """
 wget \
-  -O /tmp/ngrok.zip \
-  'https://bin.equinox.io/c/{{VERSION}}/ngrok-stable-linux-amd64.zip'
-unzip /tmp/ngrok.zip
-rm /tmp/ngrok.zip
+  -O /tmp/ngrok.tgz \
+  'https://bin.equinox.io/c/{{VERSION}}/ngrok-v3-stable-linux-amd64.tgz'
+tar xzvf /tmp/ngrok.tgz
+rm /tmp/ngrok.tgz
 mv ngrok /usr/local/bin/ngrok
 """
 
