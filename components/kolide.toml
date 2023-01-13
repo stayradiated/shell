@@ -34,7 +34,6 @@ rm /tmp/launcher.zip
 mv ./linux.amd64/launcher /usr/local/kolide-k2/bin/launcher
 rm -r ./linux.amd64
 
-#RUN
 mkdir -p /var/kolide-k2/k2device.kolide.com/
 
 cd /etc/kolide-k2/

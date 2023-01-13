@@ -28,7 +28,6 @@ dependencies = [
   'htop',
   'httpie',
   'jq',
-  # 'khal',
   'libglib',
   'make',
   'man',
@@ -51,12 +50,9 @@ dependencies = [
   'tree',
   'unzip',
   'urlview',
-  # 'vdirsyncer',
   'w3m',
   'watson',
-  # 'weechat',
   'wget',
-  # 'withexeditorhost',
   'xinput',
   'xsv',
   'zx',
@@ -64,17 +60,17 @@ dependencies = [
   'alacritty',
   'audacity',
   'charles',
-  # 'electrum',
   'feh',
   'flameshot',
   'light',
-  'peek',
   'qpdfview',
   'redshift',
-  # 'signal',
   'xclip',
   'xdg-utils',
   'xsecurelock',
+
+  # 'signal',
+  'peek',
 
   'shell-browser',
   'shell-cron',
@@ -89,7 +85,6 @@ dependencies = [
   'shell-yarn',
   'shell-zsh',
 
-  # 'gnuplot',
   'pnpm',
   'sc-im',
   'ngrok',
@@ -100,7 +95,6 @@ dependencies = [
   'rofi',
   'rofi-calc',
 
-  # 'caddy',
 
   'one-password',
   'fonts',
@@ -117,7 +111,6 @@ dependencies = [
   'kolide',
 
   # 'hey',
-
   # 'glow',
   # 'dive',
 
@@ -127,10 +120,17 @@ dependencies = [
   # 'xournalpp',
   # 'deno',
 
+  'bandwhich',
+  'caddy',
+
   # unused
   # ======
+  # 'khal',
+  # 'vdirsyncer',
+  # 'weechat',
+  # 'withexeditorhost',
+  # 'electrum',
   # 'trousseau',
-  # 'bandwhich',
   # 'calibre',
   # 'chs',
   # 'clang-format',
@@ -147,6 +147,7 @@ dependencies = [
 
   # broken
   # ======
+  # 'gnuplot',
   # 'java',
   # 'gthumb',
   # 'olive-editor',
