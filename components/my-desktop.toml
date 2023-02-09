@@ -95,7 +95,6 @@ dependencies = [
   'rofi',
   'rofi-calc',
 
-
   'one-password',
   'fonts',
   'brave',
@@ -105,9 +104,12 @@ dependencies = [
   'wifi',
 
   'darktable',
-  'pio',
+  # 'pio',
   'imgp',
+  'rhash',
+  'gimp',
 
+  # required by Runn
   'kolide',
 
   # 'hey',

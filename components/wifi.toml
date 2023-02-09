@@ -2,7 +2,7 @@ name = 'wifi'
 from = 'base'
 
 # https://github.com/stayradiated/wifi
-version = 'v1.2.0'
+version = 'v1.3.0'
 
 devDependencies = [
   'clone',
