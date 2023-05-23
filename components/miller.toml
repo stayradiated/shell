@@ -2,20 +2,21 @@ name = 'miller'
 from = 'base'
 
 # https://github.com/johnkerl/miller/releases
-version = 'v5.10.2'
+version = '6.7.0'
 
 devDependencies = [
   'wget',
+  'apteryx',
 ]
 
 build = """
 wget \
-  -O /usr/local/bin/mlr \
-  https://github.com/johnkerl/miller/releases/download/{{VERSION}}/mlr.linux.x86_64
+  -O /tmp/miller.deb \
+  https://github.com/johnkerl/miller/releases/download/v{{VERSION}}/miller-{{VERSION}}-linux-amd64.deb
 
-chmod +x /usr/local/bin/mlr
+apteryx /tmp/miller.deb
 """
 
 exports = [
-  '/usr/local/bin/mlr',
+  '/usr/bin/mlr',
 ]

@@ -2,7 +2,7 @@ name = 'tig'
 from = 'base'
 
 # https://github.com/jonas/tig/releases
-version = 'tig-2.5.5'
+version = 'tig-2.5.8'
 
 devDependencies = [
   'build-essential',

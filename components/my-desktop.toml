@@ -8,7 +8,7 @@ dependencies = [
   'python3-pip',
 
   'acpi',
-  'aerc',
+  # 'aerc',
   'alsa-utils',
   'apulse',
   'autotag',
@@ -24,7 +24,6 @@ dependencies = [
   'fzf',
   'gh',
   'go',
-  'heroku',
   'htop',
   'httpie',
   'jq',
@@ -39,6 +38,7 @@ dependencies = [
   'node',
   'peaclock',
   'pgcli',
+  'pipx',
   'prettyping',
   'ripgrep',
   'rsync',
@@ -49,17 +49,17 @@ dependencies = [
   'tig',
   'tree',
   'unzip',
-  'urlview',
-  'w3m',
   'watson',
   'wget',
   'xinput',
   'xsv',
-  'zx',
+
+  # i think i need these for tmux?
+  # 'urlview',
+  # 'w3m',
 
   'alacritty',
   'audacity',
-  'charles',
   'feh',
   'flameshot',
   'light',
@@ -70,7 +70,7 @@ dependencies = [
   'xsecurelock',
 
   # 'signal',
-  'peek',
+  # 'peek',
 
   'shell-browser',
   'shell-cron',
@@ -86,9 +86,6 @@ dependencies = [
   'shell-zsh',
 
   'pnpm',
-  'sc-im',
-  'ngrok',
-  'gifski',
   'net-tools',
 
   'greenclip',
@@ -97,64 +94,35 @@ dependencies = [
 
   'one-password',
   'fonts',
-  'brave',
 
-  'stripe',
-  'ruby',
   'wifi',
 
   'darktable',
-  # 'pio',
   'imgp',
   'rhash',
-  'gimp',
-
-  # required by Runn
-  'kolide',
-
-  # 'hey',
-  # 'glow',
-  # 'dive',
-
-  # 'wacom',
-  # 'adb',
-  # 'figlet',
-  # 'xournalpp',
-  # 'deno',
 
   'bandwhich',
   'caddy',
 
-  # unused
-  # ======
-  # 'khal',
-  # 'vdirsyncer',
-  # 'weechat',
-  # 'withexeditorhost',
-  # 'electrum',
-  # 'trousseau',
-  # 'calibre',
-  # 'chs',
-  # 'clang-format',
-  # 'etcher',
-  # 'ffmpeg',
-  # 'gcloud',
-  # 'hyperfine',
-  # 'mycli',
-  # 'np',
-  # 'prolog',
-  # 'rexpaint',
-  # 'wine',
-  # 'youtube-dl',
+  'llm',
+  'strip-tags',
+  'ttok',
 
-  # broken
-  # ======
-  # 'gnuplot',
-  # 'java',
-  # 'gthumb',
-  # 'olive-editor',
-  # 'vlc',
-  # 'xdo',
+  # Runn
+  'kolide',
+  # 'heroku',
+  # 'charles',
+  # 'brave',
+  # 'ruby',
+  # 'gifski',
+
+  # data tools
+  # 'sc-im',
+
+  # volatile development
+  # 'stripe',
+  # 'ngrok',
+
 ]
 
 command = '/home/admin/.xinitrc'

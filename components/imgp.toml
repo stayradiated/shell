@@ -1,6 +1,7 @@
 name = "imgp"
 from = "base"
 
+# https://github.com/jarun/imgp/releases
 version = "2.8"
 
 devDependencies = [

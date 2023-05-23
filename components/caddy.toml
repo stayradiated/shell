@@ -2,7 +2,7 @@ name = 'caddy'
 from = 'base'
 
 # https://github.com/caddyserver/caddy/releases
-version = '2.4.3'
+version = '2.6.4'
 
 devDependencies = [
   'wget'

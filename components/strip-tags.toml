@@ -1,0 +1,13 @@
+name = "strip-tags"
+from = "base"
+
+version = "0.3"
+
+devDependencies = [ "python3-pip", "pipx" ]
+
+build = """
+pipx install strip-tags=='{{VERSION}}'
+"""
+
+exports = [ "/usr/local/bin/strip-tags", "/usr/local/pipx/" ]
+

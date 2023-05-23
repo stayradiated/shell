@@ -2,7 +2,7 @@ name = 'rofi-calc'
 from = 'base'
 
 # https://github.com/svenstaro/rofi-calc/tags
-version = 'v2.1.0'
+version = 'v2.2.0'
 
 devDependencies = [ 'build-essential', 'clone', 'apteryx' ]
 

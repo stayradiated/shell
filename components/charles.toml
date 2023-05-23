@@ -1,7 +1,8 @@
 name = 'charles'
 from = 'base'
 
-version = '4.6.2'
+# https://www.charlesproxy.com/
+version = '4.6.4'
 
 devDependencies = [
   'wget',

@@ -1,7 +1,8 @@
 name = 'brave'
 from = 'base'
 
-version = '1.44.105'
+# https://github.com/brave/brave-browser/releases
+version = '1.51.118'
 
 devDependencies = [
   'apteryx',

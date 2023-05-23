@@ -2,7 +2,8 @@ name = 'docker'
 from = 'base'
 
 # https://docs.docker.com/engine/release-notes/
-version ='5:20.10.18*'
+# prefix the version number with 5:
+version ='24.0.1'
 
 devDependencies = [
   'apteryx',
@@ -13,7 +14,7 @@ build = """
 wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg
 apt-key add /tmp/docker.gpg
 apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable'
-apteryx docker-ce='{{VERSION}}'
+apteryx docker-ce='5:{{VERSION}}*'
 """
 
 exports = [

@@ -1,0 +1,13 @@
+name = "llm"
+from = "base"
+
+version = "0.3"
+
+devDependencies = [ "python3-pip", "pipx" ]
+
+build = """
+pipx install llm=='{{VERSION}}'
+"""
+
+exports = [ "/usr/local/bin/llm", "/usr/local/pipx/" ]
+

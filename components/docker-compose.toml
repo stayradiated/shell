@@ -2,7 +2,7 @@ name = 'docker-compose'
 from = 'base'
 
 # https://github.com/docker/compose/releases
-version = 'v2.11.2'
+version = 'v2.18.1'
 
 devDependencies = [
   'wget'

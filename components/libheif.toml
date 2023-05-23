@@ -1,0 +1,34 @@
+name = 'libheif'
+from = 'base'
+
+# https://github.com/strukturag/libheif/releases
+version = 'v1.13.0'
+
+devDependencies = [
+  'build-essential',
+  'cmake',
+  'clone',
+]
+
+build = """
+clone --https --shallow --tag {{VERSION}} github.com/strukturag/libheif
+
+cd /root/src/github.com/strukturag/libheif
+cmake .
+make
+make install
+
+rm -r /root/src
+
+cp /usr/local/lib/libheif.so* /usr/lib/x86_64-linux-gnu/
+"""
+
+exports = [
+  "/usr/lib/x86_64-linux-gnu/libheif.so",
+  "/usr/lib/x86_64-linux-gnu/libheif.so.1",
+  "/usr/lib/x86_64-linux-gnu/libheif.so.1.13.0.0",
+  "/usr/local/bin/heif-convert",
+  "/usr/local/bin/heif-enc",
+  "/usr/local/bin/heif-info",
+  "/usr/local/include/libheif/"
+]

@@ -1,0 +1,13 @@
+name = "ttok"
+from = "base"
+
+version = "0.1"
+
+devDependencies = [ "python3-pip", "pipx" ]
+
+build = """
+pipx install ttok=='{{VERSION}}'
+"""
+
+exports = [ "/usr/local/bin/ttok", "/usr/local/pipx/" ]
+

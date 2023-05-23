@@ -2,7 +2,6 @@ name = 'base'
 fromImage = 'phusion/baseimage:jammy-1.0.1' # 22.04
 
 # https://github.com/phusion/baseimage-docker
-
 baseExportDir = '/exports/'
 
 version = '2022-10-04'

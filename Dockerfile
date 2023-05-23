@@ -59,7 +59,7 @@ RUN \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.19.4.linux-amd64.tar.gz" && \
+  wget -O /tmp/go.tgz "https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz" && \
   tar xzvf /tmp/go.tgz && \
   mv go /usr/local/go && \
   rm -rf /tmp/go.tgz
@@ -177,7 +177,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN \
-  clone --https --tag='v1.85.149' https://github.com/stayradiated/dotfiles && \
+  clone --https --tag='v1.85.158' https://github.com/stayradiated/dotfiles && \
   cd /root/src/github.com/stayradiated/dotfiles && \
   git-crypt unlock /tmp/dotfiles-key && \
   rm /tmp/dotfiles-key && \
@@ -229,6 +229,18 @@ RUN \
   mv /usr/share/man/man3/bindresvport.3t.gz /usr/share/man/man3/crypt_checksalt.3.gz /usr/share/man/man3/crypt_gensalt_ra.3.gz /usr/share/man/man3/crypt_gensalt_rn.3.gz /usr/share/man/man3/crypt_gensalt.3.gz /usr/share/man/man3/crypt_preferred_method.3.gz /usr/share/man/man3/crypt_r.3.gz /usr/share/man/man3/crypt_ra.3.gz /usr/share/man/man3/crypt_rn.3.gz /usr/share/man/man3/crypt.3.gz /usr/share/man/man3/des_crypt.3t.gz /usr/share/man/man3/getnetconfig.3t.gz /usr/share/man/man3/getnetpath.3t.gz /usr/share/man/man3/getrpcent.3t.gz /usr/share/man/man3/getrpcport.3t.gz /usr/share/man/man3/rpc_clnt_auth.3t.gz /usr/share/man/man3/rpc_clnt_calls.3t.gz /usr/share/man/man3/rpc_clnt_create.3t.gz /usr/share/man/man3/rpc_gss_get_error.3t.gz /usr/share/man/man3/rpc_gss_get_mech_info.3t.gz /usr/share/man/man3/rpc_gss_get_mechanisms.3t.gz /usr/share/man/man3/rpc_gss_get_principal_name.3t.gz /usr/share/man/man3/rpc_gss_get_versions.3t.gz /usr/share/man/man3/rpc_gss_getcred.3t.gz /usr/share/man/man3/rpc_gss_is_installed.3t.gz /usr/share/man/man3/rpc_gss_max_data_length.3t.gz /usr/share/man/man3/rpc_gss_mech_to_oid.3t.gz /usr/share/man/man3/rpc_gss_qop_to_num.3t.gz /usr/share/man/man3/rpc_gss_seccreate.3t.gz /usr/share/man/man3/rpc_gss_set_callback.3t.gz /usr/share/man/man3/rpc_gss_set_defaults.3t.gz /usr/share/man/man3/rpc_gss_set_svc_name.3t.gz /usr/share/man/man3/rpc_gss_svc_max_data_length.3t.gz /usr/share/man/man3/rpc_secure.3t.gz /usr/share/man/man3/rpc_soc.3t.gz /usr/share/man/man3/rpc_svc_calls.3t.gz /usr/share/man/man3/rpc_svc_create.3t.gz /usr/share/man/man3/rpc_svc_err.3t.gz /usr/share/man/man3/rpc_svc_reg.3t.gz /usr/share/man/man3/rpc_xdr.3t.gz /usr/share/man/man3/rpc.3t.gz /usr/share/man/man3/rpcbind.3t.gz /usr/share/man/man3/rpcsec_gss.3t.gz /usr/share/man/man3/rtime.3t.gz /usr/share/man/man3/zlib.3.gz /exports/usr/share/man/man3/ && \
   mv /usr/share/man/man5/crypt.5.gz /exports/usr/share/man/man5/
 
+# CMAKE
+FROM base AS cmake
+COPY --from=apteryx /exports/ /
+RUN \
+  apteryx cmake='3.22.1-*'
+RUN \
+  mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ && \
+  mv /usr/bin/cmake /usr/bin/cpack /usr/bin/ctest /exports/usr/bin/ && \
+  mv /usr/lib/dh-elpa /exports/usr/lib/ && \
+  mv /usr/lib/x86_64-linux-gnu/libarchive.so.13 /usr/lib/x86_64-linux-gnu/libarchive.so.13.6.0 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1.9.5 /usr/lib/x86_64-linux-gnu/libjsoncpp.so.25 /usr/lib/x86_64-linux-gnu/librhash.so.0 /usr/lib/x86_64-linux-gnu/libuv.so.1 /usr/lib/x86_64-linux-gnu/libuv.so.1.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/share/aclocal /usr/share/cmake-3.22 /usr/share/cmake /exports/usr/share/
+
 # LUA
 FROM base AS lua
 COPY --from=apteryx /exports/ /
@@ -258,7 +270,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN \
   n lts && \
-  n 18.12.1 && \
+  n 20.2.0 && \
   npm install -g npm
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ && \
@@ -272,10 +284,10 @@ FROM base AS pipx
 COPY --from=apteryx /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
-  pip3 install pipx==1.1.0
+  pip3 install pipx==1.2.0
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ && \
-  mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/python-argcomplete-tcsh /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ && \
+  mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ && \
   mv /usr/local/lib/python3.10/dist-packages/argcomplete-*.dist-info /usr/local/lib/python3.10/dist-packages/argcomplete /usr/local/lib/python3.10/dist-packages/click-*.dist-info /usr/local/lib/python3.10/dist-packages/click /usr/local/lib/python3.10/dist-packages/packaging-*.dist-info /usr/local/lib/python3.10/dist-packages/packaging /usr/local/lib/python3.10/dist-packages/pipx-*.dist-info /usr/local/lib/python3.10/dist-packages/pipx /usr/local/lib/python3.10/dist-packages/userpath-*.dist-info /usr/local/lib/python3.10/dist-packages/userpath /exports/usr/local/lib/python3.10/dist-packages/
 
 # BZIP2
@@ -288,16 +300,6 @@ RUN \
   mv /usr/bin/bunzip2 /usr/bin/bzcat /usr/bin/bzcmp /usr/bin/bzdiff /usr/bin/bzegrep /usr/bin/bzexe /usr/bin/bzfgrep /usr/bin/bzgrep /usr/bin/bzip2 /usr/bin/bzip2recover /usr/bin/bzless /usr/bin/bzmore /exports/usr/bin/ && \
   mv /usr/share/doc/bzip2 /exports/usr/share/doc/ && \
   mv /usr/share/man/man1/bunzip2.1.gz /usr/share/man/man1/bzcat.1.gz /usr/share/man/man1/bzcmp.1.gz /usr/share/man/man1/bzdiff.1.gz /usr/share/man/man1/bzegrep.1.gz /usr/share/man/man1/bzexe.1.gz /usr/share/man/man1/bzfgrep.1.gz /usr/share/man/man1/bzgrep.1.gz /usr/share/man/man1/bzip2.1.gz /usr/share/man/man1/bzip2recover.1.gz /usr/share/man/man1/bzless.1.gz /usr/share/man/man1/bzmore.1.gz /exports/usr/share/man/man1/
-
-# XZ
-FROM base AS xz
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx xz-utils='5.2.5-*'
-RUN \
-  mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ && \
-  mv /usr/bin/xz /exports/usr/bin/ && \
-  mv /usr/share/man/man1/xz.1.gz /exports/usr/share/man/man1/
 
 # UNZIP
 FROM base AS unzip
@@ -319,6 +321,25 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/bin/ar /exports/usr/bin/ && \
   mv /usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so /exports/usr/lib/x86_64-linux-gnu/
+
+# LIBHEIF
+FROM base AS libheif
+COPY --from=build-essential /exports/ /
+COPY --from=cmake /exports/ /
+COPY --from=clone /exports/ /
+RUN \
+  clone --https --shallow --tag v1.13.0 github.com/strukturag/libheif && \
+  cd /root/src/github.com/strukturag/libheif && \
+  cmake . && \
+  make && \
+  make install && \
+  rm -r /root/src && \
+  cp /usr/local/lib/libheif.so* /usr/lib/x86_64-linux-gnu/
+RUN \
+  mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/include/ && \
+  mv /usr/lib/x86_64-linux-gnu/libheif.so /usr/lib/x86_64-linux-gnu/libheif.so.1 /usr/lib/x86_64-linux-gnu/libheif.so.1.13.0.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/local/bin/heif-convert /usr/local/bin/heif-enc /usr/local/bin/heif-info /exports/usr/local/bin/ && \
+  mv /usr/local/include/libheif /exports/usr/local/include/
 
 # Z.LUA
 FROM base AS z.lua
@@ -357,7 +378,7 @@ RUN \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN \
-  clone --https --tag='0.34.0' https://github.com/junegunn/fzf && \
+  clone --https --tag='0.40.0' https://github.com/junegunn/fzf && \
   mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf && \
   rm -rf /root/src && \
   /usr/local/share/fzf/install --bin
@@ -439,7 +460,7 @@ FROM base AS neovim
 COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN \
-  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.8.0/nvim.appimage' && \
+  wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.9.0/nvim.appimage' && \
   chmod +x /tmp/nvim.appimage && \
   /tmp/nvim.appimage --appimage-extract && \
   rm /tmp/nvim.appimage && \
@@ -455,7 +476,7 @@ RUN \
   mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/share/man/ /exports/usr/local/share/ && \
   mv /usr/include/python3.10/greenlet /exports/usr/include/python3.10/ && \
   mv /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ && \
-  mv /usr/local/lib/python3.10/dist-packages/greenlet-1.1.3.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-1.0.4.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-2.5.1.dist-info /usr/local/lib/python3.10/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-5.9.2.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ && \
+  mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ && \
   mv /usr/local/share/man/man1 /exports/usr/local/share/man/ && \
   mv /usr/local/share/nvim /exports/usr/local/share/
 
@@ -520,7 +541,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=bzip2 /exports/ /
 RUN \
-  wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/108.0.1/linux-x86_64/en-US/firefox-108.0.1.tar.bz2 && \
+  wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/113.0.1/linux-x86_64/en-US/firefox-113.0.1.tar.bz2 && \
   cd /opt && \
   tar xjvf /tmp/firefox.tar.bz2 && \
   rm /tmp/firefox.tar.bz2 && \
@@ -556,7 +577,7 @@ RUN \
   curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
   apt-get update && \
-  apteryx google-chrome-beta='107.0.5304.18-*'
+  apteryx google-chrome-beta='114.0.5735.35-*'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ && \
   mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ && \
@@ -603,22 +624,6 @@ RUN \
   mkdir -p /exports/usr/bin/ && \
   mv /usr/bin/browse /usr/bin/xdg-desktop-icon /usr/bin/xdg-desktop-menu /usr/bin/xdg-email /usr/bin/xdg-icon-resource /usr/bin/xdg-mime /usr/bin/xdg-open /usr/bin/xdg-screensaver /usr/bin/xdg-settings /exports/usr/bin/
 
-# FFMPEG
-FROM base AS ffmpeg
-COPY --from=wget /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O /tmp/ffmpeg.txz 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' && \
-  tar -xvf /tmp/ffmpeg.txz && \
-  rm /tmp/ffmpeg.txz && \
-  mv 'ffmpeg-5.1.1-amd64-static' ffmpeg && \
-  mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-  mv ffmpeg/ffprobe /usr/local/bin/ffprobe && \
-  rm -r ffmpeg
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
-
 # RUST
 FROM base AS rust
 COPY --from=wget /exports/ /
@@ -640,68 +645,6 @@ RUN \
   mv /usr/bin/ping /usr/bin/ping4 /usr/bin/ping6 /exports/usr/bin/ && \
   mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ && \
   mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
-
-# SOCKSIFY
-FROM base AS socksify
-COPY --from=build-essential /exports/ /
-COPY --from=wget /exports/ /
-RUN \
-  wget "https://www.inet.no/dante/files/dante-1.4.2.tar.gz" && \
-  tar xzvf "dante-1.4.2.tar.gz" && \
-  cd "dante-1.4.2" && \
-  ./configure && \
-  make && \
-  make check && \
-  make install && \
-  cd .. && \
-  rm -rf "dante-1.4.2.tar.gz" "dante-1.4.2"
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man8/ && \
-  mv /usr/local/bin/socksify /exports/usr/local/bin/ && \
-  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
-  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
-  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
-  mv /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
-  mv /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
-  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
-
-# SCDOC
-FROM base AS scdoc
-COPY --from=build-essential /exports/ /
-COPY --from=clone /exports/ /
-RUN \
-  clone --https --tag='1.11.2' https://git.sr.ht/~sircmpwn/scdoc && \
-  cd ~/src/git.sr.ht/~sircmpwn/scdoc && \
-  make && \
-  make install && \
-  rm -rf ~/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/scdoc /exports/usr/local/bin/
-
-# CADDY
-FROM base AS caddy
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.4.3/caddy_2.4.3_linux_amd64.tar.gz' && \
-  tar xzvf /tmp/caddy.tgz && \
-  mv caddy /usr/local/bin/caddy && \
-  rm /tmp/caddy.tgz
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/caddy /exports/usr/local/bin/
-
-# BANDWHICH
-FROM base AS bandwhich
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/0.20.0/bandwhich-v0.20.0-x86_64-unknown-linux-musl.tar.gz' && \
-  tar -xvf /tmp/bandwhich.tgz && \
-  rm /tmp/bandwhich.tgz && \
-  mv bandwhich /usr/local/bin/bandwhich
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/bandwhich /exports/usr/local/bin/
 
 # KOLIDE
 FROM base AS kolide
@@ -741,20 +684,71 @@ RUN \
   mv /usr/local/kolide-k2 /exports/usr/local/ && \
   mv /var/kolide-k2/k2device.kolide.com /exports/var/kolide-k2/
 
-# GIMP
-FROM base AS gimp
-COPY --from=apteryx /exports/ /
+# TTOK
+FROM base AS ttok
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 RUN \
-  apteryx gimp='2.10.30-*'
+  pipx install ttok=='0.1'
 RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/man/man1/ && \
-  mv /etc/gimp /exports/etc/ && \
-  mv /usr/bin/gimp /exports/usr/bin/ && \
-  mv /usr/lib/gimp /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/babl-0.1 /usr/lib/x86_64-linux-gnu/blas /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gegl-0.4 /usr/lib/x86_64-linux-gnu/graphviz /usr/lib/x86_64-linux-gnu/gtk-2.0 /usr/lib/x86_64-linux-gnu/lapack /usr/lib/x86_64-linux-gnu/libaa.so.1 /usr/lib/x86_64-linux-gnu/libaa.so.1.0.4 /usr/lib/x86_64-linux-gnu/libamd.so.2 /usr/lib/x86_64-linux-gnu/libamd.so.2.4.6 /usr/lib/x86_64-linux-gnu/libann.so.0 /usr/lib/x86_64-linux-gnu/libann.so.0.0.0 /usr/lib/x86_64-linux-gnu/libaom.so.3 /usr/lib/x86_64-linux-gnu/libaom.so.3.3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23609.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libavcodec.so.58 /usr/lib/x86_64-linux-gnu/libavcodec.so.58.134.100 /usr/lib/x86_64-linux-gnu/libavformat.so.58 /usr/lib/x86_64-linux-gnu/libavformat.so.58.76.100 /usr/lib/x86_64-linux-gnu/libavutil.so.56 /usr/lib/x86_64-linux-gnu/libavutil.so.56.70.100 /usr/lib/x86_64-linux-gnu/libbabl-0.1.so.0 /usr/lib/x86_64-linux-gnu/libbabl-0.1.so.0.191.1 /usr/lib/x86_64-linux-gnu/libblas.so.3 /usr/lib/x86_64-linux-gnu/libbluray.so.2 /usr/lib/x86_64-linux-gnu/libbluray.so.2.4.1 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcamd.so.2 /usr/lib/x86_64-linux-gnu/libcamd.so.2.4.6 /usr/lib/x86_64-linux-gnu/libccolamd.so.2 /usr/lib/x86_64-linux-gnu/libccolamd.so.2.9.6 /usr/lib/x86_64-linux-gnu/libcdt.so.5 /usr/lib/x86_64-linux-gnu/libcdt.so.5.0.0 /usr/lib/x86_64-linux-gnu/libcgraph.so.6 /usr/lib/x86_64-linux-gnu/libcgraph.so.6.0.0 /usr/lib/x86_64-linux-gnu/libcholmod.so.3 /usr/lib/x86_64-linux-gnu/libcholmod.so.3.0.14 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1.5.1 /usr/lib/x86_64-linux-gnu/libcodec2.so.1.0 /usr/lib/x86_64-linux-gnu/libcolamd.so.2 /usr/lib/x86_64-linux-gnu/libcolamd.so.2.9.6 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdav1d.so.5 /usr/lib/x86_64-linux-gnu/libdav1d.so.5.1.1 /usr/lib/x86_64-linux-gnu/libde265.so.0 /usr/lib/x86_64-linux-gnu/libde265.so.0.1.1 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libexiv2.so.0.27.5 /usr/lib/x86_64-linux-gnu/libexiv2.so.27 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.18.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.8 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8 /usr/lib/x86_64-linux-gnu/libgdk-x11-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk-x11-2.0.so.0.2400.33 /usr/lib/x86_64-linux-gnu/libgegl-0.4.so.0 /usr/lib/x86_64-linux-gnu/libgegl-0.4.so.0.433.1 /usr/lib/x86_64-linux-gnu/libgegl-npd-0.4.so /usr/lib/x86_64-linux-gnu/libgegl-sc-0.4.so /usr/lib/x86_64-linux-gnu/libgexiv2.so.2 /usr/lib/x86_64-linux-gnu/libgexiv2.so.2.14.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.5 /usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0 /usr/lib/x86_64-linux-gnu/libgimp-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimp-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpbase-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpbase-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpcolor-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpcolor-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpconfig-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpconfig-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpmath-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpmath-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpmodule-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpmodule-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpthumb-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpthumb-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpui-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpui-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgimpwidgets-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgimpwidgets-2.0.so.0.1000.30 /usr/lib/x86_64-linux-gnu/libgme.so.0 /usr/lib/x86_64-linux-gnu/libgme.so.0.6.3 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgpm.so.2 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgs.so.9 /usr/lib/x86_64-linux-gnu/libgs.so.9.55 /usr/lib/x86_64-linux-gnu/libgsm.so.1 /usr/lib/x86_64-linux-gnu/libgsm.so.1.0.19 /usr/lib/x86_64-linux-gnu/libgtk-x11-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgtk-x11-2.0.so.0.2400.33 /usr/lib/x86_64-linux-gnu/libgtk2.0-0 /usr/lib/x86_64-linux-gnu/libgts-0.7.so.5 /usr/lib/x86_64-linux-gnu/libgts-0.7.so.5.0.1 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0.3.0 /usr/lib/x86_64-linux-gnu/libgvc.so.6 /usr/lib/x86_64-linux-gnu/libgvc.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgvpr.so.2 /usr/lib/x86_64-linux-gnu/libgvpr.so.2.0.0 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20704.0 /usr/lib/x86_64-linux-gnu/libheif.so.1 /usr/lib/x86_64-linux-gnu/libheif.so.1.12.0 /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6.3.0 /usr/lib/x86_64-linux-gnu/libidn.so.12 /usr/lib/x86_64-linux-gnu/libidn.so.12.6.3 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libijs-0.35.so /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjbig2dec.so.0 /usr/lib/x86_64-linux-gnu/libjbig2dec.so.0.0.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.600.6 /usr/lib/x86_64-linux-gnu/liblab_gamut.so.1 /usr/lib/x86_64-linux-gnu/liblab_gamut.so.1.0.0 /usr/lib/x86_64-linux-gnu/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.12 /usr/lib/x86_64-linux-gnu/libltdl.so.7 /usr/lib/x86_64-linux-gnu/libltdl.so.7.3.1 /usr/lib/x86_64-linux-gnu/libmetis.so.5 /usr/lib/x86_64-linux-gnu/libmetis.so.5.1.0 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1.35 /usr/lib/x86_64-linux-gnu/libmfx.so.1 /usr/lib/x86_64-linux-gnu/libmfx.so.1.35 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1.35 /usr/lib/x86_64-linux-gnu/libmng.so.2 /usr/lib/x86_64-linux-gnu/libmng.so.2.0.2 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0.46.7 /usr/lib/x86_64-linux-gnu/libmypaint-1.5.so.1 /usr/lib/x86_64-linux-gnu/libmypaint-1.5.so.1.1.2 /usr/lib/x86_64-linux-gnu/libnorm.so.1 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libnuma.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0 /usr/lib/x86_64-linux-gnu/libogg.so.0 /usr/lib/x86_64-linux-gnu/libogg.so.0.8.5 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.2.4.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.7 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0.3.3 /usr/lib/x86_64-linux-gnu/libopus.so.0 /usr/lib/x86_64-linux-gnu/libopus.so.0.8.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpaper.so.1 /usr/lib/x86_64-linux-gnu/libpaper.so.1.1.2 /usr/lib/x86_64-linux-gnu/libpathplan.so.4 /usr/lib/x86_64-linux-gnu/libpathplan.so.4.0.0 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0.0.128 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.40.0 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libpoppler-glib.so.8 /usr/lib/x86_64-linux-gnu/libpoppler-glib.so.8.23.0 /usr/lib/x86_64-linux-gnu/libpoppler.so.118 /usr/lib/x86_64-linux-gnu/libpoppler.so.118.0.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4.4.0 /usr/lib/x86_64-linux-gnu/libraw_r.so.20 /usr/lib/x86_64-linux-gnu/libraw_r.so.20.0.0 /usr/lib/x86_64-linux-gnu/libraw.so.20 /usr/lib/x86_64-linux-gnu/libraw.so.20.0.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.48.0 /usr/lib/x86_64-linux-gnu/libshine.so.3 /usr/lib/x86_64-linux-gnu/libshine.so.3.0.1 /usr/lib/x86_64-linux-gnu/libslang.so.2 /usr/lib/x86_64-linux-gnu/libslang.so.2.3.2 /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsnappy.so.1 /usr/lib/x86_64-linux-gnu/libsnappy.so.1.1.8 /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/libsodium.so.23.3.0 /usr/lib/x86_64-linux-gnu/libsoxr.so.0 /usr/lib/x86_64-linux-gnu/libsoxr.so.0.1.2 /usr/lib/x86_64-linux-gnu/libspeex.so.1 /usr/lib/x86_64-linux-gnu/libspeex.so.1.5.0 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4.8.7 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.5 /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.5.10.1 /usr/lib/x86_64-linux-gnu/libswresample.so.3 /usr/lib/x86_64-linux-gnu/libswresample.so.3.9.100 /usr/lib/x86_64-linux-gnu/libswscale.so.5 /usr/lib/x86_64-linux-gnu/libswscale.so.5.9.100 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtheora.so.0 /usr/lib/x86_64-linux-gnu/libtheora.so.0.3.10 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1.1.4 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1.1.2 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.7.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0.1.0 /usr/lib/x86_64-linux-gnu/libumfpack.so.5 /usr/lib/x86_64-linux-gnu/libumfpack.so.5.7.9 /usr/lib/x86_64-linux-gnu/libva-drm.so.2 /usr/lib/x86_64-linux-gnu/libva-drm.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva-x11.so.2 /usr/lib/x86_64-linux-gnu/libva-x11.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva.so.2 /usr/lib/x86_64-linux-gnu/libva.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libvdpau.so.1 /usr/lib/x86_64-linux-gnu/libvdpau.so.1.0.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0.4.9 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2.0.12 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3.3.8 /usr/lib/x86_64-linux-gnu/libvpx.so.7 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.3 /usr/lib/x86_64-linux-gnu/libwebpdemux.so.2 /usr/lib/x86_64-linux-gnu/libwebpdemux.so.2.0.9 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3.0.8 /usr/lib/x86_64-linux-gnu/libwmf-0.2.so.7 /usr/lib/x86_64-linux-gnu/libwmf-0.2.so.7.1.4 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7.0.5 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libx264.so.163 /usr/lib/x86_64-linux-gnu/libx265.so.199 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXaw.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7 /usr/lib/x86_64-linux-gnu/libXaw7.so.7.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXmu.so.6 /usr/lib/x86_64-linux-gnu/libXmu.so.6.2.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4.3 /usr/lib/x86_64-linux-gnu/libzmq.so.5 /usr/lib/x86_64-linux-gnu/libzmq.so.5.2.4 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0.0.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0.13.2 /usr/lib/x86_64-linux-gnu/mfx /usr/lib/x86_64-linux-gnu/nss /usr/lib/x86_64-linux-gnu/vdpau /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
-  mv /usr/share/gimp /exports/usr/share/ && \
-  mv /usr/share/man/man1/gimp.1.gz /exports/usr/share/man/man1/
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/ && \
+  mv /usr/local/bin/ttok /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/
+
+# STRIP-TAGS
+FROM base AS strip-tags
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install strip-tags=='0.3'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/ && \
+  mv /usr/local/bin/strip-tags /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/
+
+# LLM
+FROM base AS llm
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN \
+  pipx install llm=='0.3'
+RUN \
+  mkdir -p /exports/usr/local/bin/ /exports/usr/local/ && \
+  mv /usr/local/bin/llm /exports/usr/local/bin/ && \
+  mv /usr/local/pipx /exports/usr/local/
+
+# CADDY
+FROM base AS caddy
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.6.4/caddy_2.6.4_linux_amd64.tar.gz' && \
+  tar xzvf /tmp/caddy.tgz && \
+  mv caddy /usr/local/bin/caddy && \
+  rm /tmp/caddy.tgz
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/caddy /exports/usr/local/bin/
+
+# BANDWHICH
+FROM base AS bandwhich
+COPY --from=wget /exports/ /
+RUN \
+  wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/0.20.0/bandwhich-v0.20.0-x86_64-unknown-linux-musl.tar.gz' && \
+  tar -xvf /tmp/bandwhich.tgz && \
+  rm /tmp/bandwhich.tgz && \
+  mv bandwhich /usr/local/bin/bandwhich
+RUN \
+  mkdir -p /exports/usr/local/bin/ && \
+  mv /usr/local/bin/bandwhich /exports/usr/local/bin/
 
 # RHASH
 FROM base AS rhash
@@ -786,31 +780,39 @@ RUN \
 FROM base AS darktable
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
+COPY --from=libheif /exports/ /
 RUN \
-  wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.2.0-1.1+56.1_amd64.deb && \
+  wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.2.1-1.1+59.1_amd64.deb && \
   apteryx /tmp/darktable.deb
 RUN \
-  mkdir -p /exports/etc/systemd/user/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/systemd/user/ /exports/usr/lib/systemd/user/graphical-session-pre.target.wants/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/ /exports/usr/share/dbus-1/services/ /exports/usr/share/gettext/its/ /exports/usr/share/xml/ && \
+  mkdir -p /exports/etc/ /exports/etc/rcS.d/ /exports/etc/systemd/user/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/root/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/dbus-1.0/ /exports/usr/lib/systemd/user/ /exports/usr/lib/systemd/user/graphical-session-pre.target.wants/ /exports/usr/lib/udev/ /exports/usr/lib/udev/rules.d/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bash-completion/completions/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/xml/ && \
+  mv /etc/mysql /etc/odbc.ini /etc/ODBCDataSources /etc/odbcinst.ini /etc/pulse /etc/vdpau_wrapper.cfg /exports/etc/ && \
+  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
   mv /etc/systemd/user/graphical-session-pre.target.wants /exports/etc/systemd/user/ && \
-  mv /etc/X11/xkb /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20dbus_xdg-runtime /exports/etc/X11/Xsession.d/ && \
-  mv /usr/bin/darktable /usr/bin/darktable-chart /usr/bin/darktable-cli /usr/bin/darktable-cltest /usr/bin/darktable-cmstest /usr/bin/darktable-generate-cache /usr/bin/darktable-rs-identify /usr/bin/gtk-update-icon-cache /usr/bin/session-migration /usr/bin/update-mime-database /exports/usr/bin/ && \
-  mv /usr/lib/GraphicsMagick-1.3.38 /usr/lib/libGraphicsMagick-Q16.so.3 /usr/lib/libGraphicsMagick-Q16.so.3.24.0 /usr/lib/libGraphicsMagickWand-Q16.so.2 /usr/lib/libGraphicsMagickWand-Q16.so.2.9.7 /exports/usr/lib/ && \
+  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/xorg.conf.d /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
+  mv /etc/X11/Xsession.d/20dbus_xdg-runtime /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
+  mv /root/.wget-hsts /exports/root/ && \
+  mv /usr/bin/darktable /usr/bin/darktable-chart /usr/bin/darktable-cli /usr/bin/darktable-cltest /usr/bin/darktable-cmstest /usr/bin/darktable-generate-cache /usr/bin/darktable-rs-identify /usr/bin/dbus-cleanup-sockets /usr/bin/dbus-daemon /usr/bin/dbus-monitor /usr/bin/dbus-run-session /usr/bin/dbus-send /usr/bin/dbus-update-activation-environment /usr/bin/dbus-uuidgen /usr/bin/gtk-update-icon-cache /usr/bin/session-migration /usr/bin/update-mime-database /usr/bin/wget /usr/bin/X11 /exports/usr/bin/ && \
+  mv /usr/include/X11 /exports/usr/include/ && \
+  mv /usr/lib/darktable /usr/lib/GraphicsMagick-1.3.38 /usr/lib/libarmadillo.so.10 /usr/lib/libarmadillo.so.10.8.2 /usr/lib/libdfalt.so.0 /usr/lib/libdfalt.so.0.0.0 /usr/lib/libgdal.so.30 /usr/lib/libgdal.so.30.0.1 /usr/lib/libGraphicsMagick-Q16.so.3 /usr/lib/libGraphicsMagick-Q16.so.3.24.0 /usr/lib/libGraphicsMagick++-Q16.so.12 /usr/lib/libGraphicsMagick++-Q16.so.12.6.0 /usr/lib/libGraphicsMagickWand-Q16.so.2 /usr/lib/libGraphicsMagickWand-Q16.so.2.9.7 /usr/lib/libmfhdfalt.so.0 /usr/lib/libmfhdfalt.so.0.0.0 /usr/lib/libogdi.so.4 /usr/lib/libogdi.so.4.1 /usr/lib/libvpf.so.4 /usr/lib/libvpf.so.4.1 /usr/lib/ogdi /usr/lib/X11 /exports/usr/lib/ && \
+  mv /usr/lib/dbus-1.0/dbus-daemon-launch-helper /exports/usr/lib/dbus-1.0/ && \
   mv /usr/lib/systemd/user/dbus.service /usr/lib/systemd/user/dbus.socket /usr/lib/systemd/user/dconf.service /usr/lib/systemd/user/glib-pacrunner.service /usr/lib/systemd/user/session-migration.service /usr/lib/systemd/user/sockets.target.wants /exports/usr/lib/systemd/user/ && \
   mv /usr/lib/systemd/user/graphical-session-pre.target.wants/session-migration.service /exports/usr/lib/systemd/user/graphical-session-pre.target.wants/ && \
   mv /usr/lib/udev/hwdb.d /exports/usr/lib/udev/ && \
   mv /usr/lib/udev/rules.d/60-libgphoto2-6.rules /exports/usr/lib/udev/rules.d/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/darktable /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libaom.so.3 /usr/lib/x86_64-linux-gnu/libaom.so.3.3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23609.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord-gtk.so.1 /usr/lib/x86_64-linux-gnu/libcolord-gtk.so.1.0.3 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdav1d.so.5 /usr/lib/x86_64-linux-gnu/libdav1d.so.5.1.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0 /usr/lib/x86_64-linux-gnu/libde265.so.0 /usr/lib/x86_64-linux-gnu/libde265.so.0.1.1 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libexif.so.12 /usr/lib/x86_64-linux-gnu/libexif.so.12.3.4 /usr/lib/x86_64-linux-gnu/libexiv2.so.0.27.5 /usr/lib/x86_64-linux-gnu/libexiv2.so.27 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.18.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.8 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6.1.0 /usr/lib/x86_64-linux-gnu/libgphoto2 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20704.0 /usr/lib/x86_64-linux-gnu/libheif.so.1 /usr/lib/x86_64-linux-gnu/libheif.so.1.12.0 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.600.6 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.12 /usr/lib/x86_64-linux-gnu/liblensfun.so.0.3.2 /usr/lib/x86_64-linux-gnu/liblensfun.so.1 /usr/lib/x86_64-linux-gnu/libltdl.so.7 /usr/lib/x86_64-linux-gnu/libltdl.so.7.3.1 /usr/lib/x86_64-linux-gnu/liblua5.4-c++.so.0 /usr/lib/x86_64-linux-gnu/liblua5.4-c++.so.0.0.0 /usr/lib/x86_64-linux-gnu/liblua5.4.so.0 /usr/lib/x86_64-linux-gnu/liblua5.4.so.0.0.0 /usr/lib/x86_64-linux-gnu/libnuma.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.2.4.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.7 /usr/lib/x86_64-linux-gnu/libosmgpsmap-1.0.so.1 /usr/lib/x86_64-linux-gnu/libosmgpsmap-1.0.so.1.1.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.40.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libproxy.so.1 /usr/lib/x86_64-linux-gnu/libproxy.so.1.0.0 /usr/lib/x86_64-linux-gnu/libpugixml.so.1 /usr/lib/x86_64-linux-gnu/libpugixml.so.1.12 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.48.0 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1.11.2 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.7.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0.3.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.20.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3.0.8 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7.0.5 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libx265.so.199 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /exports/usr/lib/x86_64-linux-gnu/ && \
+  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/blas /usr/lib/x86_64-linux-gnu/darktable /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/lapack /usr/lib/x86_64-linux-gnu/libaec.so.0 /usr/lib/x86_64-linux-gnu/libaec.so.0.0.12 /usr/lib/x86_64-linux-gnu/libaom.so.3 /usr/lib/x86_64-linux-gnu/libaom.so.3.3.0 /usr/lib/x86_64-linux-gnu/libarpack.so.2 /usr/lib/x86_64-linux-gnu/libarpack.so.2.1.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0.3.1 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23609.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libavcodec.so.58 /usr/lib/x86_64-linux-gnu/libavcodec.so.58.134.100 /usr/lib/x86_64-linux-gnu/libavformat.so.58 /usr/lib/x86_64-linux-gnu/libavformat.so.58.76.100 /usr/lib/x86_64-linux-gnu/libavutil.so.56 /usr/lib/x86_64-linux-gnu/libavutil.so.56.70.100 /usr/lib/x86_64-linux-gnu/libblas.so.3 /usr/lib/x86_64-linux-gnu/libblosc.so.1 /usr/lib/x86_64-linux-gnu/libblosc.so.1.21.1 /usr/lib/x86_64-linux-gnu/libbluray.so.2 /usr/lib/x86_64-linux-gnu/libbluray.so.2.4.1 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcfitsio.so.9 /usr/lib/x86_64-linux-gnu/libcfitsio.so.9.4.0.0 /usr/lib/x86_64-linux-gnu/libcharls.so.2 /usr/lib/x86_64-linux-gnu/libCharLS.so.2 /usr/lib/x86_64-linux-gnu/libcharls.so.2.3.4 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1.5.1 /usr/lib/x86_64-linux-gnu/libcodec2.so.1.0 /usr/lib/x86_64-linux-gnu/libcolord-gtk.so.1 /usr/lib/x86_64-linux-gnu/libcolord-gtk.so.1.0.3 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdav1d.so.5 /usr/lib/x86_64-linux-gnu/libdav1d.so.5.1.1 /usr/lib/x86_64-linux-gnu/libdbus-1.so.3.19.13 /usr/lib/x86_64-linux-gnu/libdc1394.so.25 /usr/lib/x86_64-linux-gnu/libdc1394.so.25.0.0 /usr/lib/x86_64-linux-gnu/libdconf.so.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0 /usr/lib/x86_64-linux-gnu/libde265.so.0 /usr/lib/x86_64-linux-gnu/libde265.so.0.1.1 /usr/lib/x86_64-linux-gnu/libdecor-0.so.0 /usr/lib/x86_64-linux-gnu/libdecor-0.so.0.100.0 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libexif.so.12 /usr/lib/x86_64-linux-gnu/libexif.so.12.3.4 /usr/lib/x86_64-linux-gnu/libexiv2.so.0.27.5 /usr/lib/x86_64-linux-gnu/libexiv2.so.27 /usr/lib/x86_64-linux-gnu/libfftw3_omp.so.3 /usr/lib/x86_64-linux-gnu/libfftw3_omp.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3_threads.so.3 /usr/lib/x86_64-linux-gnu/libfftw3_threads.so.3.5.8 /usr/lib/x86_64-linux-gnu/libfftw3.so.3 /usr/lib/x86_64-linux-gnu/libfftw3.so.3.5.8 /usr/lib/x86_64-linux-gnu/libFLAC.so.8 /usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.18.1 /usr/lib/x86_64-linux-gnu/libfreexl.so.1 /usr/lib/x86_64-linux-gnu/libfreexl.so.1.1.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libfyba.so.0 /usr/lib/x86_64-linux-gnu/libfyba.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfygm.so.0 /usr/lib/x86_64-linux-gnu/libfygm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfyut.so.0 /usr/lib/x86_64-linux-gnu/libfyut.so.0.0.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgd.so.3 /usr/lib/x86_64-linux-gnu/libgd.so.3.0.8 /usr/lib/x86_64-linux-gnu/libgdcmCommon.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmCommon.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmDICT.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmDICT.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmDSED.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmDSED.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmIOD.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmIOD.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmjpeg12.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmjpeg12.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmjpeg16.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmjpeg16.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmjpeg8.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmjpeg8.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmMEXD.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmMEXD.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdcmMSFF.so.3.0 /usr/lib/x86_64-linux-gnu/libgdcmMSFF.so.3.0.10 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libgeos_c.so.1 /usr/lib/x86_64-linux-gnu/libgeos_c.so.1.16.0 /usr/lib/x86_64-linux-gnu/libgeos.so.3.10.2 /usr/lib/x86_64-linux-gnu/libgeotiff.so.5 /usr/lib/x86_64-linux-gnu/libgeotiff.so.5.2.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.5 /usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0 /usr/lib/x86_64-linux-gnu/libgif.so.7 /usr/lib/x86_64-linux-gnu/libgif.so.7.1.0 /usr/lib/x86_64-linux-gnu/libgme.so.0 /usr/lib/x86_64-linux-gnu/libgme.so.0.6.3 /usr/lib/x86_64-linux-gnu/libgmic.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6.1.0 /usr/lib/x86_64-linux-gnu/libgphoto2 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgsm.so.1 /usr/lib/x86_64-linux-gnu/libgsm.so.1.0.19 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libHalf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20704.0 /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100 /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100.1.4 /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.103 /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.103.3.0 /usr/lib/x86_64-linux-gnu/libheif.so /usr/lib/x86_64-linux-gnu/libheif.so.1 /usr/lib/x86_64-linux-gnu/libheif.so.1.12.0 /usr/lib/x86_64-linux-gnu/libheif.so.1.13.0.0 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIex-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIexMath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImf-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmImfUtil-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25 /usr/lib/x86_64-linux-gnu/libIlmThread-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25 /usr/lib/x86_64-linux-gnu/libImath-2_5.so.25.0.6 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0.600.6 /usr/lib/x86_64-linux-gnu/libkmlbase.so.1 /usr/lib/x86_64-linux-gnu/libkmlbase.so.1.3.0 /usr/lib/x86_64-linux-gnu/libkmldom.so.1 /usr/lib/x86_64-linux-gnu/libkmldom.so.1.3.0 /usr/lib/x86_64-linux-gnu/libkmlengine.so.1 /usr/lib/x86_64-linux-gnu/libkmlengine.so.1.3.0 /usr/lib/x86_64-linux-gnu/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.12 /usr/lib/x86_64-linux-gnu/liblensfun.so.0.3.2 /usr/lib/x86_64-linux-gnu/liblensfun.so.1 /usr/lib/x86_64-linux-gnu/libltdl.so.7 /usr/lib/x86_64-linux-gnu/libltdl.so.7.3.1 /usr/lib/x86_64-linux-gnu/liblua5.4-c++.so.0 /usr/lib/x86_64-linux-gnu/liblua5.4-c++.so.0.0.0 /usr/lib/x86_64-linux-gnu/liblua5.4.so.0 /usr/lib/x86_64-linux-gnu/liblua5.4.so.0.0.0 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1.35 /usr/lib/x86_64-linux-gnu/libmfx.so.1 /usr/lib/x86_64-linux-gnu/libmfx.so.1.35 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1.35 /usr/lib/x86_64-linux-gnu/libminizip.so.1 /usr/lib/x86_64-linux-gnu/libminizip.so.1.0.0 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0.46.7 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21.2.32 /usr/lib/x86_64-linux-gnu/libnetcdf.so.19 /usr/lib/x86_64-linux-gnu/libnorm.so.1 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libnuma.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0 /usr/lib/x86_64-linux-gnu/libodbc.so.2 /usr/lib/x86_64-linux-gnu/libodbc.so.2.0.0 /usr/lib/x86_64-linux-gnu/libodbcinst.so.2 /usr/lib/x86_64-linux-gnu/libodbcinst.so.2.0.0 /usr/lib/x86_64-linux-gnu/libogg.so.0 /usr/lib/x86_64-linux-gnu/libogg.so.0.8.5 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0 /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.5.4d /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.5d /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.5.4d /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.5d /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.5.4d /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.5d /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.5.4d /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.5d /usr/lib/x86_64-linux-gnu/libopenjp2.so.2.4.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.7 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0.3.3 /usr/lib/x86_64-linux-gnu/libopus.so.0 /usr/lib/x86_64-linux-gnu/libopus.so.0.8.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0.32.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0.32.0 /usr/lib/x86_64-linux-gnu/libosmgpsmap-1.0.so.1 /usr/lib/x86_64-linux-gnu/libosmgpsmap-1.0.so.1.1.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0.0.128 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.40.0 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libpoppler.so.118 /usr/lib/x86_64-linux-gnu/libpoppler.so.118.0.0 /usr/lib/x86_64-linux-gnu/libportmidi.so.0 /usr/lib/x86_64-linux-gnu/libportmidi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libporttime.so.0 /usr/lib/x86_64-linux-gnu/libporttime.so.0.0.0 /usr/lib/x86_64-linux-gnu/libpq.so.5 /usr/lib/x86_64-linux-gnu/libpq.so.5.14 /usr/lib/x86_64-linux-gnu/libproj.so.22 /usr/lib/x86_64-linux-gnu/libproj.so.22.2.1 /usr/lib/x86_64-linux-gnu/libproxy.so.1 /usr/lib/x86_64-linux-gnu/libproxy.so.1.0.0 /usr/lib/x86_64-linux-gnu/libpugixml.so.1 /usr/lib/x86_64-linux-gnu/libpugixml.so.1.12 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0.1.1 /usr/lib/x86_64-linux-gnu/libpulse.so.0 /usr/lib/x86_64-linux-gnu/libpulse.so.0.24.1 /usr/lib/x86_64-linux-gnu/libqhull_r.so.8.0 /usr/lib/x86_64-linux-gnu/libqhull_r.so.8.0.2 /usr/lib/x86_64-linux-gnu/libquadmath.so.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4.4.0 /usr/lib/x86_64-linux-gnu/libraw1394.so.11 /usr/lib/x86_64-linux-gnu/libraw1394.so.11.1.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.48.0 /usr/lib/x86_64-linux-gnu/librttopo.so.1 /usr/lib/x86_64-linux-gnu/librttopo.so.1.1.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0.18.2 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libshine.so.3 /usr/lib/x86_64-linux-gnu/libshine.so.3.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsnappy.so.1 /usr/lib/x86_64-linux-gnu/libsnappy.so.1.1.8 /usr/lib/x86_64-linux-gnu/libsndfile.so.1 /usr/lib/x86_64-linux-gnu/libsndfile.so.1.0.31 /usr/lib/x86_64-linux-gnu/libsocket++.a /usr/lib/x86_64-linux-gnu/libsocket++.so.1 /usr/lib/x86_64-linux-gnu/libsocket++.so.1.0.2 /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/libsodium.so.23.3.0 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1.11.2 /usr/lib/x86_64-linux-gnu/libsoxr.so.0 /usr/lib/x86_64-linux-gnu/libsoxr.so.0.1.2 /usr/lib/x86_64-linux-gnu/libspatialite.so.7 /usr/lib/x86_64-linux-gnu/libspatialite.so.7.1.2 /usr/lib/x86_64-linux-gnu/libspeex.so.1 /usr/lib/x86_64-linux-gnu/libspeex.so.1.5.0 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4.8.7 /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libsuperlu.so.5 /usr/lib/x86_64-linux-gnu/libsuperlu.so.5.3.0 /usr/lib/x86_64-linux-gnu/libswresample.so.3 /usr/lib/x86_64-linux-gnu/libswresample.so.3.9.100 /usr/lib/x86_64-linux-gnu/libswscale.so.5 /usr/lib/x86_64-linux-gnu/libswscale.so.5.9.100 /usr/lib/x86_64-linux-gnu/libsz.so.2 /usr/lib/x86_64-linux-gnu/libsz.so.2.0.1 /usr/lib/x86_64-linux-gnu/libtbb.so.2 /usr/lib/x86_64-linux-gnu/libtbbmalloc_proxy.so.2 /usr/lib/x86_64-linux-gnu/libtbbmalloc_proxy.so.2.5 /usr/lib/x86_64-linux-gnu/libtbbmalloc.so.2 /usr/lib/x86_64-linux-gnu/libtbbmalloc.so.2.5 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtheora.so.0 /usr/lib/x86_64-linux-gnu/libtheora.so.0.3.10 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1.1.4 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1.1.2 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.7.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0.1.0 /usr/lib/x86_64-linux-gnu/liburiparser.so.1 /usr/lib/x86_64-linux-gnu/liburiparser.so.1.0.29 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0.3.0 /usr/lib/x86_64-linux-gnu/libva-drm.so.2 /usr/lib/x86_64-linux-gnu/libva-drm.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva-x11.so.2 /usr/lib/x86_64-linux-gnu/libva-x11.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva.so.2 /usr/lib/x86_64-linux-gnu/libva.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libvdpau.so.1 /usr/lib/x86_64-linux-gnu/libvdpau.so.1.0.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0.4.9 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2.0.12 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3.3.8 /usr/lib/x86_64-linux-gnu/libvpx.so.7 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.20.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3.0.8 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7 /usr/lib/x86_64-linux-gnu/libwmflite-0.2.so.7.0.5 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libx264.so.163 /usr/lib/x86_64-linux-gnu/libx265.so.199 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxerces-c-3.2.so /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXpm.so.4 /usr/lib/x86_64-linux-gnu/libXpm.so.4.11.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXss.so.1 /usr/lib/x86_64-linux-gnu/libXss.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4.3 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libzmq.so.5 /usr/lib/x86_64-linux-gnu/libzmq.so.5.2.4 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0.0.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0.13.2 /usr/lib/x86_64-linux-gnu/mfx /usr/lib/x86_64-linux-gnu/nss /usr/lib/x86_64-linux-gnu/pulseaudio /usr/lib/x86_64-linux-gnu/vdpau /exports/usr/lib/x86_64-linux-gnu/ && \
   mv /usr/lib/x86_64-linux-gnu/gio/modules/giomodule.cache /usr/lib/x86_64-linux-gnu/gio/modules/libdconfsettings.so /usr/lib/x86_64-linux-gnu/gio/modules/libgioenvironmentproxy.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiognomeproxy.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiognutls.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiolibproxy.so /exports/usr/lib/x86_64-linux-gnu/gio/modules/ && \
   mv /usr/libexec/dconf-service /usr/libexec/glib-pacrunner /exports/usr/libexec/ && \
-  mv /usr/local/bin/apteryx /exports/usr/local/bin/ && \
+  mv /usr/local/bin/apteryx /usr/local/bin/heif-convert /usr/local/bin/heif-enc /usr/local/bin/heif-info /exports/usr/local/bin/ && \
+  mv /usr/local/include/libheif /exports/usr/local/include/ && \
   mv /usr/local/share/fonts /exports/usr/local/share/ && \
   mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/applications/darktable.desktop /exports/usr/share/applications/ && \
+  mv /usr/share/alsa /usr/share/darktable /usr/share/lensfun /usr/share/libdrm /usr/share/libthai /usr/share/metainfo /usr/share/mfx /usr/share/mime /usr/share/mysql-common /usr/share/session-migration /usr/share/themes /usr/share/upstart /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/applications/org.darktable.darktable.desktop /exports/usr/share/applications/ && \
   mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/darktable /usr/share/fonts /usr/share/GConf /usr/share/GraphicsMagick-1.3.38 /usr/share/lensfun /usr/share/libthai /usr/share/metainfo /usr/share/mime /usr/share/session-migration /usr/share/themes /usr/share/upstart /usr/share/X11 /exports/usr/share/ && \
+  mv /usr/share/bash-completion/completions/darktable.bash /exports/usr/share/bash-completion/completions/ && \
+  mv /usr/share/bug/fonts-roboto /usr/share/bug/libgbm1 /usr/share/bug/libgtk-3-0 /usr/share/bug/libvdpau1 /exports/usr/share/bug/ && \
   mv /usr/share/dbus-1/services/ca.desrt.dconf.service /usr/share/dbus-1/services/org.gtk.GLib.PACRunner.service /exports/usr/share/dbus-1/services/ && \
-  mv /usr/share/gettext/its/shared-mime-info.its /usr/share/gettext/its/shared-mime-info.loc /exports/usr/share/gettext/its/ && \
   mv /usr/share/xml/fontconfig /exports/usr/share/xml/
 
 # WIFI
@@ -822,67 +824,13 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN \
-  clone --https --tag=v1.3.0 https://github.com/stayradiated/wifi && \
+  clone --https --tag=v1.3.1 https://github.com/stayradiated/wifi && \
   cd /root/src/github.com/stayradiated/wifi && \
   go build && \
   mv wifi /usr/local/bin/wifi
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/wifi /exports/usr/local/bin/
-
-# RUBY
-FROM base AS ruby
-COPY --from=apteryx /exports/ /
-COPY --from=clone /exports/ /
-RUN \
-  apteryx autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev && \
-  clone --https --shallow https://github.com/rbenv/ruby-build && \
-  cd /root/src/github.com/rbenv/ruby-build && \
-  mkdir -p /usr/local/ruby/2.7.6 && \
-  ./bin/ruby-build --verbose 2.7.6 /usr/local/ruby/2.7.6
-RUN \
-  mkdir -p /exports/usr/local/ && \
-  mv /usr/local/ruby /exports/usr/local/
-
-# STRIPE
-FROM base AS stripe
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN \
-  wget -O /tmp/stripe.tgz https://github.com/stripe/stripe-cli/releases/download/v1.10.3/stripe_1.10.3_linux_x86_64.tar.gz && \
-  tar xzvf /tmp/stripe.tgz && \
-  mv ./stripe /usr/local/bin/stripe && \
-  rm /tmp/stripe.tgz
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/stripe /exports/usr/local/bin/
-
-# BRAVE
-FROM base AS brave
-COPY --from=apteryx /exports/ /
-RUN \
-  curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && \
-  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list && \
-  apt update && \
-  apteryx brave-browser='1.44.105'
-RUN \
-  mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/sysctl.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/dbus-1/services/ /exports/var/log/ && \
-  mv /etc/dconf /etc/gtk-3.0 /exports/etc/ && \
-  mv /etc/default/brave-browser /exports/etc/default/ && \
-  mv /etc/sysctl.d/30-brave.conf /exports/etc/sysctl.d/ && \
-  mv /etc/X11/xkb /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20dbus_xdg-runtime /exports/etc/X11/Xsession.d/ && \
-  mv /opt/brave.com /exports/opt/ && \
-  mv /usr/bin/brave-browser /usr/bin/brave-browser-stable /exports/usr/bin/ && \
-  mv /usr/lib/systemd/user/dbus.service /usr/lib/systemd/user/dbus.socket /usr/lib/systemd/user/dconf.service /usr/lib/systemd/user/sockets.target.wants /exports/usr/lib/systemd/user/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23609.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdconf.so.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.18.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20704.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.12 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.40.0 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.7.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.20.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.3 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/nss /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/lib/x86_64-linux-gnu/gio/modules/giomodule.cache /usr/lib/x86_64-linux-gnu/gio/modules/libdconfsettings.so /exports/usr/lib/x86_64-linux-gnu/gio/modules/ && \
-  mv /usr/libexec/dconf-service /exports/usr/libexec/ && \
-  mv /usr/local/share/fonts /exports/usr/local/share/ && \
-  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/appdata /exports/usr/share/ && \
-  mv /usr/share/dbus-1/services/ca.desrt.dconf.service /exports/usr/share/dbus-1/services/ && \
-  mv /var/log/fontconfig.log /exports/var/log/
 
 # FONTS
 FROM base AS fonts
@@ -930,7 +878,7 @@ RUN \
   mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 && \
   curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg && \
   apt update && \
-  apteryx 1password='8.9.10'
+  apteryx 1password='8.10.6'
 RUN \
   mkdir -p /exports/etc/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ && \
   mv /etc/gtk-3.0 /exports/etc/ && \
@@ -968,7 +916,7 @@ COPY --from=build-essential /exports/ /
 COPY --from=clone /exports/ /
 COPY --from=apteryx /exports/ /
 RUN \
-  clone --https --tag='v2.1.0' https://github.com/svenstaro/rofi-calc && \
+  clone --https --tag='v2.2.0' https://github.com/svenstaro/rofi-calc && \
   apteryx rofi-dev qalc libtool autoconf automake && \
   cd /root/src/github.com/svenstaro/rofi-calc && \
   autoreconf -i && \
@@ -1019,55 +967,11 @@ RUN \
   mv /usr/share/man/man5/ethers.5.gz /exports/usr/share/man/man5/ && \
   mv /usr/share/man/man8/arp.8.gz /usr/share/man/man8/ifconfig.8.gz /usr/share/man/man8/iptunnel.8.gz /usr/share/man/man8/mii-tool.8.gz /usr/share/man/man8/nameif.8.gz /usr/share/man/man8/netstat.8.gz /usr/share/man/man8/plipconfig.8.gz /usr/share/man/man8/rarp.8.gz /usr/share/man/man8/route.8.gz /usr/share/man/man8/slattach.8.gz /exports/usr/share/man/man8/
 
-# GIFSKI
-FROM base AS gifski
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-COPY --from=xz /exports/ /
-RUN \
-  wget -O gifski.deb "https://github.com/ImageOptim/gifski/releases/download/1.4.0/gifski_1.4.0_amd64.deb" && \
-  apteryx ./gifski.deb && \
-  rm -rf debian
-RUN \
-  mkdir -p /exports/usr/bin/ && \
-  mv /usr/bin/gifski /exports/usr/bin/
-
-# NGROK
-FROM base AS ngrok
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/ngrok.tgz 'https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz' && \
-  tar xzvf /tmp/ngrok.tgz && \
-  rm /tmp/ngrok.tgz && \
-  mv ngrok /usr/local/bin/ngrok
-RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/ngrok /exports/usr/local/bin/
-
-# SC-IM
-FROM base AS sc-im
-COPY --from=clone /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=apteryx /exports/ /
-RUN \
-  clone --https --tag='v0.8.2' https://github.com/andmarti1424/sc-im && \
-  apteryx bison libncurses-dev pkg-config && \
-  cd /root/src/github.com/andmarti1424/sc-im && \
-  make -C src && \
-  make -C src install && \
-  apt-get remove --purge -y bison libncurses-dev pkg-config && \
-  rm -r /root/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/share/man/ /exports/usr/local/share/ && \
-  mv /usr/local/bin/sc-im /usr/local/bin/scopen /exports/usr/local/bin/ && \
-  mv /usr/local/share/man/man1 /exports/usr/local/share/man/ && \
-  mv /usr/local/share/sc-im /exports/usr/local/share/
-
 # PNPM
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN \
-  npm install -g 'pnpm@7.13.1'
+  npm install -g 'pnpm@8.5.1'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ && \
@@ -1170,7 +1074,7 @@ RUN \
   mv /usr/local/bin/n /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ && \
   mv /usr/local/include/node /exports/usr/local/include/ && \
   mv /usr/local/lib/node_modules /exports/usr/local/lib/ && \
-  mv /usr/local/lib/python3.10/dist-packages/greenlet-1.1.3.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-1.0.4.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-2.5.1.dist-info /usr/local/lib/python3.10/dist-packages/neovim-0.3.1.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-5.9.2.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-0.4.3.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ && \
+  mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ && \
   mv /usr/local/n /exports/usr/local/ && \
   mv /usr/local/share/man/man1 /exports/usr/local/share/man/ && \
   mv /usr/local/share/nvim /exports/usr/local/share/
@@ -1344,50 +1248,6 @@ RUN \
   mv /usr/share/menu/google-chrome-beta.menu /exports/usr/share/menu/ && \
   mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/
 
-# PEEK
-FROM base AS peek
-COPY --from=apteryx /exports/ /
-COPY --from=ffmpeg /exports/ /
-RUN \
-  add-apt-repository ppa:peek-developers/stable && \
-  apteryx peek='1.5.1+git*'
-RUN \
-  mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/init.d/ /exports/etc/rcS.d/ /exports/etc/systemd/user/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/root/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/systemd/user/ /exports/usr/lib/systemd/user/graphical-session-pre.target.wants/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/lib/x86_64-linux-gnu/gstreamer-1.0/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/pkgconfig/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/cache/ldconfig/ && \
-  mv /etc/alternatives/libblas.so.3-x86_64-linux-gnu /etc/alternatives/liblapack.so.3-x86_64-linux-gnu /etc/alternatives/x-cursor-theme /exports/etc/alternatives/ && \
-  mv /etc/dconf /etc/gtk-3.0 /etc/ld.so.cache /etc/openal /etc/pulse /etc/sensors.d /etc/sensors3.conf /etc/vdpau_wrapper.cfg /etc/vulkan /exports/etc/ && \
-  mv /etc/init.d/x11-common /exports/etc/init.d/ && \
-  mv /etc/rcS.d/S01x11-common /exports/etc/rcS.d/ && \
-  mv /etc/systemd/user/graphical-session-pre.target.wants /exports/etc/systemd/user/ && \
-  mv /etc/X11/rgb.txt /etc/X11/xkb /etc/X11/xorg.conf.d /etc/X11/Xreset /etc/X11/Xreset.d /etc/X11/Xresources /etc/X11/Xsession /etc/X11/Xsession.options /exports/etc/X11/ && \
-  mv /etc/X11/Xsession.d/20dbus_xdg-runtime /etc/X11/Xsession.d/20x11-common_process-args /etc/X11/Xsession.d/30x11-common_xresources /etc/X11/Xsession.d/35x11-common_xhost-local /etc/X11/Xsession.d/40x11-common_xsessionrc /etc/X11/Xsession.d/50x11-common_determine-startup /etc/X11/Xsession.d/60x11-common_xdg_path /etc/X11/Xsession.d/90x11-common_ssh-agent /etc/X11/Xsession.d/99x11-common_start /exports/etc/X11/Xsession.d/ && \
-  mv /root/.launchpadlib /exports/root/ && \
-  mv /usr/bin/fc-cache /usr/bin/fc-cat /usr/bin/fc-conflist /usr/bin/fc-list /usr/bin/fc-match /usr/bin/fc-pattern /usr/bin/fc-query /usr/bin/fc-scan /usr/bin/fc-validate /usr/bin/ffmpeg /usr/bin/ffplay /usr/bin/ffprobe /usr/bin/gtk-update-icon-cache /usr/bin/peek /usr/bin/qt-faststart /usr/bin/session-migration /usr/bin/update-mime-database /usr/bin/X11 /exports/usr/bin/ && \
-  mv /usr/include/X11 /exports/usr/include/ && \
-  mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-310.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ && \
-  mv /usr/lib/systemd/user/dbus.service /usr/lib/systemd/user/dbus.socket /usr/lib/systemd/user/dconf.service /usr/lib/systemd/user/glib-pacrunner.service /usr/lib/systemd/user/session-migration.service /usr/lib/systemd/user/sockets.target.wants /exports/usr/lib/systemd/user/ && \
-  mv /usr/lib/systemd/user/graphical-session-pre.target.wants/session-migration.service /exports/usr/lib/systemd/user/graphical-session-pre.target.wants/ && \
-  mv /usr/lib/X11 /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/blas /usr/lib/x86_64-linux-gnu/caca /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/lapack /usr/lib/x86_64-linux-gnu/libaa.so.1 /usr/lib/x86_64-linux-gnu/libaa.so.1.0.4 /usr/lib/x86_64-linux-gnu/libaom.so.3 /usr/lib/x86_64-linux-gnu/libaom.so.3.3.0 /usr/lib/x86_64-linux-gnu/libasound.so.2 /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0 /usr/lib/x86_64-linux-gnu/libass.so.9 /usr/lib/x86_64-linux-gnu/libass.so.9.1.3 /usr/lib/x86_64-linux-gnu/libasyncns.so.0 /usr/lib/x86_64-linux-gnu/libasyncns.so.0.3.1 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.23609.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libavc1394.so.0 /usr/lib/x86_64-linux-gnu/libavc1394.so.0.3.0 /usr/lib/x86_64-linux-gnu/libavcodec.so.58 /usr/lib/x86_64-linux-gnu/libavcodec.so.58.134.100 /usr/lib/x86_64-linux-gnu/libavdevice.so.58 /usr/lib/x86_64-linux-gnu/libavdevice.so.58.13.100 /usr/lib/x86_64-linux-gnu/libavfilter.so.7 /usr/lib/x86_64-linux-gnu/libavfilter.so.7.110.100 /usr/lib/x86_64-linux-gnu/libavformat.so.58 /usr/lib/x86_64-linux-gnu/libavformat.so.58.76.100 /usr/lib/x86_64-linux-gnu/libavutil.so.56 /usr/lib/x86_64-linux-gnu/libavutil.so.56.70.100 /usr/lib/x86_64-linux-gnu/libblas.so.3 /usr/lib/x86_64-linux-gnu/libbluray.so.2 /usr/lib/x86_64-linux-gnu/libbluray.so.2.4.1 /usr/lib/x86_64-linux-gnu/libbs2b.so.0 /usr/lib/x86_64-linux-gnu/libbs2b.so.0.0.0 /usr/lib/x86_64-linux-gnu/libcaca.so.0 /usr/lib/x86_64-linux-gnu/libcaca.so.0.99.19 /usr/lib/x86_64-linux-gnu/libcaca++.so.0 /usr/lib/x86_64-linux-gnu/libcaca++.so.0.99.19 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11600.0 /usr/lib/x86_64-linux-gnu/libcdda_interface.so.0 /usr/lib/x86_64-linux-gnu/libcdda_interface.so.0.10.2 /usr/lib/x86_64-linux-gnu/libcdda_paranoia.so.0 /usr/lib/x86_64-linux-gnu/libcdda_paranoia.so.0.10.2 /usr/lib/x86_64-linux-gnu/libcdio_cdda.so.2 /usr/lib/x86_64-linux-gnu/libcdio_cdda.so.2.0.0 /usr/lib/x86_64-linux-gnu/libcdio_paranoia.so.2 /usr/lib/x86_64-linux-gnu/libcdio_paranoia.so.2.0.0 /usr/lib/x86_64-linux-gnu/libcdio.so.19 /usr/lib/x86_64-linux-gnu/libcdio.so.19.0.0 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1 /usr/lib/x86_64-linux-gnu/libchromaprint.so.1.5.1 /usr/lib/x86_64-linux-gnu/libcodec2.so.1.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdav1d.so.5 /usr/lib/x86_64-linux-gnu/libdav1d.so.5.1.1 /usr/lib/x86_64-linux-gnu/libdc1394.so.25 /usr/lib/x86_64-linux-gnu/libdc1394.so.25.0.0 /usr/lib/x86_64-linux-gnu/libdconf.so.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdecor-0.so.0 /usr/lib/x86_64-linux-gnu/libdecor-0.so.0.100.0 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1 /usr/lib/x86_64-linux-gnu/libdrm_radeon.so.1.0.1 /usr/lib/x86_64-linux-gnu/libdrm.so.2 /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0 /usr/lib/x86_64-linux-gnu/libdv.so.4 /usr/lib/x86_64-linux-gnu/libdv.so.4.0.3 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libFLAC.so.8 /usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0 /usr/lib/x86_64-linux-gnu/libflite_cmu_grapheme_lang.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_grapheme_lang.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_grapheme_lex.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_grapheme_lex.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_indic_lang.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_indic_lang.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_indic_lex.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_indic_lex.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_time_awb.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_time_awb.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_kal.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_kal.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_cmulex.so.1 /usr/lib/x86_64-linux-gnu/libflite_cmulex.so.2.2 /usr/lib/x86_64-linux-gnu/libflite_usenglish.so.1 /usr/lib/x86_64-linux-gnu/libflite_usenglish.so.2.2 /usr/lib/x86_64-linux-gnu/libflite.so.1 /usr/lib/x86_64-linux-gnu/libflite.so.2.2 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.0 /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.18.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgbm.so.1 /usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libgfortran.so.5 /usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0 /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so.1.7.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0 /usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX_indirect.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0 /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0 /usr/lib/x86_64-linux-gnu/libgme.so.0 /usr/lib/x86_64-linux-gnu/libgme.so.0.6.3 /usr/lib/x86_64-linux-gnu/libgomp.so.1 /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgpm.so.2 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgsm.so.1 /usr/lib/x86_64-linux-gnu/libgsm.so.1.0.19 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstallocators-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstapp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstaudio-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstbasecamerabinsrc-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstbasecamerabinsrc-1.0.so.0.2003.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstfft-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstpbutils-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstphotography-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstphotography-1.0.so.0.2003.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstriff-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstrtsp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstsdp-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgsttag-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgstvideo-1.0.so.0.2001.0 /usr/lib/x86_64-linux-gnu/libgtk-3-0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2404.29 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0 /usr/lib/x86_64-linux-gnu/libgudev-1.0.so.0.3.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.20704.0 /usr/lib/x86_64-linux-gnu/libiec61883.so.0 /usr/lib/x86_64-linux-gnu/libiec61883.so.0.1.1 /usr/lib/x86_64-linux-gnu/libjack.so.0 /usr/lib/x86_64-linux-gnu/libjack.so.0.1.0 /usr/lib/x86_64-linux-gnu/libjacknet.so.0 /usr/lib/x86_64-linux-gnu/libjacknet.so.0.1.0 /usr/lib/x86_64-linux-gnu/libjackserver.so.0 /usr/lib/x86_64-linux-gnu/libjackserver.so.0.1.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/libkeybinder-3.0.so.0 /usr/lib/x86_64-linux-gnu/libkeybinder-3.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.12 /usr/lib/x86_64-linux-gnu/liblilv-0.so.0 /usr/lib/x86_64-linux-gnu/liblilv-0.so.0.24.12 /usr/lib/x86_64-linux-gnu/libLLVM-13.so /usr/lib/x86_64-linux-gnu/libLLVM-13.so.1 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1 /usr/lib/x86_64-linux-gnu/libmfx-tracer.so.1.35 /usr/lib/x86_64-linux-gnu/libmfx.so.1 /usr/lib/x86_64-linux-gnu/libmfx.so.1.35 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1 /usr/lib/x86_64-linux-gnu/libmfxhw64.so.1.35 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0 /usr/lib/x86_64-linux-gnu/libmp3lame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0 /usr/lib/x86_64-linux-gnu/libmpg123.so.0.46.7 /usr/lib/x86_64-linux-gnu/libmysofa.so.1 /usr/lib/x86_64-linux-gnu/libmysofa.so.1.1.0 /usr/lib/x86_64-linux-gnu/libnorm.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0 /usr/lib/x86_64-linux-gnu/libogg.so.0 /usr/lib/x86_64-linux-gnu/libogg.so.0.8.5 /usr/lib/x86_64-linux-gnu/libopenal.so.1 /usr/lib/x86_64-linux-gnu/libopenal.so.1.19.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.2.4.0 /usr/lib/x86_64-linux-gnu/libopenjp2.so.7 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0 /usr/lib/x86_64-linux-gnu/libopenmpt.so.0.3.3 /usr/lib/x86_64-linux-gnu/libopus.so.0 /usr/lib/x86_64-linux-gnu/libopus.so.0.8.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-0.4.so.0.32.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0 /usr/lib/x86_64-linux-gnu/liborc-test-0.4.so.0.32.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0 /usr/lib/x86_64-linux-gnu/libpgm-5.3.so.0.0.128 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.40.0 /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.37.0 /usr/lib/x86_64-linux-gnu/libpocketsphinx.so.3 /usr/lib/x86_64-linux-gnu/libpocketsphinx.so.3.0.0 /usr/lib/x86_64-linux-gnu/libpostproc.so.55 /usr/lib/x86_64-linux-gnu/libpostproc.so.55.9.100 /usr/lib/x86_64-linux-gnu/libproxy.so.1 /usr/lib/x86_64-linux-gnu/libproxy.so.1.0.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0 /usr/lib/x86_64-linux-gnu/libpulse-simple.so.0.1.1 /usr/lib/x86_64-linux-gnu/libpulse.so.0 /usr/lib/x86_64-linux-gnu/libpulse.so.0.24.1 /usr/lib/x86_64-linux-gnu/libquadmath.so.0 /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4 /usr/lib/x86_64-linux-gnu/librabbitmq.so.4.4.0 /usr/lib/x86_64-linux-gnu/libraw1394.so.11 /usr/lib/x86_64-linux-gnu/libraw1394.so.11.1.0 /usr/lib/x86_64-linux-gnu/librom1394.so.0 /usr/lib/x86_64-linux-gnu/librom1394.so.0.3.0 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2 /usr/lib/x86_64-linux-gnu/librsvg-2.so.2.48.0 /usr/lib/x86_64-linux-gnu/librubberband.so.2 /usr/lib/x86_64-linux-gnu/librubberband.so.2.1.5 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0 /usr/lib/x86_64-linux-gnu/libsamplerate.so.0.2.2 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0.18.2 /usr/lib/x86_64-linux-gnu/libsensors.so.5 /usr/lib/x86_64-linux-gnu/libsensors.so.5.0.0 /usr/lib/x86_64-linux-gnu/libserd-0.so.0 /usr/lib/x86_64-linux-gnu/libserd-0.so.0.30.10 /usr/lib/x86_64-linux-gnu/libshine.so.3 /usr/lib/x86_64-linux-gnu/libshine.so.3.0.1 /usr/lib/x86_64-linux-gnu/libshout.so.3 /usr/lib/x86_64-linux-gnu/libshout.so.3.2.0 /usr/lib/x86_64-linux-gnu/libslang.so.2 /usr/lib/x86_64-linux-gnu/libslang.so.2.3.2 /usr/lib/x86_64-linux-gnu/libsnappy.so.1 /usr/lib/x86_64-linux-gnu/libsnappy.so.1.1.8 /usr/lib/x86_64-linux-gnu/libsndfile.so.1 /usr/lib/x86_64-linux-gnu/libsndfile.so.1.0.31 /usr/lib/x86_64-linux-gnu/libsndio.so.7 /usr/lib/x86_64-linux-gnu/libsndio.so.7.0 /usr/lib/x86_64-linux-gnu/libsndio.so.7.1 /usr/lib/x86_64-linux-gnu/libsodium.so.23 /usr/lib/x86_64-linux-gnu/libsodium.so.23.3.0 /usr/lib/x86_64-linux-gnu/libsord-0.so.0 /usr/lib/x86_64-linux-gnu/libsord-0.so.0.16.8 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1 /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1.11.2 /usr/lib/x86_64-linux-gnu/libsoxr.so.0 /usr/lib/x86_64-linux-gnu/libsoxr.so.0.1.2 /usr/lib/x86_64-linux-gnu/libspeex.so.1 /usr/lib/x86_64-linux-gnu/libspeex.so.1.5.0 /usr/lib/x86_64-linux-gnu/libsphinxad.so.3 /usr/lib/x86_64-linux-gnu/libsphinxad.so.3.0.0 /usr/lib/x86_64-linux-gnu/libsphinxbase.so.3 /usr/lib/x86_64-linux-gnu/libsphinxbase.so.3.0.0 /usr/lib/x86_64-linux-gnu/libsratom-0.so.0 /usr/lib/x86_64-linux-gnu/libsratom-0.so.0.6.8 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4 /usr/lib/x86_64-linux-gnu/libsrt-gnutls.so.1.4.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4 /usr/lib/x86_64-linux-gnu/libssh-gcrypt.so.4.8.7 /usr/lib/x86_64-linux-gnu/libswresample.so.3 /usr/lib/x86_64-linux-gnu/libswresample.so.3.9.100 /usr/lib/x86_64-linux-gnu/libswscale.so.5 /usr/lib/x86_64-linux-gnu/libswscale.so.5.9.100 /usr/lib/x86_64-linux-gnu/libtag.so.1 /usr/lib/x86_64-linux-gnu/libtag.so.1.17.0 /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtheora.so.0 /usr/lib/x86_64-linux-gnu/libtheora.so.0.3.10 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1 /usr/lib/x86_64-linux-gnu/libtheoradec.so.1.1.4 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1 /usr/lib/x86_64-linux-gnu/libtheoraenc.so.1.1.2 /usr/lib/x86_64-linux-gnu/libtiff.so.5 /usr/lib/x86_64-linux-gnu/libtiff.so.5.7.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0 /usr/lib/x86_64-linux-gnu/libtwolame.so.0.0.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0 /usr/lib/x86_64-linux-gnu/libudfread.so.0.1.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so.0.3.0 /usr/lib/x86_64-linux-gnu/libv4l /usr/lib/x86_64-linux-gnu/libv4l1.so.0 /usr/lib/x86_64-linux-gnu/libv4l1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libv4l2.so.0 /usr/lib/x86_64-linux-gnu/libv4l2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libv4lconvert.so.0 /usr/lib/x86_64-linux-gnu/libv4lconvert.so.0.0.0 /usr/lib/x86_64-linux-gnu/libv4lconvert0 /usr/lib/x86_64-linux-gnu/libva-drm.so.2 /usr/lib/x86_64-linux-gnu/libva-drm.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva-x11.so.2 /usr/lib/x86_64-linux-gnu/libva-x11.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libva.so.2 /usr/lib/x86_64-linux-gnu/libva.so.2.1400.0 /usr/lib/x86_64-linux-gnu/libvdpau.so.1 /usr/lib/x86_64-linux-gnu/libvdpau.so.1.0.0 /usr/lib/x86_64-linux-gnu/libvidstab.so.1.1 /usr/lib/x86_64-linux-gnu/libvisual-0.4.so.0 /usr/lib/x86_64-linux-gnu/libvisual-0.4.so.0.0.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0 /usr/lib/x86_64-linux-gnu/libvorbis.so.0.4.9 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2 /usr/lib/x86_64-linux-gnu/libvorbisenc.so.2.0.12 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3 /usr/lib/x86_64-linux-gnu/libvorbisfile.so.3.3.8 /usr/lib/x86_64-linux-gnu/libvpx.so.7 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0 /usr/lib/x86_64-linux-gnu/libvpx.so.7.0.0 /usr/lib/x86_64-linux-gnu/libvulkan.so.1 /usr/lib/x86_64-linux-gnu/libvulkan.so.1.3.204 /usr/lib/x86_64-linux-gnu/libwavpack.so.1 /usr/lib/x86_64-linux-gnu/libwavpack.so.1.2.3 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.20.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0 /usr/lib/x86_64-linux-gnu/libwayland-server.so.0.20.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3 /usr/lib/x86_64-linux-gnu/libwebpmux.so.3.0.8 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1 /usr/lib/x86_64-linux-gnu/libX11-xcb.so.1.0.0 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libx264.so.163 /usr/lib/x86_64-linux-gnu/libx265.so.199 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0 /usr/lib/x86_64-linux-gnu/libxcb-dri3.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0 /usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0 /usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shape.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1 /usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0 /usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1 /usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXss.so.1 /usr/lib/x86_64-linux-gnu/libXss.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXv.so.1 /usr/lib/x86_64-linux-gnu/libXv.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4 /usr/lib/x86_64-linux-gnu/libxvidcore.so.4.3 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1 /usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0 /usr/lib/x86_64-linux-gnu/libzimg.so.2 /usr/lib/x86_64-linux-gnu/libzimg.so.2.0.0 /usr/lib/x86_64-linux-gnu/libzmq.so.5 /usr/lib/x86_64-linux-gnu/libzmq.so.5.2.4 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0 /usr/lib/x86_64-linux-gnu/libzvbi-chains.so.0.0.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0 /usr/lib/x86_64-linux-gnu/libzvbi.so.0.13.2 /usr/lib/x86_64-linux-gnu/mfx /usr/lib/x86_64-linux-gnu/pulseaudio /usr/lib/x86_64-linux-gnu/vdpau /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /usr/lib/x86_64-linux-gnu/gio/modules/giomodule.cache /usr/lib/x86_64-linux-gnu/gio/modules/libdconfsettings.so /usr/lib/x86_64-linux-gnu/gio/modules/libgioenvironmentproxy.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiognomeproxy.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiognutls.so /usr/lib/x86_64-linux-gnu/gio/modules/libgiolibproxy.so /exports/usr/lib/x86_64-linux-gnu/gio/modules/ && \
-  mv /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgst1394.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaasink.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstadder.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstalaw.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstalpha.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstalphacolor.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstapetag.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstapp.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudioconvert.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudiofx.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudiomixer.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudioparsers.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudiorate.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudioresample.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstaudiotestsrc.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstauparse.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstautodetect.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstavi.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcacasink.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcairo.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcamerabin.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcdparanoia.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcompositor.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcutter.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstdebug.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstdeinterlace.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstdtmf.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstdv.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsteffectv.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstencoding.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstequalizer.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstflac.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstflv.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstflxdec.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstgdkpixbuf.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstgio.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstgoom.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstgoom2k1.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsticydemux.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstid3demux.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstimagefreeze.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstinterleave.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstisomp4.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstjack.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstjpeg.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstjpegformat.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstlame.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstlevel.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstlibvisual.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmatroska.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmonoscope.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmpg123.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmulaw.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmultifile.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstmultipart.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstnavigationtest.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstogg.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstopus.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstoss4.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstossaudio.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstoverlaycomposition.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstpbtypes.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstplayback.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstpng.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstpulseaudio.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstrawparse.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstreplaygain.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstrtp.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstrtpmanager.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstrtsp.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstshapewipe.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstshout2.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstsmpte.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstsoup.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstspectrum.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstspeex.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstsubparse.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsttaglib.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsttcp.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsttheora.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsttwolame.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsttypefindfunctions.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstudp.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideo4linux2.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideobox.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideoconvert.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideocrop.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideofilter.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideomixer.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideorate.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideoscale.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvideotestsrc.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvolume.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvorbis.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstvpx.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstwavenc.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstwavpack.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstwavparse.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstximagesrc.so /usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgsty4menc.so /exports/usr/lib/x86_64-linux-gnu/gstreamer-1.0/ && \
-  mv /usr/libexec/dconf-service /usr/libexec/glib-pacrunner /exports/usr/libexec/ && \
-  mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/ && \
-  mv /usr/local/share/fonts /exports/usr/local/share/ && \
-  mv /usr/sbin/update-icon-caches /exports/usr/sbin/ && \
-  mv /usr/share/alsa /usr/share/drirc.d /usr/share/ffmpeg /usr/share/fonts /usr/share/GConf /usr/share/gst-plugins-base /usr/share/gstreamer-1.0 /usr/share/libdrm /usr/share/libmysofa /usr/share/libthai /usr/share/metainfo /usr/share/mfx /usr/share/mime /usr/share/openal /usr/share/session-migration /usr/share/themes /usr/share/upstart /usr/share/X11 /exports/usr/share/ && \
-  mv /usr/share/applications/com.uploadedlobster.peek.desktop /exports/usr/share/applications/ && \
-  mv /usr/share/apport/package-hooks/source_fontconfig.py /exports/usr/share/apport/package-hooks/ && \
-  mv /usr/share/bug/libgbm1 /usr/share/bug/libgl1-mesa-dri /usr/share/bug/libgl1 /usr/share/bug/libglapi-mesa /usr/share/bug/libglvnd0 /usr/share/bug/libglx-mesa0 /usr/share/bug/libglx0 /usr/share/bug/libgtk-3-0 /usr/share/bug/libvdpau1 /exports/usr/share/bug/ && \
-  mv /usr/share/dbus-1/services/ca.desrt.dconf.service /usr/share/dbus-1/services/com.uploadedlobster.peek.service /usr/share/dbus-1/services/org.gtk.GLib.PACRunner.service /exports/usr/share/dbus-1/services/ && \
-  mv /usr/share/doc-base/fontconfig.fontconfig-user /usr/share/doc-base/libpng16-16.libpng16 /usr/share/doc-base/ocl-icd-libopencl1 /usr/share/doc-base/shared-mime-info.shared-mime-info /exports/usr/share/doc-base/ && \
-  mv /usr/share/doc/adwaita-icon-theme /usr/share/doc/dbus-user-session /usr/share/doc/dconf-gsettings-backend /usr/share/doc/dconf-service /usr/share/doc/ffmpeg /usr/share/doc/fontconfig-config /usr/share/doc/fontconfig /usr/share/doc/fonts-dejavu-core /usr/share/doc/glib-networking-common /usr/share/doc/glib-networking-services /usr/share/doc/glib-networking /usr/share/doc/gsettings-desktop-schemas /usr/share/doc/gstreamer1.0-plugins-base /usr/share/doc/gstreamer1.0-plugins-good /usr/share/doc/gtk-update-icon-cache /usr/share/doc/hicolor-icon-theme /usr/share/doc/humanity-icon-theme /usr/share/doc/libaa1 /usr/share/doc/libaom3 /usr/share/doc/libasound2-data /usr/share/doc/libasound2 /usr/share/doc/libass9 /usr/share/doc/libasyncns0 /usr/share/doc/libatk-bridge2.0-0 /usr/share/doc/libatk1.0-0 /usr/share/doc/libatk1.0-data /usr/share/doc/libatspi2.0-0 /usr/share/doc/libavahi-client3 /usr/share/doc/libavahi-common-data /usr/share/doc/libavahi-common3 /usr/share/doc/libavc1394-0 /usr/share/doc/libavcodec58 /usr/share/doc/libavdevice58 /usr/share/doc/libavfilter7 /usr/share/doc/libavformat58 /usr/share/doc/libavutil56 /usr/share/doc/libblas3 /usr/share/doc/libbluray2 /usr/share/doc/libbs2b0 /usr/share/doc/libcaca0 /usr/share/doc/libcairo-gobject2 /usr/share/doc/libcairo2 /usr/share/doc/libcdio-cdda2 /usr/share/doc/libcdio-paranoia2 /usr/share/doc/libcdio19 /usr/share/doc/libcdparanoia0 /usr/share/doc/libchromaprint1 /usr/share/doc/libcodec2-1.0 /usr/share/doc/libcolord2 /usr/share/doc/libcups2 /usr/share/doc/libdatrie1 /usr/share/doc/libdav1d5 /usr/share/doc/libdc1394-25 /usr/share/doc/libdconf1 /usr/share/doc/libdecor-0-0 /usr/share/doc/libdeflate0 /usr/share/doc/libdrm-amdgpu1 /usr/share/doc/libdrm-common /usr/share/doc/libdrm-nouveau2 /usr/share/doc/libdrm-radeon1 /usr/share/doc/libdrm2 /usr/share/doc/libdv4 /usr/share/doc/libepoxy0 /usr/share/doc/libflac8 /usr/share/doc/libflite1 /usr/share/doc/libfontconfig1 /usr/share/doc/libfreetype6 /usr/share/doc/libfribidi0 /usr/share/doc/libgbm1 /usr/share/doc/libgdk-pixbuf-2.0-0 /usr/share/doc/libgdk-pixbuf2.0-common /usr/share/doc/libgfortran5 /usr/share/doc/libgl1-mesa-dri /usr/share/doc/libgl1 /usr/share/doc/libglapi-mesa /usr/share/doc/libglvnd0 /usr/share/doc/libglx-mesa0 /usr/share/doc/libglx0 /usr/share/doc/libgme0 /usr/share/doc/libgomp1 /usr/share/doc/libgpm2 /usr/share/doc/libgraphite2-3 /usr/share/doc/libgsm1 /usr/share/doc/libgstreamer-plugins-base1.0-0 /usr/share/doc/libgstreamer-plugins-good1.0-0 /usr/share/doc/libgtk-3-0 /usr/share/doc/libgtk-3-common /usr/share/doc/libgudev-1.0-0 /usr/share/doc/libharfbuzz0b /usr/share/doc/libiec61883-0 /usr/share/doc/libjack-jackd2-0 /usr/share/doc/libjbig0 /usr/share/doc/libjpeg-turbo8 /usr/share/doc/libjpeg8 /usr/share/doc/libkeybinder-3.0-0 /usr/share/doc/liblapack3 /usr/share/doc/liblcms2-2 /usr/share/doc/liblilv-0-0 /usr/share/doc/libllvm13 /usr/share/doc/libmfx1 /usr/share/doc/libmp3lame0 /usr/share/doc/libmpg123-0 /usr/share/doc/libmysofa1 /usr/share/doc/libnorm1 /usr/share/doc/libnuma1 /usr/share/doc/libogg0 /usr/share/doc/libopenal-data /usr/share/doc/libopenal1 /usr/share/doc/libopenjp2-7 /usr/share/doc/libopenmpt0 /usr/share/doc/libopus0 /usr/share/doc/liborc-0.4-0 /usr/share/doc/libpango-1.0-0 /usr/share/doc/libpangocairo-1.0-0 /usr/share/doc/libpangoft2-1.0-0 /usr/share/doc/libpgm-5.3-0 /usr/share/doc/libpixman-1-0 /usr/share/doc/libpng16-16 /usr/share/doc/libpocketsphinx3 /usr/share/doc/libpostproc55 /usr/share/doc/libproxy1v5 /usr/share/doc/libpulse0 /usr/share/doc/libquadmath0 /usr/share/doc/librabbitmq4 /usr/share/doc/libraw1394-11 /usr/share/doc/librsvg2-2 /usr/share/doc/librubberband2 /usr/share/doc/libsamplerate0 /usr/share/doc/libsdl2-2.0-0 /usr/share/doc/libsensors-config /usr/share/doc/libsensors5 /usr/share/doc/libserd-0-0 /usr/share/doc/libshine3 /usr/share/doc/libshout3 /usr/share/doc/libslang2 /usr/share/doc/libsnappy1v5 /usr/share/doc/libsndfile1 /usr/share/doc/libsndio7.0 /usr/share/doc/libsodium23 /usr/share/doc/libsord-0-0 /usr/share/doc/libsoup2.4-1 /usr/share/doc/libsoup2.4-common /usr/share/doc/libsoxr0 /usr/share/doc/libspeex1 /usr/share/doc/libsphinxbase3 /usr/share/doc/libsratom-0-0 /usr/share/doc/libsrt1.4-gnutls /usr/share/doc/libssh-gcrypt-4 /usr/share/doc/libswresample3 /usr/share/doc/libswscale5 /usr/share/doc/libtag1v5-vanilla /usr/share/doc/libtag1v5 /usr/share/doc/libthai-data /usr/share/doc/libthai0 /usr/share/doc/libtheora0 /usr/share/doc/libtiff5 /usr/share/doc/libtwolame0 /usr/share/doc/libudfread0 /usr/share/doc/libusb-1.0-0 /usr/share/doc/libv4l-0 /usr/share/doc/libv4lconvert0 /usr/share/doc/libva-drm2 /usr/share/doc/libva-x11-2 /usr/share/doc/libva2 /usr/share/doc/libvdpau1 /usr/share/doc/libvidstab1.1 /usr/share/doc/libvisual-0.4-0 /usr/share/doc/libvorbis0a /usr/share/doc/libvorbisenc2 /usr/share/doc/libvorbisfile3 /usr/share/doc/libvpx7 /usr/share/doc/libvulkan1 /usr/share/doc/libwavpack1 /usr/share/doc/libwayland-client0 /usr/share/doc/libwayland-cursor0 /usr/share/doc/libwayland-egl1 /usr/share/doc/libwayland-server0 /usr/share/doc/libwebp7 /usr/share/doc/libwebpmux3 /usr/share/doc/libx11-6 /usr/share/doc/libx11-data /usr/share/doc/libx11-xcb1 /usr/share/doc/libx264-163 /usr/share/doc/libx265-199 /usr/share/doc/libxau6 /usr/share/doc/libxcb-dri2-0 /usr/share/doc/libxcb-dri3-0 /usr/share/doc/libxcb-glx0 /usr/share/doc/libxcb-present0 /usr/share/doc/libxcb-render0 /usr/share/doc/libxcb-shape0 /usr/share/doc/libxcb-shm0 /usr/share/doc/libxcb-sync1 /usr/share/doc/libxcb-xfixes0 /usr/share/doc/libxcb1 /usr/share/doc/libxcomposite1 /usr/share/doc/libxcursor1 /usr/share/doc/libxdamage1 /usr/share/doc/libxdmcp6 /usr/share/doc/libxext6 /usr/share/doc/libxfixes3 /usr/share/doc/libxi6 /usr/share/doc/libxinerama1 /usr/share/doc/libxkbcommon0 /usr/share/doc/libxrandr2 /usr/share/doc/libxrender1 /usr/share/doc/libxshmfence1 /usr/share/doc/libxss1 /usr/share/doc/libxv1 /usr/share/doc/libxvidcore4 /usr/share/doc/libxxf86vm1 /usr/share/doc/libzimg2 /usr/share/doc/libzmq5 /usr/share/doc/libzvbi-common /usr/share/doc/libzvbi0 /usr/share/doc/ocl-icd-libopencl1 /usr/share/doc/peek /usr/share/doc/session-migration /usr/share/doc/shared-mime-info /usr/share/doc/ubuntu-mono /usr/share/doc/x11-common /usr/share/doc/xkb-data /exports/usr/share/doc/ && \
-  mv /usr/share/gettext/its/shared-mime-info.its /usr/share/gettext/its/shared-mime-info.loc /exports/usr/share/gettext/its/ && \
-  mv /usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml /usr/share/glib-2.0/schemas/gschemas.compiled /exports/usr/share/glib-2.0/schemas/ && \
-  mv /usr/share/pkgconfig/adwaita-icon-theme.pc /usr/share/pkgconfig/shared-mime-info.pc /usr/share/pkgconfig/xkeyboard-config.pc /exports/usr/share/pkgconfig/ && \
-  mv /usr/share/xml/fontconfig /exports/usr/share/xml/ && \
-  mv /var/cache/fontconfig /exports/var/cache/ && \
-  mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/
-
 # XSECURELOCK
 FROM base AS xsecurelock
 COPY --from=apteryx /exports/ /
@@ -1503,22 +1363,6 @@ RUN \
   mv /usr/local/share/feh /exports/usr/local/share/ && \
   mv /usr/lib/x86_64-linux-gnu/imlib2 /usr/lib/x86_64-linux-gnu/libImlib2* /usr/lib/x86_64-linux-gnu/libpng* /usr/lib/x86_64-linux-gnu/libX11* /usr/lib/x86_64-linux-gnu/libXt* /exports/usr/lib/x86_64-linux-gnu/
 
-# CHARLES
-FROM base AS charles
-COPY --from=wget /exports/ /
-RUN \
-  wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.6.2/charles-proxy-4.6.2_amd64.tar.gz' && \
-  tar -xzvf /tmp/charles.tgz && \
-  rm /tmp/charles.tgz && \
-  mv ./charles/bin/charles /usr/local/bin/charles && \
-  mkdir -p /usr/share/java/charles/ && \
-  mv ./charles/lib/* /usr/share/java/charles/ && \
-  rm -r ./charles
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/share/java/ && \
-  mv /usr/local/bin/charles /exports/usr/local/bin/ && \
-  mv /usr/share/java/charles /exports/usr/share/java/
-
 # AUDACITY
 FROM base AS audacity
 COPY --from=apteryx /exports/ /
@@ -1560,7 +1404,7 @@ RUN \
   packages="cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3" && \
   apt-get -q update && \
   apt-get install -y --no-install-recommends --auto-remove $packages && \
-  clone --https --tag='v0.11.0' https://github.com/alacritty/alacritty && \
+  clone --https --tag='v0.12.1' https://github.com/alacritty/alacritty && \
   cd /root/src/github.com/alacritty/alacritty && \
   cargo build --release --no-default-features --features=x11 && \
   mv target/release/alacritty /usr/local/bin/alacritty && \
@@ -1571,16 +1415,6 @@ RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/local/bin/ && \
   mv /usr/bin/x86_64-linux-gnu-addr2line /usr/bin/x86_64-linux-gnu-ar /usr/bin/x86_64-linux-gnu-as /usr/bin/x86_64-linux-gnu-c++filt /usr/bin/x86_64-linux-gnu-cpp /usr/bin/x86_64-linux-gnu-cpp-11 /usr/bin/x86_64-linux-gnu-dwp /usr/bin/x86_64-linux-gnu-elfedit /usr/bin/x86_64-linux-gnu-gcc-11 /usr/bin/x86_64-linux-gnu-gcc-ar-11 /usr/bin/x86_64-linux-gnu-gcc-nm-11 /usr/bin/x86_64-linux-gnu-gcc-ranlib-11 /usr/bin/x86_64-linux-gnu-gcov-11 /usr/bin/x86_64-linux-gnu-gcov-dump-11 /usr/bin/x86_64-linux-gnu-gcov-tool-11 /usr/bin/x86_64-linux-gnu-gold /usr/bin/x86_64-linux-gnu-gprof /usr/bin/x86_64-linux-gnu-ld /usr/bin/x86_64-linux-gnu-ld.bfd /usr/bin/x86_64-linux-gnu-ld.gold /usr/bin/x86_64-linux-gnu-lto-dump-11 /usr/bin/x86_64-linux-gnu-nm /usr/bin/x86_64-linux-gnu-objcopy /usr/bin/x86_64-linux-gnu-objdump /usr/bin/x86_64-linux-gnu-ranlib /usr/bin/x86_64-linux-gnu-readelf /usr/bin/x86_64-linux-gnu-size /usr/bin/x86_64-linux-gnu-strings /usr/bin/x86_64-linux-gnu-strip /exports/usr/bin/ && \
   mv /usr/local/bin/alacritty /exports/usr/local/bin/
-
-# ZX
-FROM base AS zx
-COPY --from=node /exports/ /
-RUN \
-  npm install -g 'zx@1.14.1'
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
-  mv /usr/local/bin/zx /exports/usr/local/bin/ && \
-  mv /usr/local/lib/node_modules/zx /exports/usr/local/lib/node_modules/
 
 # XSV
 FROM base AS xsv
@@ -1618,29 +1452,6 @@ RUN \
   mv /usr/local/pipx /exports/usr/local/ && \
   mv /usr/local/bin/watson /exports/usr/local/bin/
 
-# W3M
-FROM base AS w3m
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx w3m='0.5.3+*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/mime/packages/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ && \
-  mv /etc/w3m /exports/etc/ && \
-  mv /usr/bin/w3m /usr/bin/w3mman /usr/bin/www-browser /exports/usr/bin/ && \
-  mv /usr/lib/mime/packages/w3m /exports/usr/lib/mime/packages/ && \
-  mv /usr/lib/w3m /exports/usr/lib/ && \
-  mv /usr/lib/x86_64-linux-gnu/libgc.so.* /usr/lib/x86_64-linux-gnu/libgccpp.so.* /usr/lib/x86_64-linux-gnu/libgpm.so.* /exports/usr/lib/x86_64-linux-gnu/
-
-# URLVIEW
-FROM base AS urlview
-COPY --from=apteryx /exports/ /
-RUN \
-  apteryx urlview='0.9-*'
-RUN \
-  mkdir -p /exports/etc/ /exports/usr/bin/ && \
-  mv /etc/urlview /exports/etc/ && \
-  mv /usr/bin/urlview /exports/usr/bin/
-
 # TREE
 FROM base AS tree
 COPY --from=apteryx /exports/ /
@@ -1660,7 +1471,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN \
   apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev && \
-  clone --https --tag='tig-2.5.5' https://github.com/jonas/tig && \
+  clone --https --tag='tig-2.5.8' https://github.com/jonas/tig && \
   cd /root/src/github.com/jonas/tig && \
   make configure && \
   ./configure && \
@@ -1696,7 +1507,7 @@ RUN \
 FROM base AS shoebox
 COPY --from=node /exports/ /
 RUN \
-  npm install -g '@stayradiated/shoebox@1.4.0'
+  npm install -g '@stayradiated/shoebox@1.5.1'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@stayradiated/ && \
   mv /usr/local/bin/shoebox /exports/usr/local/bin/ && \
@@ -1807,7 +1618,7 @@ RUN \
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN \
-  npm install -g 'npm-check-updates@16.3.8'
+  npm install -g 'npm-check-updates@16.10.12'
 RUN \
   mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
   mv /usr/local/bin/ncu /exports/usr/local/bin/ && \
@@ -1829,12 +1640,13 @@ RUN \
 # MILLER
 FROM base AS miller
 COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
 RUN \
-  wget -O /usr/local/bin/mlr https://github.com/johnkerl/miller/releases/download/v5.10.2/mlr.linux.x86_64 && \
-  chmod +x /usr/local/bin/mlr
+  wget -O /tmp/miller.deb https://github.com/johnkerl/miller/releases/download/v6.7.0/miller-6.7.0-linux-amd64.deb && \
+  apteryx /tmp/miller.deb
 RUN \
-  mkdir -p /exports/usr/local/bin/ && \
-  mv /usr/local/bin/mlr /exports/usr/local/bin/
+  mkdir -p /exports/usr/bin/ && \
+  mv /usr/bin/mlr /exports/usr/bin/
 
 # MEDIAINFO
 FROM base AS mediainfo
@@ -1937,25 +1749,15 @@ RUN \
   mv /usr/share/doc/htop /exports/usr/share/doc/ && \
   mv /usr/share/man/man1/htop.1.gz /exports/usr/share/man/man1/
 
-# HEROKU
-FROM base AS heroku
-COPY --from=node /exports/ /
-RUN \
-  npm install -g 'heroku@7.64.0'
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ && \
-  mv /usr/local/bin/heroku /exports/usr/local/bin/ && \
-  mv /usr/local/lib/node_modules/heroku /exports/usr/local/lib/node_modules/
-
 # GH
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN \
-  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.17.0/gh_2.17.0_linux_amd64.tar.gz' && \
+  wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.29.0/gh_2.29.0_linux_amd64.tar.gz' && \
   tar xzvf /tmp/gh.tgz && \
   rm /tmp/gh.tgz && \
-  mv 'gh_2.17.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
-  rm -r 'gh_2.17.0_linux_amd64'
+  mv 'gh_2.29.0_linux_amd64/bin/gh' /usr/local/bin/gh && \
+  rm -r 'gh_2.29.0_linux_amd64'
 RUN \
   mkdir -p /exports/usr/local/bin/ && \
   mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -1995,7 +1797,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN \
   mkdir -p /usr/local/lib/docker/cli-plugins && \
-  wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.11.2/docker-compose-linux-x86_64' && \
+  wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-linux-x86_64' && \
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN \
   mkdir -p /exports/usr/local/lib/docker/cli-plugins/ && \
@@ -2009,7 +1811,7 @@ RUN \
   wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg && \
   apt-key add /tmp/docker.gpg && \
   apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' && \
-  apteryx docker-ce='5:20.10.18*'
+  apteryx docker-ce='5:24.0.1*'
 RUN \
   mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ && \
   mv /usr/bin/docker /exports/usr/bin/ && \
@@ -2104,35 +1906,6 @@ RUN \
   mv /var/cache/ldconfig/aux-cache /exports/var/cache/ldconfig/ && \
   mv /var/lib/alsa /exports/var/lib/
 
-# AERC
-FROM base AS aerc
-COPY --from=build-essential /exports/ /
-COPY --from=clone /exports/ /
-COPY --from=go /exports/ /
-COPY --from=scdoc /exports/ /
-COPY --from=socksify /exports/ /
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root \
-  GO111MODULE=auto
-RUN \
-  clone --https --tag='0.5.2' https://git.sr.ht/~sircmpwn/aerc && \
-  cd ~/src/git.sr.ht/~sircmpwn/aerc && \
-  make && \
-  make install && \
-  rm -rf ~/src
-RUN \
-  mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/sbin/ /exports/usr/local/share/ /exports/usr/local/share/man/man1/ /exports/usr/local/share/man/man5/ /exports/usr/local/share/man/man7/ /exports/usr/local/share/man/man8/ && \
-  mv /usr/local/bin/aerc /usr/local/bin/socksify /exports/usr/local/bin/ && \
-  mv /usr/local/include/socks.h /exports/usr/local/include/ && \
-  mv /usr/local/lib/libdsocks.la /usr/local/lib/libdsocks.so /usr/local/lib/libsocks.a /usr/local/lib/libsocks.la /usr/local/lib/libsocks.so /usr/local/lib/libsocks.so.0 /usr/local/lib/libsocks.so.0.1.1 /exports/usr/local/lib/ && \
-  mv /usr/local/sbin/sockd /exports/usr/local/sbin/ && \
-  mv /usr/local/share/aerc /exports/usr/local/share/ && \
-  mv /usr/local/share/man/man1/aerc-* /usr/local/share/man/man1/socksify.1 /exports/usr/local/share/man/man1/ && \
-  mv /usr/local/share/man/man5/aerc-* /usr/local/share/man/man5/sockd.conf.5 /usr/local/share/man/man5/socks.conf.5 /exports/usr/local/share/man/man5/ && \
-  mv /usr/local/share/man/man7/aerc-* /exports/usr/local/share/man/man7/ && \
-  mv /usr/local/share/man/man8/sockd.8 /exports/usr/local/share/man/man8/
-
 # ACPI
 FROM base AS acpi
 COPY --from=apteryx /exports/ /
@@ -2183,7 +1956,6 @@ COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
 COPY --from=python3-pip /exports/ /
 COPY --from=acpi /exports/ /
-COPY --from=aerc /exports/ /
 COPY --from=alsa-utils /exports/ /
 COPY --from=apulse /exports/ /
 COPY --from=autotag /exports/ /
@@ -2199,7 +1971,6 @@ COPY --from=file /exports/ /
 COPY --from=fzf /exports/ /
 COPY --from=gh /exports/ /
 COPY --from=go /exports/ /
-COPY --from=heroku /exports/ /
 COPY --from=htop /exports/ /
 COPY --from=httpie /exports/ /
 COPY --from=jq /exports/ /
@@ -2214,6 +1985,7 @@ COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
 COPY --from=peaclock /exports/ /
 COPY --from=pgcli /exports/ /
+COPY --from=pipx /exports/ /
 COPY --from=prettyping /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=rsync /exports/ /
@@ -2224,16 +1996,12 @@ COPY --from=sudo /exports/ /
 COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=unzip /exports/ /
-COPY --from=urlview /exports/ /
-COPY --from=w3m /exports/ /
 COPY --from=watson /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=xinput /exports/ /
 COPY --from=xsv /exports/ /
-COPY --from=zx /exports/ /
 COPY --from=alacritty /exports/ /
 COPY --from=audacity /exports/ /
-COPY --from=charles /exports/ /
 COPY --from=feh /exports/ /
 COPY --from=flameshot /exports/ /
 COPY --from=light /exports/ /
@@ -2242,7 +2010,6 @@ COPY --from=redshift /exports/ /
 COPY --from=xclip /exports/ /
 COPY --from=xdg-utils /exports/ /
 COPY --from=xsecurelock /exports/ /
-COPY --from=peek /exports/ /
 COPY --from=shell-browser --chown=admin /home/admin/exports/ /
 COPY --from=shell-browser /exports/ /
 COPY --from=shell-cron /exports/ /
@@ -2264,40 +2031,35 @@ COPY --from=shell-yarn /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
 COPY --from=pnpm /exports/ /
-COPY --from=sc-im /exports/ /
-COPY --from=ngrok /exports/ /
-COPY --from=gifski /exports/ /
 COPY --from=net-tools /exports/ /
 COPY --from=greenclip /exports/ /
 COPY --from=rofi /exports/ /
 COPY --from=rofi-calc /exports/ /
 COPY --from=one-password /exports/ /
 COPY --from=fonts /exports/ /
-COPY --from=brave /exports/ /
-COPY --from=stripe /exports/ /
-COPY --from=ruby /exports/ /
 COPY --from=wifi /exports/ /
 COPY --from=darktable /exports/ /
 COPY --from=imgp /exports/ /
 COPY --from=rhash /exports/ /
-COPY --from=gimp /exports/ /
-COPY --from=kolide /exports/ /
 COPY --from=bandwhich /exports/ /
 COPY --from=caddy /exports/ /
+COPY --from=llm /exports/ /
+COPY --from=strip-tags /exports/ /
+COPY --from=ttok /exports/ /
+COPY --from=kolide /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
   GO111MODULE=auto
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
 ENV \
   PATH=${PATH}:/opt/google/chrome
 ENV \
   PATH=${PATH}:/home/admin/.cache/npm/bin
 ENV \
   PATH=/home/admin/.yarn/bin:${PATH}
-ENV \
-  PATH=${PATH}:/opt/brave.com/brave
-ENV \
-  PATH=${PATH}:/usr/local/ruby/2.7.6/bin
 RUN \
   chmod 0600 /home/admin/.ssh/* && \
   chmod +x /home/admin/.ssh/sockets
