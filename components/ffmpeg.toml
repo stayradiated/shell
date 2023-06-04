@@ -2,7 +2,7 @@ name = 'ffmpeg'
 from = 'base'
 
 # https://www.johnvansickle.com/ffmpeg/
-version = '5.1.1'
+version = '6.0'
 
 devDependencies = [
   'wget',
@@ -10,6 +10,14 @@ devDependencies = [
 ]
 
 build = """
+wget \
+  -O /tmp/release.txt \
+  'https://johnvansickle.com/ffmpeg/release-readme.txt'
+
+DL_VERSION=$(cat /tmp/release.txt | grep -oP 'version:\\s[\\d.]+' | cut -d ' ' -f 2)
+
+([ "{{VERSION}}" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true)
+
 wget \
   -O /tmp/ffmpeg.txz \
   'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'

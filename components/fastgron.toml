@@ -1,0 +1,21 @@
+name = 'fastgron'
+from = 'base'
+
+# https://github.com/adamritter/fastgron/releases
+version = '0.4.11'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget \
+  -O /usr/local/bin/fastgron \
+  "https://github.com/adamritter/fastgron/releases/download/v{{VERSION}}/fastgron-ubuntu"
+
+chmod +x /usr/local/bin/fastgron
+"""
+
+exports = [
+  "/usr/local/bin/fastgron"
+]

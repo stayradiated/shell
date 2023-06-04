@@ -1,0 +1,13 @@
+name = "sqlite-utils"
+from = "base"
+
+version = "3.32.1"
+
+devDependencies = [ "python3-pip", "pipx" ]
+
+build = """
+pipx install sqlite-utils=='{{VERSION}}'
+"""
+
+exports = [ "/usr/local/bin/sqlite-utils", "/usr/local/pipx/" ]
+

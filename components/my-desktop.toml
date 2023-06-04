@@ -70,7 +70,6 @@ dependencies = [
   'xsecurelock',
 
   # 'signal',
-  # 'peek',
 
   'shell-browser',
   'shell-cron',
@@ -104,17 +103,23 @@ dependencies = [
   'bandwhich',
   'caddy',
 
+  'obsidian',
+
   'llm',
   'strip-tags',
   'ttok',
+  'sqlite-utils',
 
   # Runn
   'kolide',
-  # 'heroku',
+  'heroku',
+  'brave',
+  'peek',
   # 'charles',
-  # 'brave',
   # 'ruby',
   # 'gifski',
+
+  'fastgron',
 
   # data tools
   # 'sc-im',
@@ -122,6 +127,7 @@ dependencies = [
   # volatile development
   # 'stripe',
   # 'ngrok',
+
 
 ]
 
