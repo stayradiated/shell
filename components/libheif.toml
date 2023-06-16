@@ -1,7 +1,7 @@
 name = 'libheif'
 from = 'base'
 
-version = 'v1.13.0'
+version = 'v1.16.2'
 
 devDependencies = [
   'build-essential',

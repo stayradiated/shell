@@ -1,7 +1,7 @@
 name = 'sudo'
 from = 'base'
 
-version = '1.9.9-*'
+version = '1.9.9-1ubuntu2.4'
 
 devDependencies = [
   'apteryx'

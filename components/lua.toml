@@ -1,7 +1,7 @@
 name = 'lua'
 from = 'base'
 
-version = '5.3.6-*'
+version = '5.4.4-1'
 
 devDependencies = [
   'apteryx'

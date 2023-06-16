@@ -1,7 +1,7 @@
 name = 'moreutils'
 from = 'base'
 
-version = '0.66-*'
+version = '0.66-1'
 
 devDependencies = [ 'apteryx' ]
 

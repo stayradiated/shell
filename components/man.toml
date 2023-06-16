@@ -1,7 +1,7 @@
 name = "man"
 from = "base"
 
-version = "2.10.2-*"
+version = '2.10.2-1'
 
 devDependencies = [ "apteryx" ]
 
@@ -366,4 +366,4 @@ exports = [
 
 [checkUpdates]
   type = 'apt'
-  name = 'man'
+  name = 'man-db'

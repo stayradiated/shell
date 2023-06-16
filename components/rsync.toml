@@ -1,7 +1,7 @@
 name = "rsync"
 from = "base"
 
-version = "3.2.3-*"
+version = '3.2.7-0ubuntu0.22.04.2'
 
 devDependencies = [ "apteryx" ]
 

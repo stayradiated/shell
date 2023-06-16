@@ -3,7 +3,7 @@ from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
 # look for google-chrome-beta
-version = '114.0.5735.35-*'
+version = '115.0.5790.32'
 
 devDependencies = [
   'wget',
@@ -15,7 +15,7 @@ curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 apt-get update
 
-apteryx google-chrome-beta='{{VERSION}}'
+apteryx google-chrome-beta='{{VERSION}}-*'
 """
 
 exports = [

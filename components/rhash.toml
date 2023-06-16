@@ -1,7 +1,7 @@
 name = "rhash"
 from = "base"
 
-version = "1.4.2-*"
+version = '1.4.2-1ubuntu1'
 
 devDependencies = [ "apteryx" ]
 

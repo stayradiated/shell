@@ -1,7 +1,7 @@
 name = "alsa-utils"
 from = "base"
 
-version = "1.2.6-*"
+version = '1.2.6-1ubuntu1'
 
 devDependencies = [ "apteryx" ]
 

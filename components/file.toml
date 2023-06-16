@@ -1,7 +1,7 @@
 name = 'file'
 from = 'base'
 
-version = '1:5.41-*'
+version = '1:5.41-3'
 
 devDependencies = [ 'apteryx' ]
 

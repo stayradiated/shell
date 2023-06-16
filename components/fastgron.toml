@@ -1,7 +1,7 @@
 name = 'fastgron'
 from = 'base'
 
-version = '0.4.11'
+version = '0.5.0'
 
 devDependencies = [
   'wget'

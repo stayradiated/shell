@@ -1,7 +1,7 @@
 name = 'ping'
 from = 'base'
 
-version = '3:20211215-*'
+version = '3:20211215-1'
 
 devDependencies = [
   'apteryx'

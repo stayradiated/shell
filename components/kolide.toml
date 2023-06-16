@@ -1,7 +1,7 @@
 name = 'kolide'
 from = 'base'
 
-version = '0.12.1'
+version = '1.0.11'
 
 devDependencies = [
   'ar',

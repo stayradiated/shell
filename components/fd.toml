@@ -1,7 +1,7 @@
 name = 'fd'
 from = 'base'
 
-version = 'v8.4.0'
+version = 'v8.7.0'
 
 devDependencies = [
   'wget',

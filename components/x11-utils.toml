@@ -1,7 +1,7 @@
 name = 'x11-utils'
 from = 'base'
 
-version = '7.7+*'
+version = '7.7+5build2'
 
 devDependencies = [ 'apteryx' ]
 

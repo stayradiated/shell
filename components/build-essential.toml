@@ -1,7 +1,7 @@
 name = 'build-essential'
 from = 'base'
 
-version = '12.9*'
+version = '12.9ubuntu3'
 
 devDependencies = [
   'apteryx'
