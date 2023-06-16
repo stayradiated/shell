@@ -21,3 +21,8 @@ exports = [
   '/usr/local/include/node/',
   '/usr/local/lib/node_modules/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/nodejs/node'
+  removePrefix = 'v'

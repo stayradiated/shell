@@ -11,3 +11,6 @@ pipx install llm=='{{VERSION}}'
 
 exports = [ "/usr/local/bin/llm", "/usr/local/pipx/" ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/simonw/llm'

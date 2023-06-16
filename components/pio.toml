@@ -17,4 +17,6 @@ exports = [
   "/usr/local/bin/pio"
 ]
 
-
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/siiptuo/pio'

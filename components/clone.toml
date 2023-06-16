@@ -30,3 +30,6 @@ exports = [
   "/usr/local/bin/clone"
 ]
 
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/stayradiated/clone'

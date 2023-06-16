@@ -27,3 +27,7 @@ exports = [
   "/usr/local/share/man/man1/",
   "/usr/local/share/sc-im/",
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/andmarti1424/sc-im'

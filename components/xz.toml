@@ -15,3 +15,7 @@ exports = [
   '/usr/bin/xz',
   '/usr/share/man/man1/xz.1.gz'
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'xz-utils'

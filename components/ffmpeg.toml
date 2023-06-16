@@ -33,3 +33,7 @@ exports = [
   '/usr/local/bin/ffmpeg',
   '/usr/local/bin/ffprobe',
 ]
+
+# [checkUpdates]
+#   type = 'github-tag'
+#   url = 'https://github.com/FFmpeg/FFmpeg'

@@ -49,3 +49,7 @@ exports = [
   "/usr/share/zsh/functions/",
   "/usr/share/zsh/help/",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'zsh'

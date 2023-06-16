@@ -20,3 +20,7 @@ exports = [
   "/usr/share/man/man8/ping4.8.gz",
   "/usr/share/man/man8/ping6.8.gz",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'iputils-ping'

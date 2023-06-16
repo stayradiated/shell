@@ -12,6 +12,9 @@ devDependencies = [
 ]
 
 build = """
+# convert 3.42.0 into 3420000
+versionNumber=$(echo '{{VERSION}}000' | sed 's/\\.//g')
+
 wget \
   -O /tmp/sqlite.tgz \
   'https://sqlite.org/2020/sqlite-autoconf-{{VERSION}}.tar.gz'
@@ -40,3 +43,8 @@ exports = [
   '/usr/bin/libsqlite3',
   '/usr/lib/libsqlite3.*',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/sqlite/sqlite'
+  removePrefix = 'version-'

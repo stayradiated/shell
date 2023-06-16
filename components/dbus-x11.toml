@@ -44,3 +44,7 @@ exports = [
   '/var/lib/apt/extended_states',
   '/var/lib/dbus/machine-id',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'dbus-x11'

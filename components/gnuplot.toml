@@ -613,3 +613,7 @@ exports = [
   "/usr/share/X11/",
   "/usr/share/xml/fontconfig/",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'gnuplot'

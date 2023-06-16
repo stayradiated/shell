@@ -18,3 +18,7 @@ exports = [
   "/usr/share/doc/figlet/",
   "/usr/share/figlet/",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'figlet'

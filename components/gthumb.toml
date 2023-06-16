@@ -14,3 +14,6 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/',
 ]
  
+[checkUpdates]
+  type = 'apt'
+  name = 'gthumb'

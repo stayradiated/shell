@@ -469,3 +469,7 @@ exports = [
   # "/var/cache/ldconfig/aux-cache",
   # "/var/lib/apt/extended_states",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'zeal'

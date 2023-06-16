@@ -1,7 +1,6 @@
 name = 'pnpm'
 from = 'base'
 
-# https://npmjs.com/package/pnpm
 version = '8.5.1'
 
 devDependencies = [
@@ -17,3 +16,7 @@ exports = [
   '/usr/local/bin/pnpx',
   '/usr/local/lib/node_modules/pnpm/',
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'pnpm'

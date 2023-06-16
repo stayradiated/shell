@@ -379,3 +379,7 @@ exports = [
   "/usr/share/X11/",
   "/usr/share/zsh/vendor-completions/_udevadm",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'xserver-xorg-input-wacom'

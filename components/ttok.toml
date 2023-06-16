@@ -11,3 +11,6 @@ pipx install ttok=='{{VERSION}}'
 
 exports = [ "/usr/local/bin/ttok", "/usr/local/pipx/" ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/simonw/ttok'

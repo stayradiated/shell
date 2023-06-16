@@ -1,7 +1,6 @@
 name = 'withexeditorhost'
 from = 'base'
 
-# https://www.npmjs.com/package/withexeditorhost
 version = '6.1.0'
 
 devDependencies = [
@@ -15,3 +14,7 @@ npm install -g 'withexeditorhost@{{VERSION}}'
 exports = [
   '/usr/local/lib/node_modules/withexeditorhost/',
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'withexeditorhost'

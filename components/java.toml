@@ -15,5 +15,6 @@ exports = [
   '/usr/lib/jvm/'
 ]
 
-
-
+[checkUpdates]
+  type = 'apt'
+  name = 'openjdk-11-jre'

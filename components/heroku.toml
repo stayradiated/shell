@@ -1,7 +1,6 @@
 name = 'heroku'
 from = 'base'
 
-# https://www.npmjs.com/package/heroku
 version = '8.1.5'
 
 devDependencies = [
@@ -17,3 +16,6 @@ exports = [
   '/usr/local/lib/node_modules/heroku'
 ]
 
+[checkUpdates]
+  type = 'npm'
+  packageName = 'heroku'

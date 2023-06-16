@@ -1561,3 +1561,7 @@ exports = [
   # "/var/log/dpkg.log",
   # "/var/log/fontconfig.log"
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'audacity'

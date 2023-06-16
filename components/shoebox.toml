@@ -1,7 +1,6 @@
 name = 'shoebox'
 from = 'base'
 
-# https://www.npmjs.com/package/@stayradiated/shoebox
 version = '1.6.0'
 
 devDependencies = [
@@ -16,3 +15,7 @@ exports = [
   '/usr/local/bin/shoebox',
   '/usr/local/lib/node_modules/@stayradiated/shoebox/'
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = '@stayradiated/shoebox'

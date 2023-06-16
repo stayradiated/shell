@@ -16,3 +16,7 @@ exports = [
   '/usr/share/doc/wget/',
   '/usr/share/man/man1/wget.1.gz'
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'wget'

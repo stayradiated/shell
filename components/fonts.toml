@@ -72,3 +72,7 @@ exports = [
   '/var/cache/fontconfig/',
   '/var/lib/xfonts/',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'fontconfig'

@@ -4,7 +4,6 @@ from = 'base'
 version = 'v0.12.1'
 
 devDependencies = [
-  'apteryx',
   'clone',
   'rust',
 ]
@@ -437,7 +436,6 @@ exports = [
   # "/usr/lib/x86_64-linux-gnu/rcrt1.o",
   # "/usr/lib/x86_64-linux-gnu/Scrt1.o",
   "/usr/local/bin/alacritty",
-  # "/usr/local/bin/apteryx",
   # "/usr/local/bin/clone",
   # "/usr/local/share/fonts",
   # "/usr/share/aclocal/",

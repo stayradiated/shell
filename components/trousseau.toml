@@ -18,3 +18,8 @@ apteryx /tmp/trousseau.deb
 exports = [
   "/usr/local/bin/trousseau",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/oleiade/trousseau'
+  removePrefix = 'v'

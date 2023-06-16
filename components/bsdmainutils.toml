@@ -36,3 +36,7 @@ exports = [
   # "/usr/bin/write",
   # "/usr/share/calendar/",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'bsdmainutils'

@@ -19,3 +19,6 @@ exports = [
   '/usr/share/misc/magic.mgc',
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'file'

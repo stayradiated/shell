@@ -6,8 +6,8 @@ version = "1:10.0.0-*"
 devDependencies = [ "apteryx" ]
 
 build = """
-apteryx clang-format-10='{{VERSION}}'
-mv /usr/bin/clang-format-10 /usr/bin/clang-format
+apteryx clang-format='{{VERSION}}'
+mv /usr/bin/clang-format /usr/bin/clang-format
 """
 
 exports = [
@@ -21,3 +21,6 @@ exports = [
   '/usr/share/clang/',
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'clang-format'

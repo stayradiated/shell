@@ -15,3 +15,7 @@ apteryx vlc='{{VERSION}}'
 exports = [
   '/usr/bin/vlc'
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'vlc'

@@ -31,3 +31,7 @@ exports = [
   '/usr/share/themes/',
   '/usr/share/thumbnailers/',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'pavucontrol'

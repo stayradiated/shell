@@ -19,3 +19,7 @@ exports = [
   '/usr/share/man/man1/psc.1.gz',
   '/usr/share/man/man1/sc.1.gz',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'sc'

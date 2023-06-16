@@ -15,5 +15,6 @@ exports = [
   '/usr/local/bin/hey'
 ]
 
-
-
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/rakyll/hey'

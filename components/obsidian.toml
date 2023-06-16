@@ -358,3 +358,8 @@ exports = [
   # "/usr/share/icons/ubuntu-mono-dark/",
   # "/usr/share/icons/ubuntu-mono-light/",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/obsidianmd/obsidian-releases'
+  removePrefix = 'v'

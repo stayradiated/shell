@@ -1,7 +1,6 @@
 name = 'diff-so-fancy'
 from = 'base'
 
-# https://www.npmjs.com/package/diff-so-fancy
 version = '1.4.3'
 
 devDependencies = [
@@ -16,3 +15,8 @@ exports = [
   '/usr/local/bin/diff-so-fancy',
   '/usr/local/lib/node_modules/diff-so-fancy/',
 ]
+
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'diff-so-fancy'

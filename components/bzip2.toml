@@ -38,3 +38,7 @@ exports = [
   "/usr/share/man/man1/bzless.1.gz",
   "/usr/share/man/man1/bzmore.1.gz",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'bzip2'

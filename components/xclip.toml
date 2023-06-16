@@ -24,3 +24,7 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/libXmu.so.*',
   '/usr/lib/x86_64-linux-gnu/libXt.so.*',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'xclip'

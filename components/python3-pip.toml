@@ -481,3 +481,7 @@ exports = [
   # "/var/log/apt/term.log",
   # "/var/log/dpkg.log"
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/pypa/pip'

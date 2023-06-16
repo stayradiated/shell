@@ -43,3 +43,8 @@ exports = [
   '/usr/share/applications/firefox.desktop',
   '/usr/lib/x86_64-linux-gnu/libdbus-glib-1.so.*',
 ]
+
+[checkUpdates]
+  type = 'json'
+  url = 'https://product-details.mozilla.org/1.0/firefox_versions.json'
+  path = ['LATEST_FIREFOX_VERSION']

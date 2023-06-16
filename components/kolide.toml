@@ -55,3 +55,8 @@ exports = [
   '/usr/local/kolide-k2/',
   '/var/kolide-k2/k2device.kolide.com/'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/kolide/launcher'
+  removePrefix = 'v'

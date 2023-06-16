@@ -14,3 +14,6 @@ exports = [
   '/usr/bin/urlview',
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'urlview'

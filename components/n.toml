@@ -1,7 +1,6 @@
 name = 'n'
 from = 'base'
 
-# https://www.npmjs.com/package/n
 version = '9.0.0'
 
 devDependencies = [
@@ -16,3 +15,7 @@ chmod +x /usr/local/bin/n
 exports = [
   '/usr/local/bin/n'
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'n'

@@ -1,7 +1,6 @@
 name = 'ncu'
 from = 'base'
 
-# https://www.npmjs.com/package/npm-check-updates
 version = '16.10.12'
 
 devDependencies = [
@@ -16,3 +15,7 @@ exports = [
   '/usr/local/bin/ncu',
   '/usr/local/lib/node_modules/npm-check-updates'
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'npm-check-updates'

@@ -1,7 +1,6 @@
 name = 'yarn'
 from = 'base'
 
-# https://www.npmjs.com/package/yarn
 version = '1.22.19'
 
 devDependencies = [
@@ -16,3 +15,7 @@ exports = [
   '/usr/local/bin/yarn',
   '/usr/local/lib/node_modules/yarn/',
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'yarn'

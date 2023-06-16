@@ -241,3 +241,7 @@ exports = [
   # "/var/log/apt/term.log",
   # "/var/log/dpkg.log"
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'graphicsmagick'

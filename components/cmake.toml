@@ -133,3 +133,6 @@ exports = [
   # "/var/log/dpkg.log"
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'cmake'

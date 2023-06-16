@@ -1,15 +1,14 @@
 name = "go"
 from = "base"
 
-# https://golang.org/dl/
-version = "go1.20.4"
+version = "1.20.4"
 
 devDependencies = [
   "wget",
 ]
 
 build = """
-wget -O /tmp/go.tgz "https://dl.google.com/go/{{VERSION}}.linux-amd64.tar.gz"
+wget -O /tmp/go.tgz "https://dl.google.com/go/go{{VERSION}}.linux-amd64.tar.gz"
 tar xzvf /tmp/go.tgz
 
 mv go /usr/local/go
@@ -25,3 +24,9 @@ exportEnv = [
   ["GOPATH", "/root"],
   ["GO111MODULE", "auto"],
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/golang/go'
+  matchTag = '^go\d+\.\d+\.\d+$'
+  removePrefix = 'go'

@@ -13,3 +13,6 @@ exports = [
   "/usr/bin/xinput",
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'xinput'

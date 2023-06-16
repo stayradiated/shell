@@ -44,3 +44,6 @@ exports = [
   # "/var/lib/apt/extended_states",
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'rhash'

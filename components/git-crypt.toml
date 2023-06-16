@@ -29,4 +29,3 @@ exports = [
 [checkUpdates]
   type = 'github-release'
   url = 'https://github.com/AGWA/git-crypt'
-

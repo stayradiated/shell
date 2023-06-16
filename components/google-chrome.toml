@@ -782,3 +782,8 @@ exports = [
 exportEnv = [
   ['PATH', "${PATH}:/opt/google/chrome"]
 ]
+
+[checkUpdates]
+  type = 'json'
+  url = 'https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/beta/versions'
+  path = ['versions', '0', 'version']

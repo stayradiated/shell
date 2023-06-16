@@ -963,3 +963,7 @@ exports = [
   # "/var/cache/fontconfig/",
   # "/var/cache/ldconfig/aux-cache",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'gimp'

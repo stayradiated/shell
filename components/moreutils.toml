@@ -75,3 +75,7 @@ exports = [
   '/usr/share/man/man1/vipe.1.gz',
   '/usr/share/man/man1/zrun.1.gz',
   ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'moreutils'

@@ -29,3 +29,7 @@ exports = [
   "/usr/share/perl5/Git/",
   "/var/lib/git",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'git'

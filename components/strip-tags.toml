@@ -11,3 +11,6 @@ pipx install strip-tags=='{{VERSION}}'
 
 exports = [ "/usr/local/bin/strip-tags", "/usr/local/pipx/" ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/simonw/strip-tags'

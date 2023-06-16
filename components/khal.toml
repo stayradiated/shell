@@ -16,3 +16,8 @@ exports = [
   '/usr/local/pipx/',
   '/usr/local/bin/khal',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/pimutils/khal'
+  removePrefix = 'v'

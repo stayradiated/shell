@@ -15,3 +15,6 @@ exports = [
   '/usr/share/man/man1/htop.1.gz',
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'htop'

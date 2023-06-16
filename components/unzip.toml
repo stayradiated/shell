@@ -15,3 +15,7 @@ exports = [
   '/usr/bin/unzip',
   '/usr/share/man/man1/unzip.1.gz'
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'unzip'

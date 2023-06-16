@@ -481,3 +481,7 @@ exports = [
   "/usr/share/man/man1/python2.7.1.gz",
   "/usr/share/pixmaps/python2.7.xpm",
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'python2.7'

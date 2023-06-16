@@ -1,8 +1,6 @@
 name = 'docker'
 from = 'base'
 
-# https://docs.docker.com/engine/release-notes/
-# prefix the version number with 5:
 version ='24.0.1'
 
 devDependencies = [
@@ -22,3 +20,8 @@ exports = [
 
   '/usr/share/zsh/vendor-completions/_docker',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/moby/moby'
+  removePrefix = 'v'

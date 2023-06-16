@@ -1,7 +1,7 @@
 name = "acpi"
 from = "base"
 
-version = "1.7-*"
+version = "1.7-1.1ubuntu1"
 
 devDependencies = [ "apteryx" ]
 
@@ -12,3 +12,7 @@ apteryx acpi='{{VERSION}}'
 exports = [
   '/usr/bin/acpi'
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'acpi'

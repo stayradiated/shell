@@ -36,3 +36,6 @@ exports = [
   '/usr/lib/x86_64-linux-gnu/libXt*',
 ]
 
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/derf/feh'

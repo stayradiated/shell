@@ -28,3 +28,7 @@ exports = [
   '/usr/share/alsa/',
   '/usr/share/pulseaudio/',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'pulseaudio'

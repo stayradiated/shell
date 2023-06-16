@@ -1,7 +1,6 @@
 name = 'np'
 from = 'base'
 
-# https://npmjs.com/package/np
 version = '7.4.0'
 
 devDependencies = [
@@ -16,3 +15,7 @@ exports = [
   '/usr/local/bin/np',
   '/usr/local/lib/node_modules/np/',
 ]
+
+[checkUpdates]
+  type = 'npm'
+  packageName = 'np'

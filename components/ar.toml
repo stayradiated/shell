@@ -15,3 +15,6 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so"
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'binutils'

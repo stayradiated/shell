@@ -20,3 +20,7 @@ exports = [
   '/usr/local/bin/hyperfine',
   '/usr/local/man/man1/hyperfine.1',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/sharkdp/hyperfine'

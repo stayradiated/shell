@@ -23,3 +23,7 @@ exports = [
   '/usr/lib/',
   '/usr/share/',
 ]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'x11-utils'

@@ -11,3 +11,6 @@ pipx install sqlite-utils=='{{VERSION}}'
 
 exports = [ "/usr/local/bin/sqlite-utils", "/usr/local/pipx/" ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/simonw/sqlite-utils'

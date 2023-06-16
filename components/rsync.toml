@@ -13,3 +13,6 @@ exports = [
   '/usr/bin/rsync',
 ]
 
+[checkUpdates]
+  type = 'apt'
+  name = 'rsync'
