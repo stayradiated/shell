@@ -1,7 +1,6 @@
 name = 'xsecurelock'
 from = 'base'
 
-# https://github.com/google/xsecurelock/releases
 version = 'v1.7.0'
 
 devDependencies = [
@@ -55,3 +54,7 @@ exports = [
   '/usr/local/bin/xsecurelock',
   '/usr/local/libexec/xsecurelock/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/google/xsecurelock'

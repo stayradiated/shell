@@ -1,7 +1,6 @@
 name = 'pgcli'
 from = 'base'
 
-# https://github.com/dbcli/pgcli/tags
 version = '3.5.0'
 
 devDependencies = [
@@ -22,3 +21,8 @@ exports = [
   '/usr/local/bin/sqlformat',
   '/usr/local/pipx/',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/dbcli/pgcli'
+  removePrefix = 'v'

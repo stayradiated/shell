@@ -1,7 +1,6 @@
 name = 'httpie'
 from = 'base'
 
-# https://github.com/jakubroztocil/httpie/releases
 version = '3.2.2'
 
 devDependencies = [
@@ -18,3 +17,7 @@ exports = [
   '/usr/local/bin/http',
   '/usr/local/bin/https',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/jakubroztocil/httpie'

@@ -1,7 +1,7 @@
 name = 'ruby'
 from = 'base'
 
-version = '2.7.6'
+version = '3.2.2'
 
 devDependencies = [
   'apteryx',
@@ -37,5 +37,5 @@ exports = [
 ]
 
 exportEnv = [
-  ['PATH', "${PATH}:/usr/local/ruby/2.7.6/bin"]
+  ['PATH', "${PATH}:/usr/local/ruby/*/bin"]
 ]

@@ -1,7 +1,6 @@
 name = "stripe"
 from = "base"
 
-# https://github.com/stripe/stripe-cli/releases
 version = "1.10.3"
 
 devDependencies = [
@@ -23,3 +22,8 @@ rm /tmp/stripe.tgz
 exports = [
   "/usr/local/bin/stripe",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/stripe/stripe-cli'
+  removePrefix = 'v'

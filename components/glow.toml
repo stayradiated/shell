@@ -1,7 +1,6 @@
 name = "glow"
 from = "base"
 
-# https://github.com/charmbracelet/glow/releases
 version = "1.4.1"
 
 devDependencies = [ "apteryx", "wget" ]
@@ -17,3 +16,8 @@ apteryx /tmp/glow.deb
 exports = [
   '/usr/bin/glow'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/charmbracelet/glow'
+  removePrefix = 'v'

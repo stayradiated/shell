@@ -1,7 +1,6 @@
 name = "peaclock"
 from = "base"
 
-# https://github.com/octobanana/peaclock/tags
 version = "0.4.3"
 
 devDependencies = [ "clone", "build-essential" ]
@@ -31,3 +30,7 @@ apt-get -q clean
 exports = [
   "/usr/local/bin/peaclock",
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/octobanana/peaclock'

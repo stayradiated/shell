@@ -1,7 +1,6 @@
 name = 'chs'
 from = 'base'
 
-# https://github.com/nickzuber/chs
 version = 'v3.0.0'
 
 devDependencies = [
@@ -29,3 +28,8 @@ exports = [
   '/usr/local/lib/python3.*/dist-packages/chs/',
   '/usr/local/lib/python3.*/dist-packages/editdistance/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/nickzuber/chs'
+

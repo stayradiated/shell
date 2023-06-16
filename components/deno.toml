@@ -1,7 +1,6 @@
 name = 'deno'
 from = 'base'
 
-# https://github.com/denoland/deno/releases
 version = 'v1.26.1'
 
 devDependencies = [
@@ -21,3 +20,7 @@ rm /tmp/deno.zip
 exports = [
   '/usr/local/bin/deno'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/denoland/deno'

@@ -1,7 +1,6 @@
 name = 'nvm'
 from = 'base'
 
-# https://github.com/nvm-sh/nvm/releases
 version = 'v0.37.0'
 
 devDependencies = [
@@ -22,3 +21,7 @@ exports = [
 exportEnv = [
   ['NVM_DIR', '/usr/local/share/nvm']
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/nvm-sh/nvm'

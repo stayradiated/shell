@@ -1,7 +1,6 @@
 name = 'container-diff'
 from = 'base'
 
-# https://github.com/GoogleContainerTools/container-diff/releases
 version = 'v0.17.0'
 
 devDependencies = [
@@ -19,3 +18,7 @@ mv container-diff /usr/local/bin/container-diff
 exports = [
   '/usr/local/bin/container-diff'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/GoogleContainerTools/container-diff'

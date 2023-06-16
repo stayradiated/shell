@@ -1,7 +1,6 @@
 name = 'fastgron'
 from = 'base'
 
-# https://github.com/adamritter/fastgron/releases
 version = '0.4.11'
 
 devDependencies = [
@@ -19,3 +18,8 @@ chmod +x /usr/local/bin/fastgron
 exports = [
   "/usr/local/bin/fastgron"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/adamritter/fastgron'
+  removePrefix = 'v'

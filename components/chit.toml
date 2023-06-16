@@ -1,7 +1,6 @@
 name = 'chit'
 from = 'base'
 
-# https://github.com/peterheesterman/chit/releases
 version = '0.1.15'
 
 devDependencies = [
@@ -21,3 +20,7 @@ mv chit /usr/local/bin/chit
 exports = [
   '/usr/local/bin/chit'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/peterheesterman/chit'

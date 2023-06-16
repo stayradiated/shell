@@ -1,7 +1,6 @@
 name = 'miller'
 from = 'base'
 
-# https://github.com/johnkerl/miller/releases
 version = '6.7.0'
 
 devDependencies = [
@@ -20,3 +19,9 @@ apteryx /tmp/miller.deb
 exports = [
   '/usr/bin/mlr',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/johnkerl/miller'
+  removePrefix = 'v'
+

@@ -1,7 +1,6 @@
 name = "buku"
 from = "base"
 
-# https://github.com/jarun/buku/releases/
 version = "4.5"
 
 devDependencies = [
@@ -18,3 +17,8 @@ exports = [
   '/usr/local/bin/buku',
   '/usr/local/bin/bukuserver',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/jarun/buku'
+  removePrefix = 'v'

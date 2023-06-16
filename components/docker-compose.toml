@@ -1,7 +1,6 @@
 name = 'docker-compose'
 from = 'base'
 
-# https://github.com/docker/compose/releases
 version = 'v2.18.1'
 
 devDependencies = [
@@ -23,3 +22,7 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 exports = [
   '/usr/local/lib/docker/cli-plugins/docker-compose'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/docker/compose'

@@ -1,7 +1,6 @@
 name = 'prettyping'
 from = 'base'
 
-# https://github.com/denilsonsa/prettyping/releases
 version = 'v1.0.1'
 
 dependencies = [
@@ -22,3 +21,7 @@ chmod +x /usr/local/bin/prettyping
 exports = [
   '/usr/local/bin/prettyping'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/denilsonsa/prettyping'

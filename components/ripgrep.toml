@@ -1,7 +1,6 @@
 name = 'ripgrep'
 from = 'base'
 
-# https://github.com/BurntSushi/ripgrep/releases
 version = '13.0.0'
 
 devDependencies = [
@@ -25,3 +24,7 @@ exports = [
   '/usr/local/bin/rg',
   '/usr/local/share/man/man1/rg.1',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/BurntSushi/ripgrep'

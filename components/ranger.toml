@@ -1,7 +1,6 @@
 name = 'ranger'
 from = 'base'
 
-# https://github.com/ranger/ranger/tags
 version = '1.9.3'
 
 devDependencies = [
@@ -18,3 +17,8 @@ exports = [
   '/usr/local/bin/ranger',
   '/usr/local/bin/rifle',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/ranger/ranger'
+  removePrefix = 'v'

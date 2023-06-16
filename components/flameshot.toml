@@ -1,7 +1,6 @@
 name = 'flameshot'
 from = 'base'
 
-# https://github.com/flameshot-org/flameshot/releases
 version = '12.1.0'
 
 devDependencies = [ 'wget', 'apteryx' ]
@@ -823,3 +822,9 @@ exports = [
   # "/var/log/dpkg.log",
   # "/var/log/fontconfig.log"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/flameshot-org/flameshot'
+  removePrefix = 'v'
+

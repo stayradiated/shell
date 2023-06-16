@@ -1,7 +1,6 @@
 name = 'sd'
 from = 'base'
 
-# https://github.com/chmln/sd/releases
 version = 'v0.7.6'
 
 devDependencies = [
@@ -19,3 +18,7 @@ chmod +x /usr/local/bin/sd
 exports = [
   '/usr/local/bin/sd'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/chmln/sd'

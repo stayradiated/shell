@@ -1,7 +1,6 @@
 name = 'beets'
 from = 'base'
 
-# https://github.com/beetbox/beets/releases
 version = '1.6.0'
 
 devDependencies = [
@@ -17,3 +16,8 @@ exports = [
   '/usr/local/bin/beet',
   '/usr/local/pipx/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/beetbox/beets'
+  removePrefix = 'v'

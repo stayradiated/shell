@@ -1,7 +1,6 @@
 name = 'git-crypt'
 from = 'base'
 
-# https://github.com/AGWA/git-crypt/releases
 version = '0.7.0'
 
 devDependencies = [
@@ -26,3 +25,8 @@ mv git-crypt /usr/local/bin/git-crypt
 exports = [
   '/usr/local/bin/git-crypt',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/AGWA/git-crypt'
+

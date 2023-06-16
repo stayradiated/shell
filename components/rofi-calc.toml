@@ -1,21 +1,30 @@
 name = 'rofi-calc'
 from = 'base'
 
-# https://github.com/svenstaro/rofi-calc/tags
 version = 'v2.2.0'
 
-devDependencies = [ 'build-essential', 'clone', 'apteryx' ]
+devDependencies = [ 'rofi', 'build-essential', 'clone', 'apteryx' ]
 
 build = """
 clone --https --tag='{{VERSION}}' https://github.com/svenstaro/rofi-calc
-apteryx rofi-dev qalc libtool autoconf automake
+apteryx qalc libtool autoconf automake pkg-config
+
+#RUN
+
+apteryx libglib2.0-dev
+
+#RUN
+
+apteryx libcairo2-dev
+
+#RUN
 
 cd /root/src/github.com/svenstaro/rofi-calc
 autoreconf -i
 
 mkdir build
 cd build/
-../configure
+../configure --prefix=/usr
 
 make
 make install
@@ -34,4 +43,8 @@ exports = [
   "/usr/share/qalculate/",
   "/usr/share/rofi/",
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/svenstaro/rofi-calc'
 

@@ -1,7 +1,6 @@
 name = 'gifski'
 from = 'base'
 
-# https://github.com/ImageOptim/gifski/releases
 version = '1.11.0'
 
 devDependencies = [
@@ -21,3 +20,8 @@ rm -rf debian
 exports = [
   '/usr/bin/gifski'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/ImageOptim/gifski'
+

@@ -1,7 +1,6 @@
 name = 'xdo'
 from = 'base'
 
-# https://github.com/baskerville/xdo/releases
 version = '0.5.7'
 
 devDependencies = [
@@ -33,3 +32,7 @@ rm -rf /root/src
 exports = [
   '/usr/local/bin/xdo',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/baskerville/xdo'

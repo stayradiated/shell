@@ -1,7 +1,6 @@
 name = 'eyed3'
 from = 'base'
 
-# https://github.com/nicfit/eyeD3/releases
 version = 'v0.9.6'
 
 devDependencies = [
@@ -17,3 +16,8 @@ exports = [
   '/usr/local/bin/eyeD3',
   '/usr/local/pipx/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/nicfit/eyeD3'
+

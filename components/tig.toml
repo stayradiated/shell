@@ -1,7 +1,6 @@
 name = 'tig'
 from = 'base'
 
-# https://github.com/jonas/tig/releases
 version = 'tig-2.5.8'
 
 devDependencies = [
@@ -35,3 +34,7 @@ exports = [
   '/usr/local/bin/tig',
   '/usr/local/etc/tigrc',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/jonas/tig'

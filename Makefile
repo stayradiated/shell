@@ -1,19 +1,8 @@
-.PHONY: build build-manual benji chromebook
+.PHONY: build generate
 
 build:
 	shoebox build my-desktop --tag stayradiated/desktop:latest --build-dir . --verbose
 
-build-manual:
-	docker build --squash -t stayradiated/desktop:latest .
+generate:
+	shoebox generate my-desktop > Dockerfile
 
-benji:
-	shoebox build my-benji --tag stayradiated/benji:latest --build-dir . --verbose
-
-dockerfile-benji:
-	shoebox generate my-benji > Dockerfile.benji
-
-chromebook:
-	shoebox build my-chromebook --tag stayradiated/chromebook:latest --build-dir . --verbose
-
-desktop-minimal:
-	shoebox build my-desktop-minimal --tag stayradiated/desktop-minimal:latest --build-dir . --verbose

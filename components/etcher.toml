@@ -1,7 +1,6 @@
 name = 'etcher'
 from = 'base'
 
-# https://github.com/balena-io/etcher/releases
 version = '1.5.120'
 
 devDependencies = [
@@ -23,3 +22,8 @@ rm /tmp/etcher.zip
 exports = [
   "/usr/local/bin/etcher"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/balena-io/etcher'
+  removePrefix = 'v'

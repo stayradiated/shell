@@ -1,15 +1,14 @@
 name = 'xcape'
 from = 'base'
 
-# https://github.com/alols/xcape
-version = '1.2-3'
+version = '1.2'
 
 devDependencies = [
   'apteryx',
 ]
 
 build = """
-apteryx xcape='{{VERSION}}'
+apteryx xcape='{{VERSION}}-*'
 """
 
 exports = [
@@ -65,3 +64,8 @@ exports = [
   "/usr/share/man/man5/Xsession.options.5.gz",
   "/usr/share/X11/",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/alols/xcape'
+  removePrefix = 'v'

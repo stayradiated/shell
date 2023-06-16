@@ -1,7 +1,6 @@
 name = 'fd'
 from = 'base'
 
-# https://github.com/sharkdp/fd/releases
 version = 'v8.4.0'
 
 devDependencies = [
@@ -25,3 +24,7 @@ exports = [
   '/usr/local/bin/fd',
   '/usr/local/share/man/man1/fd.1'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/sharkdp/fd'

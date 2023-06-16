@@ -1,7 +1,6 @@
 name = 'circleci'
 from = 'base'
 
-# https://github.com/CircleCI-Public/circleci-cli/releases
 version = '0.1.11458'
 
 devDependencies = [
@@ -22,3 +21,8 @@ build = """
 exports = [
   '/usr/local/bin/circleci'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/CircleCI-Public/circleci-cli'
+  removePrefix = 'v'

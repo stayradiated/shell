@@ -1,7 +1,6 @@
 name = 'watson'
 from = 'base'
 
-# https://github.com/TailorDev/Watson/releases
 version = '2.1.0'
 
 devDependencies = [
@@ -18,3 +17,7 @@ exports = [
   '/usr/local/pipx/',
   '/usr/local/bin/watson',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/TailorDev/Watson'

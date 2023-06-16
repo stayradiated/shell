@@ -1,7 +1,6 @@
 name = 'light'
 from = 'base'
 
-# https://github.com/haikarainen/light/releases
 version = 'c5fb45423ec1ee1080e442e061ccfcdb98b32e4a'
 
 devDependencies = [
@@ -24,3 +23,7 @@ exports = [
   '/usr/local/bin/light',
   '/usr/local/share/man/man1/light.1'
 ]
+
+[checkUpdates]
+  type = 'github-commit'
+  url = 'https://github.com/haikarainen/light'

@@ -1,0 +1,34 @@
+name = "exa"
+from = "base"
+
+version = "0.10.1"
+
+devDependencies = [ "wget", "unzip" ]
+
+build = """
+wget \
+  -O /tmp/exa.tar.gz \
+  "https://github.com/ogham/exa/releases/download/v{{VERSION}}/exa-linux-x86_64-v{{VERSION}}.zip"
+
+mkdir -p /tmp/exa
+cd /tmp/exa
+unzip /tmp/exa.tar.gz
+
+mv /tmp/exa/bin/exa /usr/local/bin/
+mv /tmp/exa/completions/exa.zsh /usr/share/zsh/vendor-completions/
+mv /tmp/exa/man/exa* /usr/share/man/man1/
+
+rm -r /tmp/exa.tar.gz /tmp/exa
+"""
+
+exports = [
+  "/usr/local/bin/exa",
+  "/usr/share/man/man1/exa_colors.5",
+  "/usr/share/man/man1/exa.1",
+  "/usr/share/zsh/vendor-completions/exa.zsh",
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/ogham/exa'
+  removePrefix = 'v'

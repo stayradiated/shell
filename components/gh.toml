@@ -1,7 +1,6 @@
 name = 'gh'
 from = 'base'
 
-# https://github.com/cli/cli/releases
 version = '2.29.0'
 
 devDependencies = [
@@ -22,3 +21,8 @@ rm -r 'gh_{{VERSION}}_linux_amd64'
 exports = [
   '/usr/local/bin/gh'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/cli/cli'
+  removePrefix = 'v'

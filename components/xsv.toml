@@ -1,7 +1,6 @@
 name = 'xsv'
 from = 'base'
 
-# https://github.com/BurntSushi/xsv/releases
 version = '0.13.0'
 
 devDependencies = [
@@ -23,3 +22,7 @@ rm -r /tmp/xsv*
 exports = [
   '/usr/local/bin/xsv',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/BurntSushi/xsv'

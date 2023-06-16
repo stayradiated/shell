@@ -1,7 +1,6 @@
 name = 'insomnia'
 from = 'base'
 
-# https://github.com/Kong/insomnia/releases
 version = '2020.4.2'
 
 devDependencies = ['apteryx', 'wget']
@@ -19,3 +18,9 @@ exports = [
   '/opt/Insomnia/',
   '/usr/lib/x86_64-linux-gnu/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/Kong/insomnia'
+  matchTag = '^core@'
+  removePrefix = 'core@'

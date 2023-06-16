@@ -1,7 +1,6 @@
 name = "signal"
 from = "base"
 
-# https://github.com/signalapp/Signal-Desktop/releases
 version = "5.35.0"
 
 devDependencies = [ "apteryx" ]
@@ -17,3 +16,9 @@ exports = [
   '/opt/Signal/',
   '/usr/bin/signal-desktop',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/signalapp/Signal-Desktop'
+  matchTag = '^v\d+\.\d+\.\d+$'
+  removePrefix = 'v'

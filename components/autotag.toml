@@ -1,7 +1,6 @@
 name = 'autotag'
 from = 'base'
 
-# https://github.com/pantheon-systems/autotag/releases
 version = "v1.3.23"
 
 devDependencies = [ "wget" ]
@@ -17,3 +16,7 @@ rm /tmp/autotag.tgz
 exports = [
   "/usr/local/bin/autotag"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/pantheon-systems/autotag'

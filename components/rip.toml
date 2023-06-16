@@ -1,0 +1,23 @@
+name = "rip"
+from = "base"
+
+version = "0.13.1"
+
+devDependencies = [
+  'build-essential',
+  'rust'
+]
+
+build = """
+cargo install --version {{VERSION}} rm-improved
+
+mv /root/.cargo/bin/rip /usr/local/bin/rip
+"""
+
+exports = [
+  "/usr/local/bin/rip"
+]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/nivekuil/rip'

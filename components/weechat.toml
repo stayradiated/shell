@@ -1,8 +1,8 @@
 name = 'weechat'
 from = 'base'
 
-# https://github.com/weechat/weechat
-# https://weechat.org/download/debian/
+version = "v3.8"
+
 devDependencies = [
   'apteryx',
   'python3-pip',
@@ -98,3 +98,7 @@ exports = [
   "/usr/share/perl/",
   "/usr/share/pixmaps/weechat.xpm",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/weechat/weechat'

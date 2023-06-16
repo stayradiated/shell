@@ -1,7 +1,6 @@
 name = 'one-pw'
 from = 'base'
 
-# https://github.com/special/1pw
 version = '07cc81d9eedd7ff75966316a7a0091ffd7bab188'
 
 devDependencies = [
@@ -21,3 +20,7 @@ rm -rf /root/src
 exports = [
   '/usr/local/bin/1pw'
 ]
+
+[checkUpdates]
+  type = 'github-commit'
+  url = 'https://github.com/special/1pw'

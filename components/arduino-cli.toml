@@ -1,7 +1,6 @@
 name = 'arduino-cli'
 from = 'base'
 
-# https://github.com/arduino/arduino-cli/releases
 version = '0.13.0'
 
 devDependencies = [
@@ -24,3 +23,7 @@ exports = [
   '/usr/local/bin/arduino-cli',
   '/root/.arduino15/',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/arduino/arduino-cli'

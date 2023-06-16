@@ -1,7 +1,6 @@
 name = 'brave'
 from = 'base'
 
-# https://github.com/brave/brave-browser/releases
 version = '1.51.118'
 
 devDependencies = [
@@ -788,3 +787,8 @@ exports = [
 exportEnv = [
   ['PATH', "${PATH}:/opt/brave.com/brave"]
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/brave/brave-browser'
+  removePrefix = 'v'

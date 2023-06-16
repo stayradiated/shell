@@ -1,7 +1,6 @@
 name = 'bandwhich'
 from = 'base'
 
-# https://github.com/imsnif/bandwhich/releases
 version = '0.20.0'
 
 devDependencies = [
@@ -20,3 +19,7 @@ mv bandwhich /usr/local/bin/bandwhich
 exports = [
   '/usr/local/bin/bandwhich'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/imsnif/bandwhich'

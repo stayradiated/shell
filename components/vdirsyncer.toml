@@ -1,7 +1,6 @@
 name = 'vdirsyncer'
 from = 'base'
 
-# https://github.com/pimutils/vdirsyncer/releases
 version = '0.16.8'
 
 devDependencies = [
@@ -19,3 +18,7 @@ exports = [
   '/usr/local/pipx/',
   '/usr/local/bin/vdirsyncer',
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/pimutils/vdirsyncer'

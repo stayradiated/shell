@@ -1,7 +1,6 @@
 name = 'alacritty'
 from = 'base'
 
-# https://github.com/alacritty/alacritty/releases
 version = 'v0.12.1'
 
 devDependencies = [
@@ -1105,3 +1104,7 @@ exports = [
   # "/var/log/apt/term.log",
   # "/var/log/dpkg.log"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/alacritty/alacritty'

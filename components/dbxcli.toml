@@ -1,7 +1,6 @@
 name = "dbxcli"
 from = "base"
 
-# https://github.com/dropbox/dbxcli/releases
 version = "3.0.0"
 
 devDependencies = [
@@ -18,3 +17,9 @@ mv dbxcli /usr/local/bin/dbxcli
 exports = [
   "/usr/local/bin/dbxcli"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/dropbox/dbxcli'
+  removePrefix = 'v'
+

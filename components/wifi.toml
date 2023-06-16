@@ -1,7 +1,6 @@
 name = 'wifi'
 from = 'base'
 
-# https://github.com/stayradiated/wifi
 version = 'v1.3.1'
 
 devDependencies = [
@@ -19,3 +18,7 @@ mv wifi /usr/local/bin/wifi
 exports = [
   "/usr/local/bin/wifi"
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/stayradiated/wifi'

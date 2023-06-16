@@ -1,7 +1,6 @@
 name = "dive"
 from = "base"
 
-# https://github.com/wagoodman/dive/release
 version = "0.10.0"
 
 devDependencies = [ "apteryx", "wget" ]
@@ -17,3 +16,8 @@ apteryx /tmp/dive.deb
 exports = [
   '/usr/local/bin/dive'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/wagoodman/dive'
+  removePrefix = 'v'

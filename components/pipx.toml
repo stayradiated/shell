@@ -1,7 +1,6 @@
 name = 'pipx'
 from = 'base'
 
-# https://github.com/pipxproject/pipx/releases/
 version = '1.2.0'
 
 devDependencies = [
@@ -35,3 +34,7 @@ exports = [
   "/usr/local/lib/python3.10/dist-packages/userpath-*.dist-info/",
   "/usr/local/lib/python3.10/dist-packages/userpath/",
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/pipxproject/pipx'

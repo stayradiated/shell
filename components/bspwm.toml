@@ -1,7 +1,6 @@
 name = 'bspwm'
 from = 'base'
 
-# https://github.com/baskerville/bspwm/tags
 version = '0.9.10'
 
 devDependencies = [
@@ -95,3 +94,7 @@ exports = [
   "/usr/local/bin/bspc",
   "/usr/local/bin/bspwm",
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/baskerville/bspwm'

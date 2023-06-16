@@ -1,7 +1,6 @@
 name = 'caddy'
 from = 'base'
 
-# https://github.com/caddyserver/caddy/releases
 version = '2.6.4'
 
 devDependencies = [
@@ -22,3 +21,9 @@ rm /tmp/caddy.tgz
 exports = [
   '/usr/local/bin/caddy'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/caddyserver/caddy'
+  matchTag = '^v\d+\.\d+\.\d+$'
+  removePrefix = 'v'

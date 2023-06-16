@@ -1,7 +1,6 @@
 name = "greenclip"
 from = "base"
 
-# https://github.com/erebe/greenclip/releases
 version = "v4.2"
 
 devDependencies = [
@@ -17,3 +16,7 @@ chmod +x /usr/local/bin/greenclip
 exports = [
   "/usr/local/bin/greenclip"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/erebe/greenclip'

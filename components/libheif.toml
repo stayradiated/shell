@@ -1,7 +1,6 @@
 name = 'libheif'
 from = 'base'
 
-# https://github.com/strukturag/libheif/releases
 version = 'v1.13.0'
 
 devDependencies = [
@@ -32,3 +31,7 @@ exports = [
   "/usr/local/bin/heif-info",
   "/usr/local/include/libheif/"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/strukturag/libheif'

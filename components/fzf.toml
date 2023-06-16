@@ -1,7 +1,6 @@
 name = 'fzf'
 from = 'base'
 
-# https://github.com/junegunn/fzf/releases
 version = '0.40.0'
 
 devDependencies = [
@@ -18,3 +17,7 @@ rm -rf /root/src
 exports = [
   '/usr/local/share/fzf/'
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/junegunn/fzf'

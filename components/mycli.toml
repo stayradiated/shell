@@ -1,7 +1,6 @@
 name = 'mycli'
 from = 'base'
 
-# https://github.com/dbcli/mycli/releases
 version = '1.24.1'
 
 devDependencies = [
@@ -17,3 +16,8 @@ exports = [
   '/usr/local/pipx/',
   '/usr/local/bin/mycli',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/dbcli/mycli'
+  removePrefix = 'v'

@@ -1,7 +1,6 @@
 name = 'safe-rm'
 from = 'base'
 
-# https://github.com/kaelzhang/shell-safe-rm/releases
 version = '1.0.7'
 
 devDependencies = [
@@ -18,3 +17,7 @@ rm -rf /root/src/
 exports = [
   '/usr/local/bin/safe-rm'
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/kaelzhang/shell-safe-rm'

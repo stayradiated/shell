@@ -1,7 +1,6 @@
 name = "imgp"
 from = "base"
 
-# https://github.com/jarun/imgp/releases
 version = "2.8"
 
 devDependencies = [
@@ -358,3 +357,8 @@ exports = [
   # "/var/log/apt/term.log",
   # "/var/log/dpkg.log"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/jarun/imgp'
+  removePrefix = 'v'

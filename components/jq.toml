@@ -1,7 +1,6 @@
 name = 'jq'
 from = 'base'
 
-# https://github.com/stedolan/jq/releases
 version = '1.6'
 
 devDependencies = [ 'wget' ]
@@ -17,3 +16,7 @@ exports = [
   '/usr/local/bin/jq'
 ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/stedolan/jq'
+  removePrefix = 'jq-'

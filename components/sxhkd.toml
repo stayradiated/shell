@@ -1,7 +1,6 @@
 name = 'sxhkd'
 from = 'base'
 
-# https://github.com/baskerville/sxhkd/tags
 version = '0.6.2'
 
 devDependencies = [
@@ -27,3 +26,7 @@ exports = [
   '/usr/local/bin/sxhkd',
   '/usr/local/share/man/man1/sxhkd.1',
 ]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/baskerville/sxhkd'

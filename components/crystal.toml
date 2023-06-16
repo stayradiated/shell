@@ -1,7 +1,6 @@
 name = "crystal"
 from = "base"
 
-# https://github.com/crystal-lang/crystal/releases
 version = "0.35.1"
 
 dependencies = [
@@ -30,3 +29,6 @@ exports = [
   "/usr/local/share/crystal",
 ]
 
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/crystal-lang/crystal'

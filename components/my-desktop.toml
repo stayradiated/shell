@@ -42,7 +42,6 @@ dependencies = [
   'prettyping',
   'ripgrep',
   'rsync',
-  'safe-rm',
   'sd',
   'shoebox',
   'sudo',
@@ -88,8 +87,6 @@ dependencies = [
   'net-tools',
 
   'greenclip',
-  'rofi',
-  'rofi-calc',
 
   'one-password',
   'fonts',
@@ -114,12 +111,20 @@ dependencies = [
   'kolide',
   'heroku',
   'brave',
-  'peek',
+  # 'peek',
   # 'charles',
   # 'ruby',
   # 'gifski',
 
   'fastgron',
+  'rofi',
+
+  'exa',
+  'zoxide',
+  'zeal',
+  'bun',
+  'rip',
+  'gosee',
 
   # data tools
   # 'sc-im',

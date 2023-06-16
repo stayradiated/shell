@@ -1,8 +1,7 @@
 name = 'rust'
 from = 'base'
 
-# https://github.com/rust-lang/rust/releases
-version = '1.64.0'
+version = '1.70.0'
 
 devDependencies = [
   'wget'
@@ -22,3 +21,7 @@ exports = [
 exportEnv = [
   ['PATH', '/root/.cargo/bin:$PATH']
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/rust-lang/rust'
