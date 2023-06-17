@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.86.11' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.86.14' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -228,7 +228,7 @@ RUN set -e \
 FROM base AS xz
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx xz-utils='5.2.5-*'
+  ; apteryx xz-utils='5.2.5-2ubuntu1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
   ; mv /usr/bin/xz /exports/usr/bin/ \
@@ -887,7 +887,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list \
   ; apt update \
-  ; apteryx brave-browser='1.50.125*'
+  ; apteryx brave-browser='1.52.126*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/sysctl.d/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/dbus-1/services/ /exports/var/log/ \
   ; mv /etc/dconf /etc/gtk-3.0 /exports/etc/ \
@@ -1624,7 +1624,7 @@ RUN set -e \
 FROM base AS urlview
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx urlview='0.9-*'
+  ; apteryx urlview='0.9-22'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/usr/bin/ \
   ; mv /etc/urlview /exports/etc/ \

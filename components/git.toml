@@ -2,7 +2,7 @@ name = "git"
 from = "base"
 
 # https://launchpad.net/~git-core/+archive/ubuntu/ppa
-version = '[object Object]'
+version = '1:2.40.1-0ppa1~ubuntu22.04.1'
 
 devDependencies = [
   "apteryx"
