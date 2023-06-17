@@ -23,9 +23,7 @@ cp /usr/local/lib/libheif.so* /usr/lib/x86_64-linux-gnu/
 """
 
 exports = [
-  "/usr/lib/x86_64-linux-gnu/libheif.so",
-  "/usr/lib/x86_64-linux-gnu/libheif.so.1",
-  "/usr/lib/x86_64-linux-gnu/libheif.so.1.13.0.0",
+  "/usr/lib/x86_64-linux-gnu/libheif.so*",
   "/usr/local/bin/heif-convert",
   "/usr/local/bin/heif-enc",
   "/usr/local/bin/heif-info",

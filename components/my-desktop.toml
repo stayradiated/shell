@@ -53,9 +53,7 @@ dependencies = [
   'xinput',
   'xsv',
 
-  # i think i need these for tmux?
-  # 'urlview',
-  # 'w3m',
+  'urlview',
 
   'alacritty',
   'audacity',
@@ -67,8 +65,6 @@ dependencies = [
   'xclip',
   'xdg-utils',
   'xsecurelock',
-
-  # 'signal',
 
   'shell-browser',
   'shell-cron',
@@ -89,13 +85,11 @@ dependencies = [
   'greenclip',
 
   'one-password',
-  'fonts',
 
   'wifi',
 
   'darktable',
   'imgp',
-  'rhash',
 
   'bandwhich',
   'caddy',
@@ -111,7 +105,8 @@ dependencies = [
   'kolide',
   'heroku',
   'brave',
-  # 'peek',
+  'peek',
+
   # 'charles',
   # 'ruby',
   # 'gifski',
@@ -126,14 +121,14 @@ dependencies = [
   'rip',
   'gosee',
 
+  'fonts',
+
   # data tools
   # 'sc-im',
 
   # volatile development
   # 'stripe',
   # 'ngrok',
-
-
 ]
 
 command = '/home/admin/.xinitrc'

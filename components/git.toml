@@ -2,7 +2,7 @@ name = "git"
 from = "base"
 
 # https://launchpad.net/~git-core/+archive/ubuntu/ppa
-version = '1:2.34.1-1ubuntu1.9'
+version = '[object Object]'
 
 devDependencies = [
   "apteryx"
@@ -31,5 +31,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'git'
+  type = 'json'
+  url = 'https://api.val.town/v1/run/freecrayon.getLatestGitCoreVersion?args=["22.04"]'
+  path = []
