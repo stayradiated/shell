@@ -107,7 +107,6 @@ dependencies = [
   'brave',
   'peek',
 
-  # 'charles',
   # 'ruby',
   # 'gifski',
 
@@ -121,6 +120,7 @@ dependencies = [
   'rip',
   'gosee',
 
+  'charles',
   'fonts',
 
   # data tools
