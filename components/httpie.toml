@@ -21,3 +21,4 @@ exports = [
 [checkUpdates]
   type = 'github-release'
   url = 'https://github.com/jakubroztocil/httpie'
+  matchPrerelease = false

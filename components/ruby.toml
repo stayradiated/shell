@@ -10,32 +10,78 @@ devDependencies = [
 
 build = """
 # https://github.com/rbenv/ruby-build/wiki#suggested-build-environment
-apteryx \
-  autoconf \
-  bison \
-  build-essential \
-  libssl-dev \
-  libyaml-dev \
-  libreadline6-dev \
-  zlib1g-dev \
-  libncurses5-dev \
-  libffi-dev \
-  libgdbm6 \
-  libgdbm-dev \
-  libdb-dev \
-  uuid-dev
+packages="autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev"
+
+apt-get -q update
+apt-get install -y --no-install-recommends --auto-remove $packages
 
 clone --https --shallow https://github.com/rbenv/ruby-build
 cd /root/src/github.com/rbenv/ruby-build
 
 mkdir -p /usr/local/ruby/{{VERSION}}
 ./bin/ruby-build --verbose {{VERSION}} /usr/local/ruby/{{VERSION}}
+
+# ln -s /usr/local/ruby/{{VERSION}}/bin/bundler  /usr/local/bin/bundler
+# ln -s /usr/local/ruby/{{VERSION}}/bin/erb      /usr/local/bin/erb
+# ln -s /usr/local/ruby/{{VERSION}}/bin/irb      /usr/local/bin/irb
+# ln -s /usr/local/ruby/{{VERSION}}/bin/racc     /usr/local/bin/racc
+# ln -s /usr/local/ruby/{{VERSION}}/bin/rbs      /usr/local/bin/rbs
+# ln -s /usr/local/ruby/{{VERSION}}/bin/rdbg     /usr/local/bin/rdbg
+# ln -s /usr/local/ruby/{{VERSION}}/bin/rdoc     /usr/local/bin/rdoc
+# ln -s /usr/local/ruby/{{VERSION}}/bin/ri       /usr/local/bin/ri
+# ln -s /usr/local/ruby/{{VERSION}}/bin/typeprof /usr/local/bin/typeprof
+ln -s /usr/local/ruby/{{VERSION}}/bin/bundle   /usr/local/bin/bundle
+ln -s /usr/local/ruby/{{VERSION}}/bin/gem      /usr/local/bin/gem
+ln -s /usr/local/ruby/{{VERSION}}/bin/rake     /usr/local/bin/rake
+ln -s /usr/local/ruby/{{VERSION}}/bin/ruby     /usr/local/bin/ruby
+
+apt-get remove --purge -y $packages
+apt-get -q clean
+
+rm -rf /root/src
 """
 
+
 exports = [
-  "/usr/local/ruby"
+  "/usr/local/bin/bundle",
+  "/usr/local/bin/gem",
+  "/usr/local/bin/rake",
+  "/usr/local/bin/ruby",
+  "/usr/local/ruby",
 ]
 
-exportEnv = [
-  ['PATH', "${PATH}:/usr/local/ruby/*/bin"]
+# TODO: ruby tags with underscores instead of periods
+# e.g.  v3_2_2 instead v3.2.2
+# [checkUpdates]
+# type = "github-release"
+# url = "https://github.com/ruby/ruby"
+
+[diff]
+exclude = [
+  "/etc/alternatives/**",
+  "/etc/ld.so.cache",
+  "/root/.local/",
+  "/tmp/ruby-build.*.log",
+  "/usr/bin/**",
+  "/usr/include/**",
+  "/usr/include/x86_64-linux-gnu/**",
+  "/usr/include/xen/**",
+  "/usr/lib/bfd-plugins/**",
+  "/usr/lib/compat-ld/**",
+  "/usr/lib/cpp",
+  "/usr/lib/gcc/**",
+  "/usr/lib/gold-ld/**",
+  "/usr/lib/valgrind/**",
+  "/usr/lib/x86_64-linux-gnu/**",
+  "/usr/share/bug/**",
+  "/usr/share/doc/**",
+  "/usr/share/gdb/**",
+  "/usr/share/info/**",
+  "/usr/share/lintian/**",
+  "/usr/share/lto-disabled-list/**",
+  "/usr/share/man/**",
+  "/var/cache/**",
+  "/var/lib/apt/**",
+  "/var/lib/dpkg/**",
+  "/var/log/**"
 ]

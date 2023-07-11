@@ -1,7 +1,7 @@
 name = 'docker-compose'
 from = 'base'
 
-version = 'v2.19.1'
+version = 'v2.20.0'
 
 devDependencies = [
   'wget'

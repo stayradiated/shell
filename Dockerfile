@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.87.2' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.87.4' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -265,7 +265,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n 20.3.1 \
+  ; n 20.4.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -554,7 +554,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=bzip2 /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/114.0.2/linux-x86_64/en-US/firefox-114.0.2.tar.bz2 \
+  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.0.2/linux-x86_64/en-US/firefox-115.0.2.tar.bz2 \
   ; cd /opt \
   ; tar xjvf /tmp/firefox.tar.bz2 \
   ; rm /tmp/firefox.tar.bz2 \
@@ -590,7 +590,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='115.0.5790.56-*'
+  ; apteryx google-chrome-beta='115.0.5790.75-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -683,6 +683,46 @@ RUN set -e \
   ; mv /var/cache/fontconfig /exports/var/cache/ \
   ; mv /var/lib/xfonts /exports/var/lib/
 
+# RUBY
+FROM base AS ruby
+COPY --from=apteryx /exports/ /
+COPY --from=clone /exports/ /
+RUN set -e \
+  ; packages="autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev" \
+  ; apt-get -q update \
+  ; apt-get install -y --no-install-recommends --auto-remove $packages \
+  ; clone --https --shallow https://github.com/rbenv/ruby-build \
+  ; cd /root/src/github.com/rbenv/ruby-build \
+  ; mkdir -p /usr/local/ruby/3.2.2 \
+  ; ./bin/ruby-build --verbose 3.2.2 /usr/local/ruby/3.2.2 \
+  ; ln -s /usr/local/ruby/3.2.2/bin/bundle   /usr/local/bin/bundle \
+  ; ln -s /usr/local/ruby/3.2.2/bin/gem      /usr/local/bin/gem \
+  ; ln -s /usr/local/ruby/3.2.2/bin/rake     /usr/local/bin/rake \
+  ; ln -s /usr/local/ruby/3.2.2/bin/ruby     /usr/local/bin/ruby \
+  ; apt-get remove --purge -y $packages \
+  ; apt-get -q clean \
+  ; rm -rf /root/src
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
+  ; mv /usr/local/bin/bundle /usr/local/bin/gem /usr/local/bin/rake /usr/local/bin/ruby /exports/usr/local/bin/ \
+  ; mv /usr/local/ruby /exports/usr/local/
+
+# CHARLES
+FROM base AS charles
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/charles.tgz 'https://www.charlesproxy.com/assets/release/4.6.4/charles-proxy-4.6.4_amd64.tar.gz' \
+  ; tar -xzvf /tmp/charles.tgz \
+  ; rm /tmp/charles.tgz \
+  ; mv ./charles/bin/charles /usr/local/bin/charles \
+  ; mkdir -p /usr/share/java/charles/ \
+  ; mv ./charles/lib/* /usr/share/java/charles/ \
+  ; rm -r ./charles
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/share/java/ \
+  ; mv /usr/local/bin/charles /exports/usr/local/bin/ \
+  ; mv /usr/share/java/charles /exports/usr/share/java/
+
 # GOSEE
 FROM base AS gosee
 COPY --from=clone /exports/ /
@@ -692,7 +732,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=513d27512cb215f2462bd22f243f48e4b56814be https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=bd3dbedf4b1b056ef58776696bfb38f575ec764f https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -718,7 +758,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v0.6.12/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v0.6.13/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -828,7 +868,7 @@ RUN set -e \
 FROM base AS fastgron
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/fastgron "https://github.com/adamritter/fastgron/releases/download/v0.6.2/fastgron-ubuntu" \
+  ; wget -O /usr/local/bin/fastgron "https://github.com/adamritter/fastgron/releases/download/v0.6.4/fastgron-ubuntu" \
   ; chmod +x /usr/local/bin/fastgron
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -887,7 +927,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.54.76*'
+  ; apteryx brave-browser-beta='1.57.1*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -968,7 +1008,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
-  ; pipx install ttok=='0.1'
+  ; pipx install ttok=='0.2'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/local/bin/ttok /exports/usr/local/bin/ \
@@ -982,7 +1022,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
-  ; pipx install strip-tags=='0.5'
+  ; pipx install strip-tags=='0.5.1'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/local/bin/strip-tags /exports/usr/local/bin/ \
@@ -1102,7 +1142,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --tag=v1.3.1 https://github.com/stayradiated/wifi \
+  ; clone --https --tag=v1.4.0 https://github.com/stayradiated/wifi \
   ; cd /root/src/github.com/stayradiated/wifi \
   ; go build \
   ; mv wifi /usr/local/bin/wifi
@@ -1178,7 +1218,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@8.6.5'
+  ; npm install -g 'pnpm@8.6.7'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1599,7 +1639,7 @@ RUN set -e \
   ; packages="cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3" \
   ; apt-get -q update \
   ; apt-get install -y --no-install-recommends --auto-remove $packages \
-  ; clone --https --tag='v0.12.1' https://github.com/alacritty/alacritty \
+  ; clone --https --tag='v0.12.2' https://github.com/alacritty/alacritty \
   ; cd /root/src/github.com/alacritty/alacritty \
   ; cargo build --release --no-default-features --features=x11 \
   ; mv target/release/alacritty /usr/local/bin/alacritty \
@@ -1712,7 +1752,7 @@ RUN set -e \
 FROM base AS shoebox
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g '@stayradiated/shoebox@2.0.0'
+  ; npm install -g '@stayradiated/shoebox@2.4.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@stayradiated/ \
   ; mv /usr/local/bin/shoebox /exports/usr/local/bin/ \
@@ -1811,7 +1851,7 @@ RUN set -e \
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'npm-check-updates@16.10.13'
+  ; npm install -g 'npm-check-updates@16.10.15'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/ncu /exports/usr/local/bin/ \
@@ -1993,7 +2033,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN set -e \
   ; mkdir -p /usr/local/lib/docker/cli-plugins \
-  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64' \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-linux-x86_64' \
   ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN set -e \
   ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
@@ -2004,10 +2044,12 @@ FROM base AS docker
 COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/docker.gpg https://download.docker.com/linux/ubuntu/gpg \
-  ; apt-key add /tmp/docker.gpg \
-  ; apt-add-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' \
-  ; apteryx docker-ce='5:24.0.2*'
+  ; install -m 0755 -d /etc/apt/keyrings \
+  ; curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+  ; chmod a+r /etc/apt/keyrings/docker.gpg \
+  ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+  ; apt-get update \
+  ; apteryx docker-ce-cli='5:24.0.4*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -2251,6 +2293,8 @@ COPY --from=zeal /exports/ /
 COPY --from=bun /exports/ /
 COPY --from=rip /exports/ /
 COPY --from=gosee /exports/ /
+COPY --from=charles /exports/ /
+COPY --from=ruby /exports/ /
 COPY --from=fonts /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \

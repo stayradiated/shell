@@ -1,0 +1,20 @@
+name = "lunatask"
+from = "base"
+
+version = "1.7.0"
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget -O \
+  /tmp/lunatask.appimage \
+  "https://lunatask.app/download/Lunatask-{{VERSION}}.AppImage"
+chmod +x /tmp/lunatask.appimage
+/tmp/lunatask.appimage --appimage-extract
+rm /tmp/lunatask.appimage
+"""
+
+exports = [
+]
