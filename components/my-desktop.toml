@@ -121,6 +121,7 @@ dependencies = [
 
   'charles',
   'ruby',
+  'deno',
   'fonts',
 
   # data tools

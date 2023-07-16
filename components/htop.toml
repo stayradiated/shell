@@ -10,11 +10,28 @@ apteryx htop='{{VERSION}}'
 """
 
 exports = [
-  '/usr/bin/htop',
-  '/usr/share/doc/htop/',
-  '/usr/share/man/man1/htop.1.gz',
+  "/usr/bin/htop",
+  "/usr/lib/x86_64-linux-gnu/libnl-3.so.200",
+  "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+  "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200",
+  "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+  "/usr/share/doc/htop/",
+  "/usr/share/man/man1/htop.1.gz",
 ]
 
 [checkUpdates]
   type = 'apt'
   name = 'htop'
+
+[diff]
+exclude = [
+  "/etc/ld.so.cache",
+  "/etc/libnl-3/",
+  "/usr/share/applications/*.desktop",
+  "/usr/share/doc/libnl-**",
+  "/usr/share/icons/**",
+  "/usr/share/pixmaps/**",
+  "/var/cache/**",
+  "/var/lib/**",
+  "/var/log/**"
+]
