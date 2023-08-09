@@ -2,7 +2,7 @@ name = 'python3-pip'
 from = 'base'
 
 # https://pypi.org/project/pip/
-version = '23.1.2'
+version = '23.2.1'
 
 devDependencies = [
   'apteryx',

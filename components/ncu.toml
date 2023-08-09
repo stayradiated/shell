@@ -1,7 +1,7 @@
 name = 'ncu'
 from = 'base'
 
-version = '16.10.15'
+version = '16.10.18'
 
 devDependencies = [
   'node'

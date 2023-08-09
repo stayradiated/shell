@@ -1,7 +1,7 @@
 name = 'docker'
 from = 'base'
 
-version = '24.0.4'
+version = '24.0.5'
 
 devDependencies = [
   'apteryx',

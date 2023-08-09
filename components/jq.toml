@@ -20,3 +20,4 @@ exports = [
   type = 'github-release'
   url = 'https://github.com/stedolan/jq'
   removePrefix = 'jq-'
+  matchPrerelease = false
