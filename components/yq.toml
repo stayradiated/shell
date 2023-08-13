@@ -1,0 +1,22 @@
+name = 'yq'
+from = 'base'
+
+version = 'v4.35.1'
+
+devDependencies = [ 'wget' ]
+
+build = """
+wget \
+  -O /usr/local/bin/yq \
+  'https://github.com/mikefarah/yq/releases/download/{{VERSION}}/yq_linux_amd64'
+chmod +x /usr/local/bin/yq
+"""
+
+exports = [
+  '/usr/local/bin/yq'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/mikefarah/yq'
+  matchPrerelease = false

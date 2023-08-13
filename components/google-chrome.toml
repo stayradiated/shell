@@ -3,7 +3,7 @@ from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
 # look for google-chrome-beta
-version = '116.0.5845.62'
+version = '116.0.5845.82'
 
 devDependencies = [
   'wget',
