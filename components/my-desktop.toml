@@ -124,7 +124,9 @@ dependencies = [
   'deno',
   'fonts',
 
-  'yq'
+  'yq',
+  'lunatask',
+  'xcolor',
 
   # data tools
   # 'sc-im',

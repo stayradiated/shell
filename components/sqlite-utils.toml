@@ -1,7 +1,7 @@
 name = "sqlite-utils"
 from = "base"
 
-version = '3.34'
+version = '3.35'
 
 devDependencies = [ "python3-pip", "pipx" ]
 

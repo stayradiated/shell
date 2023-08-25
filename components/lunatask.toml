@@ -1,7 +1,11 @@
 name = "lunatask"
 from = "base"
 
-version = "1.7.0"
+version = '1.7.5'
+
+dependencies = [
+  'fuse'
+]
 
 devDependencies = [
   'wget'
@@ -9,12 +13,17 @@ devDependencies = [
 
 build = """
 wget -O \
-  /tmp/lunatask.appimage \
+  /usr/local/bin/lunatask \
   "https://lunatask.app/download/Lunatask-{{VERSION}}.AppImage"
-chmod +x /tmp/lunatask.appimage
-/tmp/lunatask.appimage --appimage-extract
-rm /tmp/lunatask.appimage
+
+chmod +x /usr/local/bin/lunatask
 """
 
 exports = [
+  "/usr/local/bin/lunatask"
 ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/lunatask/lunatask'
+  removePrefix = 'v'

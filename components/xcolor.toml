@@ -1,0 +1,31 @@
+name = "xcolor"
+from = "base"
+
+version = '0.5.1'
+
+devDependencies = [
+  'apteryx',
+  'build-essential',
+  'rust'
+]
+
+build = """
+packages="pkg-config libx11-dev libx11-xcb-dev libxcursor-dev"
+
+apt-get install -y --no-install-recommends --auto-remove $packages
+
+cargo install --version {{VERSION}} xcolor
+
+apt-get remove --purge -y $packages
+
+mv /root/.cargo/bin/xcolor /usr/local/bin/xcolor
+
+"""
+
+exports = [
+  "/usr/local/bin/xcolor"
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/Soft/xcolor'

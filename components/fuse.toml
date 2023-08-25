@@ -1,0 +1,36 @@
+name = "fuse"
+from = "base"
+
+version = "2.9.9-5ubuntu3"
+
+devDependencies = [ "apteryx" ]
+
+build = """
+apteryx fuse='{{VERSION}}'
+"""
+
+exports = [
+  "/etc/fuse.conf",
+  "/usr/bin/fusermount",
+  "/usr/bin/ulockmgr_server",
+  "/usr/lib/x86_64-linux-gnu/libfuse.so.2",
+  "/usr/lib/x86_64-linux-gnu/libfuse.so.2.9.9",
+  "/usr/lib/x86_64-linux-gnu/libulockmgr.so.1",
+  "/usr/lib/x86_64-linux-gnu/libulockmgr.so.1.0.1",
+  "/usr/sbin/mount.fuse"
+]
+
+[diff]
+exclude = [
+  "/etc/ld.so.cache",
+  "/usr/share/doc/**",
+  "/usr/share/initramfs-tools/**",
+  "/usr/share/man/**",
+  "/var/cache/**",
+  "/var/lib/**",
+  "/var/log/**"
+]
+
+[checkUpdates]
+  type = 'apt'
+  name = 'fuse'
