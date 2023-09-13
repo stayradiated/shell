@@ -1,7 +1,7 @@
 name = 'pnpm'
 from = 'base'
 
-version = '8.6.12'
+version = '8.7.5'
 
 devDependencies = [
   'node'
