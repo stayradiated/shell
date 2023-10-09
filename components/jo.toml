@@ -1,0 +1,31 @@
+name = "jo"
+from = "base"
+
+version = 'b3e67e11020222bb53f691a5c44fb972a2416a7b'
+
+devDependencies = [
+  "clone",
+  "apteryx",
+  "build-essential"
+]
+
+build = """
+PKG_LIST="autoconf automake pkgconf"
+apteryx $PKG_LIST
+
+clone --https --ref='{{VERSION}}' --shallow 'https://github.com/jpmens/jo'
+
+cd /root/src/github.com/jpmens/jo
+autoreconf -i
+./configure
+make install
+
+apt-get remove --purge -y $PKG_LIST
+rm -r /root/src
+"""
+
+exports = [ "/usr/local/bin/jo" ]
+
+[checkUpdates]
+type = "github-commit"
+url = "https://github.com/jpmens/jo"

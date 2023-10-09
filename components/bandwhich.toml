@@ -1,7 +1,7 @@
 name = 'bandwhich'
 from = 'base'
 
-version = '0.20.0'
+version = '0.21.0'
 
 devDependencies = [
   'wget',
@@ -10,7 +10,7 @@ devDependencies = [
 build = """
 wget \
   -O /tmp/bandwhich.tgz \
-  'https://github.com/imsnif/bandwhich/releases/download/{{VERSION}}/bandwhich-v{{VERSION}}-x86_64-unknown-linux-musl.tar.gz'
+  'https://github.com/imsnif/bandwhich/releases/download/v{{VERSION}}/bandwhich-v{{VERSION}}-x86_64-unknown-linux-musl.tar.gz'
 tar -xvf /tmp/bandwhich.tgz
 rm /tmp/bandwhich.tgz
 mv bandwhich /usr/local/bin/bandwhich
@@ -23,3 +23,4 @@ exports = [
 [checkUpdates]
   type = 'github-release'
   url = 'https://github.com/imsnif/bandwhich'
+  removePrefix = 'v'

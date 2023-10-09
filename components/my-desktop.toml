@@ -128,6 +128,8 @@ dependencies = [
   'lunatask',
   'xcolor',
 
+  'jo',
+
   # data tools
   # 'sc-im',
 

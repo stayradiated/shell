@@ -10,13 +10,12 @@ devDependencies = [
 ]
 
 build = """
-packages="pkg-config libx11-dev libx11-xcb-dev libxcursor-dev"
-
-apt-get install -y --no-install-recommends --auto-remove $packages
+PKG_LIST="pkg-config libx11-dev libx11-xcb-dev libxcursor-dev"
+apteryx $PKG_LIST
 
 cargo install --version {{VERSION}} xcolor
 
-apt-get remove --purge -y $packages
+apt-get remove --purge -y $PKG_LIST
 
 mv /root/.cargo/bin/xcolor /usr/local/bin/xcolor
 
