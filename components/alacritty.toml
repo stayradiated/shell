@@ -1,7 +1,7 @@
 name = 'alacritty'
 from = 'base'
 
-version = 'v0.12.3'
+version = 'v0.13.0-rc1'
 
 devDependencies = [
   'clone',

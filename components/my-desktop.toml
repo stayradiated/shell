@@ -114,14 +114,14 @@ dependencies = [
 
   'exa',
   'zoxide',
-  'zeal',
+  # 'zeal',
   'bun',
   'rip',
   'gosee',
 
-  'charles',
-  'ruby',
-  'deno',
+  # 'charles',
+  # 'ruby',
+  # 'deno',
   'fonts',
 
   'yq',
@@ -129,6 +129,7 @@ dependencies = [
   'xcolor',
 
   'jo',
+  'xterm',
 
   # data tools
   # 'sc-im',

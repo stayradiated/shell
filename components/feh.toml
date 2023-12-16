@@ -2,7 +2,7 @@ name = 'feh'
 from = 'base'
 
 # https://feh.finalrewind.org/
-version = '3.10.1'
+version = '3.10.2'
 
 devDependencies = [
   'apteryx',
