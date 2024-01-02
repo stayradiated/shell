@@ -1,7 +1,7 @@
 name = 'neovim'
 from = 'base'
 
-version = 'v0.9.4'
+version = 'v0.9.5'
 
 devDependencies = [
   'wget',

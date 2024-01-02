@@ -2,7 +2,7 @@ name = 'obsidian'
 from = 'base'
 
 # https://obsidian.md/download
-version = '1.4.16'
+version = '1.5.3'
 
 devDependencies = [
   'wget',

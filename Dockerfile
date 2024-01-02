@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.88.0' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.88.7' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -198,31 +198,17 @@ COPY --from=apteryx /exports/ /
 RUN set -e \
   ; apteryx python3-pip python3-dev python3-setuptools python3-venv python3-wheel \
   ; pip3 install wheel \
-  ; python3 -m pip install -U pip==23.3.1
+  ; python3 -m pip install -U pip==23.3.2
 RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/python3.10/ /exports/usr/lib/python3.10/distutils/__pycache__/ /exports/usr/lib/python3.10/distutils/ /exports/usr/lib/ /exports/usr/lib/python3/dist-packages/__pycache__/ /exports/usr/lib/python3/dist-packages/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/share/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/doc/libcrypt1/ /exports/usr/share/doc/python3.10/ /exports/usr/share/doc/python3/ /exports/usr/share/gdb/auto-load/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man3/ /exports/usr/share/man/man5/ \
-  ; mv /usr/bin/gencat /usr/bin/pip /usr/bin/pip3 /usr/bin/pip3.10 /usr/bin/python3-config /usr/bin/python3.10-config /usr/bin/rpcgen /usr/bin/x86_64-linux-gnu-python3-config /usr/bin/x86_64-linux-gnu-python3.10-config /exports/usr/bin/ \
-  ; mv /usr/include/aio.h /usr/include/aliases.h /usr/include/alloca.h /usr/include/ar.h /usr/include/argp.h /usr/include/argz.h /usr/include/arpa /usr/include/asm-generic /usr/include/assert.h /usr/include/byteswap.h /usr/include/complex.h /usr/include/cpio.h /usr/include/crypt.h /usr/include/ctype.h /usr/include/dirent.h /usr/include/dlfcn.h /usr/include/drm /usr/include/elf.h /usr/include/endian.h /usr/include/envz.h /usr/include/err.h /usr/include/errno.h /usr/include/error.h /usr/include/execinfo.h /usr/include/expat_external.h /usr/include/expat.h /usr/include/fcntl.h /usr/include/features-time64.h /usr/include/features.h /usr/include/fenv.h /usr/include/finclude /usr/include/fmtmsg.h /usr/include/fnmatch.h /usr/include/fstab.h /usr/include/fts.h /usr/include/ftw.h /usr/include/gconv.h /usr/include/getopt.h /usr/include/glob.h /usr/include/gnu-versions.h /usr/include/grp.h /usr/include/gshadow.h /usr/include/iconv.h /usr/include/ifaddrs.h /usr/include/inttypes.h /usr/include/langinfo.h /usr/include/lastlog.h /usr/include/libgen.h /usr/include/libintl.h /usr/include/limits.h /usr/include/link.h /usr/include/linux /usr/include/locale.h /usr/include/malloc.h /usr/include/math.h /usr/include/mcheck.h /usr/include/memory.h /usr/include/misc /usr/include/mntent.h /usr/include/monetary.h /usr/include/mqueue.h /usr/include/mtd /usr/include/net /usr/include/netash /usr/include/netatalk /usr/include/netax25 /usr/include/netdb.h /usr/include/neteconet /usr/include/netinet /usr/include/netipx /usr/include/netiucv /usr/include/netpacket /usr/include/netrom /usr/include/netrose /usr/include/nfs /usr/include/nl_types.h /usr/include/nss.h /usr/include/obstack.h /usr/include/paths.h /usr/include/poll.h /usr/include/printf.h /usr/include/proc_service.h /usr/include/protocols /usr/include/pthread.h /usr/include/pty.h /usr/include/pwd.h /usr/include/python3.10 /usr/include/rdma /usr/include/re_comp.h /usr/include/regex.h /usr/include/regexp.h /usr/include/resolv.h /usr/include/rpc /usr/include/rpcsvc /usr/include/sched.h /usr/include/scsi /usr/include/search.h /usr/include/semaphore.h /usr/include/setjmp.h /usr/include/sgtty.h /usr/include/shadow.h /usr/include/signal.h /usr/include/sound /usr/include/spawn.h /usr/include/stab.h /usr/include/stdc-predef.h /usr/include/stdint.h /usr/include/stdio_ext.h /usr/include/stdio.h /usr/include/stdlib.h /usr/include/string.h /usr/include/strings.h /usr/include/syscall.h /usr/include/sysexits.h /usr/include/syslog.h /usr/include/tar.h /usr/include/termio.h /usr/include/termios.h /usr/include/tgmath.h /usr/include/thread_db.h /usr/include/threads.h /usr/include/time.h /usr/include/tirpc /usr/include/ttyent.h /usr/include/uchar.h /usr/include/ucontext.h /usr/include/ulimit.h /usr/include/unistd.h /usr/include/utime.h /usr/include/utmp.h /usr/include/utmpx.h /usr/include/values.h /usr/include/video /usr/include/wait.h /usr/include/wchar.h /usr/include/wctype.h /usr/include/wordexp.h /usr/include/x86_64-linux-gnu /usr/include/xen /usr/include/zconf.h /usr/include/zlib.h /exports/usr/include/ \
-  ; mv /usr/lib/python3.10/config-3.10-x86_64-linux-gnu /usr/lib/python3.10/ensurepip /usr/lib/python3.10/lib2to3 /exports/usr/lib/python3.10/ \
-  ; mv /usr/lib/python3.10/distutils/__pycache__/_msvccompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/archive_util.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/bcppcompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/ccompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/cmd.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/config.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/core.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/cygwinccompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/debug.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/dep_util.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/dir_util.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/dist.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/errors.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/extension.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/fancy_getopt.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/file_util.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/filelist.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/log.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/msvc9compiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/msvccompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/spawn.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/sysconfig.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/text_file.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/unixccompiler.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/util.cpython-310.pyc /usr/lib/python3.10/distutils/__pycache__/versionpredicate.cpython-310.pyc /exports/usr/lib/python3.10/distutils/__pycache__/ \
-  ; mv /usr/lib/python3.10/distutils/_msvccompiler.py /usr/lib/python3.10/distutils/archive_util.py /usr/lib/python3.10/distutils/bcppcompiler.py /usr/lib/python3.10/distutils/ccompiler.py /usr/lib/python3.10/distutils/cmd.py /usr/lib/python3.10/distutils/command /usr/lib/python3.10/distutils/config.py /usr/lib/python3.10/distutils/core.py /usr/lib/python3.10/distutils/cygwinccompiler.py /usr/lib/python3.10/distutils/debug.py /usr/lib/python3.10/distutils/dep_util.py /usr/lib/python3.10/distutils/dir_util.py /usr/lib/python3.10/distutils/dist.py /usr/lib/python3.10/distutils/errors.py /usr/lib/python3.10/distutils/extension.py /usr/lib/python3.10/distutils/fancy_getopt.py /usr/lib/python3.10/distutils/file_util.py /usr/lib/python3.10/distutils/filelist.py /usr/lib/python3.10/distutils/log.py /usr/lib/python3.10/distutils/msvc9compiler.py /usr/lib/python3.10/distutils/msvccompiler.py /usr/lib/python3.10/distutils/README /usr/lib/python3.10/distutils/spawn.py /usr/lib/python3.10/distutils/sysconfig.py /usr/lib/python3.10/distutils/text_file.py /usr/lib/python3.10/distutils/unixccompiler.py /usr/lib/python3.10/distutils/util.py /usr/lib/python3.10/distutils/versionpredicate.py /exports/usr/lib/python3.10/distutils/ \
-  ; mv /usr/lib/python3.11 /exports/usr/lib/ \
-  ; mv /usr/lib/python3/dist-packages/__pycache__/lsb_release.cpython-310.pyc /exports/usr/lib/python3/dist-packages/__pycache__/ \
-  ; mv /usr/lib/python3/dist-packages/_distutils_hack /usr/lib/python3/dist-packages/pip-*.dist-info /usr/lib/python3/dist-packages/pip /usr/lib/python3/dist-packages/setuptools-59.6.0.egg-info /usr/lib/python3/dist-packages/setuptools /usr/lib/python3/dist-packages/wheel-0.37.1.egg-info /usr/lib/python3/dist-packages/wheel /exports/usr/lib/python3/dist-packages/ \
-  ; mv /usr/lib/x86_64-linux-gnu/cmake /usr/lib/x86_64-linux-gnu/crt1.o /usr/lib/x86_64-linux-gnu/crti.o /usr/lib/x86_64-linux-gnu/crtn.o /usr/lib/x86_64-linux-gnu/gcrt1.o /usr/lib/x86_64-linux-gnu/grcrt1.o /usr/lib/x86_64-linux-gnu/libanl.a /usr/lib/x86_64-linux-gnu/libanl.so /usr/lib/x86_64-linux-gnu/libBrokenLocale.a /usr/lib/x86_64-linux-gnu/libBrokenLocale.so /usr/lib/x86_64-linux-gnu/libc_malloc_debug.so /usr/lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib/x86_64-linux-gnu/libc.a /usr/lib/x86_64-linux-gnu/libc.so /usr/lib/x86_64-linux-gnu/libcrypt.a /usr/lib/x86_64-linux-gnu/libcrypt.so /usr/lib/x86_64-linux-gnu/libdl.a /usr/lib/x86_64-linux-gnu/libexpat.a /usr/lib/x86_64-linux-gnu/libexpat.so /usr/lib/x86_64-linux-gnu/libexpatw.a /usr/lib/x86_64-linux-gnu/libexpatw.so /usr/lib/x86_64-linux-gnu/libg.a /usr/lib/x86_64-linux-gnu/libm-2.35.a /usr/lib/x86_64-linux-gnu/libm.a /usr/lib/x86_64-linux-gnu/libm.so /usr/lib/x86_64-linux-gnu/libmcheck.a /usr/lib/x86_64-linux-gnu/libmvec.a /usr/lib/x86_64-linux-gnu/libmvec.so /usr/lib/x86_64-linux-gnu/libnsl.a /usr/lib/x86_64-linux-gnu/libnsl.so /usr/lib/x86_64-linux-gnu/libnss_compat.so /usr/lib/x86_64-linux-gnu/libnss_hesiod.so /usr/lib/x86_64-linux-gnu/libpthread.a /usr/lib/x86_64-linux-gnu/libpython3.10.a /usr/lib/x86_64-linux-gnu/libpython3.10.so /usr/lib/x86_64-linux-gnu/libpython3.10.so.1 /usr/lib/x86_64-linux-gnu/libpython3.10.so.1.0 /usr/lib/x86_64-linux-gnu/libresolv.a /usr/lib/x86_64-linux-gnu/libresolv.so /usr/lib/x86_64-linux-gnu/librt.a /usr/lib/x86_64-linux-gnu/libthread_db.so /usr/lib/x86_64-linux-gnu/libtirpc.a /usr/lib/x86_64-linux-gnu/libtirpc.so /usr/lib/x86_64-linux-gnu/libutil.a /usr/lib/x86_64-linux-gnu/libz.a /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/x86_64-linux-gnu/Mcrt1.o /usr/lib/x86_64-linux-gnu/pkgconfig /usr/lib/x86_64-linux-gnu/rcrt1.o /usr/lib/x86_64-linux-gnu/Scrt1.o /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/bin/pip /usr/local/bin/pip3 /usr/local/bin/pip3.10 /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/python3.10/dist-packages/pip-*.dist-info /usr/local/lib/python3.10/dist-packages/pip /exports/usr/local/lib/python3.10/dist-packages/ \
-  ; mv /usr/share/aclocal /usr/share/javascript /usr/share/python-wheels /exports/usr/share/ \
-  ; mv /usr/share/doc-base/libexpat1-dev.expat /exports/usr/share/doc-base/ \
-  ; mv /usr/share/doc/libc-dev-bin /usr/share/doc/libc6-dev /usr/share/doc/libcrypt-dev /usr/share/doc/libexpat1-dev /usr/share/doc/libjs-jquery /usr/share/doc/libjs-sphinxdoc /usr/share/doc/libjs-underscore /usr/share/doc/libnsl-dev /usr/share/doc/libpython3-dev /usr/share/doc/libpython3.10 /usr/share/doc/libpython3.10-dev /usr/share/doc/libtirpc-dev /usr/share/doc/linux-libc-dev /usr/share/doc/python3-dev /usr/share/doc/python3-distutils /usr/share/doc/python3-lib2to3 /usr/share/doc/python3-pip-whl /usr/share/doc/python3-pip /usr/share/doc/python3-setuptools-whl /usr/share/doc/python3-setuptools /usr/share/doc/python3-venv /usr/share/doc/python3-wheel /usr/share/doc/python3.10-dev /usr/share/doc/python3.10-venv /usr/share/doc/rpcsvc-proto /usr/share/doc/zlib1g-dev /exports/usr/share/doc/ \
-  ; mv /usr/share/doc/libcrypt1/README.md.gz /usr/share/doc/libcrypt1/TODO.md.gz /exports/usr/share/doc/libcrypt1/ \
-  ; mv /usr/share/doc/python3.10/gdbinit.gz /usr/share/doc/python3.10/HISTORY.gz /usr/share/doc/python3.10/pybench.log /usr/share/doc/python3.10/README.maintainers /usr/share/doc/python3.10/README.valgrind.gz /usr/share/doc/python3.10/test_results.gz /exports/usr/share/doc/python3.10/ \
-  ; mv /usr/share/doc/python3/_static /usr/share/doc/python3/index.html /usr/share/doc/python3/python-policy.html /usr/share/doc/python3/searchindex.js /exports/usr/share/doc/python3/ \
-  ; mv /usr/share/gdb/auto-load/lib /exports/usr/share/gdb/auto-load/ \
-  ; mv /usr/share/lintian/overrides/libc6-dev /usr/share/lintian/overrides/libpython3.10 /usr/share/lintian/overrides/libpython3.10-dev /usr/share/lintian/overrides/python3-distutils /usr/share/lintian/overrides/python3-lib2to3 /usr/share/lintian/overrides/python3-pip /usr/share/lintian/overrides/python3.10-venv /exports/usr/share/lintian/overrides/ \
-  ; mv /usr/share/man/man1/gencat.1.gz /usr/share/man/man1/pip.1.gz /usr/share/man/man1/pip3.1.gz /usr/share/man/man1/python3-config.1.gz /usr/share/man/man1/python3.10-config.1.gz /usr/share/man/man1/rpcgen.1.gz /usr/share/man/man1/x86_64-linux-gnu-python3-config.1.gz /usr/share/man/man1/x86_64-linux-gnu-python3.10-config.1.gz /exports/usr/share/man/man1/ \
-  ; mv /usr/share/man/man3/bindresvport.3t.gz /usr/share/man/man3/crypt_checksalt.3.gz /usr/share/man/man3/crypt_gensalt_ra.3.gz /usr/share/man/man3/crypt_gensalt_rn.3.gz /usr/share/man/man3/crypt_gensalt.3.gz /usr/share/man/man3/crypt_preferred_method.3.gz /usr/share/man/man3/crypt_r.3.gz /usr/share/man/man3/crypt_ra.3.gz /usr/share/man/man3/crypt_rn.3.gz /usr/share/man/man3/crypt.3.gz /usr/share/man/man3/des_crypt.3t.gz /usr/share/man/man3/getnetconfig.3t.gz /usr/share/man/man3/getnetpath.3t.gz /usr/share/man/man3/getrpcent.3t.gz /usr/share/man/man3/getrpcport.3t.gz /usr/share/man/man3/rpc_clnt_auth.3t.gz /usr/share/man/man3/rpc_clnt_calls.3t.gz /usr/share/man/man3/rpc_clnt_create.3t.gz /usr/share/man/man3/rpc_gss_get_error.3t.gz /usr/share/man/man3/rpc_gss_get_mech_info.3t.gz /usr/share/man/man3/rpc_gss_get_mechanisms.3t.gz /usr/share/man/man3/rpc_gss_get_principal_name.3t.gz /usr/share/man/man3/rpc_gss_get_versions.3t.gz /usr/share/man/man3/rpc_gss_getcred.3t.gz /usr/share/man/man3/rpc_gss_is_installed.3t.gz /usr/share/man/man3/rpc_gss_max_data_length.3t.gz /usr/share/man/man3/rpc_gss_mech_to_oid.3t.gz /usr/share/man/man3/rpc_gss_qop_to_num.3t.gz /usr/share/man/man3/rpc_gss_seccreate.3t.gz /usr/share/man/man3/rpc_gss_set_callback.3t.gz /usr/share/man/man3/rpc_gss_set_defaults.3t.gz /usr/share/man/man3/rpc_gss_set_svc_name.3t.gz /usr/share/man/man3/rpc_gss_svc_max_data_length.3t.gz /usr/share/man/man3/rpc_secure.3t.gz /usr/share/man/man3/rpc_soc.3t.gz /usr/share/man/man3/rpc_svc_calls.3t.gz /usr/share/man/man3/rpc_svc_create.3t.gz /usr/share/man/man3/rpc_svc_err.3t.gz /usr/share/man/man3/rpc_svc_reg.3t.gz /usr/share/man/man3/rpc_xdr.3t.gz /usr/share/man/man3/rpc.3t.gz /usr/share/man/man3/rpcbind.3t.gz /usr/share/man/man3/rpcsec_gss.3t.gz /usr/share/man/man3/rtime.3t.gz /usr/share/man/man3/zlib.3.gz /exports/usr/share/man/man3/ \
-  ; mv /usr/share/man/man5/crypt.5.gz /exports/usr/share/man/man5/
+  ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/share/ /exports/usr/src/ \
+  ; mv /usr/bin/gencat /usr/bin/pip /usr/bin/pip3 /usr/bin/pip3.10 /usr/bin/python3-config /usr/bin/python3.10 /usr/bin/python3.10-config /usr/bin/x86_64-linux-gnu-python3-config /usr/bin/x86_64-linux-gnu-python3.10-config /exports/usr/bin/ \
+  ; mv /usr/include/python3.10 /exports/usr/include/ \
+  ; mv /usr/lib/python3.10 /usr/lib/python3.11 /usr/lib/python3 /exports/usr/lib/ \
+  ; mv /usr/lib/x86_64-linux-gnu/libpython3.10.a /usr/lib/x86_64-linux-gnu/libpython3.10.so /usr/lib/x86_64-linux-gnu/libpython3.10.so.1 /usr/lib/x86_64-linux-gnu/libpython3.10.so.1.0 /exports/usr/lib/x86_64-linux-gnu/ \
+  ; mv /usr/local/bin/pip /usr/local/bin/pip3 /usr/local/bin/pip3.10 /usr/local/bin/pip3.11 /exports/usr/local/bin/ \
+  ; mv /usr/local/lib/python3.10/dist-packages/pip-23.3.2.dist-info /usr/local/lib/python3.10/dist-packages/pip /exports/usr/local/lib/python3.10/dist-packages/ \
+  ; mv /usr/share/python-wheels /exports/usr/share/ \
+  ; mv /usr/src/python3.10 /exports/usr/src/
 
 # XZ
 FROM base AS xz
@@ -265,7 +251,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n 21.4.0 \
+  ; n 21.5.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -279,11 +265,11 @@ FROM base AS pipx
 COPY --from=apteryx /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN set -e \
-  ; pip3 install pipx==1.2.1
+  ; pip3 install pipx==1.4.0
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ \
   ; mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/python3.10/dist-packages/argcomplete-*.dist-info /usr/local/lib/python3.10/dist-packages/argcomplete /usr/local/lib/python3.10/dist-packages/click-*.dist-info /usr/local/lib/python3.10/dist-packages/click /usr/local/lib/python3.10/dist-packages/packaging-*.dist-info /usr/local/lib/python3.10/dist-packages/packaging /usr/local/lib/python3.10/dist-packages/pipx-*.dist-info /usr/local/lib/python3.10/dist-packages/pipx /usr/local/lib/python3.10/dist-packages/userpath-*.dist-info /usr/local/lib/python3.10/dist-packages/userpath /exports/usr/local/lib/python3.10/dist-packages/
+  ; mv /usr/local/lib/python3.10/dist-packages/argcomplete-*.dist-info /usr/local/lib/python3.10/dist-packages/argcomplete /usr/local/lib/python3.10/dist-packages/click-*.dist-info /usr/local/lib/python3.10/dist-packages/click /usr/local/lib/python3.10/dist-packages/packaging-*.dist-info /usr/local/lib/python3.10/dist-packages/packaging /usr/local/lib/python3.10/dist-packages/pipx-*.dist-info /usr/local/lib/python3.10/dist-packages/pipx /usr/local/lib/python3.10/dist-packages/platformdirs-*.dist-info /usr/local/lib/python3.10/dist-packages/platformdirs /usr/local/lib/python3.10/dist-packages/tomli-*.dist-info /usr/local/lib/python3.10/dist-packages/tomli /usr/local/lib/python3.10/dist-packages/userpath-*.dist-info /usr/local/lib/python3.10/dist-packages/userpath /exports/usr/local/lib/python3.10/dist-packages/
 
 # BZIP2
 FROM base AS bzip2
@@ -301,7 +287,7 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.74.0' \
+  ; sh rust.sh -y --default-toolchain '1.75.0' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
@@ -365,7 +351,7 @@ COPY --from=build-essential /exports/ /
 COPY --from=cmake /exports/ /
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --shallow --tag v1.17.5 github.com/strukturag/libheif \
+  ; clone --https --shallow --tag v1.17.6 github.com/strukturag/libheif \
   ; cd /root/src/github.com/strukturag/libheif \
   ; cmake . \
   ; make \
@@ -403,7 +389,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='0.44.1' https://github.com/junegunn/fzf \
+  ; clone --https --tag='0.45.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -485,7 +471,7 @@ FROM base AS neovim
 COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.9.4/nvim.appimage' \
+  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.9.5/nvim.appimage' \
   ; chmod +x /tmp/nvim.appimage \
   ; /tmp/nvim.appimage --appimage-extract \
   ; rm /tmp/nvim.appimage \
@@ -1084,7 +1070,7 @@ FROM base AS obsidian
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.4.16/obsidian_1.4.16_amd64.deb" \
+  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.5.3/obsidian_1.5.3_amd64.deb" \
   ; apteryx /tmp/obsidian.deb
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ \
@@ -1137,7 +1123,7 @@ COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 COPY --from=libheif /exports/ /
 RUN set -e \
-  ; wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.4.2-1.1+69.1_amd64.deb \
+  ; wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.6.0-1.1+72.1_amd64.deb \
   ; apteryx /tmp/darktable.deb
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/share/ \
@@ -1234,7 +1220,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@8.12.1'
+  ; npm install -g 'pnpm@8.13.1'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1516,7 +1502,7 @@ COPY --from=build-essential /exports/ /
 COPY --from=clone /exports/ /
 RUN set -e \
   ; apteryx apache2-utils autoconf autotools-dev automake binutils gcc libc6-dev libpam-dev libx11-dev libxcomposite-dev libxext-dev libxfixes-dev libxft-dev libxmuu-dev libxrandr-dev libxss-dev make mplayer mpv pamtester pkg-config x11proto-core-dev xscreensaver \
-  ; clone --https --tag='v1.8.0' https://github.com/google/xsecurelock \
+  ; clone --https --tag='v1.9.0' https://github.com/google/xsecurelock \
   ; cd ~/src/github.com/google/xsecurelock \
   ; sh autogen.sh \
   ; ./configure --with-pam-service-name=xscreensaver \
@@ -1655,7 +1641,7 @@ RUN set -e \
   ; packages="cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3" \
   ; apt-get -q update \
   ; apt-get install -y --no-install-recommends --auto-remove $packages \
-  ; clone --https --tag='v0.13.0-rc1' https://github.com/alacritty/alacritty \
+  ; clone --https --tag='v0.13.0' https://github.com/alacritty/alacritty \
   ; cd /root/src/github.com/alacritty/alacritty \
   ; cargo build --release --no-default-features --features=x11 \
   ; mv target/release/alacritty /usr/local/bin/alacritty \
@@ -2035,10 +2021,10 @@ RUN set -e \
 FROM base AS fd
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v9.0.0/fd-v9.0.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xzvf /tmp/fd.tgz \
   ; rm /tmp/fd.tgz \
-  ; mv 'fd-v8.7.1-x86_64-unknown-linux-musl' fd \
+  ; mv 'fd-v9.0.0-x86_64-unknown-linux-musl' fd \
   ; mv fd/fd /usr/local/bin/fd \
   ; mkdir -p /usr/local/share/man/man1 \
   ; mv fd/fd.1 /usr/local/share/man/man1/fd.1 \

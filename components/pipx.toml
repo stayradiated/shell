@@ -1,7 +1,7 @@
 name = 'pipx'
 from = 'base'
 
-version = '1.2.1'
+version = '1.4.0'
 
 devDependencies = [
   'apteryx',
@@ -31,8 +31,17 @@ exports = [
   "/usr/local/lib/python3.10/dist-packages/packaging/",
   "/usr/local/lib/python3.10/dist-packages/pipx-*.dist-info/",
   "/usr/local/lib/python3.10/dist-packages/pipx/",
+  "/usr/local/lib/python3.10/dist-packages/platformdirs-*.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/platformdirs/",
+  "/usr/local/lib/python3.10/dist-packages/tomli-*.dist-info/",
+  "/usr/local/lib/python3.10/dist-packages/tomli/",
   "/usr/local/lib/python3.10/dist-packages/userpath-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/userpath/",
+  "/usr/local/lib/python3.10/dist-packages/userpath/"
+]
+
+[diff]
+exclude = [
+  "/root/.cache/",
 ]
 
 [checkUpdates]
