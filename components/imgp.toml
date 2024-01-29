@@ -358,7 +358,7 @@ exports = [
   # "/var/log/dpkg.log"
 ]
 
-[checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/jarun/imgp'
-  removePrefix = 'v'
+# [checkUpdates]
+#   type = 'github-release'
+#   url = 'https://github.com/jarun/imgp'
+#   removePrefix = 'v'

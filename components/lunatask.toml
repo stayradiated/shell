@@ -1,7 +1,7 @@
 name = "lunatask"
 from = "base"
 
-version = '1.7.8'
+version = '1.7.9'
 
 dependencies = [
   'fuse'
@@ -14,7 +14,7 @@ devDependencies = [
 build = """
 wget -O \
   /usr/local/bin/lunatask \
-  "https://lunatask.app/download/Lunatask-{{VERSION}}.AppImage"
+  "https://github.com/lunatask/lunatask/releases/download/v{{VERSION}}/Lunatask-{{VERSION}}.AppImage"
 
 chmod +x /usr/local/bin/lunatask
 """
