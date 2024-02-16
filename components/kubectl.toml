@@ -1,0 +1,33 @@
+name = 'kubectl'
+from = 'base'
+
+# https://github.com/digitalocean/doctl/releases
+
+version = 'v1.29.1'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget -O kubectl \
+  "https://dl.k8s.io/release/{{VERSION}}/bin/linux/amd64/kubectl"
+
+wget -O kubectl.sha256 \
+  "https://dl.k8s.io/release/{{VERSION}}/bin/linux/amd64/kubectl.sha256"
+
+echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
+
+chmod +x kubectl
+mv kubectl /usr/local/bin/kubectl
+
+rm kubectl.sha256
+"""
+
+exports = [
+  '/usr/local/bin/kubectl',
+]
+
+[checkUpdates]
+  type = 'text'
+  url = 'https://cdn.dl.k8s.io/release/stable.txt'

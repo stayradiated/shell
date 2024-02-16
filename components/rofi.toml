@@ -72,7 +72,7 @@ make install
 #RUN
 
 # install rofi-emoji plugin
-clone --https --shallow https://github.com/Mange/rofi-emoji
+clone --ref 78a98f28c69c69ec3bfc08392290e96b9d19e03c --https --shallow https://github.com/Mange/rofi-emoji
 
 cd /root/src/github.com/Mange/rofi-emoji
 autoreconf -i

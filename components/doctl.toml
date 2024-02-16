@@ -1,0 +1,30 @@
+name = 'doctl'
+from = 'base'
+
+# https://github.com/digitalocean/doctl/releases
+
+version = '1.104.0'
+
+devDependencies = [
+  'wget'
+]
+
+build = """
+wget \
+  -O doctl.tgz \
+  'https://github.com/digitalocean/doctl/releases/download/v{{VERSION}}/doctl-{{VERSION}}-linux-amd64.tar.gz'
+
+tar -xf doctl.tgz
+mv doctl /usr/local/bin/doctl
+
+rm doctl.tgz
+"""
+
+exports = [
+  '/usr/local/bin/doctl',
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/digitalocean/doctl'
+  removePrefix = 'v'

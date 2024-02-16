@@ -12,6 +12,9 @@ mount = [
 ]
 
 build = """
+echo "* - nofile 100000" >> /etc/security/limits.conf
+echo "session required pam_limits.so" >> /etc/pam.d/common-session
+
 useradd -s /bin/zsh --create-home admin
 echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted
 adduser admin sudo

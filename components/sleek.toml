@@ -1,0 +1,24 @@
+name = "sleek"
+from = "base"
+
+version = '0.3.0'
+
+devDependencies = [
+  'build-essential',
+  'rust'
+]
+
+build = """
+cargo install --version {{VERSION}} sleek
+
+mv /root/.cargo/bin/sleek /usr/local/bin/sleek
+"""
+
+exports = [
+  "/usr/local/bin/sleek"
+]
+
+[checkUpdates]
+  type = 'github-tag'
+  url = 'https://github.com/nrempel/sleek'
+  removePrefix = 'v'

@@ -129,7 +129,8 @@ dependencies = [
   'xcolor',
 
   'jo',
-  'xterm',
+  # 'xterm',
+  'sleek',
 
   # data tools
   # 'sc-im',
