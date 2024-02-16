@@ -648,6 +648,17 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# OHA
+FROM base AS oha
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget "https://github.com/hatoo/oha/releases/download/v1.3.0/oha-linux-amd64" -O /tmp/oha \
+  ; chmod +x /tmp/oha \
+  ; mv /tmp/oha /usr/local/bin/oha
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/oha /exports/usr/local/bin/
+
 # SLEEK
 FROM base AS sleek
 COPY --from=build-essential /exports/ /
@@ -2305,6 +2316,7 @@ COPY --from=lunatask /exports/ /
 COPY --from=xcolor /exports/ /
 COPY --from=jo /exports/ /
 COPY --from=sleek /exports/ /
+COPY --from=oha /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

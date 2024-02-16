@@ -131,6 +131,7 @@ dependencies = [
   'jo',
   # 'xterm',
   'sleek',
+  'oha',
 
   # data tools
   # 'sc-im',

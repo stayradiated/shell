@@ -1,0 +1,24 @@
+name = "oha"
+from = "base"
+
+version = "1.3.0"
+
+devDependencies = [ "wget" ]
+
+build = """
+wget \
+  "https://github.com/hatoo/oha/releases/download/v{{VERSION}}/oha-linux-amd64" \
+  -O /tmp/oha
+
+chmod +x /tmp/oha
+mv /tmp/oha /usr/local/bin/oha
+"""
+
+exports = [
+  '/usr/local/bin/oha'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/hatoo/oha'
+  removePrefix = 'v'
