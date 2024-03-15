@@ -1,7 +1,7 @@
 name = 'tmux'
 from = 'base'
 
-version = '3.3a'
+version = '3.4'
 
 devDependencies = [
   'apteryx',
@@ -11,7 +11,7 @@ devDependencies = [
 ]
 
 build = """
-apteryx libncurses5-dev libevent-dev
+apteryx libncurses5-dev libevent-dev bison
 
 cd /root
 wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/{{VERSION}}/tmux-{{VERSION}}.tar.gz'

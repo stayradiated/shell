@@ -2,7 +2,7 @@ name = 'python3-pip'
 from = 'base'
 
 # https://pypi.org/project/pip/
-version = '23.3.2'
+version = '24.0'
 
 devDependencies = [
   'apteryx',
@@ -25,35 +25,31 @@ exports = [
   "/usr/bin/gencat",
   "/usr/bin/pip",
   "/usr/bin/pip3",
-  "/usr/bin/pip3.10",
   "/usr/bin/python3-config",
-  "/usr/bin/python3.10",
-  "/usr/bin/python3.10-config",
   "/usr/bin/x86_64-linux-gnu-python3-config",
-  "/usr/bin/x86_64-linux-gnu-python3.10-config",
-  "/usr/include/python3.10/",
-  "/usr/lib/python3.10/",
-  "/usr/lib/python3.11/",
+  "/usr/include/python3.*/",
+  "/usr/lib/python3.*/",
   "/usr/lib/python3/",
-  "/usr/lib/x86_64-linux-gnu/libpython3.10.a",
-  "/usr/lib/x86_64-linux-gnu/libpython3.10.so",
-  "/usr/lib/x86_64-linux-gnu/libpython3.10.so.1",
-  "/usr/lib/x86_64-linux-gnu/libpython3.10.so.1.0",
+  "/usr/lib/x86_64-linux-gnu/libpython3.*.a",
+  "/usr/lib/x86_64-linux-gnu/libpython3.*.so",
+  "/usr/lib/x86_64-linux-gnu/libpython3.*.so.*",
   "/usr/local/bin/pip",
   "/usr/local/bin/pip3",
-  "/usr/local/bin/pip3.10",
-  "/usr/local/bin/pip3.11",
-  "/usr/local/lib/python3.10/dist-packages/pip-23.3.2.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/pip/",
+  "/usr/local/lib/python3.*/dist-packages/pip-*.dist-info/",
+  "/usr/local/lib/python3.*/dist-packages/pip/",
   "/usr/share/python-wheels/",
-  "/usr/src/python3.10/"
+  "/usr/src/python3.*/"
 ]
 
 [diff]
 exclude=[
   "/etc/ld.so.cache",
   "/root/.cache/",
+  "/usr/bin/pip3.*",
+  "/usr/bin/python3.*",
+  "/usr/bin/python3.*-config",
   "/usr/bin/rpcgen",
+  "/usr/bin/x86_64-linux-gnu-python3.*-config",
   "/usr/include/aio.h",
   "/usr/include/aliases.h",
   "/usr/include/alloca.h",
@@ -262,6 +258,7 @@ exclude=[
   "/usr/lib/x86_64-linux-gnu/libz.so",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/",
   "/usr/lib/x86_64-linux-gnu/rcrt1.o",
+  "/usr/local/bin/pip3.*",
   "/usr/share/aclocal/",
   "/usr/share/doc-base/libexpat1-dev.expat",
   "/usr/share/doc/**",

@@ -1,29 +1,30 @@
 name = 'light'
 from = 'base'
 
-version = 'd717f1c336d44f7d87bb09a5dc5d124673345304'
+version = '85022325043182eb26e42a13b2e080ad991bdf6a'
 
 devDependencies = [
-  'build-essential',
-  'apteryx',
+  # 'build-essential',
+  # 'apteryx',
   'clone',
 ]
 
 build = """
-apteryx automake autoconf
-clone --https --ref='{{VERSION}}' https://github.com/haikarainen/light
-cd /root/src/github.com/haikarainen/light
-./autogen.sh
-./configure
-make
-make install
+# apteryx automake autoconf
+clone --https --ref='{{VERSION}}' https://github.com/stayradiated/light
+cd /root/src/github.com/stayradiated/light
+mv light /usr/local/bin/light
+# ./autogen.sh
+# ./configure
+# make
+# make install
 """
 
 exports = [
   '/usr/local/bin/light',
-  '/usr/local/share/man/man1/light.1'
+  # '/usr/local/share/man/man1/light.1'
 ]
 
 [checkUpdates]
   type = 'github-commit'
-  url = 'https://github.com/haikarainen/light'
+  url = 'https://github.com/stayradiated/light'
