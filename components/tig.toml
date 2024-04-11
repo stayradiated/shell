@@ -1,7 +1,7 @@
 name = 'tig'
 from = 'base'
 
-version = 'tig-2.5.8'
+version = 'tig-2.5.9'
 
 devDependencies = [
   'build-essential',

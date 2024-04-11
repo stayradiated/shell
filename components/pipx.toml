@@ -1,7 +1,7 @@
 name = 'pipx'
 from = 'base'
 
-version = '1.4.3'
+version = '1.5.0'
 
 devDependencies = [
   'apteryx',
