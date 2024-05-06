@@ -1,0 +1,27 @@
+name = 'lazygit'
+from = 'base'
+
+version = 'v0.41.0'
+
+devDependencies = [ 'wget' ]
+
+build = """
+wget \
+  -O /tmp/lazygit.tgz \
+  'https://github.com/jesseduffield/lazygit/releases/download/v{{VERSION}}/lazygit_{{VERSION}}_Linux_x86_64.tar.gz'
+
+mkdir -p /tmp/lazygit
+tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit
+
+mv /tmp/lazygit/lazygit /usr/local/bin
+rm -r /tmp/lazygit /tmp/lazygit.tgz
+"""
+
+exports = [
+  '/usr/local/bin/lazygit'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/jesseduffield/lazygit'
+  matchPrerelease = false

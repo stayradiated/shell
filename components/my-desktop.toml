@@ -133,6 +133,9 @@ dependencies = [
   'sleek',
   'oha',
 
+  'files-to-prompt',
+  'lazygit',
+
   # data tools
   # 'sc-im',
 

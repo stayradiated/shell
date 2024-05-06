@@ -7,6 +7,8 @@ devDependencies = [ "python3-pip", "pipx" ]
 
 build = """
 pipx install llm=='{{VERSION}}'
+
+llm install llm-claude-3
 """
 
 exports = [ "/usr/local/bin/llm", "/usr/local/pipx/" ]

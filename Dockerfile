@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.95.6' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.96.17' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -186,7 +186,7 @@ RUN set -e \
 FROM base AS n
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://raw.githubusercontent.com/tj/n/v9.2.1/bin/n" -O /usr/local/bin/n \
+  ; wget "https://raw.githubusercontent.com/tj/n/v9.2.3/bin/n" -O /usr/local/bin/n \
   ; chmod +x /usr/local/bin/n
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -253,7 +253,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n 21.7.3 \
+  ; n 22.1.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -289,7 +289,7 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.77.2' \
+  ; sh rust.sh -y --default-toolchain '1.78.0' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
@@ -391,7 +391,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='0.49.0' https://github.com/junegunn/fzf \
+  ; clone --https --tag='0.51.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -554,7 +554,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=bzip2 /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/124.0.2/linux-x86_64/en-US/firefox-124.0.2.tar.bz2 \
+  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/125.0.3/linux-x86_64/en-US/firefox-125.0.3.tar.bz2 \
   ; cd /opt \
   ; tar xjvf /tmp/firefox.tar.bz2 \
   ; rm /tmp/firefox.tar.bz2 \
@@ -590,7 +590,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='124.0.6367.29-*'
+  ; apteryx google-chrome-beta='125.0.6422.26-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -648,11 +648,38 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# LAZYGIT
+FROM base AS lazygit
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/vv0.41.0/lazygit_v0.41.0_Linux_x86_64.tar.gz' \
+  ; mkdir -p /tmp/lazygit \
+  ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
+  ; mv /tmp/lazygit/lazygit /usr/local/bin \
+  ; rm -r /tmp/lazygit /tmp/lazygit.tgz
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/lazygit /exports/usr/local/bin/
+
+# FILES-TO-PROMPT
+FROM base AS files-to-prompt
+COPY --from=python3-pip /exports/ /
+COPY --from=pipx /exports/ /
+ENV \
+  PIPX_HOME=/usr/local/pipx \
+  PIPX_BIN_DIR=/usr/local/bin
+RUN set -e \
+  ; pipx install files-to-prompt=='0.2.1'
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
+  ; mv /usr/local/bin/files-to-prompt /exports/usr/local/bin/ \
+  ; mv /usr/local/pipx /exports/usr/local/
+
 # OHA
 FROM base AS oha
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.3/oha-linux-amd64" -O /tmp/oha \
+  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.4/oha-linux-amd64" -O /tmp/oha \
   ; chmod +x /tmp/oha \
   ; mv /tmp/oha /usr/local/bin/oha
 RUN set -e \
@@ -713,7 +740,7 @@ FROM base AS lunatask
 COPY --from=wget /exports/ /
 COPY --from=fuse /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v1.7.9/Lunatask-1.7.9.AppImage" \
+  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v2.0.0/Lunatask-2.0.0.AppImage" \
   ; chmod +x /usr/local/bin/lunatask
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/sbin/ \
@@ -777,7 +804,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=038db34311d8988379b44fd76df4c68ddffbaa33 https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=4de4a9fb2fc53328714b10e7498d8716867b2aab https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -803,7 +830,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.3/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.7/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -962,7 +989,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.65.108*'
+  ; apteryx brave-browser-beta='1.66.97*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -977,7 +1004,7 @@ RUN set -e \
 FROM base AS heroku
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'heroku@8.11.2'
+  ; npm install -g 'heroku@8.11.5'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/heroku /exports/usr/local/bin/ \
@@ -1043,7 +1070,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
-  ; pipx install ttok=='0.2'
+  ; pipx install ttok=='0.3'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/local/bin/ttok /exports/usr/local/bin/ \
@@ -1071,7 +1098,8 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
-  ; pipx install llm=='0.13.1'
+  ; pipx install llm=='0.13.1' \
+  ; llm install llm-claude-3
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/local/bin/llm /exports/usr/local/bin/ \
@@ -1175,7 +1203,7 @@ RUN set -e \
   ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
   ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
   ; apt update \
-  ; version=$(echo "8.10.30-20" | sed 's/-/~/') \
+  ; version=$(echo "8.10.32-25" | sed 's/-/~/') \
   ; apteryx 1password="${version}.BETA"
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ \
@@ -1232,7 +1260,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@8.15.6'
+  ; npm install -g 'pnpm@9.0.6'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1861,7 +1889,7 @@ RUN set -e \
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'npm-check-updates@16.14.18'
+  ; npm install -g 'npm-check-updates@16.14.20'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/ncu /exports/usr/local/bin/ \
@@ -2000,11 +2028,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.47.0/gh_2.47.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.49.0/gh_2.49.0_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.47.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.47.0_linux_amd64'
+  ; mv 'gh_2.49.0_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.49.0_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -2044,7 +2072,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN set -e \
   ; mkdir -p /usr/local/lib/docker/cli-plugins \
-  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-linux-x86_64' \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64' \
   ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN set -e \
   ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
@@ -2060,7 +2088,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:26.0.1*'
+  ; apteryx docker-ce-cli='5:26.1.1*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -2310,6 +2338,8 @@ COPY --from=xcolor /exports/ /
 COPY --from=jo /exports/ /
 COPY --from=sleek /exports/ /
 COPY --from=oha /exports/ /
+COPY --from=files-to-prompt /exports/ /
+COPY --from=lazygit /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

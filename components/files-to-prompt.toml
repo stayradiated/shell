@@ -1,0 +1,16 @@
+name = "files-to-prompt"
+from = "base"
+
+version = "0.2.1"
+
+devDependencies = [ "python3-pip", "pipx" ]
+
+build = """
+pipx install files-to-prompt=='{{VERSION}}'
+"""
+
+exports = [ "/usr/local/bin/files-to-prompt", "/usr/local/pipx/" ]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/simonw/files-to-prompt'
