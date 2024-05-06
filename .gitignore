@@ -1,2 +1,5 @@
+# secret values
 /secret
 !/secret/README.md
+
+*.log

@@ -1,7 +1,7 @@
 name = 'lazygit'
 from = 'base'
 
-version = 'v0.41.0'
+version = '0.41.0'
 
 devDependencies = [ 'wget' ]
 
@@ -25,3 +25,4 @@ exports = [
   type = 'github-release'
   url = 'https://github.com/jesseduffield/lazygit'
   matchPrerelease = false
+  removePrefix = 'v'
