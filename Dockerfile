@@ -54,7 +54,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.22.2.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.22.3.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.96.17' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.96.20' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -198,7 +198,7 @@ COPY --from=apteryx /exports/ /
 RUN set -e \
   ; apteryx python3-pip python3-dev python3-setuptools python3-venv python3-wheel \
   ; pip3 install wheel \
-  ; python3 -m pip install -U pip==24.0
+  ; python3 -m pip install -U pip==24.1b1
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.*/dist-packages/ /exports/usr/share/ /exports/usr/src/ \
   ; mv /usr/bin/gencat /usr/bin/pip /usr/bin/pip3 /usr/bin/python3-config /usr/bin/x86_64-linux-gnu-python3-config /exports/usr/bin/ \
@@ -253,7 +253,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n 22.1.0 \
+  ; n 20.13.1 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -391,7 +391,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='0.51.0' https://github.com/junegunn/fzf \
+  ; clone --https --tag='0.52.1' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -590,7 +590,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='125.0.6422.26-*'
+  ; apteryx google-chrome-beta='125.0.6422.41-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -740,7 +740,7 @@ FROM base AS lunatask
 COPY --from=wget /exports/ /
 COPY --from=fuse /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v2.0.0/Lunatask-2.0.0.AppImage" \
+  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v2.0.2/Lunatask-2.0.2.AppImage" \
   ; chmod +x /usr/local/bin/lunatask
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/sbin/ \
@@ -754,7 +754,7 @@ RUN set -e \
 FROM base AS yq
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64' \
+  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.44.1/yq_linux_amd64' \
   ; chmod +x /usr/local/bin/yq
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -804,7 +804,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=4de4a9fb2fc53328714b10e7498d8716867b2aab https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=238eb9e0093e80ffae2cf32a15f9cb1c3cd3dd34 https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -830,7 +830,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.7/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.8/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -989,7 +989,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.66.97*'
+  ; apteryx brave-browser-beta='1.67.78*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -1098,7 +1098,7 @@ ENV \
   PIPX_HOME=/usr/local/pipx \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
-  ; pipx install llm=='0.13.1' \
+  ; pipx install llm=='0.14' \
   ; llm install llm-claude-3
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
@@ -1260,7 +1260,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@9.0.6'
+  ; npm install -g 'pnpm@9.1.1'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1751,7 +1751,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN set -e \
   ; apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev \
-  ; clone --https --tag='tig-2.5.9' https://github.com/jonas/tig \
+  ; clone --https --tag='tig-2.5.10' https://github.com/jonas/tig \
   ; cd /root/src/github.com/jonas/tig \
   ; make configure \
   ; ./configure \
@@ -1858,7 +1858,7 @@ ENV \
   PIPX_BIN_DIR=/usr/local/bin
 RUN set -e \
   ; apteryx libpq-dev \
-  ; pipx install pgcli=='4.0.1' --include-deps
+  ; pipx install pgcli=='4.1.0' --include-deps
 RUN set -e \
   ; mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ \
@@ -1982,7 +1982,7 @@ RUN set -e \
 FROM base AS libglib
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx libglib2.0-bin='2.72.4-0ubuntu2.2'
+  ; apteryx libglib2.0-bin='2.72.4-0ubuntu2.3'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ \
   ; mv /usr/bin/gapplication /usr/bin/gdbus /usr/bin/gio /usr/bin/gio-querymodules /usr/bin/glib-compile-schemas /usr/bin/gresource /usr/bin/gsettings /exports/usr/bin/ \
@@ -2028,11 +2028,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.49.0/gh_2.49.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.49.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.49.0_linux_amd64'
+  ; mv 'gh_2.49.2_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.49.2_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -2054,10 +2054,10 @@ RUN set -e \
 FROM base AS fd
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v9.0.0/fd-v9.0.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xzvf /tmp/fd.tgz \
   ; rm /tmp/fd.tgz \
-  ; mv 'fd-v9.0.0-x86_64-unknown-linux-musl' fd \
+  ; mv 'fd-v10.1.0-x86_64-unknown-linux-musl' fd \
   ; mv fd/fd /usr/local/bin/fd \
   ; mkdir -p /usr/local/share/man/man1 \
   ; mv fd/fd.1 /usr/local/share/man/man1/fd.1 \
@@ -2088,7 +2088,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:26.1.1*'
+  ; apteryx docker-ce-cli='5:26.1.2*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
