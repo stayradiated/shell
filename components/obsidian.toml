@@ -2,7 +2,7 @@ name = 'obsidian'
 from = 'base'
 
 # https://obsidian.md/download
-version = '1.5.12'
+version = '1.6.5'
 
 devDependencies = [
   'wget',
@@ -11,7 +11,7 @@ devDependencies = [
 
 build = """
 wget -O /tmp/obsidian.deb \
-  "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{VERSION}}/obsidian_{{VERSION}}_amd64.deb"
+  "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{VERSION}}/obsidian-{{VERSION}}-amd64.deb"
 
 apteryx /tmp/obsidian.deb
 """

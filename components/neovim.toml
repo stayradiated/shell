@@ -1,7 +1,7 @@
 name = 'neovim'
 from = 'base'
 
-version = 'v0.9.5'
+version = 'v0.10.0'
 
 devDependencies = [
   'wget',
@@ -18,8 +18,8 @@ rm /tmp/nvim.appimage
 
 mv squashfs-root/usr/bin/nvim /usr/local/bin/nvim
 mv squashfs-root/usr/share/nvim /usr/local/share/nvim
-mkdir -p /usr/local/share/man/man1
-mv squashfs-root/usr/man/man1/nvim.1 /usr/local/share/man/man1/nvim.1
+# mkdir -p /usr/local/share/man/man1
+# mv squashfs-root/usr/man/man1/nvim.1 /usr/local/share/man/man1/nvim.1
 rm -r squashfs-root
 
 find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775
@@ -44,7 +44,7 @@ exports = [
   "/usr/local/lib/python3.10/dist-packages/psutil/",
   "/usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info/",
   "/usr/local/lib/python3.10/dist-packages/pynvim/",
-  "/usr/local/share/man/man1/",
+  # "/usr/local/share/man/man1/",
   "/usr/local/share/nvim/",
 ]
 

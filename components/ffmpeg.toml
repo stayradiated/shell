@@ -2,7 +2,7 @@ name = 'ffmpeg'
 from = 'base'
 
 # https://www.johnvansickle.com/ffmpeg/
-version = '6.1'
+version = '7.0.1'
 
 devDependencies = [
   'wget',

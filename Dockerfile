@@ -28,7 +28,7 @@ RUN set -e \
 FROM base AS wget
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx wget='1.21.2-2ubuntu1'
+  ; apteryx wget='1.21.2-2ubuntu1.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ \
   ; mv /usr/bin/wget /exports/usr/bin/ \
@@ -40,7 +40,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN set -e \
   ; add-apt-repository ppa:git-core/ppa \
-  ; apteryx git='1:2.45.1-0ppa1~ubuntu22.04.1'
+  ; apteryx git='1:2.45.2-0ppa1~ubuntu22.04.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
@@ -54,7 +54,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.22.3.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.22.4.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.97.4' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.98.10' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -198,7 +198,7 @@ COPY --from=apteryx /exports/ /
 RUN set -e \
   ; apteryx python3-pip python3-dev python3-setuptools python3-venv python3-wheel \
   ; pip3 install wheel \
-  ; python3 -m pip install -U pip==24.1b1
+  ; python3 -m pip install -U pip==24.1b2
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.*/dist-packages/ /exports/usr/share/ /exports/usr/src/ \
   ; mv /usr/bin/gencat /usr/bin/pip /usr/bin/pip3 /usr/bin/python3-config /usr/bin/x86_64-linux-gnu-python3-config /exports/usr/bin/ \
@@ -253,7 +253,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v22.2.0 \
+  ; n v22.3.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -267,7 +267,7 @@ FROM base AS pipx
 COPY --from=apteryx /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN set -e \
-  ; pip3 install pipx==1.5.0
+  ; pip3 install pipx==1.6.0
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ \
   ; mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ \
@@ -289,7 +289,7 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.78.0' \
+  ; sh rust.sh -y --default-toolchain '1.79.0' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
@@ -324,11 +324,11 @@ COPY --from=xz /exports/ /
 RUN set -e \
   ; wget -O /tmp/release.txt 'https://johnvansickle.com/ffmpeg/release-readme.txt' \
   ; DL_VERSION=$(cat /tmp/release.txt | grep -oP 'version:\s[\d.]+' | cut -d ' ' -f 2) \
-  ; ([ "6.1" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true) \
+  ; ([ "7.0.1" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true) \
   ; wget -O /tmp/ffmpeg.txz 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' \
   ; tar -xvf /tmp/ffmpeg.txz \
   ; rm /tmp/ffmpeg.txz \
-  ; mv 'ffmpeg-6.1-amd64-static' ffmpeg \
+  ; mv 'ffmpeg-7.0.1-amd64-static' ffmpeg \
   ; mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
   ; mv ffmpeg/ffprobe /usr/local/bin/ffprobe \
   ; rm -r ffmpeg
@@ -391,7 +391,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='0.52.1' https://github.com/junegunn/fzf \
+  ; clone --https --tag='0.53.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -473,24 +473,21 @@ FROM base AS neovim
 COPY --from=wget /exports/ /
 COPY --from=python3-pip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.9.5/nvim.appimage' \
+  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage' \
   ; chmod +x /tmp/nvim.appimage \
   ; /tmp/nvim.appimage --appimage-extract \
   ; rm /tmp/nvim.appimage \
   ; mv squashfs-root/usr/bin/nvim /usr/local/bin/nvim \
   ; mv squashfs-root/usr/share/nvim /usr/local/share/nvim \
-  ; mkdir -p /usr/local/share/man/man1 \
-  ; mv squashfs-root/usr/man/man1/nvim.1 /usr/local/share/man/man1/nvim.1 \
   ; rm -r squashfs-root \
   ; find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775 \
   ; find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664 \
   ; pip3 install neovim msgpack neovim-remote
 RUN set -e \
-  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/share/man/ /exports/usr/local/share/ \
+  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/share/ \
   ; mv /usr/include/python3.10/greenlet /exports/usr/include/python3.10/ \
   ; mv /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ \
   ; mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ \
-  ; mv /usr/local/share/man/man1 /exports/usr/local/share/man/ \
   ; mv /usr/local/share/nvim /exports/usr/local/share/
 
 # TMUX
@@ -554,7 +551,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=bzip2 /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/126.0/linux-x86_64/en-US/firefox-126.0.tar.bz2 \
+  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/127.0.2/linux-x86_64/en-US/firefox-127.0.2.tar.bz2 \
   ; cd /opt \
   ; tar xjvf /tmp/firefox.tar.bz2 \
   ; rm /tmp/firefox.tar.bz2 \
@@ -590,7 +587,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='126.0.6478.17-*'
+  ; apteryx google-chrome-beta='127.0.6533.26-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -679,7 +676,7 @@ RUN set -e \
 FROM base AS oha
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.4/oha-linux-amd64" -O /tmp/oha \
+  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.5/oha-linux-amd64" -O /tmp/oha \
   ; chmod +x /tmp/oha \
   ; mv /tmp/oha /usr/local/bin/oha
 RUN set -e \
@@ -740,7 +737,7 @@ FROM base AS lunatask
 COPY --from=wget /exports/ /
 COPY --from=fuse /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v2.0.3/Lunatask-2.0.3.AppImage" \
+  ; wget -O /usr/local/bin/lunatask "https://github.com/lunatask/lunatask/releases/download/v2.0.4/Lunatask-2.0.4.AppImage" \
   ; chmod +x /usr/local/bin/lunatask
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/sbin/ \
@@ -754,7 +751,7 @@ RUN set -e \
 FROM base AS yq
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.44.1/yq_linux_amd64' \
+  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.44.2/yq_linux_amd64' \
   ; chmod +x /usr/local/bin/yq
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -804,7 +801,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=8144eb32e58d6d47d11b14f655c32c35e86a0171 https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=2e22c02d00f15db04fe7721bcbc0733ad462588c https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -830,7 +827,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.10/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.17/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -989,7 +986,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.67.98*'
+  ; apteryx brave-browser-beta='1.68.101*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -1110,7 +1107,7 @@ FROM base AS obsidian
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.5.12/obsidian_1.5.12_amd64.deb" \
+  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.6.5/obsidian-1.6.5-amd64.deb" \
   ; apteryx /tmp/obsidian.deb
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ \
@@ -1123,7 +1120,7 @@ RUN set -e \
 FROM base AS caddy
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.7.6/caddy_2.7.6_linux_amd64.tar.gz' \
+  ; wget -O /tmp/caddy.tgz 'https://github.com/caddyserver/caddy/releases/download/v2.8.4/caddy_2.8.4_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/caddy.tgz \
   ; mv caddy /usr/local/bin/caddy \
   ; rm /tmp/caddy.tgz
@@ -1163,7 +1160,7 @@ COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 COPY --from=libheif /exports/ /
 RUN set -e \
-  ; wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.6.0-1.1+72.1_amd64.deb \
+  ; wget -O /tmp/darktable.deb https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_4.6.1-1.1+74.1_amd64.deb \
   ; apteryx /tmp/darktable.deb
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/share/ \
@@ -1203,7 +1200,7 @@ RUN set -e \
   ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
   ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
   ; apt update \
-  ; version=$(echo "8.10.34-23" | sed 's/-/~/') \
+  ; version=$(echo "8.10.36-31" | sed 's/-/~/') \
   ; apteryx 1password="${version}.BETA"
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ \
@@ -1260,7 +1257,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@9.1.3'
+  ; npm install -g 'pnpm@9.4.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1356,14 +1353,13 @@ RUN set -e \
   ; mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/
 USER root
 RUN set -e \
-  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/ /exports/usr/local/share/man/ /exports/usr/local/share/ \
+  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/ /exports/usr/local/share/ \
   ; mv /usr/include/python3.10/greenlet /exports/usr/include/python3.10/ \
   ; mv /usr/local/bin/n /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ \
   ; mv /usr/local/include/node /exports/usr/local/include/ \
   ; mv /usr/local/lib/node_modules /exports/usr/local/lib/ \
   ; mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ \
   ; mv /usr/local/n /exports/usr/local/ \
-  ; mv /usr/local/share/man/man1 /exports/usr/local/share/man/ \
   ; mv /usr/local/share/nvim /exports/usr/local/share/
 
 # SHELL-TMUX
@@ -2028,11 +2024,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.52.0/gh_2.52.0_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.49.2_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.49.2_linux_amd64'
+  ; mv 'gh_2.52.0_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.52.0_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -2072,7 +2068,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN set -e \
   ; mkdir -p /usr/local/lib/docker/cli-plugins \
-  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64' \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-linux-x86_64' \
   ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN set -e \
   ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
@@ -2088,7 +2084,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:26.1.3*'
+  ; apteryx docker-ce-cli='5:27.0.2*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -2131,7 +2127,7 @@ RUN set -e \
 FROM base AS autotag
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.28/autotag_linux_amd64.tar.gz" \
+  ; wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.29/autotag_linux_amd64.tar.gz" \
   ; tar xzvf /tmp/autotag.tgz autotag \
   ; mv autotag /usr/local/bin/autotag \
   ; rm /tmp/autotag.tgz
