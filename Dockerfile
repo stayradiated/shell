@@ -614,6 +614,18 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# JUJUTSU
+FROM base AS jujutsu
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.19.0/jj-v0.19.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; tar xzvf /tmp/jj.tgz \
+  ; rm /tmp/jj.tgz \
+  ; mv 'jj' /usr/local/bin/jj
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/jj /exports/usr/local/bin/
+
 # AST-GREP
 FROM base AS ast-grep
 COPY --from=wget /exports/ /
@@ -2289,6 +2301,7 @@ COPY --from=oha /exports/ /
 COPY --from=lazygit /exports/ /
 COPY --from=gifski /exports/ /
 COPY --from=ast-grep /exports/ /
+COPY --from=jujutsu /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
