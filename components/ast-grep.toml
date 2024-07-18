@@ -1,0 +1,23 @@
+name = "ast-grep"
+from = "base"
+
+version = "0.25.1"
+
+devDependencies = [ "wget", "unzip" ]
+
+build = """
+wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/{{VERSION}}/app-x86_64-unknown-linux-gnu.zip'
+unzip /tmp/ast-grep.zip
+rm /tmp/ast-grep.zip
+
+mv sg /usr/local/bin/sg
+rm ast-grep
+"""
+
+exports = [ "/usr/local/bin/sg" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/ast-grep/ast-grep"
+removePrefix = "v"
+

@@ -1,7 +1,7 @@
 name = 'gifski'
 from = 'base'
 
-version = '1.11.0'
+version = '1.32.0'
 
 devDependencies = [
   'apteryx',
@@ -12,7 +12,7 @@ devDependencies = [
 build = """
 wget \
   -O gifski.deb \
-  "https://github.com/ImageOptim/gifski/releases/download/{{VERSION}}/gifski_{{VERSION}}_amd64.deb"
+  "https://github.com/ImageOptim/gifski/releases/download/{{VERSION}}/gifski_{{VERSION}}-1_amd64.deb"
 apteryx ./gifski.deb
 rm -rf debian
 """
