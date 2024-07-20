@@ -1,7 +1,7 @@
 name = 'lazygit'
 from = 'base'
 
-version = '0.42.0'
+version = '0.43.1'
 
 devDependencies = [ 'wget' ]
 
