@@ -588,10 +588,11 @@ FROM base AS yt-dlp
 COPY --from=apteryx /exports/ /
 RUN set -e \
   ; add-apt-repository ppa:tomtomtom/yt-dlp \
-  ; apteryx yt-dlp
+  ; apteryx yt-dlp='2024.08.06-*'
 RUN set -e \
-  ; mkdir -p /exports/usr/bin/ \
-  ; mv /usr/bin/yt-dlp /exports/usr/bin/
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/python3/dist-packages/ \
+  ; mv /usr/bin/yt-dlp /exports/usr/bin/ \
+  ; mv /usr/lib/python3/dist-packages/_brotli.cpython-310-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/brotli.py /usr/lib/python3/dist-packages/certifi /usr/lib/python3/dist-packages/chardet /usr/lib/python3/dist-packages/Cryptodome /usr/lib/python3/dist-packages/idna /usr/lib/python3/dist-packages/mutagen /usr/lib/python3/dist-packages/requests /usr/lib/python3/dist-packages/urllib3 /usr/lib/python3/dist-packages/websockets /usr/lib/python3/dist-packages/yt_dlp /exports/usr/lib/python3/dist-packages/
 
 # HEY
 FROM base AS hey

@@ -2,7 +2,7 @@ name = 'yt-dlp'
 from = 'base'
 
 # https://github.com/yt-dlp/yt-dlp/releases
-version = '2024.08.06'
+version = '2024.08.06-*'
 
 devDependencies = [
   'apteryx'
@@ -10,9 +10,20 @@ devDependencies = [
 
 build = """
 add-apt-repository ppa:tomtomtom/yt-dlp
-apteryx yt-dlp 
+apteryx yt-dlp='{{VERSION}}'
 """
 
 exports = [
   '/usr/bin/yt-dlp',
+  '/usr/lib/python3/dist-packages/_brotli.cpython-310-x86_64-linux-gnu.so',
+  '/usr/lib/python3/dist-packages/brotli.py',
+  '/usr/lib/python3/dist-packages/certifi/',
+  '/usr/lib/python3/dist-packages/chardet/',
+  '/usr/lib/python3/dist-packages/Cryptodome/',
+  '/usr/lib/python3/dist-packages/idna/',
+  '/usr/lib/python3/dist-packages/mutagen/',
+  '/usr/lib/python3/dist-packages/requests/',
+  '/usr/lib/python3/dist-packages/urllib3/',
+  '/usr/lib/python3/dist-packages/websockets/',
+  '/usr/lib/python3/dist-packages/yt_dlp/',
 ]
