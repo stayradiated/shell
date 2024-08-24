@@ -262,16 +262,6 @@ RUN set -e \
   ; mv /usr/share/doc/bzip2 /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/bunzip2.1.gz /usr/share/man/man1/bzcat.1.gz /usr/share/man/man1/bzcmp.1.gz /usr/share/man/man1/bzdiff.1.gz /usr/share/man/man1/bzegrep.1.gz /usr/share/man/man1/bzexe.1.gz /usr/share/man/man1/bzfgrep.1.gz /usr/share/man/man1/bzgrep.1.gz /usr/share/man/man1/bzip2.1.gz /usr/share/man/man1/bzip2recover.1.gz /usr/share/man/man1/bzless.1.gz /usr/share/man/man1/bzmore.1.gz /exports/usr/share/man/man1/
 
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; apteryx unzip='6.0-26ubuntu3.2'
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
-  ; mv /usr/bin/unzip /exports/usr/bin/ \
-  ; mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
-
 # XZ
 FROM base AS xz
 COPY --from=apteryx /exports/ /
@@ -281,6 +271,16 @@ RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
   ; mv /usr/bin/xz /exports/usr/bin/ \
   ; mv /usr/share/man/man1/xz.1.gz /exports/usr/share/man/man1/
+
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx unzip='6.0-26ubuntu3.2'
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
+  ; mv /usr/bin/unzip /exports/usr/bin/ \
+  ; mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
 
 # RUST
 FROM base AS rust
@@ -593,6 +593,25 @@ RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/python3/dist-packages/ \
   ; mv /usr/bin/yt-dlp /exports/usr/bin/ \
   ; mv /usr/lib/python3/dist-packages/_brotli.cpython-310-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/brotli.py /usr/lib/python3/dist-packages/certifi /usr/lib/python3/dist-packages/chardet /usr/lib/python3/dist-packages/Cryptodome /usr/lib/python3/dist-packages/idna /usr/lib/python3/dist-packages/mutagen /usr/lib/python3/dist-packages/requests /usr/lib/python3/dist-packages/urllib3 /usr/lib/python3/dist-packages/websockets /usr/lib/python3/dist-packages/yt_dlp /exports/usr/lib/python3/dist-packages/
+
+# FFMPEG
+FROM base AS ffmpeg
+COPY --from=wget /exports/ /
+COPY --from=xz /exports/ /
+RUN set -e \
+  ; wget -O /tmp/release.txt 'https://johnvansickle.com/ffmpeg/release-readme.txt' \
+  ; DL_VERSION=$(cat /tmp/release.txt | grep -oP 'version:\s[\d.]+' | cut -d ' ' -f 2) \
+  ; ([ "7.0.1" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true) \
+  ; wget -O /tmp/ffmpeg.txz 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' \
+  ; tar -xvf /tmp/ffmpeg.txz \
+  ; rm /tmp/ffmpeg.txz \
+  ; mv 'ffmpeg-7.0.1-amd64-static' ffmpeg \
+  ; mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
+  ; mv ffmpeg/ffprobe /usr/local/bin/ffprobe \
+  ; rm -r ffmpeg
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
 
 # HEY
 FROM base AS hey
@@ -1607,21 +1626,6 @@ RUN set -e \
   ; mkdir -p /exports/usr/bin/ \
   ; mv /usr/bin/xinput /exports/usr/bin/
 
-# WATSON
-FROM base AS watson
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
-RUN set -e \
-  ; pipx install td-watson==2.1.0 \
-  ; rm -rf /root/.cache/pip
-RUN set -e \
-  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/ \
-  ; mv /usr/local/bin/watson /exports/usr/local/bin/
-
 # TREE
 FROM base AS tree
 COPY --from=apteryx /exports/ /
@@ -1632,26 +1636,6 @@ RUN set -e \
   ; mv /usr/bin/tree /exports/usr/bin/ \
   ; mv /usr/share/doc/tree /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/tree.1.gz /exports/usr/share/man/man1/
-
-# TIG
-FROM base AS tig
-COPY --from=build-essential /exports/ /
-COPY --from=apteryx /exports/ /
-COPY --from=clone /exports/ /
-COPY --from=make /exports/ /
-RUN set -e \
-  ; apteryx autoconf automake pkg-config libreadline-dev libncursesw5-dev \
-  ; clone --https --tag='tig-2.5.10' https://github.com/jonas/tig \
-  ; cd /root/src/github.com/jonas/tig \
-  ; make configure \
-  ; ./configure \
-  ; make prefix=/usr/local \
-  ; make install prefix=/usr/local \
-  ; rm -rf /root/src
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/etc/ \
-  ; mv /usr/local/bin/tig /exports/usr/local/bin/ \
-  ; mv /usr/local/etc/tigrc /exports/usr/local/etc/
 
 # SUDO
 FROM base AS sudo
@@ -1755,26 +1739,6 @@ RUN set -e \
   ; mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ \
   ; mv /usr/local/pipx /exports/usr/local/
 
-# PEACLOCK
-FROM base AS peaclock
-COPY --from=clone /exports/ /
-COPY --from=build-essential /exports/ /
-RUN set -e \
-  ; add-apt-repository ppa:ubuntu-toolchain-r/test \
-  ; apt-get update -q \
-  ; apt-get install -y --no-install-recommends --auto-remove cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 \
-  ; clone --https --tag='0.4.3' https://github.com/octobanana/peaclock \
-  ; cd /root/src/github.com/octobanana/peaclock \
-  ; ./RUNME.sh build --release -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 \
-  ; ./RUNME.sh install --release \
-  ; rm -rf /root/src \
-  ; apt purge -y cmake libpthread-stubs0-dev libicu-dev gcc-9 g++-9 \
-  ; apt autoremove -y \
-  ; apt-get -q clean
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/peaclock /exports/usr/local/bin/
-
 # NCU
 FROM base AS ncu
 COPY --from=node /exports/ /
@@ -1797,17 +1761,6 @@ RUN set -e \
   ; mv /usr/bin/chronic /usr/bin/combine /usr/bin/errno /usr/bin/ifdata /usr/bin/ifne /usr/bin/isutf8 /usr/bin/lckdo /usr/bin/mispipe /usr/bin/parallel /usr/bin/pee /usr/bin/sponge /usr/bin/ts /usr/bin/vidir /usr/bin/vipe /usr/bin/zrun /exports/usr/bin/ \
   ; mv /usr/share/doc/moreutils /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/chronic.1.gz /usr/share/man/man1/combine.1.gz /usr/share/man/man1/errno.1.gz /usr/share/man/man1/ifdata.1.gz /usr/share/man/man1/ifne.1.gz /usr/share/man/man1/isutf8.1.gz /usr/share/man/man1/lckdo.1.gz /usr/share/man/man1/mispipe.1.gz /usr/share/man/man1/parallel.1.gz /usr/share/man/man1/pee.1.gz /usr/share/man/man1/sponge.1.gz /usr/share/man/man1/ts.1.gz /usr/share/man/man1/vidir.1.gz /usr/share/man/man1/vipe.1.gz /usr/share/man/man1/zrun.1.gz /exports/usr/share/man/man1/
-
-# MILLER
-FROM base AS miller
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; wget -O /tmp/miller.deb https://github.com/johnkerl/miller/releases/download/v6.12.0/miller-6.12.0-linux-amd64.deb \
-  ; apteryx /tmp/miller.deb
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ \
-  ; mv /usr/bin/mlr /exports/usr/bin/
 
 # MEDIAINFO
 FROM base AS mediainfo
@@ -2145,11 +2098,9 @@ COPY --from=make /exports/ /
 COPY --from=man /exports/ /
 COPY --from=mbsync /exports/ /
 COPY --from=mediainfo /exports/ /
-COPY --from=miller /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
-COPY --from=peaclock /exports/ /
 COPY --from=pgcli /exports/ /
 COPY --from=pipx /exports/ /
 COPY --from=prettyping /exports/ /
@@ -2158,10 +2109,8 @@ COPY --from=rsync /exports/ /
 COPY --from=sd /exports/ /
 COPY --from=shoebox /exports/ /
 COPY --from=sudo /exports/ /
-COPY --from=tig /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=unzip /exports/ /
-COPY --from=watson /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=xinput /exports/ /
 COPY --from=xsv /exports/ /
@@ -2229,6 +2178,7 @@ COPY --from=gifski /exports/ /
 COPY --from=ast-grep /exports/ /
 COPY --from=jujutsu /exports/ /
 COPY --from=hey /exports/ /
+COPY --from=ffmpeg /exports/ /
 COPY --from=yt-dlp /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
