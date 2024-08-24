@@ -137,6 +137,8 @@ dependencies = [
   'gifski',
   'ast-grep',
   'jujutsu',
+  'hey',
+  'yt-dlp',
 
   # data tools
   # 'sc-im',

@@ -15,7 +15,6 @@ pipx install httpie=='{{VERSION}}'
 exports = [
   '/usr/local/pipx/',
   '/usr/local/bin/http',
-  '/usr/local/bin/https',
 ]
 
 [checkUpdates]

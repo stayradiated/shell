@@ -614,6 +614,25 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# YT-DLP
+FROM base AS yt-dlp
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; add-apt-repository ppa:tomtomtom/yt-dlp \
+  ; apteryx yt-dlp
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ \
+  ; mv /usr/bin/yt-dlp /exports/usr/bin/
+
+# HEY
+FROM base AS hey
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 -O /usr/local/bin/hey
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/hey /exports/usr/local/bin/
+
 # JUJUTSU
 FROM base AS jujutsu
 COPY --from=wget /exports/ /
@@ -1972,7 +1991,7 @@ RUN set -e \
 RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
   ; mv /usr/local/pipx /exports/usr/local/ \
-  ; mv /usr/local/bin/http /usr/local/bin/https /exports/usr/local/bin/
+  ; mv /usr/local/bin/http /exports/usr/local/bin/
 
 # HTOP
 FROM base AS htop
@@ -2302,6 +2321,8 @@ COPY --from=lazygit /exports/ /
 COPY --from=gifski /exports/ /
 COPY --from=ast-grep /exports/ /
 COPY --from=jujutsu /exports/ /
+COPY --from=hey /exports/ /
+COPY --from=yt-dlp /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
