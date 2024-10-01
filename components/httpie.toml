@@ -4,16 +4,17 @@ from = 'base'
 version = '3.2.3'
 
 devDependencies = [
-  'python3-pip',
-  'pipx'
+  'uv'
 ]
 
 build = """
-pipx install httpie=='{{VERSION}}'
+uv tool install httpie=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/http /usr/local/bin/http
 """
 
 exports = [
-  '/usr/local/pipx/',
+  '/usr/local/uv/',
   '/usr/local/bin/http',
 ]
 

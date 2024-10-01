@@ -3,23 +3,23 @@ from = 'base'
 
 version = '4.1.0'
 
-devDependencies = [
+dependencies = [
   'apteryx',
-  'build-essential',
-  'python3-pip',
-  'pipx',
+  'uv',
 ]
 
 build = """
 apteryx libpq-dev
-pipx install pgcli=='{{VERSION}}' --include-deps
+
+uv tool install pgcli=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/pgcli /usr/local/bin/pgcli
 """
 
 exports = [
   '/usr/lib/x86_64-linux-gnu/libpq.*',
+  '/usr/local/uv/',
   '/usr/local/bin/pgcli',
-  '/usr/local/bin/sqlformat',
-  '/usr/local/pipx/',
 ]
 
 [checkUpdates]

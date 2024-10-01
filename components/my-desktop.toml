@@ -5,7 +5,6 @@ dependencies = [
   'libxv1',
   'mesa',
   'x11-utils',
-  'python3-pip',
 
   'acpi',
   # 'aerc',
@@ -38,7 +37,6 @@ dependencies = [
   'node',
   # 'peaclock',
   'pgcli',
-  'pipx',
   'prettyping',
   'ripgrep',
   'rsync',

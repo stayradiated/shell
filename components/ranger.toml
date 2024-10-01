@@ -4,18 +4,18 @@ from = 'base'
 version = '1.9.3'
 
 devDependencies = [
-  'python3-pip',
-  'pipx'
+  'uv'
 ]
 
 build = """
-pipx install ranger-fm=='{{VERSION}}'
+uv tool install ranger-fm=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/ranger /usr/local/bin/ranger
 """
 
 exports = [
-  '/usr/local/pipx/',
+  '/usr/local/uv/',
   '/usr/local/bin/ranger',
-  '/usr/local/bin/rifle',
 ]
 
 [checkUpdates]

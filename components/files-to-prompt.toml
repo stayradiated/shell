@@ -3,13 +3,20 @@ from = "base"
 
 version = "0.2.1"
 
-devDependencies = [ "python3-pip", "pipx" ]
+devDependencies = [
+  'uv'
+]
 
 build = """
-pipx install files-to-prompt=='{{VERSION}}'
+uv tool install files-to-prompt=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/files-to-prompt /usr/local/bin/files-to-prompt
 """
 
-exports = [ "/usr/local/bin/files-to-prompt", "/usr/local/pipx/" ]
+exports = [
+  "/usr/local/uv/",
+  "/usr/local/bin/files-to-prompt",
+]
 
 [checkUpdates]
   type = 'github-release'

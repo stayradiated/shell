@@ -3,7 +3,7 @@
 # BASE
 FROM phusion/baseimage:jammy-1.0.1 AS base
 RUN set -e \
-  ; echo jammy-1.0.2 \
+  ; echo jammy-1.0.4 \
   ; export LANG=en_NZ.UTF-8 \
   ; locale-gen $LANG \
   ; yes | unminimize
@@ -40,7 +40,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN set -e \
   ; add-apt-repository ppa:git-core/ppa \
-  ; apteryx git='1:2.45.2-0ppa1~ubuntu22.04.1'
+  ; apteryx git='1:2.46.2-0ppa1~ubuntu22.04.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
@@ -54,7 +54,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.22.5.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.23.1.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.98.27' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.98.52' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -186,29 +186,11 @@ RUN set -e \
 FROM base AS n
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://raw.githubusercontent.com/tj/n/v9.2.3/bin/n" -O /usr/local/bin/n \
+  ; wget "https://raw.githubusercontent.com/tj/n/v10.0.0/bin/n" -O /usr/local/bin/n \
   ; chmod +x /usr/local/bin/n
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/n /exports/usr/local/bin/
-
-# PYTHON3-PIP
-FROM base AS python3-pip
-COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; apteryx python3-pip python3-dev python3-setuptools python3-venv python3-wheel \
-  ; pip3 install wheel \
-  ; python3 -m pip install -U pip==24.1b2
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.*/dist-packages/ /exports/usr/share/ /exports/usr/src/ \
-  ; mv /usr/bin/gencat /usr/bin/pip /usr/bin/pip3 /usr/bin/python3-config /usr/bin/x86_64-linux-gnu-python3-config /exports/usr/bin/ \
-  ; mv /usr/include/python3.* /exports/usr/include/ \
-  ; mv /usr/lib/python3.* /usr/lib/python3 /exports/usr/lib/ \
-  ; mv /usr/lib/x86_64-linux-gnu/libpython3.*.a /usr/lib/x86_64-linux-gnu/libpython3.*.so /usr/lib/x86_64-linux-gnu/libpython3.*.so.* /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/bin/pip /usr/local/bin/pip3 /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/python3.*/dist-packages/pip-*.dist-info /usr/local/lib/python3.*/dist-packages/pip /exports/usr/local/lib/python3.*/dist-packages/ \
-  ; mv /usr/share/python-wheels /exports/usr/share/ \
-  ; mv /usr/src/python3.* /exports/usr/src/
 
 # SHELL-ROOT
 FROM base AS shell-root
@@ -231,7 +213,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v22.5.1 \
+  ; n v22.9.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -240,16 +222,20 @@ RUN set -e \
   ; mv /usr/local/lib/node_modules /exports/usr/local/lib/ \
   ; mv /usr/local/n /exports/usr/local/
 
-# PIPX
-FROM base AS pipx
-COPY --from=apteryx /exports/ /
-COPY --from=python3-pip /exports/ /
+# UV
+FROM base AS uv
+COPY --from=wget /exports/ /
 RUN set -e \
-  ; pip3 install pipx==1.6.0
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.4.17/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; tar -xzvf /tmp/uv.tgz -C /tmp \
+  ; rm /tmp/uv.tgz \
+  ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
+  ; rmdir /tmp/uv-x86_64-unknown-linux-gnu \
+  ; mkdir -p /usr/local/uv/tools /usr/local/uv/bin /usr/local/uv/python
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ \
-  ; mv /usr/local/bin/activate-global-python-argcomplete /usr/local/bin/pipx /usr/local/bin/python-argcomplete-check-easy-install-script /usr/local/bin/register-python-argcomplete /usr/local/bin/userpath /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/python3.10/dist-packages/argcomplete-*.dist-info /usr/local/lib/python3.10/dist-packages/argcomplete /usr/local/lib/python3.10/dist-packages/click-*.dist-info /usr/local/lib/python3.10/dist-packages/click /usr/local/lib/python3.10/dist-packages/packaging-*.dist-info /usr/local/lib/python3.10/dist-packages/packaging /usr/local/lib/python3.10/dist-packages/pipx-*.dist-info /usr/local/lib/python3.10/dist-packages/pipx /usr/local/lib/python3.10/dist-packages/platformdirs-*.dist-info /usr/local/lib/python3.10/dist-packages/platformdirs /usr/local/lib/python3.10/dist-packages/tomli-*.dist-info /usr/local/lib/python3.10/dist-packages/tomli /usr/local/lib/python3.10/dist-packages/userpath-*.dist-info /usr/local/lib/python3.10/dist-packages/userpath /exports/usr/local/lib/python3.10/dist-packages/
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
+  ; mv /usr/local/bin/uv /usr/local/bin/uvx /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/
 
 # BZIP2
 FROM base AS bzip2
@@ -287,7 +273,7 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.79.0' \
+  ; sh rust.sh -y --default-toolchain '1.81.0' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
@@ -304,32 +290,11 @@ RUN set -e \
   ; mv /usr/bin/ar /exports/usr/bin/ \
   ; mv /usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so /exports/usr/lib/x86_64-linux-gnu/
 
-# PYTHON2
-FROM base AS python2
-COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; apteryx python2.7='2.7.18-13ubuntu1.2' \
-  ; update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-RUN set -e \
-  ; mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/python2.7/ /exports/usr/lib/python2.7/dist-packages/ /exports/usr/local/lib/ /exports/usr/share/applications/ /exports/usr/share/binfmts/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/pixmaps/ \
-  ; mv /etc/alternatives/python /exports/etc/alternatives/ \
-  ; mv /etc/python2.7 /exports/etc/ \
-  ; mv /usr/bin/2to3-2.7 /usr/bin/pdb2.7 /usr/bin/pydoc2.7 /usr/bin/pygettext2.7 /usr/bin/python /usr/bin/python2.7 /exports/usr/bin/ \
-  ; mv /usr/lib/python2.7/__future__.py /usr/lib/python2.7/__future__.pyc /usr/lib/python2.7/__phello__.foo.py /usr/lib/python2.7/__phello__.foo.pyc /usr/lib/python2.7/_abcoll.py /usr/lib/python2.7/_abcoll.pyc /usr/lib/python2.7/_LWPCookieJar.py /usr/lib/python2.7/_LWPCookieJar.pyc /usr/lib/python2.7/_MozillaCookieJar.py /usr/lib/python2.7/_MozillaCookieJar.pyc /usr/lib/python2.7/_osx_support.py /usr/lib/python2.7/_osx_support.pyc /usr/lib/python2.7/_pyio.py /usr/lib/python2.7/_pyio.pyc /usr/lib/python2.7/_strptime.py /usr/lib/python2.7/_strptime.pyc /usr/lib/python2.7/_sysconfigdata.py /usr/lib/python2.7/_sysconfigdata.pyc /usr/lib/python2.7/_threading_local.py /usr/lib/python2.7/_threading_local.pyc /usr/lib/python2.7/_weakrefset.py /usr/lib/python2.7/_weakrefset.pyc /usr/lib/python2.7/abc.py /usr/lib/python2.7/abc.pyc /usr/lib/python2.7/aifc.py /usr/lib/python2.7/aifc.pyc /usr/lib/python2.7/antigravity.py /usr/lib/python2.7/antigravity.pyc /usr/lib/python2.7/anydbm.py /usr/lib/python2.7/anydbm.pyc /usr/lib/python2.7/argparse.egg-info /usr/lib/python2.7/argparse.py /usr/lib/python2.7/argparse.pyc /usr/lib/python2.7/ast.py /usr/lib/python2.7/ast.pyc /usr/lib/python2.7/asynchat.py /usr/lib/python2.7/asynchat.pyc /usr/lib/python2.7/asyncore.py /usr/lib/python2.7/asyncore.pyc /usr/lib/python2.7/atexit.py /usr/lib/python2.7/atexit.pyc /usr/lib/python2.7/audiodev.py /usr/lib/python2.7/audiodev.pyc /usr/lib/python2.7/base64.py /usr/lib/python2.7/base64.pyc /usr/lib/python2.7/BaseHTTPServer.py /usr/lib/python2.7/BaseHTTPServer.pyc /usr/lib/python2.7/Bastion.py /usr/lib/python2.7/Bastion.pyc /usr/lib/python2.7/bdb.py /usr/lib/python2.7/bdb.pyc /usr/lib/python2.7/binhex.py /usr/lib/python2.7/binhex.pyc /usr/lib/python2.7/bisect.py /usr/lib/python2.7/bisect.pyc /usr/lib/python2.7/bsddb /usr/lib/python2.7/calendar.py /usr/lib/python2.7/calendar.pyc /usr/lib/python2.7/cgi.py /usr/lib/python2.7/cgi.pyc /usr/lib/python2.7/CGIHTTPServer.py /usr/lib/python2.7/CGIHTTPServer.pyc /usr/lib/python2.7/cgitb.py /usr/lib/python2.7/cgitb.pyc /usr/lib/python2.7/chunk.py /usr/lib/python2.7/chunk.pyc /usr/lib/python2.7/cmd.py /usr/lib/python2.7/cmd.pyc /usr/lib/python2.7/code.py /usr/lib/python2.7/code.pyc /usr/lib/python2.7/codecs.py /usr/lib/python2.7/codecs.pyc /usr/lib/python2.7/codeop.py /usr/lib/python2.7/codeop.pyc /usr/lib/python2.7/collections.py /usr/lib/python2.7/collections.pyc /usr/lib/python2.7/colorsys.py /usr/lib/python2.7/colorsys.pyc /usr/lib/python2.7/commands.py /usr/lib/python2.7/commands.pyc /usr/lib/python2.7/compileall.py /usr/lib/python2.7/compileall.pyc /usr/lib/python2.7/compiler /usr/lib/python2.7/ConfigParser.py /usr/lib/python2.7/ConfigParser.pyc /usr/lib/python2.7/contextlib.py /usr/lib/python2.7/contextlib.pyc /usr/lib/python2.7/Cookie.py /usr/lib/python2.7/Cookie.pyc /usr/lib/python2.7/cookielib.py /usr/lib/python2.7/cookielib.pyc /usr/lib/python2.7/copy_reg.py /usr/lib/python2.7/copy_reg.pyc /usr/lib/python2.7/copy.py /usr/lib/python2.7/copy.pyc /usr/lib/python2.7/cProfile.py /usr/lib/python2.7/cProfile.pyc /usr/lib/python2.7/csv.py /usr/lib/python2.7/csv.pyc /usr/lib/python2.7/ctypes /usr/lib/python2.7/curses /usr/lib/python2.7/dbhash.py /usr/lib/python2.7/dbhash.pyc /usr/lib/python2.7/decimal.py /usr/lib/python2.7/decimal.pyc /usr/lib/python2.7/difflib.py /usr/lib/python2.7/difflib.pyc /usr/lib/python2.7/dircache.py /usr/lib/python2.7/dircache.pyc /usr/lib/python2.7/dis.py /usr/lib/python2.7/dis.pyc /usr/lib/python2.7/distutils /usr/lib/python2.7/doctest.py /usr/lib/python2.7/doctest.pyc /usr/lib/python2.7/DocXMLRPCServer.py /usr/lib/python2.7/DocXMLRPCServer.pyc /usr/lib/python2.7/dumbdbm.py /usr/lib/python2.7/dumbdbm.pyc /usr/lib/python2.7/dummy_thread.py /usr/lib/python2.7/dummy_thread.pyc /usr/lib/python2.7/dummy_threading.py /usr/lib/python2.7/dummy_threading.pyc /usr/lib/python2.7/email /usr/lib/python2.7/encodings /usr/lib/python2.7/ensurepip /usr/lib/python2.7/filecmp.py /usr/lib/python2.7/filecmp.pyc /usr/lib/python2.7/fileinput.py /usr/lib/python2.7/fileinput.pyc /usr/lib/python2.7/fnmatch.py /usr/lib/python2.7/fnmatch.pyc /usr/lib/python2.7/formatter.py /usr/lib/python2.7/formatter.pyc /usr/lib/python2.7/fpformat.py /usr/lib/python2.7/fpformat.pyc /usr/lib/python2.7/fractions.py /usr/lib/python2.7/fractions.pyc /usr/lib/python2.7/ftplib.py /usr/lib/python2.7/ftplib.pyc /usr/lib/python2.7/functools.py /usr/lib/python2.7/functools.pyc /usr/lib/python2.7/genericpath.py /usr/lib/python2.7/genericpath.pyc /usr/lib/python2.7/getopt.py /usr/lib/python2.7/getopt.pyc /usr/lib/python2.7/getpass.py /usr/lib/python2.7/getpass.pyc /usr/lib/python2.7/gettext.py /usr/lib/python2.7/gettext.pyc /usr/lib/python2.7/glob.py /usr/lib/python2.7/glob.pyc /usr/lib/python2.7/gzip.py /usr/lib/python2.7/gzip.pyc /usr/lib/python2.7/hashlib.py /usr/lib/python2.7/hashlib.pyc /usr/lib/python2.7/heapq.py /usr/lib/python2.7/heapq.pyc /usr/lib/python2.7/hmac.py /usr/lib/python2.7/hmac.pyc /usr/lib/python2.7/hotshot /usr/lib/python2.7/htmlentitydefs.py /usr/lib/python2.7/htmlentitydefs.pyc /usr/lib/python2.7/htmllib.py /usr/lib/python2.7/htmllib.pyc /usr/lib/python2.7/HTMLParser.py /usr/lib/python2.7/HTMLParser.pyc /usr/lib/python2.7/httplib.py /usr/lib/python2.7/httplib.pyc /usr/lib/python2.7/ihooks.py /usr/lib/python2.7/ihooks.pyc /usr/lib/python2.7/imaplib.py /usr/lib/python2.7/imaplib.pyc /usr/lib/python2.7/imghdr.py /usr/lib/python2.7/imghdr.pyc /usr/lib/python2.7/importlib /usr/lib/python2.7/imputil.py /usr/lib/python2.7/imputil.pyc /usr/lib/python2.7/inspect.py /usr/lib/python2.7/inspect.pyc /usr/lib/python2.7/io.py /usr/lib/python2.7/io.pyc /usr/lib/python2.7/json /usr/lib/python2.7/keyword.py /usr/lib/python2.7/keyword.pyc /usr/lib/python2.7/lib-dynload /usr/lib/python2.7/lib-tk /usr/lib/python2.7/lib2to3 /usr/lib/python2.7/LICENSE.txt /usr/lib/python2.7/linecache.py /usr/lib/python2.7/linecache.pyc /usr/lib/python2.7/locale.py /usr/lib/python2.7/locale.pyc /usr/lib/python2.7/logging /usr/lib/python2.7/macpath.py /usr/lib/python2.7/macpath.pyc /usr/lib/python2.7/macurl2path.py /usr/lib/python2.7/macurl2path.pyc /usr/lib/python2.7/mailbox.py /usr/lib/python2.7/mailbox.pyc /usr/lib/python2.7/mailcap.py /usr/lib/python2.7/mailcap.pyc /usr/lib/python2.7/markupbase.py /usr/lib/python2.7/markupbase.pyc /usr/lib/python2.7/md5.py /usr/lib/python2.7/md5.pyc /usr/lib/python2.7/mhlib.py /usr/lib/python2.7/mhlib.pyc /usr/lib/python2.7/mimetools.py /usr/lib/python2.7/mimetools.pyc /usr/lib/python2.7/mimetypes.py /usr/lib/python2.7/mimetypes.pyc /usr/lib/python2.7/MimeWriter.py /usr/lib/python2.7/MimeWriter.pyc /usr/lib/python2.7/mimify.py /usr/lib/python2.7/mimify.pyc /usr/lib/python2.7/modulefinder.py /usr/lib/python2.7/modulefinder.pyc /usr/lib/python2.7/multifile.py /usr/lib/python2.7/multifile.pyc /usr/lib/python2.7/multiprocessing /usr/lib/python2.7/mutex.py /usr/lib/python2.7/mutex.pyc /usr/lib/python2.7/netrc.py /usr/lib/python2.7/netrc.pyc /usr/lib/python2.7/new.py /usr/lib/python2.7/new.pyc /usr/lib/python2.7/nntplib.py /usr/lib/python2.7/nntplib.pyc /usr/lib/python2.7/ntpath.py /usr/lib/python2.7/ntpath.pyc /usr/lib/python2.7/nturl2path.py /usr/lib/python2.7/nturl2path.pyc /usr/lib/python2.7/numbers.py /usr/lib/python2.7/numbers.pyc /usr/lib/python2.7/opcode.py /usr/lib/python2.7/opcode.pyc /usr/lib/python2.7/optparse.py /usr/lib/python2.7/optparse.pyc /usr/lib/python2.7/os.py /usr/lib/python2.7/os.pyc /usr/lib/python2.7/os2emxpath.py /usr/lib/python2.7/os2emxpath.pyc /usr/lib/python2.7/pdb.doc /usr/lib/python2.7/pdb.py /usr/lib/python2.7/pdb.pyc /usr/lib/python2.7/pickle.py /usr/lib/python2.7/pickle.pyc /usr/lib/python2.7/pickletools.py /usr/lib/python2.7/pickletools.pyc /usr/lib/python2.7/pipes.py /usr/lib/python2.7/pipes.pyc /usr/lib/python2.7/pkgutil.py /usr/lib/python2.7/pkgutil.pyc /usr/lib/python2.7/plat-x86_64-linux-gnu /usr/lib/python2.7/platform.py /usr/lib/python2.7/platform.pyc /usr/lib/python2.7/plistlib.py /usr/lib/python2.7/plistlib.pyc /usr/lib/python2.7/popen2.py /usr/lib/python2.7/popen2.pyc /usr/lib/python2.7/poplib.py /usr/lib/python2.7/poplib.pyc /usr/lib/python2.7/posixfile.py /usr/lib/python2.7/posixfile.pyc /usr/lib/python2.7/posixpath.py /usr/lib/python2.7/posixpath.pyc /usr/lib/python2.7/pprint.py /usr/lib/python2.7/pprint.pyc /usr/lib/python2.7/profile.py /usr/lib/python2.7/profile.pyc /usr/lib/python2.7/pstats.py /usr/lib/python2.7/pstats.pyc /usr/lib/python2.7/pty.py /usr/lib/python2.7/pty.pyc /usr/lib/python2.7/py_compile.py /usr/lib/python2.7/py_compile.pyc /usr/lib/python2.7/pyclbr.py /usr/lib/python2.7/pyclbr.pyc /usr/lib/python2.7/pydoc_data /usr/lib/python2.7/pydoc.py /usr/lib/python2.7/pydoc.pyc /usr/lib/python2.7/Queue.py /usr/lib/python2.7/Queue.pyc /usr/lib/python2.7/quopri.py /usr/lib/python2.7/quopri.pyc /usr/lib/python2.7/random.py /usr/lib/python2.7/random.pyc /usr/lib/python2.7/re.py /usr/lib/python2.7/re.pyc /usr/lib/python2.7/repr.py /usr/lib/python2.7/repr.pyc /usr/lib/python2.7/rexec.py /usr/lib/python2.7/rexec.pyc /usr/lib/python2.7/rfc822.py /usr/lib/python2.7/rfc822.pyc /usr/lib/python2.7/rlcompleter.py /usr/lib/python2.7/rlcompleter.pyc /usr/lib/python2.7/robotparser.py /usr/lib/python2.7/robotparser.pyc /usr/lib/python2.7/runpy.py /usr/lib/python2.7/runpy.pyc /usr/lib/python2.7/sched.py /usr/lib/python2.7/sched.pyc /usr/lib/python2.7/sets.py /usr/lib/python2.7/sets.pyc /usr/lib/python2.7/sgmllib.py /usr/lib/python2.7/sgmllib.pyc /usr/lib/python2.7/sha.py /usr/lib/python2.7/sha.pyc /usr/lib/python2.7/shelve.py /usr/lib/python2.7/shelve.pyc /usr/lib/python2.7/shlex.py /usr/lib/python2.7/shlex.pyc /usr/lib/python2.7/shutil.py /usr/lib/python2.7/shutil.pyc /usr/lib/python2.7/SimpleHTTPServer.py /usr/lib/python2.7/SimpleHTTPServer.pyc /usr/lib/python2.7/SimpleXMLRPCServer.py /usr/lib/python2.7/SimpleXMLRPCServer.pyc /usr/lib/python2.7/site.py /usr/lib/python2.7/site.pyc /usr/lib/python2.7/sitecustomize.py /usr/lib/python2.7/sitecustomize.pyc /usr/lib/python2.7/smtpd.py /usr/lib/python2.7/smtpd.pyc /usr/lib/python2.7/smtplib.py /usr/lib/python2.7/smtplib.pyc /usr/lib/python2.7/sndhdr.py /usr/lib/python2.7/sndhdr.pyc /usr/lib/python2.7/socket.py /usr/lib/python2.7/socket.pyc /usr/lib/python2.7/SocketServer.py /usr/lib/python2.7/SocketServer.pyc /usr/lib/python2.7/sqlite3 /usr/lib/python2.7/sre_compile.py /usr/lib/python2.7/sre_compile.pyc /usr/lib/python2.7/sre_constants.py /usr/lib/python2.7/sre_constants.pyc /usr/lib/python2.7/sre_parse.py /usr/lib/python2.7/sre_parse.pyc /usr/lib/python2.7/sre.py /usr/lib/python2.7/sre.pyc /usr/lib/python2.7/ssl.py /usr/lib/python2.7/ssl.pyc /usr/lib/python2.7/stat.py /usr/lib/python2.7/stat.pyc /usr/lib/python2.7/statvfs.py /usr/lib/python2.7/statvfs.pyc /usr/lib/python2.7/string.py /usr/lib/python2.7/string.pyc /usr/lib/python2.7/StringIO.py /usr/lib/python2.7/StringIO.pyc /usr/lib/python2.7/stringold.py /usr/lib/python2.7/stringold.pyc /usr/lib/python2.7/stringprep.py /usr/lib/python2.7/stringprep.pyc /usr/lib/python2.7/struct.py /usr/lib/python2.7/struct.pyc /usr/lib/python2.7/subprocess.py /usr/lib/python2.7/subprocess.pyc /usr/lib/python2.7/sunau.py /usr/lib/python2.7/sunau.pyc /usr/lib/python2.7/sunaudio.py /usr/lib/python2.7/sunaudio.pyc /usr/lib/python2.7/symbol.py /usr/lib/python2.7/symbol.pyc /usr/lib/python2.7/symtable.py /usr/lib/python2.7/symtable.pyc /usr/lib/python2.7/sysconfig.py /usr/lib/python2.7/sysconfig.pyc /usr/lib/python2.7/tabnanny.py /usr/lib/python2.7/tabnanny.pyc /usr/lib/python2.7/tarfile.py /usr/lib/python2.7/tarfile.pyc /usr/lib/python2.7/telnetlib.py /usr/lib/python2.7/telnetlib.pyc /usr/lib/python2.7/tempfile.py /usr/lib/python2.7/tempfile.pyc /usr/lib/python2.7/test /usr/lib/python2.7/textwrap.py /usr/lib/python2.7/textwrap.pyc /usr/lib/python2.7/this.py /usr/lib/python2.7/this.pyc /usr/lib/python2.7/threading.py /usr/lib/python2.7/threading.pyc /usr/lib/python2.7/timeit.py /usr/lib/python2.7/timeit.pyc /usr/lib/python2.7/toaiff.py /usr/lib/python2.7/toaiff.pyc /usr/lib/python2.7/token.py /usr/lib/python2.7/token.pyc /usr/lib/python2.7/tokenize.py /usr/lib/python2.7/tokenize.pyc /usr/lib/python2.7/trace.py /usr/lib/python2.7/trace.pyc /usr/lib/python2.7/traceback.py /usr/lib/python2.7/traceback.pyc /usr/lib/python2.7/tty.py /usr/lib/python2.7/tty.pyc /usr/lib/python2.7/types.py /usr/lib/python2.7/types.pyc /usr/lib/python2.7/unittest /usr/lib/python2.7/urllib.py /usr/lib/python2.7/urllib.pyc /usr/lib/python2.7/urllib2.py /usr/lib/python2.7/urllib2.pyc /usr/lib/python2.7/urlparse.py /usr/lib/python2.7/urlparse.pyc /usr/lib/python2.7/user.py /usr/lib/python2.7/user.pyc /usr/lib/python2.7/UserDict.py /usr/lib/python2.7/UserDict.pyc /usr/lib/python2.7/UserList.py /usr/lib/python2.7/UserList.pyc /usr/lib/python2.7/UserString.py /usr/lib/python2.7/UserString.pyc /usr/lib/python2.7/uu.py /usr/lib/python2.7/uu.pyc /usr/lib/python2.7/uuid.py /usr/lib/python2.7/uuid.pyc /usr/lib/python2.7/warnings.py /usr/lib/python2.7/warnings.pyc /usr/lib/python2.7/wave.py /usr/lib/python2.7/wave.pyc /usr/lib/python2.7/weakref.py /usr/lib/python2.7/weakref.pyc /usr/lib/python2.7/webbrowser.py /usr/lib/python2.7/webbrowser.pyc /usr/lib/python2.7/whichdb.py /usr/lib/python2.7/whichdb.pyc /usr/lib/python2.7/wsgiref.egg-info /usr/lib/python2.7/wsgiref /usr/lib/python2.7/xdrlib.py /usr/lib/python2.7/xdrlib.pyc /usr/lib/python2.7/xml /usr/lib/python2.7/xmllib.py /usr/lib/python2.7/xmllib.pyc /usr/lib/python2.7/xmlrpclib.py /usr/lib/python2.7/xmlrpclib.pyc /usr/lib/python2.7/zipfile.py /usr/lib/python2.7/zipfile.pyc /exports/usr/lib/python2.7/ \
-  ; mv /usr/lib/python2.7/dist-packages/README /exports/usr/lib/python2.7/dist-packages/ \
-  ; mv /usr/local/lib/python2.7 /exports/usr/local/lib/ \
-  ; mv /usr/share/applications/python2.7.desktop /exports/usr/share/applications/ \
-  ; mv /usr/share/binfmts/python2.7 /exports/usr/share/binfmts/ \
-  ; mv /usr/share/doc/libpython2.7-minimal /usr/share/doc/libpython2.7-stdlib /usr/share/doc/python2.7-minimal /usr/share/doc/python2.7 /exports/usr/share/doc/ \
-  ; mv /usr/share/lintian/overrides/libpython2.7-minimal /usr/share/lintian/overrides/libpython2.7-stdlib /usr/share/lintian/overrides/python2.7 /usr/share/lintian/overrides/python2.7-minimal /exports/usr/share/lintian/overrides/ \
-  ; mv /usr/share/man/man1/2to3-2.7.1.gz /usr/share/man/man1/pdb2.7.1.gz /usr/share/man/man1/pydoc2.7.1.gz /usr/share/man/man1/pygettext2.7.1.gz /usr/share/man/man1/python2.7.1.gz /exports/usr/share/man/man1/ \
-  ; mv /usr/share/pixmaps/python2.7.xpm /exports/usr/share/pixmaps/
-
 # FZF
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='v0.54.1' https://github.com/junegunn/fzf \
+  ; clone --https --tag='v0.55.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -409,9 +374,16 @@ RUN set -e \
 # NEOVIM
 FROM base AS neovim
 COPY --from=wget /exports/ /
-COPY --from=python3-pip /exports/ /
+COPY --from=uv /exports/ /
+ENV \
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.10.0/nvim.appimage' \
+  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.10.1/nvim.appimage' \
   ; chmod +x /tmp/nvim.appimage \
   ; /tmp/nvim.appimage --appimage-extract \
   ; rm /tmp/nvim.appimage \
@@ -420,12 +392,12 @@ RUN set -e \
   ; rm -r squashfs-root \
   ; find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775 \
   ; find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664 \
-  ; pip3 install neovim msgpack neovim-remote
+  ; uv pip install --system neovim msgpack neovim-remote
 RUN set -e \
-  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/share/ \
-  ; mv /usr/include/python3.10/greenlet /exports/usr/include/python3.10/ \
+  ; mkdir -p /exports/usr/include/ /exports/usr/local/bin/ /exports/usr/local/lib/python3.10/ /exports/usr/local/share/ \
+  ; mv /usr/include/python3.10 /exports/usr/include/ \
   ; mv /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ \
+  ; mv /usr/local/lib/python3.10/dist-packages /exports/usr/local/lib/python3.10/ \
   ; mv /usr/local/share/nvim /exports/usr/local/share/
 
 # TMUX
@@ -437,15 +409,15 @@ COPY --from=wget /exports/ /
 RUN set -e \
   ; apteryx libncurses5-dev libevent-dev bison \
   ; cd /root \
-  ; wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz' \
+  ; wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.5/tmux-3.5.tar.gz' \
   ; tar xzvf /tmp/tmux.tgz \
   ; rm /tmp/tmux.tgz \
-  ; cd 'tmux-3.4' \
+  ; cd 'tmux-3.5' \
   ; ./configure \
   ; make \
   ; make install \
   ; cd .. \
-  ; rm -r 'tmux-3.4'
+  ; rm -r 'tmux-3.5'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/valgrind/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/pkgconfig/ /exports/usr/local/bin/ /exports/usr/local/share/man/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ \
   ; mv /usr/bin/ncurses5-config /usr/bin/ncurses6-config /usr/bin/ncursesw5-config /usr/bin/ncursesw6-config /exports/usr/bin/ \
@@ -461,17 +433,21 @@ RUN set -e \
 
 # RANGER
 FROM base AS ranger
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install ranger-fm=='1.9.3'
+  ; uv tool install ranger-fm=='1.9.3' \
+  ; ln -s /usr/local/uv/bin/ranger /usr/local/bin/ranger
 RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/ \
-  ; mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/ranger /exports/usr/local/bin/
 
 # DIFF-SO-FANCY
 FROM base AS diff-so-fancy
@@ -489,7 +465,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=bzip2 /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.0/linux-x86_64/en-US/firefox-128.0.tar.bz2 \
+  ; wget -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/130.0.1/linux-x86_64/en-US/firefox-130.0.1.tar.bz2 \
   ; cd /opt \
   ; tar xjvf /tmp/firefox.tar.bz2 \
   ; rm /tmp/firefox.tar.bz2 \
@@ -525,7 +501,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='127.0.6533.57-*'
+  ; apteryx google-chrome-beta='130.0.6723.19-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -601,11 +577,11 @@ COPY --from=xz /exports/ /
 RUN set -e \
   ; wget -O /tmp/release.txt 'https://johnvansickle.com/ffmpeg/release-readme.txt' \
   ; DL_VERSION=$(cat /tmp/release.txt | grep -oP 'version:\s[\d.]+' | cut -d ' ' -f 2) \
-  ; ([ "7.0.1" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true) \
+  ; ([ "7.0.2" != "$DL_VERSION" ] && echo "Version mismatch! The latest version of ffmpeg is ${DL_VERSION}." && exit 1 || true) \
   ; wget -O /tmp/ffmpeg.txz 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz' \
   ; tar -xvf /tmp/ffmpeg.txz \
   ; rm /tmp/ffmpeg.txz \
-  ; mv 'ffmpeg-7.0.1-amd64-static' ffmpeg \
+  ; mv 'ffmpeg-7.0.2-amd64-static' ffmpeg \
   ; mv ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
   ; mv ffmpeg/ffprobe /usr/local/bin/ffprobe \
   ; rm -r ffmpeg
@@ -626,7 +602,7 @@ RUN set -e \
 FROM base AS jujutsu
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.19.0/jj-v0.19.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.21.0/jj-v0.21.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar xzvf /tmp/jj.tgz \
   ; rm /tmp/jj.tgz \
   ; mv 'jj' /usr/local/bin/jj
@@ -639,7 +615,7 @@ FROM base AS ast-grep
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.25.2/app-x86_64-unknown-linux-gnu.zip' \
+  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.27.3/app-x86_64-unknown-linux-gnu.zip' \
   ; unzip /tmp/ast-grep.zip \
   ; rm /tmp/ast-grep.zip \
   ; mv sg /usr/local/bin/sg \
@@ -665,7 +641,7 @@ RUN set -e \
 FROM base AS lazygit
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.43.1/lazygit_0.43.1_Linux_x86_64.tar.gz' \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.44.1/lazygit_0.44.1_Linux_x86_64.tar.gz' \
   ; mkdir -p /tmp/lazygit \
   ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
   ; mv /tmp/lazygit/lazygit /usr/local/bin \
@@ -678,7 +654,7 @@ RUN set -e \
 FROM base AS oha
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.5/oha-linux-amd64" -O /tmp/oha \
+  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.6/oha-linux-amd64" -O /tmp/oha \
   ; chmod +x /tmp/oha \
   ; mv /tmp/oha /usr/local/bin/oha
 RUN set -e \
@@ -778,7 +754,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=3fbaabade4470b7bcd8a15d7a48f649ae2c621c7 https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=8adde39a6bd636ffba4bcf51f5c341282ba4b5f1 https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -804,7 +780,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.20/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.1.29/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -818,7 +794,7 @@ RUN set -e \
 FROM base AS zoxide
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/zoxide.tar.gz "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.4/zoxide-0.9.4-x86_64-unknown-linux-musl.tar.gz" \
+  ; wget -O /tmp/zoxide.tar.gz "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.6/zoxide-0.9.6-x86_64-unknown-linux-musl.tar.gz" \
   ; mkdir -p /tmp/zoxide \
   ; tar -xvf /tmp/zoxide.tar.gz -C /tmp/zoxide --no-same-owner \
   ; mv /tmp/zoxide/zoxide /usr/local/bin/ \
@@ -917,7 +893,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.69.117*'
+  ; apteryx brave-browser-beta='1.71.102*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -932,7 +908,7 @@ RUN set -e \
 FROM base AS heroku
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'heroku@9.0.0'
+  ; npm install -g 'heroku@9.3.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/heroku /exports/usr/local/bin/ \
@@ -978,60 +954,76 @@ RUN set -e \
 
 # SQLITE-UTILS
 FROM base AS sqlite-utils
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install sqlite-utils=='3.37'
+  ; uv tool install sqlite-utils=='3.37' \
+  ; ln -s /usr/local/uv/bin/sqlite-utils /usr/local/bin/sqlite-utils
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
-  ; mv /usr/local/bin/sqlite-utils /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/sqlite-utils /exports/usr/local/bin/
 
 # TTOK
 FROM base AS ttok
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install ttok=='0.3'
+  ; uv tool install ttok=='0.3' \
+  ; ln -s /usr/local/uv/bin/ttok /usr/local/bin/ttok
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
-  ; mv /usr/local/bin/ttok /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/ttok /exports/usr/local/bin/
 
 # STRIP-TAGS
 FROM base AS strip-tags
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install strip-tags=='0.5.1'
+  ; uv tool install strip-tags=='0.5.1' \
+  ; ln -s /usr/local/uv/bin/strip-tags /usr/local/bin/strip-tags
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
-  ; mv /usr/local/bin/strip-tags /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/strip-tags /exports/usr/local/bin/
 
 # LLM
 FROM base AS llm
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install llm=='0.15' \
+  ; uv tool install llm=='0.16' \
+  ; ln -s /usr/local/uv/bin/llm /usr/local/bin/llm \
   ; llm install llm-claude-3
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/ \
-  ; mv /usr/local/bin/llm /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/llm /exports/usr/local/bin/
 
 # OBSIDIAN
 FROM base AS obsidian
@@ -1063,7 +1055,7 @@ RUN set -e \
 FROM base AS bandwhich
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/v0.22.2/bandwhich-v0.22.2-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/bandwhich.tgz 'https://github.com/imsnif/bandwhich/releases/download/v0.23.0/bandwhich-v0.23.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xvf /tmp/bandwhich.tgz \
   ; rm /tmp/bandwhich.tgz \
   ; mv bandwhich /usr/local/bin/bandwhich
@@ -1113,7 +1105,7 @@ RUN set -e \
   ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
   ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
   ; apt update \
-  ; version=$(echo "8.10.36-35" | sed 's/-/~/') \
+  ; version=$(echo "8.10.46-23" | sed 's/-/~/') \
   ; apteryx 1password="${version}.BETA"
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ \
@@ -1170,7 +1162,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@9.5.0'
+  ; npm install -g 'pnpm@9.11.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1182,7 +1174,6 @@ COPY --from=antibody /exports/ /
 COPY --from=git /exports/ /
 COPY --from=make /exports/ /
 COPY --from=fzf /exports/ /
-COPY --from=python2 /exports/ /
 COPY --from=zsh /exports/ /
 RUN set -e \
   ; cd dotfiles \
@@ -1198,23 +1189,16 @@ RUN set -e \
   ; mv /home/admin/.config/fzf /home/admin/exports/home/admin/.config/
 USER root
 RUN set -e \
-  ; mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/usr/bin/ /exports/usr/lib/python2.7/ /exports/usr/lib/python2.7/dist-packages/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/lib/ /exports/usr/local/share/ /exports/usr/share/applications/ /exports/usr/share/binfmts/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ /exports/usr/share/pixmaps/ /exports/usr/share/zsh/ \
-  ; mv /etc/alternatives/python /exports/etc/alternatives/ \
-  ; mv /etc/python2.7 /etc/shells /etc/zsh /exports/etc/ \
-  ; mv /usr/bin/2to3-2.7 /usr/bin/pdb2.7 /usr/bin/pydoc2.7 /usr/bin/pygettext2.7 /usr/bin/python /usr/bin/python2.7 /usr/bin/rzsh /usr/bin/zsh /usr/bin/zsh5 /exports/usr/bin/ \
-  ; mv /usr/lib/python2.7/__future__.py /usr/lib/python2.7/__future__.pyc /usr/lib/python2.7/__phello__.foo.py /usr/lib/python2.7/__phello__.foo.pyc /usr/lib/python2.7/_abcoll.py /usr/lib/python2.7/_abcoll.pyc /usr/lib/python2.7/_LWPCookieJar.py /usr/lib/python2.7/_LWPCookieJar.pyc /usr/lib/python2.7/_MozillaCookieJar.py /usr/lib/python2.7/_MozillaCookieJar.pyc /usr/lib/python2.7/_osx_support.py /usr/lib/python2.7/_osx_support.pyc /usr/lib/python2.7/_pyio.py /usr/lib/python2.7/_pyio.pyc /usr/lib/python2.7/_strptime.py /usr/lib/python2.7/_strptime.pyc /usr/lib/python2.7/_sysconfigdata.py /usr/lib/python2.7/_sysconfigdata.pyc /usr/lib/python2.7/_threading_local.py /usr/lib/python2.7/_threading_local.pyc /usr/lib/python2.7/_weakrefset.py /usr/lib/python2.7/_weakrefset.pyc /usr/lib/python2.7/abc.py /usr/lib/python2.7/abc.pyc /usr/lib/python2.7/aifc.py /usr/lib/python2.7/aifc.pyc /usr/lib/python2.7/antigravity.py /usr/lib/python2.7/antigravity.pyc /usr/lib/python2.7/anydbm.py /usr/lib/python2.7/anydbm.pyc /usr/lib/python2.7/argparse.egg-info /usr/lib/python2.7/argparse.py /usr/lib/python2.7/argparse.pyc /usr/lib/python2.7/ast.py /usr/lib/python2.7/ast.pyc /usr/lib/python2.7/asynchat.py /usr/lib/python2.7/asynchat.pyc /usr/lib/python2.7/asyncore.py /usr/lib/python2.7/asyncore.pyc /usr/lib/python2.7/atexit.py /usr/lib/python2.7/atexit.pyc /usr/lib/python2.7/audiodev.py /usr/lib/python2.7/audiodev.pyc /usr/lib/python2.7/base64.py /usr/lib/python2.7/base64.pyc /usr/lib/python2.7/BaseHTTPServer.py /usr/lib/python2.7/BaseHTTPServer.pyc /usr/lib/python2.7/Bastion.py /usr/lib/python2.7/Bastion.pyc /usr/lib/python2.7/bdb.py /usr/lib/python2.7/bdb.pyc /usr/lib/python2.7/binhex.py /usr/lib/python2.7/binhex.pyc /usr/lib/python2.7/bisect.py /usr/lib/python2.7/bisect.pyc /usr/lib/python2.7/bsddb /usr/lib/python2.7/calendar.py /usr/lib/python2.7/calendar.pyc /usr/lib/python2.7/cgi.py /usr/lib/python2.7/cgi.pyc /usr/lib/python2.7/CGIHTTPServer.py /usr/lib/python2.7/CGIHTTPServer.pyc /usr/lib/python2.7/cgitb.py /usr/lib/python2.7/cgitb.pyc /usr/lib/python2.7/chunk.py /usr/lib/python2.7/chunk.pyc /usr/lib/python2.7/cmd.py /usr/lib/python2.7/cmd.pyc /usr/lib/python2.7/code.py /usr/lib/python2.7/code.pyc /usr/lib/python2.7/codecs.py /usr/lib/python2.7/codecs.pyc /usr/lib/python2.7/codeop.py /usr/lib/python2.7/codeop.pyc /usr/lib/python2.7/collections.py /usr/lib/python2.7/collections.pyc /usr/lib/python2.7/colorsys.py /usr/lib/python2.7/colorsys.pyc /usr/lib/python2.7/commands.py /usr/lib/python2.7/commands.pyc /usr/lib/python2.7/compileall.py /usr/lib/python2.7/compileall.pyc /usr/lib/python2.7/compiler /usr/lib/python2.7/ConfigParser.py /usr/lib/python2.7/ConfigParser.pyc /usr/lib/python2.7/contextlib.py /usr/lib/python2.7/contextlib.pyc /usr/lib/python2.7/Cookie.py /usr/lib/python2.7/Cookie.pyc /usr/lib/python2.7/cookielib.py /usr/lib/python2.7/cookielib.pyc /usr/lib/python2.7/copy_reg.py /usr/lib/python2.7/copy_reg.pyc /usr/lib/python2.7/copy.py /usr/lib/python2.7/copy.pyc /usr/lib/python2.7/cProfile.py /usr/lib/python2.7/cProfile.pyc /usr/lib/python2.7/csv.py /usr/lib/python2.7/csv.pyc /usr/lib/python2.7/ctypes /usr/lib/python2.7/curses /usr/lib/python2.7/dbhash.py /usr/lib/python2.7/dbhash.pyc /usr/lib/python2.7/decimal.py /usr/lib/python2.7/decimal.pyc /usr/lib/python2.7/difflib.py /usr/lib/python2.7/difflib.pyc /usr/lib/python2.7/dircache.py /usr/lib/python2.7/dircache.pyc /usr/lib/python2.7/dis.py /usr/lib/python2.7/dis.pyc /usr/lib/python2.7/distutils /usr/lib/python2.7/doctest.py /usr/lib/python2.7/doctest.pyc /usr/lib/python2.7/DocXMLRPCServer.py /usr/lib/python2.7/DocXMLRPCServer.pyc /usr/lib/python2.7/dumbdbm.py /usr/lib/python2.7/dumbdbm.pyc /usr/lib/python2.7/dummy_thread.py /usr/lib/python2.7/dummy_thread.pyc /usr/lib/python2.7/dummy_threading.py /usr/lib/python2.7/dummy_threading.pyc /usr/lib/python2.7/email /usr/lib/python2.7/encodings /usr/lib/python2.7/ensurepip /usr/lib/python2.7/filecmp.py /usr/lib/python2.7/filecmp.pyc /usr/lib/python2.7/fileinput.py /usr/lib/python2.7/fileinput.pyc /usr/lib/python2.7/fnmatch.py /usr/lib/python2.7/fnmatch.pyc /usr/lib/python2.7/formatter.py /usr/lib/python2.7/formatter.pyc /usr/lib/python2.7/fpformat.py /usr/lib/python2.7/fpformat.pyc /usr/lib/python2.7/fractions.py /usr/lib/python2.7/fractions.pyc /usr/lib/python2.7/ftplib.py /usr/lib/python2.7/ftplib.pyc /usr/lib/python2.7/functools.py /usr/lib/python2.7/functools.pyc /usr/lib/python2.7/genericpath.py /usr/lib/python2.7/genericpath.pyc /usr/lib/python2.7/getopt.py /usr/lib/python2.7/getopt.pyc /usr/lib/python2.7/getpass.py /usr/lib/python2.7/getpass.pyc /usr/lib/python2.7/gettext.py /usr/lib/python2.7/gettext.pyc /usr/lib/python2.7/glob.py /usr/lib/python2.7/glob.pyc /usr/lib/python2.7/gzip.py /usr/lib/python2.7/gzip.pyc /usr/lib/python2.7/hashlib.py /usr/lib/python2.7/hashlib.pyc /usr/lib/python2.7/heapq.py /usr/lib/python2.7/heapq.pyc /usr/lib/python2.7/hmac.py /usr/lib/python2.7/hmac.pyc /usr/lib/python2.7/hotshot /usr/lib/python2.7/htmlentitydefs.py /usr/lib/python2.7/htmlentitydefs.pyc /usr/lib/python2.7/htmllib.py /usr/lib/python2.7/htmllib.pyc /usr/lib/python2.7/HTMLParser.py /usr/lib/python2.7/HTMLParser.pyc /usr/lib/python2.7/httplib.py /usr/lib/python2.7/httplib.pyc /usr/lib/python2.7/ihooks.py /usr/lib/python2.7/ihooks.pyc /usr/lib/python2.7/imaplib.py /usr/lib/python2.7/imaplib.pyc /usr/lib/python2.7/imghdr.py /usr/lib/python2.7/imghdr.pyc /usr/lib/python2.7/importlib /usr/lib/python2.7/imputil.py /usr/lib/python2.7/imputil.pyc /usr/lib/python2.7/inspect.py /usr/lib/python2.7/inspect.pyc /usr/lib/python2.7/io.py /usr/lib/python2.7/io.pyc /usr/lib/python2.7/json /usr/lib/python2.7/keyword.py /usr/lib/python2.7/keyword.pyc /usr/lib/python2.7/lib-dynload /usr/lib/python2.7/lib-tk /usr/lib/python2.7/lib2to3 /usr/lib/python2.7/LICENSE.txt /usr/lib/python2.7/linecache.py /usr/lib/python2.7/linecache.pyc /usr/lib/python2.7/locale.py /usr/lib/python2.7/locale.pyc /usr/lib/python2.7/logging /usr/lib/python2.7/macpath.py /usr/lib/python2.7/macpath.pyc /usr/lib/python2.7/macurl2path.py /usr/lib/python2.7/macurl2path.pyc /usr/lib/python2.7/mailbox.py /usr/lib/python2.7/mailbox.pyc /usr/lib/python2.7/mailcap.py /usr/lib/python2.7/mailcap.pyc /usr/lib/python2.7/markupbase.py /usr/lib/python2.7/markupbase.pyc /usr/lib/python2.7/md5.py /usr/lib/python2.7/md5.pyc /usr/lib/python2.7/mhlib.py /usr/lib/python2.7/mhlib.pyc /usr/lib/python2.7/mimetools.py /usr/lib/python2.7/mimetools.pyc /usr/lib/python2.7/mimetypes.py /usr/lib/python2.7/mimetypes.pyc /usr/lib/python2.7/MimeWriter.py /usr/lib/python2.7/MimeWriter.pyc /usr/lib/python2.7/mimify.py /usr/lib/python2.7/mimify.pyc /usr/lib/python2.7/modulefinder.py /usr/lib/python2.7/modulefinder.pyc /usr/lib/python2.7/multifile.py /usr/lib/python2.7/multifile.pyc /usr/lib/python2.7/multiprocessing /usr/lib/python2.7/mutex.py /usr/lib/python2.7/mutex.pyc /usr/lib/python2.7/netrc.py /usr/lib/python2.7/netrc.pyc /usr/lib/python2.7/new.py /usr/lib/python2.7/new.pyc /usr/lib/python2.7/nntplib.py /usr/lib/python2.7/nntplib.pyc /usr/lib/python2.7/ntpath.py /usr/lib/python2.7/ntpath.pyc /usr/lib/python2.7/nturl2path.py /usr/lib/python2.7/nturl2path.pyc /usr/lib/python2.7/numbers.py /usr/lib/python2.7/numbers.pyc /usr/lib/python2.7/opcode.py /usr/lib/python2.7/opcode.pyc /usr/lib/python2.7/optparse.py /usr/lib/python2.7/optparse.pyc /usr/lib/python2.7/os.py /usr/lib/python2.7/os.pyc /usr/lib/python2.7/os2emxpath.py /usr/lib/python2.7/os2emxpath.pyc /usr/lib/python2.7/pdb.doc /usr/lib/python2.7/pdb.py /usr/lib/python2.7/pdb.pyc /usr/lib/python2.7/pickle.py /usr/lib/python2.7/pickle.pyc /usr/lib/python2.7/pickletools.py /usr/lib/python2.7/pickletools.pyc /usr/lib/python2.7/pipes.py /usr/lib/python2.7/pipes.pyc /usr/lib/python2.7/pkgutil.py /usr/lib/python2.7/pkgutil.pyc /usr/lib/python2.7/plat-x86_64-linux-gnu /usr/lib/python2.7/platform.py /usr/lib/python2.7/platform.pyc /usr/lib/python2.7/plistlib.py /usr/lib/python2.7/plistlib.pyc /usr/lib/python2.7/popen2.py /usr/lib/python2.7/popen2.pyc /usr/lib/python2.7/poplib.py /usr/lib/python2.7/poplib.pyc /usr/lib/python2.7/posixfile.py /usr/lib/python2.7/posixfile.pyc /usr/lib/python2.7/posixpath.py /usr/lib/python2.7/posixpath.pyc /usr/lib/python2.7/pprint.py /usr/lib/python2.7/pprint.pyc /usr/lib/python2.7/profile.py /usr/lib/python2.7/profile.pyc /usr/lib/python2.7/pstats.py /usr/lib/python2.7/pstats.pyc /usr/lib/python2.7/pty.py /usr/lib/python2.7/pty.pyc /usr/lib/python2.7/py_compile.py /usr/lib/python2.7/py_compile.pyc /usr/lib/python2.7/pyclbr.py /usr/lib/python2.7/pyclbr.pyc /usr/lib/python2.7/pydoc_data /usr/lib/python2.7/pydoc.py /usr/lib/python2.7/pydoc.pyc /usr/lib/python2.7/Queue.py /usr/lib/python2.7/Queue.pyc /usr/lib/python2.7/quopri.py /usr/lib/python2.7/quopri.pyc /usr/lib/python2.7/random.py /usr/lib/python2.7/random.pyc /usr/lib/python2.7/re.py /usr/lib/python2.7/re.pyc /usr/lib/python2.7/repr.py /usr/lib/python2.7/repr.pyc /usr/lib/python2.7/rexec.py /usr/lib/python2.7/rexec.pyc /usr/lib/python2.7/rfc822.py /usr/lib/python2.7/rfc822.pyc /usr/lib/python2.7/rlcompleter.py /usr/lib/python2.7/rlcompleter.pyc /usr/lib/python2.7/robotparser.py /usr/lib/python2.7/robotparser.pyc /usr/lib/python2.7/runpy.py /usr/lib/python2.7/runpy.pyc /usr/lib/python2.7/sched.py /usr/lib/python2.7/sched.pyc /usr/lib/python2.7/sets.py /usr/lib/python2.7/sets.pyc /usr/lib/python2.7/sgmllib.py /usr/lib/python2.7/sgmllib.pyc /usr/lib/python2.7/sha.py /usr/lib/python2.7/sha.pyc /usr/lib/python2.7/shelve.py /usr/lib/python2.7/shelve.pyc /usr/lib/python2.7/shlex.py /usr/lib/python2.7/shlex.pyc /usr/lib/python2.7/shutil.py /usr/lib/python2.7/shutil.pyc /usr/lib/python2.7/SimpleHTTPServer.py /usr/lib/python2.7/SimpleHTTPServer.pyc /usr/lib/python2.7/SimpleXMLRPCServer.py /usr/lib/python2.7/SimpleXMLRPCServer.pyc /usr/lib/python2.7/site.py /usr/lib/python2.7/site.pyc /usr/lib/python2.7/sitecustomize.py /usr/lib/python2.7/sitecustomize.pyc /usr/lib/python2.7/smtpd.py /usr/lib/python2.7/smtpd.pyc /usr/lib/python2.7/smtplib.py /usr/lib/python2.7/smtplib.pyc /usr/lib/python2.7/sndhdr.py /usr/lib/python2.7/sndhdr.pyc /usr/lib/python2.7/socket.py /usr/lib/python2.7/socket.pyc /usr/lib/python2.7/SocketServer.py /usr/lib/python2.7/SocketServer.pyc /usr/lib/python2.7/sqlite3 /usr/lib/python2.7/sre_compile.py /usr/lib/python2.7/sre_compile.pyc /usr/lib/python2.7/sre_constants.py /usr/lib/python2.7/sre_constants.pyc /usr/lib/python2.7/sre_parse.py /usr/lib/python2.7/sre_parse.pyc /usr/lib/python2.7/sre.py /usr/lib/python2.7/sre.pyc /usr/lib/python2.7/ssl.py /usr/lib/python2.7/ssl.pyc /usr/lib/python2.7/stat.py /usr/lib/python2.7/stat.pyc /usr/lib/python2.7/statvfs.py /usr/lib/python2.7/statvfs.pyc /usr/lib/python2.7/string.py /usr/lib/python2.7/string.pyc /usr/lib/python2.7/StringIO.py /usr/lib/python2.7/StringIO.pyc /usr/lib/python2.7/stringold.py /usr/lib/python2.7/stringold.pyc /usr/lib/python2.7/stringprep.py /usr/lib/python2.7/stringprep.pyc /usr/lib/python2.7/struct.py /usr/lib/python2.7/struct.pyc /usr/lib/python2.7/subprocess.py /usr/lib/python2.7/subprocess.pyc /usr/lib/python2.7/sunau.py /usr/lib/python2.7/sunau.pyc /usr/lib/python2.7/sunaudio.py /usr/lib/python2.7/sunaudio.pyc /usr/lib/python2.7/symbol.py /usr/lib/python2.7/symbol.pyc /usr/lib/python2.7/symtable.py /usr/lib/python2.7/symtable.pyc /usr/lib/python2.7/sysconfig.py /usr/lib/python2.7/sysconfig.pyc /usr/lib/python2.7/tabnanny.py /usr/lib/python2.7/tabnanny.pyc /usr/lib/python2.7/tarfile.py /usr/lib/python2.7/tarfile.pyc /usr/lib/python2.7/telnetlib.py /usr/lib/python2.7/telnetlib.pyc /usr/lib/python2.7/tempfile.py /usr/lib/python2.7/tempfile.pyc /usr/lib/python2.7/test /usr/lib/python2.7/textwrap.py /usr/lib/python2.7/textwrap.pyc /usr/lib/python2.7/this.py /usr/lib/python2.7/this.pyc /usr/lib/python2.7/threading.py /usr/lib/python2.7/threading.pyc /usr/lib/python2.7/timeit.py /usr/lib/python2.7/timeit.pyc /usr/lib/python2.7/toaiff.py /usr/lib/python2.7/toaiff.pyc /usr/lib/python2.7/token.py /usr/lib/python2.7/token.pyc /usr/lib/python2.7/tokenize.py /usr/lib/python2.7/tokenize.pyc /usr/lib/python2.7/trace.py /usr/lib/python2.7/trace.pyc /usr/lib/python2.7/traceback.py /usr/lib/python2.7/traceback.pyc /usr/lib/python2.7/tty.py /usr/lib/python2.7/tty.pyc /usr/lib/python2.7/types.py /usr/lib/python2.7/types.pyc /usr/lib/python2.7/unittest /usr/lib/python2.7/urllib.py /usr/lib/python2.7/urllib.pyc /usr/lib/python2.7/urllib2.py /usr/lib/python2.7/urllib2.pyc /usr/lib/python2.7/urlparse.py /usr/lib/python2.7/urlparse.pyc /usr/lib/python2.7/user.py /usr/lib/python2.7/user.pyc /usr/lib/python2.7/UserDict.py /usr/lib/python2.7/UserDict.pyc /usr/lib/python2.7/UserList.py /usr/lib/python2.7/UserList.pyc /usr/lib/python2.7/UserString.py /usr/lib/python2.7/UserString.pyc /usr/lib/python2.7/uu.py /usr/lib/python2.7/uu.pyc /usr/lib/python2.7/uuid.py /usr/lib/python2.7/uuid.pyc /usr/lib/python2.7/warnings.py /usr/lib/python2.7/warnings.pyc /usr/lib/python2.7/wave.py /usr/lib/python2.7/wave.pyc /usr/lib/python2.7/weakref.py /usr/lib/python2.7/weakref.pyc /usr/lib/python2.7/webbrowser.py /usr/lib/python2.7/webbrowser.pyc /usr/lib/python2.7/whichdb.py /usr/lib/python2.7/whichdb.pyc /usr/lib/python2.7/wsgiref.egg-info /usr/lib/python2.7/wsgiref /usr/lib/python2.7/xdrlib.py /usr/lib/python2.7/xdrlib.pyc /usr/lib/python2.7/xml /usr/lib/python2.7/xmllib.py /usr/lib/python2.7/xmllib.pyc /usr/lib/python2.7/xmlrpclib.py /usr/lib/python2.7/xmlrpclib.pyc /usr/lib/python2.7/zipfile.py /usr/lib/python2.7/zipfile.pyc /exports/usr/lib/python2.7/ \
-  ; mv /usr/lib/python2.7/dist-packages/README /exports/usr/lib/python2.7/dist-packages/ \
+  ; mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/share/ /exports/usr/share/bug/ /exports/usr/share/doc/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/menu/ /exports/usr/share/zsh/ \
+  ; mv /etc/shells /etc/zsh /exports/etc/ \
+  ; mv /usr/bin/rzsh /usr/bin/zsh /usr/bin/zsh5 /exports/usr/bin/ \
   ; mv /usr/lib/x86_64-linux-gnu/zsh /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/lib/python2.7 /exports/usr/local/lib/ \
   ; mv /usr/local/share/fzf /usr/local/share/zsh /exports/usr/local/share/ \
-  ; mv /usr/share/applications/python2.7.desktop /exports/usr/share/applications/ \
-  ; mv /usr/share/binfmts/python2.7 /exports/usr/share/binfmts/ \
   ; mv /usr/share/bug/zsh /usr/share/bug/zsh-common /exports/usr/share/bug/ \
-  ; mv /usr/share/doc/libpython2.7-minimal /usr/share/doc/libpython2.7-stdlib /usr/share/doc/python2.7-minimal /usr/share/doc/python2.7 /usr/share/doc/zsh-common /usr/share/doc/zsh /exports/usr/share/doc/ \
-  ; mv /usr/share/lintian/overrides/libpython2.7-minimal /usr/share/lintian/overrides/libpython2.7-stdlib /usr/share/lintian/overrides/python2.7 /usr/share/lintian/overrides/python2.7-minimal /usr/share/lintian/overrides/zsh /usr/share/lintian/overrides/zsh-common /exports/usr/share/lintian/overrides/ \
-  ; mv /usr/share/man/man1/2to3-2.7.1.gz /usr/share/man/man1/pdb2.7.1.gz /usr/share/man/man1/pydoc2.7.1.gz /usr/share/man/man1/pygettext2.7.1.gz /usr/share/man/man1/python2.7.1.gz /usr/share/man/man1/rzsh.1.gz /usr/share/man/man1/zsh.1.gz /usr/share/man/man1/zshall.1.gz /usr/share/man/man1/zshbuiltins.1.gz /usr/share/man/man1/zshcalsys.1.gz /usr/share/man/man1/zshcompctl.1.gz /usr/share/man/man1/zshcompsys.1.gz /usr/share/man/man1/zshcompwid.1.gz /usr/share/man/man1/zshcontrib.1.gz /usr/share/man/man1/zshexpn.1.gz /usr/share/man/man1/zshmisc.1.gz /usr/share/man/man1/zshmodules.1.gz /usr/share/man/man1/zshoptions.1.gz /usr/share/man/man1/zshparam.1.gz /usr/share/man/man1/zshroadmap.1.gz /usr/share/man/man1/zshtcpsys.1.gz /usr/share/man/man1/zshzftpsys.1.gz /usr/share/man/man1/zshzle.1.gz /exports/usr/share/man/man1/ \
+  ; mv /usr/share/doc/zsh-common /usr/share/doc/zsh /exports/usr/share/doc/ \
+  ; mv /usr/share/lintian/overrides/zsh /usr/share/lintian/overrides/zsh-common /exports/usr/share/lintian/overrides/ \
+  ; mv /usr/share/man/man1/rzsh.1.gz /usr/share/man/man1/zsh.1.gz /usr/share/man/man1/zshall.1.gz /usr/share/man/man1/zshbuiltins.1.gz /usr/share/man/man1/zshcalsys.1.gz /usr/share/man/man1/zshcompctl.1.gz /usr/share/man/man1/zshcompsys.1.gz /usr/share/man/man1/zshcompwid.1.gz /usr/share/man/man1/zshcontrib.1.gz /usr/share/man/man1/zshexpn.1.gz /usr/share/man/man1/zshmisc.1.gz /usr/share/man/man1/zshmodules.1.gz /usr/share/man/man1/zshoptions.1.gz /usr/share/man/man1/zshparam.1.gz /usr/share/man/man1/zshroadmap.1.gz /usr/share/man/man1/zshtcpsys.1.gz /usr/share/man/man1/zshzftpsys.1.gz /usr/share/man/man1/zshzle.1.gz /exports/usr/share/man/man1/ \
   ; mv /usr/share/menu/zsh-common /exports/usr/share/menu/ \
-  ; mv /usr/share/pixmaps/python2.7.xpm /exports/usr/share/pixmaps/ \
   ; mv /usr/share/zsh/5.* /usr/share/zsh/functions /usr/share/zsh/help /exports/usr/share/zsh/
 
 # SHELL-YARN
@@ -1266,12 +1250,12 @@ RUN set -e \
   ; mv /home/admin/dotfiles/apps/vim /home/admin/exports/home/admin/dotfiles/apps/
 USER root
 RUN set -e \
-  ; mkdir -p /exports/usr/include/python3.10/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/lib/python3.10/dist-packages/ /exports/usr/local/ /exports/usr/local/share/ \
-  ; mv /usr/include/python3.10/greenlet /exports/usr/include/python3.10/ \
+  ; mkdir -p /exports/usr/include/ /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/lib/python3.10/ /exports/usr/local/ /exports/usr/local/share/ \
+  ; mv /usr/include/python3.10 /exports/usr/include/ \
   ; mv /usr/local/bin/n /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/nvim /usr/local/bin/nvr /exports/usr/local/bin/ \
   ; mv /usr/local/include/node /exports/usr/local/include/ \
   ; mv /usr/local/lib/node_modules /exports/usr/local/lib/ \
-  ; mv /usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info /usr/local/lib/python3.10/dist-packages/greenlet /usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info /usr/local/lib/python3.10/dist-packages/msgpack /usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim-*.dist-info /usr/local/lib/python3.10/dist-packages/neovim /usr/local/lib/python3.10/dist-packages/nvr /usr/local/lib/python3.10/dist-packages/psutil-*.dist-info /usr/local/lib/python3.10/dist-packages/psutil /usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info /usr/local/lib/python3.10/dist-packages/pynvim /exports/usr/local/lib/python3.10/dist-packages/ \
+  ; mv /usr/local/lib/python3.10/dist-packages /exports/usr/local/lib/python3.10/ \
   ; mv /usr/local/n /exports/usr/local/ \
   ; mv /usr/local/share/nvim /exports/usr/local/share/
 
@@ -1323,8 +1307,8 @@ RUN set -e \
 USER root
 RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/ \
-  ; mv /usr/local/bin/ranger /usr/local/bin/rifle /exports/usr/local/bin/
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/ranger /exports/usr/local/bin/
 
 # SHELL-PASSWORDS
 FROM shell-admin AS shell-passwords
@@ -1694,10 +1678,10 @@ RUN set -e \
 FROM base AS ripgrep
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xzvf /tmp/ripgrep.tgz \
   ; rm /tmp/ripgrep.tgz \
-  ; mv ripgrep-14.1.0-x86_64-unknown-linux-musl ripgrep \
+  ; mv ripgrep-14.1.1-x86_64-unknown-linux-musl ripgrep \
   ; mv ripgrep/rg /usr/local/bin/rg \
   ; mkdir -p /usr/local/share/man/man1 \
   ; mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1 \
@@ -1724,26 +1708,29 @@ RUN set -e \
 # PGCLI
 FROM base AS pgcli
 COPY --from=apteryx /exports/ /
-COPY --from=build-essential /exports/ /
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
   ; apteryx libpq-dev \
-  ; pipx install pgcli=='4.1.0' --include-deps
+  ; uv tool install pgcli=='4.1.0' \
+  ; ln -s /usr/local/uv/bin/pgcli /usr/local/bin/pgcli
 RUN set -e \
   ; mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ \
   ; mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/bin/pgcli /usr/local/bin/sqlformat /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/
+  ; mv /usr/local/bin/apteryx /usr/local/bin/pgcli /usr/local/bin/uv /usr/local/bin/uvx /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/
 
 # NCU
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'npm-check-updates@16.14.20'
+  ; npm install -g 'npm-check-updates@17.1.3'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/ncu /exports/usr/local/bin/ \
@@ -1843,16 +1830,20 @@ RUN set -e \
 
 # HTTPIE
 FROM base AS httpie
-COPY --from=python3-pip /exports/ /
-COPY --from=pipx /exports/ /
+COPY --from=uv /exports/ /
 ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; pipx install httpie=='3.2.3'
+  ; uv tool install httpie=='3.2.3' \
+  ; ln -s /usr/local/uv/bin/http /usr/local/bin/http
 RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
-  ; mv /usr/local/pipx /exports/usr/local/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
   ; mv /usr/local/bin/http /exports/usr/local/bin/
 
 # HTOP
@@ -1871,11 +1862,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.53.0/gh_2.53.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.57.0/gh_2.57.0_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.53.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.53.0_linux_amd64'
+  ; mv 'gh_2.57.0_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.57.0_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -1897,10 +1888,10 @@ RUN set -e \
 FROM base AS fd
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/fd.tgz 'https://github.com/sharkdp/fd/releases/download/v10.2.0/fd-v10.2.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xzvf /tmp/fd.tgz \
   ; rm /tmp/fd.tgz \
-  ; mv 'fd-v10.1.0-x86_64-unknown-linux-musl' fd \
+  ; mv 'fd-v10.2.0-x86_64-unknown-linux-musl' fd \
   ; mv fd/fd /usr/local/bin/fd \
   ; mkdir -p /usr/local/share/man/man1 \
   ; mv fd/fd.1 /usr/local/share/man/man1/fd.1 \
@@ -1915,7 +1906,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN set -e \
   ; mkdir -p /usr/local/lib/docker/cli-plugins \
-  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.29.0/docker-compose-linux-x86_64' \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64' \
   ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN set -e \
   ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
@@ -1931,7 +1922,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:27.0.3*'
+  ; apteryx docker-ce-cli='5:27.3.1*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -1974,7 +1965,7 @@ RUN set -e \
 FROM base AS autotag
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.29/autotag_linux_amd64.tar.gz" \
+  ; wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.3.30/autotag_linux_amd64.tar.gz" \
   ; tar xzvf /tmp/autotag.tgz autotag \
   ; mv autotag /usr/local/bin/autotag \
   ; rm /tmp/autotag.tgz
@@ -2073,7 +2064,6 @@ FROM shell-admin AS my-desktop
 COPY --from=libxv1 /exports/ /
 COPY --from=mesa /exports/ /
 COPY --from=x11-utils /exports/ /
-COPY --from=python3-pip /exports/ /
 COPY --from=acpi /exports/ /
 COPY --from=alsa-utils /exports/ /
 COPY --from=apulse /exports/ /
@@ -2102,7 +2092,6 @@ COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
 COPY --from=pgcli /exports/ /
-COPY --from=pipx /exports/ /
 COPY --from=prettyping /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=rsync /exports/ /
@@ -2184,9 +2173,6 @@ ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
   GO111MODULE=auto
-ENV \
-  PIPX_HOME=/usr/local/pipx \
-  PIPX_BIN_DIR=/usr/local/bin
 ENV \
   PATH=${PATH}:/opt/google/chrome
 ENV \

@@ -3,13 +3,20 @@ from = "base"
 
 version = '0.3'
 
-devDependencies = [ "python3-pip", "pipx" ]
+devDependencies = [
+  'uv'
+]
 
 build = """
-pipx install ttok=='{{VERSION}}'
+uv tool install ttok=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/ttok /usr/local/bin/ttok
 """
 
-exports = [ "/usr/local/bin/ttok", "/usr/local/pipx/" ]
+exports = [
+  "/usr/local/uv/",
+  "/usr/local/bin/ttok",
+]
 
 [checkUpdates]
   type = 'github-release'

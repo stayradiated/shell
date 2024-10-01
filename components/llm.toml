@@ -1,17 +1,24 @@
 name = "llm"
 from = "base"
 
-version = '0.15'
+version = '0.16'
 
-devDependencies = [ "python3-pip", "pipx" ]
+devDependencies = [
+  "uv"
+]
 
 build = """
-pipx install llm=='{{VERSION}}'
+uv tool install llm=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/llm /usr/local/bin/llm
 
 llm install llm-claude-3
 """
 
-exports = [ "/usr/local/bin/llm", "/usr/local/pipx/" ]
+exports = [
+  "/usr/local/uv/",
+  "/usr/local/bin/llm",
+]
 
 [checkUpdates]
   type = 'github-release'

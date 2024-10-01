@@ -3,7 +3,6 @@ from = 'shell-admin'
 
 dependencies = [
   'fzf',
-  'python2',
   'zsh',
 ]
 

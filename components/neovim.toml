@@ -1,11 +1,11 @@
 name = 'neovim'
 from = 'base'
 
-version = 'v0.10.0'
+version = 'v0.10.1'
 
 devDependencies = [
   'wget',
-  'python3-pip',
+  'uv',
 ]
 
 build = """
@@ -25,27 +25,22 @@ rm -r squashfs-root
 find /usr/local/share/nvim -type d -print0 | xargs -0 chmod 0775
 find /usr/local/share/nvim -type f -print0 | xargs -0 chmod 0664
 
-pip3 install neovim msgpack neovim-remote
+uv pip install --system neovim msgpack neovim-remote
 """
 
 exports = [
-  "/usr/include/python3.10/greenlet/",
+  "/usr/include/python3.10/",
   "/usr/local/bin/nvim",
   "/usr/local/bin/nvr",
-  "/usr/local/lib/python3.10/dist-packages/greenlet-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/greenlet/",
-  "/usr/local/lib/python3.10/dist-packages/msgpack-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/msgpack/",
-  "/usr/local/lib/python3.10/dist-packages/neovim_remote-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/neovim-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/neovim/",
-  "/usr/local/lib/python3.10/dist-packages/nvr/",
-  "/usr/local/lib/python3.10/dist-packages/psutil-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/psutil/",
-  "/usr/local/lib/python3.10/dist-packages/pynvim-*.dist-info/",
-  "/usr/local/lib/python3.10/dist-packages/pynvim/",
-  # "/usr/local/share/man/man1/",
+  "/usr/local/lib/python3.10/dist-packages/",
   "/usr/local/share/nvim/",
+]
+
+[diff]
+exclude = [
+  "/root/.cache/",
+  "/root/.wget-hsts/",
+  "/tmp/uv-*.lock",
 ]
 
 [checkUpdates]

@@ -3,7 +3,7 @@ fromImage = 'phusion/baseimage:jammy-1.0.1' # 22.04
 
 baseExportDir = '/exports/'
 
-version = 'jammy-1.0.2'
+version = 'jammy-1.0.4'
 
 build = """
 echo {{VERSION}}

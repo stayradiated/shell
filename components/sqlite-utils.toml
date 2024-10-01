@@ -3,13 +3,20 @@ from = "base"
 
 version = '3.37'
 
-devDependencies = [ "python3-pip", "pipx" ]
+devDependencies = [
+  'uv'
+]
 
 build = """
-pipx install sqlite-utils=='{{VERSION}}'
+uv tool install sqlite-utils=='{{VERSION}}'
+
+ln -s /usr/local/uv/bin/sqlite-utils /usr/local/bin/sqlite-utils
 """
 
-exports = [ "/usr/local/bin/sqlite-utils", "/usr/local/pipx/" ]
+exports = [
+  '/usr/local/uv/',
+  '/usr/local/bin/sqlite-utils',
+]
 
 [checkUpdates]
   type = 'github-release'
