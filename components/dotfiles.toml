@@ -1,7 +1,7 @@
 name = 'dotfiles'
 from = 'base'
 
-version = 'v1.98.52'
+version = 'v1.98.59'
 
 devDependencies = [
   'clone',

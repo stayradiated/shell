@@ -124,7 +124,7 @@ dependencies = [
   # 'lunatask',
   'xcolor',
 
-  'jo',
+  # 'jo',
   # 'xterm',
   'sleek',
   'oha',
@@ -134,10 +134,11 @@ dependencies = [
 
   'gifski',
   'ast-grep',
-  'jujutsu',
+  # 'jujutsu',
   'hey',
   'ffmpeg',
   'yt-dlp',
+  'curlie',
 
   # data tools
   # 'sc-im',

@@ -1,0 +1,24 @@
+name = "curlie"
+from = "base"
+
+version = "1.7.2"
+
+devDependencies = [ "wget" ]
+
+build = """
+wget --no-hsts -O /tmp/curlie.tgz 'https://github.com/rs/curlie/releases/download/v{{VERSION}}/curlie_{{VERSION}}_linux_amd64.tar.gz'
+
+mkdir -p /tmp/curlie
+tar xzvf /tmp/curlie.tgz -C /tmp/curlie/
+rm /tmp/curlie.tgz
+
+mv /tmp/curlie/curlie /usr/local/bin/curlie
+rm -r /tmp/curlie
+"""
+
+exports = [ "/usr/local/bin/curlie" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/rs/curlie"
+removePrefix = "v"
