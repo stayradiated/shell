@@ -139,6 +139,7 @@ dependencies = [
   'ffmpeg',
   'yt-dlp',
   'curlie',
+  'cloudflared',
 
   # data tools
   # 'sc-im',

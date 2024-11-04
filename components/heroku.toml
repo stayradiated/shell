@@ -1,7 +1,7 @@
 name = 'heroku'
 from = 'base'
 
-version = '9.3.0'
+version = '9.3.2'
 
 devDependencies = [
   'node',

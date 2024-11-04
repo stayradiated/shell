@@ -1,7 +1,7 @@
 name = 'alacritty'
 from = 'base'
 
-version = 'v0.13.2'
+version = 'v0.14.0'
 
 devDependencies = [
   'clone',
@@ -9,7 +9,7 @@ devDependencies = [
 ]
 
 build = """
-packages="cmake gcc pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3"
+packages="cmake g++ pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev python3"
 
 apt-get -q update
 apt-get install -y --no-install-recommends --auto-remove $packages

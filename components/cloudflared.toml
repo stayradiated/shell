@@ -1,0 +1,18 @@
+name = "cloudflared"
+from = "base"
+
+version = '2024.10.1'
+
+devDependencies = [ "wget" ]
+
+build = """
+wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/{{VERSION}}/cloudflared-linux-amd64'
+chmod +x /usr/local/bin/cloudflared
+"""
+exports = [ "/usr/local/bin/cloudflared" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/cloudflare/cloudflared"
+removePrefix = "v"
+
