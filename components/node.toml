@@ -2,7 +2,7 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = 'v23.2.0'
+version = 'v23.3.0'
 
 dependencies = ['n']
 
