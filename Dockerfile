@@ -54,7 +54,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.23.3.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.23.4.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -172,7 +172,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.99.3' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.99.6' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -213,7 +213,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v23.3.0 \
+  ; n v23.4.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -226,7 +226,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.5.5/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.5.7/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -501,7 +501,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='132.0.6834.15-*'
+  ; apteryx google-chrome-beta='132.0.6834.32-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/man/man8/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /exports/etc/ \
@@ -559,11 +559,43 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# GITBUTLER
+FROM base AS gitbutler
+COPY --from=apteryx /exports/ /
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; UNSUFFIXED_VERSION=$(echo '0.14.2-1544' | sed 's/-.*//') \
+  ; wget -O /tmp/gitbutler.deb "https://releases.gitbutler.com/releases/release/0.14.2-1544/linux/x86_64/GitButler_${UNSUFFIXED_VERSION}_amd64.deb"
+RUN set -e \
+  ; apteryx /tmp/gitbutler.deb
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ \
+  ; mv /usr/bin/gitbutler-git-askpass /usr/bin/gitbutler-git-setsid /usr/bin/gitbutler-tauri /exports/usr/bin/ \
+  ; mv /usr/lib/x86_64-linux-gnu /exports/usr/lib/
+
+# FILES-TO-PROMPT
+FROM base AS files-to-prompt
+COPY --from=uv /exports/ /
+ENV \
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
+RUN set -e \
+  ; uv tool install files-to-prompt=='0.4' \
+  ; ln -s /usr/local/uv/bin/files-to-prompt /usr/local/bin/files-to-prompt
+RUN set -e \
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/files-to-prompt /exports/usr/local/bin/
+
 # CLOUDFLARED
 FROM base AS cloudflared
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2024.11.1/cloudflared-linux-amd64' \
+  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2024.12.1/cloudflared-linux-amd64' \
   ; chmod +x /usr/local/bin/cloudflared
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -634,7 +666,7 @@ FROM base AS ast-grep
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.31.0/app-x86_64-unknown-linux-gnu.zip' \
+  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.31.1/app-x86_64-unknown-linux-gnu.zip' \
   ; unzip /tmp/ast-grep.zip \
   ; rm /tmp/ast-grep.zip \
   ; mv sg /usr/local/bin/sg \
@@ -673,7 +705,7 @@ RUN set -e \
 FROM base AS oha
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget "https://github.com/hatoo/oha/releases/download/v1.4.7/oha-linux-amd64" -O /tmp/oha \
+  ; wget "https://github.com/hatoo/oha/releases/download/v1.5.0/oha-linux-amd64" -O /tmp/oha \
   ; chmod +x /tmp/oha \
   ; mv /tmp/oha /usr/local/bin/oha
 RUN set -e \
@@ -893,7 +925,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.74.18*'
+  ; apteryx brave-browser-beta='1.74.20*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -908,7 +940,7 @@ RUN set -e \
 FROM base AS heroku
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'heroku@9.5.0'
+  ; npm install -g 'heroku@10.0.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/heroku /exports/usr/local/bin/ \
@@ -1017,7 +1049,7 @@ ENV \
   UV_TOOL_BIN_DIR=/usr/local/uv/bin \
   UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; uv tool install llm=='0.19' \
+  ; uv tool install llm=='0.19.1' \
   ; ln -s /usr/local/uv/bin/llm /usr/local/bin/llm \
   ; llm install llm-claude-3
 RUN set -e \
@@ -1105,7 +1137,7 @@ RUN set -e \
   ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
   ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
   ; apt update \
-  ; version=$(echo "8.10.56-1" | sed 's/-/~/') \
+  ; version=$(echo "8.10.56-22" | sed 's/-/~/') \
   ; apteryx 1password="${version}.BETA"
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/bin/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc/ /exports/usr/share/gettext/its/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ \
@@ -1162,7 +1194,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@9.14.4'
+  ; npm install -g 'pnpm@9.15.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1862,11 +1894,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.63.0/gh_2.63.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.63.2/gh_2.63.2_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.63.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.63.0_linux_amd64'
+  ; mv 'gh_2.63.2_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.63.2_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -1922,7 +1954,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:27.3.1*'
+  ; apteryx docker-ce-cli='5:27.4.0*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -2169,6 +2201,8 @@ COPY --from=ffmpeg /exports/ /
 COPY --from=yt-dlp /exports/ /
 COPY --from=curlie /exports/ /
 COPY --from=cloudflared /exports/ /
+COPY --from=files-to-prompt /exports/ /
+COPY --from=gitbutler /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

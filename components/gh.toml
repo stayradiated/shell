@@ -1,7 +1,7 @@
 name = 'gh'
 from = 'base'
 
-version = '2.63.0'
+version = '2.63.2'
 
 devDependencies = [
   'wget',

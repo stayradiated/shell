@@ -129,7 +129,6 @@ dependencies = [
   'sleek',
   'oha',
 
-  # 'files-to-prompt',
   'lazygit',
 
   'gifski',
@@ -140,6 +139,9 @@ dependencies = [
   'yt-dlp',
   'curlie',
   'cloudflared',
+
+  'files-to-prompt',
+  'gitbutler',
 
   # data tools
   # 'sc-im',
