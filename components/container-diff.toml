@@ -20,6 +20,6 @@ exports = [
   '/usr/local/bin/container-diff'
 ]
 
-[checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/GoogleContainerTools/container-diff'
+# [checkUpdates]
+#   type = 'github-release'
+#   url = 'https://github.com/GoogleContainerTools/container-diff'

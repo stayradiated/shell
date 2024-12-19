@@ -1,7 +1,7 @@
 name = 'autotag'
 from = 'base'
 
-version = 'v1.3.34'
+version = 'v1.3.37'
 
 devDependencies = [ "wget" ]
 
