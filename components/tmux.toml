@@ -11,26 +11,29 @@ devDependencies = [
 ]
 
 build = """
-apteryx libncurses5-dev libevent-dev bison
+packages="libncurses5-dev libevent-dev bison"
+apteryx $packages
 
-cd /root
-wget -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/{{VERSION}}/tmux-{{VERSION}}.tar.gz'
-tar xzvf /tmp/tmux.tgz
+wget \
+  --no-hsts \
+  -O /tmp/tmux.tgz \
+  'https://github.com/tmux/tmux/releases/download/{{VERSION}}/tmux-{{VERSION}}.tar.gz'
+
+mkdir -p /tmp/tmux
+tar -xz --strip-components=1 -C /tmp/tmux -f /tmp/tmux.tgz 
 rm /tmp/tmux.tgz
 
-cd 'tmux-{{VERSION}}'
+cd /tmp/tmux
 ./configure
 make
 make install
-cd ..
-rm -r 'tmux-{{VERSION}}'
+
+cd /
+rm -r /tmp/tmux
+apt-get remove --purge -y $packages
 """
 
 exports = [
-  "/usr/bin/ncurses5-config",
-  "/usr/bin/ncurses6-config",
-  "/usr/bin/ncursesw5-config",
-  "/usr/bin/ncursesw6-config",
   "/usr/include/curses.h",
   "/usr/include/cursesapp.h",
   "/usr/include/cursesf.h",
@@ -40,15 +43,8 @@ exports = [
   "/usr/include/cursslk.h",
   "/usr/include/eti.h",
   "/usr/include/etip.h",
-  "/usr/include/evdns.h",
-  "/usr/include/event.h",
-  "/usr/include/event2/",
-  "/usr/include/evhttp.h",
-  "/usr/include/evrpc.h",
-  "/usr/include/evutil.h",
   "/usr/include/form.h",
   "/usr/include/menu.h",
-  "/usr/include/nc_tparm.h",
   "/usr/include/ncurses_dll.h",
   "/usr/include/ncurses.h",
   "/usr/include/ncursesw/",
@@ -56,42 +52,43 @@ exports = [
   "/usr/include/term_entry.h",
   "/usr/include/term.h",
   "/usr/include/termcap.h",
-  "/usr/include/tic.h",
   "/usr/include/unctrl.h",
-  "/usr/lib/valgrind/ncurses.supp",
   "/usr/lib/x86_64-linux-gnu/libcurses.a",
   "/usr/lib/x86_64-linux-gnu/libcurses.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_core-*.so.*",
-  "/usr/lib/x86_64-linux-gnu/libevent_core.a",
-  "/usr/lib/x86_64-linux-gnu/libevent_core.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_extra-*.so.*",
-  "/usr/lib/x86_64-linux-gnu/libevent_extra.a",
-  "/usr/lib/x86_64-linux-gnu/libevent_extra.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_openssl-*.so.*",
-  "/usr/lib/x86_64-linux-gnu/libevent_openssl.a",
-  "/usr/lib/x86_64-linux-gnu/libevent_openssl.so",
-  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-*.so.*",
-  "/usr/lib/x86_64-linux-gnu/libevent_pthreads.a",
-  "/usr/lib/x86_64-linux-gnu/libevent_pthreads.so",
-  "/usr/lib/x86_64-linux-gnu/libevent-*.so.*",
-  "/usr/lib/x86_64-linux-gnu/libevent.a",
-  "/usr/lib/x86_64-linux-gnu/libevent.so",
+  "/usr/lib/x86_64-linux-gnu/libevent_core-2.1.so.7",
+  "/usr/lib/x86_64-linux-gnu/libevent_core-2.1.so.7.0.1",
+  "/usr/lib/x86_64-linux-gnu/libevent_extra-2.1.so.7",
+  "/usr/lib/x86_64-linux-gnu/libevent_extra-2.1.so.7.0.1",
+  "/usr/lib/x86_64-linux-gnu/libevent_openssl-2.1.so.7",
+  "/usr/lib/x86_64-linux-gnu/libevent_openssl-2.1.so.7.0.1",
+  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-2.1.so.7",
+  "/usr/lib/x86_64-linux-gnu/libevent_pthreads-2.1.so.7.0.1",
+  "/usr/lib/x86_64-linux-gnu/libevent-2.1.so.7",
+  "/usr/lib/x86_64-linux-gnu/libevent-2.1.so.7.0.1",
   "/usr/lib/x86_64-linux-gnu/libform.a",
   "/usr/lib/x86_64-linux-gnu/libform.so",
+  "/usr/lib/x86_64-linux-gnu/libform.so.6",
+  "/usr/lib/x86_64-linux-gnu/libform.so.6.4",
   "/usr/lib/x86_64-linux-gnu/libformw.a",
   "/usr/lib/x86_64-linux-gnu/libformw.so",
   "/usr/lib/x86_64-linux-gnu/libmenu.a",
   "/usr/lib/x86_64-linux-gnu/libmenu.so",
+  "/usr/lib/x86_64-linux-gnu/libmenu.so.6",
+  "/usr/lib/x86_64-linux-gnu/libmenu.so.6.4",
   "/usr/lib/x86_64-linux-gnu/libmenuw.a",
   "/usr/lib/x86_64-linux-gnu/libmenuw.so",
   "/usr/lib/x86_64-linux-gnu/libncurses.a",
   "/usr/lib/x86_64-linux-gnu/libncurses.so",
+  "/usr/lib/x86_64-linux-gnu/libncurses.so.6",
+  "/usr/lib/x86_64-linux-gnu/libncurses.so.6.4",
   "/usr/lib/x86_64-linux-gnu/libncurses++.a",
   "/usr/lib/x86_64-linux-gnu/libncurses++w.a",
   "/usr/lib/x86_64-linux-gnu/libncursesw.a",
   "/usr/lib/x86_64-linux-gnu/libncursesw.so",
   "/usr/lib/x86_64-linux-gnu/libpanel.a",
   "/usr/lib/x86_64-linux-gnu/libpanel.so",
+  "/usr/lib/x86_64-linux-gnu/libpanel.so.6",
+  "/usr/lib/x86_64-linux-gnu/libpanel.so.6.4",
   "/usr/lib/x86_64-linux-gnu/libpanelw.a",
   "/usr/lib/x86_64-linux-gnu/libpanelw.so",
   "/usr/lib/x86_64-linux-gnu/libtermcap.a",
@@ -102,11 +99,6 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libtinfo.so",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/form.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/formw.pc",
-  "/usr/lib/x86_64-linux-gnu/pkgconfig/libevent_core.pc",
-  "/usr/lib/x86_64-linux-gnu/pkgconfig/libevent_extra.pc",
-  "/usr/lib/x86_64-linux-gnu/pkgconfig/libevent_openssl.pc",
-  "/usr/lib/x86_64-linux-gnu/pkgconfig/libevent_pthreads.pc",
-  "/usr/lib/x86_64-linux-gnu/pkgconfig/libevent.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/menu.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/menuw.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/ncurses.pc",
@@ -117,23 +109,28 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/pkgconfig/panelw.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/tic.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/tinfo.pc",
-  "/usr/local/bin/tmux",
-  "/usr/local/share/man/man1/",
-  "/usr/share/doc/libevent-2.1-7/",
-  "/usr/share/doc/libevent-core-2.1-7/",
-  "/usr/share/doc/libevent-dev/",
-  "/usr/share/doc/libevent-extra-2.1-7/",
-  "/usr/share/doc/libevent-openssl-2.1-7/",
-  "/usr/share/doc/libevent-pthreads-2.1-7/",
-  "/usr/share/doc/libncurses-dev",
-  "/usr/share/doc/libncurses5-dev",
-  "/usr/share/lintian/overrides/libevent-openssl-2.1-7",
-  "/usr/share/man/man1/ncurses5-config.1.gz",
-  "/usr/share/man/man1/ncurses6-config.1.gz",
-  "/usr/share/man/man1/ncursesw5-config.1.gz",
-  "/usr/share/man/man1/ncursesw6-config.1.gz",
+  "/usr/local/bin/tmux"
 ]
 
 [checkUpdates]
   type = 'github-release'
   url = 'https://github.com/tmux/tmux'
+
+[diff]
+exclude = [
+  "/etc/ld.so.cache",
+  "/usr/bin/m4",
+  "/usr/bin/ncurses*-config",
+  "/usr/lib/valgrind/ncurses.supp",
+  "/usr/local/share/man/**",
+  "/usr/share/doc/**",
+  "/usr/share/doc/m4/",
+  "/usr/share/doc/**",
+  "/usr/share/info/**",
+  "/usr/share/lintian/**",
+  "/usr/share/man/**",
+  "/var/cache/ldconfig/aux-cache",
+  "/var/lib/apt/**",
+  "/var/lib/dpkg/**",
+  "/var/log/**"
+]

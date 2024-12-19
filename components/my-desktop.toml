@@ -9,7 +9,7 @@ dependencies = [
   'acpi',
   # 'aerc',
   'alsa-utils',
-  'apulse',
+  # 'apulse', # TODO missing on Ubuntu 24.04??
   'autotag',
   'bat',
   'bsdmainutils',
@@ -28,7 +28,7 @@ dependencies = [
   'jq',
   'libglib',
   'make',
-  'man',
+  # 'man',
   'mbsync',
   'mediainfo',
   # 'miller',
@@ -87,12 +87,12 @@ dependencies = [
   'wifi',
 
   # 'darktable',
-  'imgp',
+  # 'imgp',
 
   'bandwhich',
   'caddy',
 
-  'obsidian',
+  # 'obsidian',
 
   'llm',
   'strip-tags',
@@ -100,12 +100,12 @@ dependencies = [
   'sqlite-utils',
 
   # Runn
-  'kolide',
+  # 'kolide',
   'heroku',
   'brave',
   # 'peek',
 
-  'fastgron',
+  # 'fastgron',
   'rofi',
 
   'exa',
@@ -120,11 +120,11 @@ dependencies = [
   # 'deno',
   'fonts',
 
-  # 'yq',
+  'yq',
   # 'lunatask',
   'xcolor',
 
-  # 'jo',
+  'jo',
   # 'xterm',
   'sleek',
   'oha',
@@ -133,7 +133,7 @@ dependencies = [
 
   'gifski',
   'ast-grep',
-  # 'jujutsu',
+  'jujutsu',
   'hey',
   'ffmpeg',
   'yt-dlp',
@@ -141,7 +141,8 @@ dependencies = [
   'cloudflared',
 
   'files-to-prompt',
-  'gitbutler',
+  # 'gitbutler',
+  'miller',
 
   # data tools
   # 'sc-im',

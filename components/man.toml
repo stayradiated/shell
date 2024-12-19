@@ -1,7 +1,7 @@
 name = "man"
 from = "base"
 
-version = '2.10.2-1'
+version = '2.12.0-4build2'
 
 devDependencies = [ "apteryx" ]
 

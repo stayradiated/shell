@@ -1,7 +1,7 @@
 name = 'xz'
 from = 'base'
 
-version = '5.2.5-2ubuntu1'
+version = '5.6.1+really5.4.5-1build0.1'
 
 devDependencies = [
   'apteryx'

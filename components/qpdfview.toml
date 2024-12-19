@@ -1,7 +1,7 @@
 name = 'qpdfview'
 from = 'base'
 
-version = '0.4.18-6'
+version = '0.5.0+ds-4build4'
 
 devDependencies = [ 'apteryx' ]
 

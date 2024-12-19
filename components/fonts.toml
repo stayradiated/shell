@@ -1,7 +1,7 @@
 name = 'fonts'
 from = 'base'
 
-version = '2.13.1-4.2ubuntu5'
+version = '2.15.0-1.1ubuntu2'
 
 devDependencies = [
   'clone',
@@ -34,7 +34,8 @@ mv SFMono/TrueType /usr/share/fonts/SFMono
 mv SFPro/TrueType /usr/share/fonts/SFPro
 
 cd /etc/fonts/conf.d
-rm 10* 70-no-bitmaps.conf
+ls -alh
+rm 10* 70-no-bitmaps-except-emoji.conf
 ln -s ../conf.avail/70-yes-bitmaps.conf .
 dpkg-reconfigure fontconfig
 fc-cache -fv

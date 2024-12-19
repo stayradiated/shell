@@ -1,7 +1,7 @@
 name = "ar"
 from = "base"
 
-version = '2.38-4ubuntu2.6'
+version = '2.42-4ubuntu2.3'
 
 devDependencies = [ "apteryx" ]
 

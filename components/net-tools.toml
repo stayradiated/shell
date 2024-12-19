@@ -1,7 +1,7 @@
 name = "net-tools"
 from = "base"
 
-version = '1.60+git20181103.0eebece-1ubuntu5'
+version = '2.10-0.1ubuntu4'
 
 devDependencies = [ "apteryx" ]
 

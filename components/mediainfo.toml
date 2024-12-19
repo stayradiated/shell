@@ -1,6 +1,7 @@
 name = 'mediainfo'
 from = 'base'
-version = '22.03-1'
+
+version = '24.01.1-1build2'
 
 devDependencies = [ 'apteryx' ]
 

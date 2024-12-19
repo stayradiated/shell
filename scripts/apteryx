@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export DEBIAN_FRONTEND="noninteractive"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+log_info() {
+    echo -e "${BLUE}INFO:${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}ERROR:${NC} $1" >&2
+}
+
+log_success() {
+    echo -e "${GREEN}SUCCESS:${NC} $1"
+}
+
+check_dependencies() {
+    if ! command -v apt-get >/dev/null || ! command -v apt-cache >/dev/null; then
+        log_error "This script requires apt-get and apt-cache to be installed"
+        exit 1
+    fi
+}
+
+update_apt_if_needed() {
+    if [ ! "$(find /var/lib/apt/lists/ -mmin -1440 2>/dev/null)" ]; then
+        log_info "Updating package lists..."
+        if ! apt-get -qq update; then
+            log_error "Failed to update package lists"
+            exit 1
+        fi
+    fi
+}
+
+get_package_name() {
+    echo "$1" | cut -d'=' -f1
+}
+
+get_requested_version() {
+    echo "$1" | cut -d'=' -f2- || echo ""
+}
+
+list_available_versions() {
+    local package="$1"
+    log_info "Available versions for ${package}:"
+    echo
+    apt-cache madison "$package" |
+        awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); if ($2 != "") print "  •",$2}'
+    echo
+}
+
+install_packages() {
+    local install_cmd="apt-get install -y --no-install-recommends --auto-remove"
+    if ! $install_cmd "$@" >/dev/null 2>&1; then
+        for pkg in "$@"; do
+            local package_name=$(get_package_name "$pkg")
+            local requested_version=$(get_requested_version "$pkg")
+
+            # Check if package exists
+            if ! apt-cache show "$package_name" >/dev/null 2>&1; then
+                log_error "Package '$package_name' not found in the repositories"
+                return 1
+            fi
+
+            # If version was specified, check its availability
+            if [ -n "$requested_version" ]; then
+                if ! apt-cache madison "$package_name" | grep -q "$requested_version"; then
+                    log_error "Version '$requested_version' not found for package '$package_name'"
+                    list_available_versions "$package_name"
+                    return 1
+                fi
+            fi
+        done
+
+        # If we get here, it's a different kind of error
+        log_error "Failed to install packages. Original error:"
+        $install_cmd "$@"
+        return 1
+    fi
+    return 0
+}
+
+cleanup() {
+    if [ $? -eq 0 ]; then
+        apt-get -qq clean
+        rm -rf /var/tmp/* /tmp/*
+    fi
+}
+
+main() {
+    if [ $# -eq 0 ]; then
+        log_error "No packages specified"
+        echo "Usage: $(basename "$0") package[=version] [package[=version] ...]"
+        exit 1
+    fi
+
+    check_dependencies
+    update_apt_if_needed
+
+    if install_packages "$@"; then
+        log_success "Successfully installed: $*"
+        cleanup
+    else
+        exit 1
+    fi
+}
+
+trap cleanup EXIT
+main "$@"

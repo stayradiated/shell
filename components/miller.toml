@@ -1,19 +1,22 @@
 name = 'miller'
 from = 'base'
 
-version = '6.12.0'
+version = '6.13.0'
 
-devDependencies = [
-  'wget',
-  'apteryx',
-]
+devDependencies = ['wget']
 
 build = """
-wget \
-  -O /tmp/miller.deb \
-  https://github.com/johnkerl/miller/releases/download/v{{VERSION}}/miller-{{VERSION}}-linux-amd64.deb
+wget --no-hsts \
+  -O /tmp/miller.tar.gz \
+  https://github.com/johnkerl/miller/releases/download/v{{VERSION}}/miller-{{VERSION}}-linux-amd64.tar.gz
 
-apteryx /tmp/miller.deb
+tar -xz \
+  --strip-components=1 \
+  -C /usr/bin \
+  -f /tmp/miller.tar.gz \
+  miller-{{VERSION}}-linux-amd64/mlr
+
+rm /tmp/miller.tar.gz
 """
 
 exports = [

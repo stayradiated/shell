@@ -1,7 +1,7 @@
 name = "bsdmainutils"
 from = "base"
 
-version = '12.1.7+nmu3ubuntu2'
+version = '12.1.8'
 
 devDependencies = [ "apteryx" ]
 

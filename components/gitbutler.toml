@@ -13,8 +13,6 @@ wget \
   -O /tmp/gitbutler.deb \
   "https://releases.gitbutler.com/releases/release/{{VERSION}}/linux/x86_64/GitButler_${UNSUFFIXED_VERSION}_amd64.deb"
 
-#RUN
-
 apteryx /tmp/gitbutler.deb
 """
 

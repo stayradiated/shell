@@ -1,7 +1,7 @@
 name = "zsh"
 from = "base"
 
-version = '5.8.1-1'
+version = '5.9-6ubuntu2'
 
 devDependencies = [
   "apteryx"

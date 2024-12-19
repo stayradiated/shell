@@ -1,5 +1,5 @@
 name = 'base'
-fromImage = 'phusion/baseimage:jammy-1.0.1' # 22.04
+fromImage = 'phusion/baseimage:noble-1.0.0' # 24.04
 
 baseExportDir = '/exports/'
 

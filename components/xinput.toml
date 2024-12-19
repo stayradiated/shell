@@ -1,7 +1,7 @@
 name = "xinput"
 from = "base"
 
-version = '1.6.3-1build2'
+version = '1.6.4-1build1'
 
 devDependencies = [ "apteryx" ]
 
