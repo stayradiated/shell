@@ -184,6 +184,7 @@ COPY ./secret/admin-passwd /tmp/admin-passwd
 RUN set -e \
   ; echo "* - nofile 100000" >> /etc/security/limits.conf \
   ; echo "session required pam_limits.so" >> /etc/pam.d/common-session \
+  ; userdel ubuntu \
   ; useradd -s /bin/zsh --create-home admin \
   ; echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted \
   ; adduser admin sudo \

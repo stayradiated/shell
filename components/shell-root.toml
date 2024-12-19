@@ -15,6 +15,9 @@ build = """
 echo "* - nofile 100000" >> /etc/security/limits.conf
 echo "session required pam_limits.so" >> /etc/pam.d/common-session
 
+# remove existing 1000:1000 user
+userdel ubuntu
+
 useradd -s /bin/zsh --create-home admin
 echo "admin:$(cat /tmp/admin-passwd)" | chpasswd --encrypted
 adduser admin sudo
