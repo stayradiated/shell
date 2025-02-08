@@ -1,7 +1,7 @@
 name = "darktable"
 from = "base"
 
-# https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/
+# https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_24.04/amd64/
 # → ubuntu → "Grab binary package files directly"
 version = "4.6.1-1.1+74.1"
 
@@ -12,7 +12,7 @@ dependencies = [ "libheif" ]
 # https://software.opensuse.org/download.html?project=graphics:darktable&package=darktable
 build = """
 wget -O /tmp/darktable.deb \
-  https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_22.04/amd64/darktable_{{VERSION}}_amd64.deb
+  https://download.opensuse.org/repositories/graphics:/darktable/xUbuntu_24.04/amd64/darktable_{{VERSION}}_amd64.deb
 apteryx /tmp/darktable.deb
 """
 

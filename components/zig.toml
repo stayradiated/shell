@@ -1,0 +1,33 @@
+name = 'zig'
+from = 'base'
+
+version = '0.13.0'
+
+devDependencies = [
+  'wget',
+  'xz',
+]
+
+build = """
+wget \
+  --no-hsts \
+  -O /tmp/zig.tar.xz \
+  "https://ziglang.org/download/{{VERSION}}/zig-linux-x86_64-{{VERSION}}.tar.xz"
+
+#RUN
+
+tar -v -x --strip-components=1 -C /tmp -f /tmp/zig.tar.xz
+mv /tmp/zig /usr/local/bin/zig
+mv /tmp/lib /usr/lib/zig
+
+rm -r /tmp/doc/ /tmp/LICENSE /tmp/README.md /tmp/zig.tar.xz
+"""
+
+exports = [
+  '/usr/local/bin/zig',
+  '/usr/lib/zig/'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/ziglang/zig'

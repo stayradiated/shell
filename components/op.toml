@@ -1,0 +1,10 @@
+name = "op"
+from = "base"
+
+version = "2.30.3"
+
+devDependencies = []
+
+build = """
+curl -L -o op.zip https://cache.agilebits.com/dist/1P/op2/pkg/v{{VERSION}}/op_linux_amd64_v{{VERSION}}.zip
+"""

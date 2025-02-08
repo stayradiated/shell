@@ -1,7 +1,7 @@
 name = "cmake"
 from = "base"
 
-version = '3.22.1-1ubuntu1.22.04.2'
+version = '3.22.1-1ubuntu1.24.04.2'
 
 devDependencies = [ "apteryx" ]
 

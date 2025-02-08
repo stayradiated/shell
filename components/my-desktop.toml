@@ -127,22 +127,25 @@ dependencies = [
   'jo',
   # 'xterm',
   'sleek',
-  'oha',
 
   'lazygit',
 
   'gifski',
   'ast-grep',
   'jujutsu',
-  'hey',
+
+  # 'hey',
+  'oha',
+
   'ffmpeg',
-  'yt-dlp',
+  # 'yt-dlp',
   'curlie',
   'cloudflared',
 
   'files-to-prompt',
   # 'gitbutler',
-  'miller',
+  # 'miller',
+  # 'ghostty',
 
   # data tools
   # 'sc-im',

@@ -1,7 +1,7 @@
 name = 'neovim'
 from = 'base'
 
-version = 'v0.10.2'
+version = 'v0.10.4'
 
 devDependencies = [
   'wget',
@@ -11,7 +11,7 @@ devDependencies = [
 build = """
 wget \
   -O /tmp/nvim.appimage \
-  'https://github.com/neovim/neovim/releases/download/{{VERSION}}/nvim.appimage'
+  'https://github.com/neovim/neovim/releases/download/{{VERSION}}/nvim-linux-x86_64.appimage'
 chmod +x /tmp/nvim.appimage
 /tmp/nvim.appimage --appimage-extract
 rm /tmp/nvim.appimage

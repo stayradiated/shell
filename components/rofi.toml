@@ -1,7 +1,7 @@
 name = 'rofi'
 from = 'base'
 
-version = '1.7.5'
+version = '1.7.8'
 
 devDependencies = [
   'apteryx',
@@ -37,6 +37,7 @@ PKG_LIST="\
   libxcb-cursor-dev \
   libxcb-ewmh-dev \
   libxcb-icccm4-dev \
+  libxcb-keysyms1-dev \
   libxcb-randr0-dev \
   libxcb-util-dev \
   libxcb-xinerama0-dev \

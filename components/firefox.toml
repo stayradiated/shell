@@ -2,18 +2,18 @@ name = 'firefox'
 from = 'base'
 
 # https://www.mozilla.org/en-US/firefox/releases/
-version = '133.0.3'
+version = '135.0'
 
-devDependencies = [ 'apteryx', 'wget', 'bzip2' ]
+devDependencies = [ 'apteryx', 'wget', 'xz' ]
 
 build = """
 wget \
-  -O /tmp/firefox.tar.bz2 \
-  https://download-installer.cdn.mozilla.net/pub/firefox/releases/{{VERSION}}/linux-x86_64/en-US/firefox-{{VERSION}}.tar.bz2
+  -O /tmp/firefox.tar.xz \
+  https://download-installer.cdn.mozilla.net/pub/firefox/releases/{{VERSION}}/linux-x86_64/en-US/firefox-{{VERSION}}.tar.xz
 
 cd /opt
-tar xjvf /tmp/firefox.tar.bz2
-rm /tmp/firefox.tar.bz2
+tar xJvf /tmp/firefox.tar.xz
+rm /tmp/firefox.tar.xz
 
 ln -s /opt/firefox/firefox /usr/local/bin/firefox
 

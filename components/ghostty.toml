@@ -1,0 +1,80 @@
+name = 'ghostty'
+from = 'base'
+
+version = 'v1.1.0'
+
+devDependencies = [
+  'apteryx',
+  'zig',
+  'clone',
+]
+
+build = """
+apteryx libgtk-4-dev libadwaita-1-dev
+
+clone --https --shallow --tag=v{{VERSION}} https://github.com/ghostty-org/ghostty
+
+cd ~/src/github.com/ghostty-org/ghostty
+
+zig build -p /root/.local -Doptimize=ReleaseFast
+
+apt-get remove --purge -y libgtk-4-dev libadwaita-1-dev
+apt autoremove -y
+
+rm -r ~/src
+"""
+
+exports = [
+  '/usr/local/bin/ghostty'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/ghostty-org/ghostty'
+
+
+[diff]
+exclude = [
+  "/etc/fonts/",
+  "/etc/init.d/x11-common",
+  "/etc/ld.so.cache",
+  "/etc/rcS.d/S01x11-common",
+  "/etc/sensors.d/",
+  "/etc/sensors3.conf",
+  "/etc/X11/rgb.txt",
+  "/etc/X11/Xreset",
+  "/etc/X11/Xreset.d/",
+  "/etc/X11/Xresources/",
+  "/etc/X11/Xsession",
+  "/etc/X11/Xsession.d/20dbus_xdg-runtime",
+  "/etc/X11/Xsession.d/20x11-common_process-args",
+  "/etc/X11/Xsession.d/30x11-common_xresources",
+  "/etc/X11/Xsession.d/35x11-common_xhost-local",
+  "/etc/X11/Xsession.d/40x11-common_xsessionrc",
+  "/etc/X11/Xsession.d/50x11-common_determine-startup",
+  "/etc/X11/Xsession.d/60x11-common_xdg_path",
+  "/etc/X11/Xsession.d/90x11-common_ssh-agent",
+  "/etc/X11/Xsession.d/99x11-common_start",
+  "/etc/X11/Xsession.options",
+  "/root/.cache/",
+  "/usr/bin/update-mime-database",
+  "/usr/lib/systemd/user/dbus.service",
+  "/usr/lib/systemd/user/dbus.socket",
+  "/usr/lib/systemd/user/sockets.target.wants/",
+  "/usr/local/share/fonts",
+  "/usr/share/doc-base/shared-mime-info.shared-mime-info",
+  "/usr/share/doc/dbus-user-session/",
+  "/usr/share/doc/shared-mime-info/",
+  "/usr/share/gettext/",
+  "/usr/share/lintian/overrides/dbus-user-session",
+  "/usr/share/man/man1/update-mime-database.1.gz",
+  "/usr/share/mime/",
+  "/usr/share/pkgconfig/shared-mime-info.pc",
+  "/usr/share/shell-integration/",
+  "/usr/share/themes/",
+  "/var/cache/**",
+  "/var/lib/apt/**",
+  "/var/lib/dpkg/**",
+  "/var/lib/ucf/**",
+  "/var/log/**"
+]
