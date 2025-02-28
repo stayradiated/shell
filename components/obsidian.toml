@@ -17,6 +17,7 @@ apteryx /tmp/obsidian.deb
 """
 
 exports = [
+  "/etc/alternatives/obsidian",
   "/opt/Obsidian/",
   "/usr/bin/obsidian",
   "/usr/lib/x86_64-linux-gnu/avahi/",
@@ -163,6 +164,9 @@ exports = [
 
 [diff]
 exclude = [
+  "/etc/alternatives/open",
+  "/etc/alternatives/open.1.gz",
+  "/etc/alternatives/x-cursor-theme",
   "/etc/X11/Xreset*",
   "/etc/X11/Xresources/**",
   "/etc/X11/Xsession",
@@ -173,7 +177,6 @@ exclude = [
   "/etc/X11/xkb/**",
   "/etc/X11/xorg.conf.d",
   "/etc/X11/xorg.conf.d/**",
-  "/etc/alternatives/**",
   "/etc/dconf/**",
   "/etc/fonts/**",
   "/etc/gtk-3.0/**",

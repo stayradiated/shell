@@ -1,7 +1,7 @@
 name = "cloudflared"
 from = "base"
 
-version = '2025.2.0'
+version = '2025.2.1'
 
 devDependencies = [ "wget" ]
 

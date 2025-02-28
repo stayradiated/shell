@@ -155,7 +155,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.101.9' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.101.13' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -197,7 +197,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v23.8.0 \
+  ; n v23.9.0 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -210,7 +210,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.6.2/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.6.3/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -459,7 +459,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='134.0.6998.23-*'
+  ; apteryx google-chrome-beta='134.0.6998.35-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/menu/ /exports/usr/share/pkgconfig/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /etc/vulkan /exports/etc/ \
@@ -523,7 +523,8 @@ RUN set -e \
   ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.7/obsidian_1.8.7_amd64.deb" \
   ; apteryx /tmp/obsidian.deb
 RUN set -e \
-  ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ \
+  ; mkdir -p /exports/etc/alternatives/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ \
+  ; mv /etc/alternatives/obsidian /exports/etc/alternatives/ \
   ; mv /opt/Obsidian /exports/opt/ \
   ; mv /usr/bin/obsidian /exports/usr/bin/ \
   ; mv /usr/lib/x86_64-linux-gnu/avahi /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0 /usr/lib/x86_64-linux-gnu/gtk-3.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.25209.1 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0 /usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3 /usr/lib/x86_64-linux-gnu/libavahi-client.so.3.2.9 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3 /usr/lib/x86_64-linux-gnu/libavahi-common.so.3.5.4 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2 /usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11800.0 /usr/lib/x86_64-linux-gnu/libcairo.so.2 /usr/lib/x86_64-linux-gnu/libcairo.so.2.11800.0 /usr/lib/x86_64-linux-gnu/libcolord.so.2 /usr/lib/x86_64-linux-gnu/libcolord.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2 /usr/lib/x86_64-linux-gnu/libcolordprivate.so.2.0.5 /usr/lib/x86_64-linux-gnu/libcups.so.2 /usr/lib/x86_64-linux-gnu/libdatrie.so.1 /usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0 /usr/lib/x86_64-linux-gnu/libdconf.so.1 /usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0 /usr/lib/x86_64-linux-gnu/libdeflate.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0 /usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 /usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.1 /usr/lib/x86_64-linux-gnu/libfreebl3.chk /usr/lib/x86_64-linux-gnu/libfreebl3.so /usr/lib/x86_64-linux-gnu/libfreeblpriv3.chk /usr/lib/x86_64-linux-gnu/libfreeblpriv3.so /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.1 /usr/lib/x86_64-linux-gnu/libfribidi.so.0 /usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.10 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0 /usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2409.32 /usr/lib/x86_64-linux-gnu/libgraphite2.so.2.0.0 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1 /usr/lib/x86_64-linux-gnu/libgtk-3-0t64 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0 /usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2409.32 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.60830.0 /usr/lib/x86_64-linux-gnu/libjbig.so.0 /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2 /usr/lib/x86_64-linux-gnu/liblcms2.so.2.0.14 /usr/lib/x86_64-linux-gnu/libLerc.so.4 /usr/lib/x86_64-linux-gnu/libnotify.so.4 /usr/lib/x86_64-linux-gnu/libnotify.so.4.0.0 /usr/lib/x86_64-linux-gnu/libnspr4.so /usr/lib/x86_64-linux-gnu/libnss3.so /usr/lib/x86_64-linux-gnu/libnssckbi.so /usr/lib/x86_64-linux-gnu/libnssdbm3.chk /usr/lib/x86_64-linux-gnu/libnssdbm3.so /usr/lib/x86_64-linux-gnu/libnssutil3.so /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5200.1 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5200.1 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 /usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5200.1 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 /usr/lib/x86_64-linux-gnu/libpixman-1.so.0.42.2 /usr/lib/x86_64-linux-gnu/libplc4.so /usr/lib/x86_64-linux-gnu/libplds4.so /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/libpng16.so.16.43.0 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0 /usr/lib/x86_64-linux-gnu/libsecret-1.so.0.0.0 /usr/lib/x86_64-linux-gnu/libsharpyuv.so.0 /usr/lib/x86_64-linux-gnu/libsharpyuv.so.0.0.1 /usr/lib/x86_64-linux-gnu/libsmime3.so /usr/lib/x86_64-linux-gnu/libsoftokn3.chk /usr/lib/x86_64-linux-gnu/libsoftokn3.so /usr/lib/x86_64-linux-gnu/libssl3.so /usr/lib/x86_64-linux-gnu/libthai.so.0 /usr/lib/x86_64-linux-gnu/libthai.so.0.3.1 /usr/lib/x86_64-linux-gnu/libtiff.so.6 /usr/lib/x86_64-linux-gnu/libtiff.so.6.0.1 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0 /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.22.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0 /usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.22.0 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1 /usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.22.0 /usr/lib/x86_64-linux-gnu/libwebp.so.7 /usr/lib/x86_64-linux-gnu/libwebp.so.7.1.8 /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/libX11.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/libXau.so.6.0.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0 /usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0 /usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0 /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1 /usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXcursor.so.1 /usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2 /usr/lib/x86_64-linux-gnu/libXdamage.so.1 /usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0 /usr/lib/x86_64-linux-gnu/libXext.so.6 /usr/lib/x86_64-linux-gnu/libXext.so.6.4.0 /usr/lib/x86_64-linux-gnu/libXfixes.so.3 /usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0 /usr/lib/x86_64-linux-gnu/libXi.so.6 /usr/lib/x86_64-linux-gnu/libXi.so.6.1.0 /usr/lib/x86_64-linux-gnu/libXinerama.so.1 /usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0 /usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0 /usr/lib/x86_64-linux-gnu/libXrandr.so.2 /usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0 /usr/lib/x86_64-linux-gnu/libXrender.so.1 /usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0 /usr/lib/x86_64-linux-gnu/libXss.so.1 /usr/lib/x86_64-linux-gnu/libXss.so.1.0.0 /usr/lib/x86_64-linux-gnu/libXtst.so.6 /usr/lib/x86_64-linux-gnu/libXtst.so.6.1.0 /exports/usr/lib/x86_64-linux-gnu/ \
@@ -562,7 +563,7 @@ RUN set -e \
 FROM base AS cloudflared
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2025.2.0/cloudflared-linux-amd64' \
+  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2025.2.1/cloudflared-linux-amd64' \
   ; chmod +x /usr/local/bin/cloudflared
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -654,7 +655,7 @@ RUN set -e \
 FROM base AS lazygit
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.47.1/lazygit_0.47.1_Linux_x86_64.tar.gz' \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.47.2/lazygit_0.47.2_Linux_x86_64.tar.gz' \
   ; mkdir -p /tmp/lazygit \
   ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
   ; mv /tmp/lazygit/lazygit /usr/local/bin \
@@ -793,7 +794,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.3/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.4/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -896,7 +897,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.76.63*'
+  ; apteryx brave-browser-beta='1.77.70*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/share/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -984,7 +985,7 @@ ENV \
   UV_TOOL_BIN_DIR=/usr/local/uv/bin \
   UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; uv tool install llm=='0.22' \
+  ; uv tool install llm=='0.23a0' \
   ; ln -s /usr/local/uv/bin/llm /usr/local/bin/llm \
   ; llm install llm-anthropic
 RUN set -e \
@@ -1105,7 +1106,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@10.4.1'
+  ; npm install -g 'pnpm@10.5.2'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1831,7 +1832,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:28.0.0*'
+  ; apteryx docker-ce-cli='5:28.0.1*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
