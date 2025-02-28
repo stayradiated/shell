@@ -91,8 +91,6 @@ dependencies = [
   'bandwhich',
   'caddy',
 
-  # 'obsidian',
-
   'llm',
   'strip-tags',
   'ttok',
@@ -145,6 +143,7 @@ dependencies = [
   # 'gitbutler',
   'miller',
   # 'ghostty',
+  'obsidian',
 
   # data tools
   # 'sc-im',
