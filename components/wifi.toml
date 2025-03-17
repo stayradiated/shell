@@ -1,18 +1,20 @@
 name = 'wifi'
 from = 'base'
 
-version = 'v1.5.0'
+version = 'v2025.03.17-1251'
 
 devDependencies = [
-  'clone',
-  'go'
+  "wget",
+  "unzip"
 ]
 
 build = """
-clone --https --tag={{VERSION}} https://github.com/stayradiated/wifi
-cd /root/src/github.com/stayradiated/wifi
-go build
-mv wifi /usr/local/bin/wifi
+wget --no-hsts -O wifi.zip \
+  "https://github.com/stayradiated/wifi/releases/download/{{VERSION}}/wifi-linux-amd64.zip"
+unzip wifi.zip
+mv wifi-linux-amd64 /usr/local/bin/wifi
+chmod +x /usr/local/bin/wifi
+rm wifi.zip
 """
 
 exports = [

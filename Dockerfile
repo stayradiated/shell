@@ -1019,17 +1019,14 @@ RUN set -e \
 
 # WIFI
 FROM base AS wifi
-COPY --from=clone /exports/ /
-COPY --from=go /exports/ /
-ENV \
-  PATH=/usr/local/go/bin:${PATH} \
-  GOPATH=/root \
-  GO111MODULE=auto
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
 RUN set -e \
-  ; clone --https --tag=v1.5.0 https://github.com/stayradiated/wifi \
-  ; cd /root/src/github.com/stayradiated/wifi \
-  ; go build \
-  ; mv wifi /usr/local/bin/wifi
+  ; wget --no-hsts -O wifi.zip "https://github.com/stayradiated/wifi/releases/download/v2025.03.17-1251/wifi-linux-amd64.zip" \
+  ; unzip wifi.zip \
+  ; mv wifi-linux-amd64 /usr/local/bin/wifi \
+  ; chmod +x /usr/local/bin/wifi \
+  ; rm wifi.zip
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/wifi /exports/usr/local/bin/
