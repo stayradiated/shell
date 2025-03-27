@@ -1,7 +1,7 @@
 name = "strip-tags"
 from = "base"
 
-version = '0.5.1'
+version = '0.6'
 
 devDependencies = [
   "uv"

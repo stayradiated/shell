@@ -1,7 +1,7 @@
 name = "gosee"
 from = "base"
 
-version = '879ef34312ca3344882a9e7b24cd0009b68dfbf2'
+version = 'c79152f16cc718391dbb4a6d79d94a4793067031'
 
 devDependencies = ["clone", "go"]
 

@@ -30,7 +30,7 @@ exports = [
   "/var/lib/git",
 ]
 
-[checkUpdates]
-  type = 'json'
-  url = 'https://freecrayon-getlatestgitcoreversion.web.val.run/?query=24.04'
-  path = ['version']
+# [checkUpdates]
+#   type = 'json'
+#   url = 'https://freecrayon-getlatestgitcoreversion.web.val.run/?query=24.04'
+#   path = ['version']
