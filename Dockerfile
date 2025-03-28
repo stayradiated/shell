@@ -155,7 +155,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.105.0' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.105.6' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -423,7 +423,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=xz /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.xz https://download-installer.cdn.mozilla.net/pub/firefox/releases/136.0.3/linux-x86_64/en-US/firefox-136.0.3.tar.xz \
+  ; wget -O /tmp/firefox.tar.xz https://download-installer.cdn.mozilla.net/pub/firefox/releases/136.0.4/linux-x86_64/en-US/firefox-136.0.4.tar.xz \
   ; cd /opt \
   ; tar xJvf /tmp/firefox.tar.xz \
   ; rm /tmp/firefox.tar.xz \
@@ -794,7 +794,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.6/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.7/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -897,7 +897,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.77.88*'
+  ; apteryx brave-browser-beta='1.78.69*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/share/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/ \
   ; mv /opt/brave.com /exports/opt/ \
