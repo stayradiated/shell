@@ -97,7 +97,6 @@ dependencies = [
   'sqlite-utils',
 
   # Runn
-  # 'kolide',
   'heroku',
   'brave',
   # 'peek',
@@ -144,6 +143,8 @@ dependencies = [
   'miller',
   # 'ghostty',
   'obsidian',
+
+  'kolide',
 
   # data tools
   # 'sc-im',

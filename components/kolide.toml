@@ -4,7 +4,6 @@ from = 'base'
 version = '0.12.1'
 
 devDependencies = [
-  'ar',
   'wget',
   'unzip',
 ]
@@ -18,13 +17,10 @@ build = """
 mkdir -p /usr/local/kolide-k2/bin
 
 # install osqueryd
-wget -O /tmp/osquery.deb \
-  https://github.com/osquery/osquery/releases/download/5.5.1/osquery_5.5.1-1.linux_amd64.deb
-cd /tmp
-ar xv ./osquery.deb data.tar.gz
-tar xzvf ./data.tar.gz ./opt/osquery/bin/osqueryd
-mv opt/osquery/bin/osqueryd /usr/local/kolide-k2/bin/osqueryd
-rm -r ./opt ./osquery.deb ./data.tar.gz
+wget -O /tmp/osquery.tgz \
+  https://github.com/osquery/osquery/releases/download/5.16.0/osquery-5.16.0_1.linux_x86_64.tar.gz 
+tar xzvf /tmp/osquery.tgz opt/osquery/bin/osqueryd -C /usr/local/kolide-k2/bin
+rm -r /tmp/osquery.tgz
 
 # install kolide launcher
 wget -O /tmp/launcher.zip \

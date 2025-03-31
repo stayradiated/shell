@@ -515,6 +515,40 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# KOLIDE
+FROM base AS kolide
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+COPY ./secret/kolide-secret /etc/kolide-k2/secret
+RUN set -e \
+  ; mkdir -p /usr/local/kolide-k2/bin \
+  ; wget -O /tmp/osquery.tgz https://github.com/osquery/osquery/releases/download/5.16.0/osquery-5.16.0_1.linux_x86_64.tar.gz \
+  ; tar xzvf /tmp/osquery.tgz opt/osquery/bin/osqueryd -C /usr/local/kolide-k2/bin \
+  ; rm -r /tmp/osquery.tgz \
+  ; wget -O /tmp/launcher.zip https://github.com/kolide/launcher/releases/download/v0.12.1/linux-binaries.zip \
+  ; unzip /tmp/launcher.zip \
+  ; rm /tmp/launcher.zip \
+  ; mv ./linux.amd64/launcher /usr/local/kolide-k2/bin/launcher \
+  ; rm -r ./linux.amd64 \
+  ; mkdir -p /var/kolide-k2/k2device.kolide.com/ \
+  ; cd /etc/kolide-k2/ \
+  ; touch launcher.flags \
+  ; echo 'with_initial_runner' >> launcher.flags \
+  ; echo 'control' >> launcher.flags \
+  ; echo 'autoupdate' >> launcher.flags \
+  ; echo 'root_directory /var/kolide-k2/k2device.kolide.com' >> launcher.flags \
+  ; echo 'osqueryd_path /usr/local/kolide-k2/bin/osqueryd' >> launcher.flags \
+  ; echo 'enroll_secret_path /etc/kolide-k2/secret' >> launcher.flags \
+  ; echo 'control_hostname k2control.kolide.com' >> launcher.flags \
+  ; echo 'update_channel stable' >> launcher.flags \
+  ; echo 'transport jsonrpc' >> launcher.flags \
+  ; echo 'hostname k2device.kolide.com' >> launcher.flags
+RUN set -e \
+  ; mkdir -p /exports/etc/ /exports/usr/local/ /exports/var/kolide-k2/ \
+  ; mv /etc/kolide-k2 /exports/etc/ \
+  ; mv /usr/local/kolide-k2 /exports/usr/local/ \
+  ; mv /var/kolide-k2/k2device.kolide.com /exports/var/kolide-k2/
+
 # OBSIDIAN
 FROM base AS obsidian
 COPY --from=wget /exports/ /
@@ -2060,6 +2094,7 @@ COPY --from=cloudflared /exports/ /
 COPY --from=files-to-prompt /exports/ /
 COPY --from=miller /exports/ /
 COPY --from=obsidian /exports/ /
+COPY --from=kolide /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
