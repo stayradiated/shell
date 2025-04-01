@@ -1,7 +1,7 @@
 name = "ar"
 from = "base"
 
-version = '2.42-4ubuntu2.3'
+version = '2.42-4ubuntu2.4'
 
 devDependencies = [ "apteryx" ]
 
@@ -12,7 +12,8 @@ mv /usr/bin/x86_64-linux-gnu-ar /usr/bin/ar
 
 exports = [
   "/usr/bin/ar",
-  "/usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so"
+  "/usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so",
+  "/usr/lib/x86_64-linux-gnu/libsframe.so.*",
 ]
 
 [checkUpdates]

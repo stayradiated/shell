@@ -155,7 +155,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.106.3' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.107.0' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -210,7 +210,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.6.10/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.6.11/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -241,6 +241,17 @@ RUN set -e \
   ; mv /usr/bin/unzip /exports/usr/bin/ \
   ; mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
 
+# AR
+FROM base AS ar
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx binutils='2.42-4ubuntu2.4' \
+  ; mv /usr/bin/x86_64-linux-gnu-ar /usr/bin/ar
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ \
+  ; mv /usr/bin/ar /exports/usr/bin/ \
+  ; mv /usr/lib/x86_64-linux-gnu/libbfd-2.*-system.so /usr/lib/x86_64-linux-gnu/libsframe.so.* /exports/usr/lib/x86_64-linux-gnu/
+
 # RUST
 FROM base AS rust
 COPY --from=wget /exports/ /
@@ -256,7 +267,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='v0.60.3' https://github.com/junegunn/fzf \
+  ; clone --https --tag='v0.61.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -515,14 +526,48 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# CLAUDE-CODE
+FROM base AS claude-code
+COPY --from=node /exports/ /
+RUN set -e \
+  ; npm install -g '@anthropic-ai/claude-code@0.2.57'
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@anthropic-ai/ \
+  ; mv /usr/local/bin/claude /exports/usr/local/bin/ \
+  ; mv /usr/local/lib/node_modules/@anthropic-ai/claude-code /exports/usr/local/lib/node_modules/@anthropic-ai/
+
 # KOLIDE
 FROM base AS kolide
-COPY ./secret/kolide/launcher.flags /etc/kolide-k2/launcher.flags
-COPY ./secret/kolide/secret /etc/kolide-k2/secret
-COPY ./secret/kolide/launcher /usr/local/kolide-k2/bin/launcher
-COPY ./secret/kolide/osqueryd /usr/local/kolide-k2/bin/osqueryd
+COPY --from=ar /exports/ /
+COPY --from=wget /exports/ /
+COPY --from=unzip /exports/ /
+COPY ./secret/kolide-secret /etc/kolide-k2/secret
 RUN set -e \
-  ; mkdir -p /var/kolide-k2/k2device.kolide.com/
+  ; mkdir -p /usr/local/kolide-k2/bin \
+  ; wget -O /tmp/osquery.deb https://github.com/osquery/osquery/releases/download/5.5.1/osquery_5.5.1-1.linux_amd64.deb \
+  ; cd /tmp \
+  ; ar xv ./osquery.deb data.tar.gz \
+  ; tar xzvf ./data.tar.gz ./opt/osquery/bin/osqueryd \
+  ; mv opt/osquery/bin/osqueryd /usr/local/kolide-k2/bin/osqueryd \
+  ; rm -r ./opt ./osquery.deb ./data.tar.gz \
+  ; wget -O /tmp/launcher.zip https://github.com/kolide/launcher/releases/download/v0.12.1/linux-binaries.zip \
+  ; unzip /tmp/launcher.zip \
+  ; rm /tmp/launcher.zip \
+  ; mv ./linux.amd64/launcher /usr/local/kolide-k2/bin/launcher \
+  ; rm -r ./linux.amd64 \
+  ; mkdir -p /var/kolide-k2/k2device.kolide.com/ \
+  ; cd /etc/kolide-k2/ \
+  ; touch launcher.flags \
+  ; echo 'with_initial_runner' >> launcher.flags \
+  ; echo 'control' >> launcher.flags \
+  ; echo 'autoupdate' >> launcher.flags \
+  ; echo 'root_directory /var/kolide-k2/k2device.kolide.com' >> launcher.flags \
+  ; echo 'osqueryd_path /usr/local/kolide-k2/bin/osqueryd' >> launcher.flags \
+  ; echo 'enroll_secret_path /etc/kolide-k2/secret' >> launcher.flags \
+  ; echo 'control_hostname k2control.kolide.com' >> launcher.flags \
+  ; echo 'update_channel stable' >> launcher.flags \
+  ; echo 'transport jsonrpc' >> launcher.flags \
+  ; echo 'hostname k2device.kolide.com' >> launcher.flags
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/usr/local/ /exports/var/kolide-k2/ \
   ; mv /etc/kolide-k2 /exports/etc/ \
@@ -782,7 +827,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=c79152f16cc718391dbb4a6d79d94a4793067031 https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=07e656a9643e820b274f9a544912134f7e028a2e https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -808,7 +853,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.7/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.8/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -911,7 +956,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.78.69*'
+  ; apteryx brave-browser-beta='1.78.72*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/share/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -2075,6 +2120,7 @@ COPY --from=files-to-prompt /exports/ /
 COPY --from=miller /exports/ /
 COPY --from=obsidian /exports/ /
 COPY --from=kolide /exports/ /
+COPY --from=claude-code /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

@@ -3,16 +3,51 @@ from = 'base'
 
 version = '0.12.1'
 
+devDependencies = [
+  'ar',
+  'wget',
+  'unzip',
+]
+
 mount = [
   # secret is extracted from the .deb provided by the Kolide slack app
-  ['./secret/kolide/launcher.flags', '/etc/kolide-k2/launcher.flags'],
-  ['./secret/kolide/secret', '/etc/kolide-k2/secret'],
-  ['./secret/kolide/launcher', '/usr/local/kolide-k2/bin/launcher'],
-  ['./secret/kolide/osqueryd', '/usr/local/kolide-k2/bin/osqueryd']
+  ['./secret/kolide-secret', '/etc/kolide-k2/secret']
 ]
 
 build = """
+mkdir -p /usr/local/kolide-k2/bin
+
+# install osqueryd
+wget -O /tmp/osquery.deb \
+  https://github.com/osquery/osquery/releases/download/5.5.1/osquery_5.5.1-1.linux_amd64.deb
+cd /tmp
+ar xv ./osquery.deb data.tar.gz
+tar xzvf ./data.tar.gz ./opt/osquery/bin/osqueryd
+mv opt/osquery/bin/osqueryd /usr/local/kolide-k2/bin/osqueryd
+rm -r ./opt ./osquery.deb ./data.tar.gz
+
+# install kolide launcher
+wget -O /tmp/launcher.zip \
+  https://github.com/kolide/launcher/releases/download/v{{VERSION}}/linux-binaries.zip
+unzip /tmp/launcher.zip
+rm /tmp/launcher.zip
+mv ./linux.amd64/launcher /usr/local/kolide-k2/bin/launcher
+rm -r ./linux.amd64
+
 mkdir -p /var/kolide-k2/k2device.kolide.com/
+
+cd /etc/kolide-k2/
+touch launcher.flags
+echo 'with_initial_runner' >> launcher.flags
+echo 'control' >> launcher.flags
+echo 'autoupdate' >> launcher.flags
+echo 'root_directory /var/kolide-k2/k2device.kolide.com' >> launcher.flags
+echo 'osqueryd_path /usr/local/kolide-k2/bin/osqueryd' >> launcher.flags
+echo 'enroll_secret_path /etc/kolide-k2/secret' >> launcher.flags
+echo 'control_hostname k2control.kolide.com' >> launcher.flags
+echo 'update_channel stable' >> launcher.flags
+echo 'transport jsonrpc' >> launcher.flags
+echo 'hostname k2device.kolide.com' >> launcher.flags
 """
 
 exports = [

@@ -145,6 +145,7 @@ dependencies = [
   'obsidian',
 
   'kolide',
+  'claude-code',
 
   # data tools
   # 'sc-im',
