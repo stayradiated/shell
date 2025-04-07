@@ -1,0 +1,28 @@
+name = 'lazycommit'
+from = 'base'
+
+version = '1.0.1'
+
+devDependencies = [ 'wget' ]
+
+build = """
+wget --no-hsts \
+  -O /tmp/lazycommit.tgz \
+  'https://github.com/stayradiated/lazycommit/releases/download/v{{VERSION}}/lazycommit_{{VERSION}}_linux_amd64.tar.gz'
+
+mkdir -p /tmp/lazycommit
+tar xzvf /tmp/lazycommit.tgz -C /tmp/lazycommit
+
+mv /tmp/lazycommit/lazycommit /usr/local/bin
+rm -r /tmp/lazycommit /tmp/lazycommit.tgz
+"""
+
+exports = [
+  '/usr/local/bin/lazycommit'
+]
+
+[checkUpdates]
+  type = 'github-release'
+  url = 'https://github.com/stayradiated/lazycommit'
+  matchPrerelease = false
+  removePrefix = 'v'

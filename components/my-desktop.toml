@@ -146,6 +146,7 @@ dependencies = [
 
   'kolide',
   'claude-code',
+  'lazycommit',
 
   # data tools
   # 'sc-im',
