@@ -530,7 +530,7 @@ RUN set -e \
 FROM base AS lazycommit
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /tmp/lazycommit.tgz 'https://github.com/stayradiated/lazycommit/releases/download/v1.0.2/lazycommit_1.0.2_linux_amd64.tar.gz' \
+  ; wget --no-hsts -O /tmp/lazycommit.tgz 'https://github.com/stayradiated/lazycommit/releases/download/v1.0.3/lazycommit_1.0.3_linux_amd64.tar.gz' \
   ; mkdir -p /tmp/lazycommit \
   ; tar xzvf /tmp/lazycommit.tgz -C /tmp/lazycommit \
   ; mv /tmp/lazycommit/lazycommit /usr/local/bin \
