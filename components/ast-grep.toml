@@ -1,7 +1,7 @@
 name = "ast-grep"
 from = "base"
 
-version = '0.36.2'
+version = '0.36.3'
 
 devDependencies = [ "wget", "unzip" ]
 
