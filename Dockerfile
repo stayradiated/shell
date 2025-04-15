@@ -567,6 +567,7 @@ RUN set -e \
   ; unzip /tmp/launcher.zip \
   ; rm /tmp/launcher.zip \
   ; mv ./linux.amd64/launcher /usr/local/kolide-k2/bin/launcher \
+  ; chmod +x /usr/local/kolide-k2/bin/launcher \
   ; rm -r ./linux.amd64 \
   ; mkdir -p /var/kolide-k2/k2device.kolide.com/ \
   ; cd /etc/kolide-k2/ \
