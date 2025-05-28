@@ -3,11 +3,7 @@ from = 'base'
 
 version = 'v1.1.0'
 
-devDependencies = [
-  'apteryx',
-  'zig',
-  'clone',
-]
+devDependencies = ['apteryx', 'zig', 'clone']
 
 build = """
 apteryx libgtk-4-dev libadwaita-1-dev
@@ -24,14 +20,11 @@ apt autoremove -y
 rm -r ~/src
 """
 
-exports = [
-  '/usr/local/bin/ghostty'
-]
+exports = ['/usr/local/bin/ghostty']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/ghostty-org/ghostty'
-
+type = 'github-release'
+url = 'https://github.com/ghostty-org/ghostty'
 
 [diff]
 exclude = [
@@ -76,5 +69,5 @@ exclude = [
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
   "/var/lib/ucf/**",
-  "/var/log/**"
+  "/var/log/**",
 ]

@@ -1,13 +1,9 @@
 name = "jo"
 from = "base"
 
-version = '0ae09bc6d46369bd137b8a30e697007e3393ba0f'
+version = 'd7b01392cc1a6bc381741cdbc062b06403bbdb91'
 
-devDependencies = [
-  "clone",
-  "apteryx",
-  "build-essential"
-]
+devDependencies = ["clone", "apteryx", "build-essential"]
 
 build = """
 PKG_LIST="autoconf automake pkgconf"
@@ -24,7 +20,7 @@ apt-get remove --purge -y $PKG_LIST
 rm -r /root/src
 """
 
-exports = [ "/usr/local/bin/jo" ]
+exports = ["/usr/local/bin/jo"]
 
 [checkUpdates]
 type = "github-commit"

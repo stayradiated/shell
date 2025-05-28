@@ -3,16 +3,14 @@ from = "base"
 
 version = '3.2.7-1ubuntu1.2'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx rsync='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/rsync',
-]
+exports = ['/usr/bin/rsync']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'rsync'
+type = 'apt'
+name = 'rsync'

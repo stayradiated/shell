@@ -5,9 +5,7 @@ from = 'base'
 
 version = '1.104.0'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -20,11 +18,9 @@ mv doctl /usr/local/bin/doctl
 rm doctl.tgz
 """
 
-exports = [
-  '/usr/local/bin/doctl',
-]
+exports = ['/usr/local/bin/doctl']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/digitalocean/doctl'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/digitalocean/doctl'
+removePrefix = 'v'

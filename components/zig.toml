@@ -3,10 +3,7 @@ from = 'base'
 
 version = '0.13.0'
 
-devDependencies = [
-  'wget',
-  'xz',
-]
+devDependencies = ['wget', 'xz']
 
 build = """
 wget \
@@ -23,11 +20,8 @@ mv /tmp/lib /usr/lib/zig
 rm -r /tmp/doc/ /tmp/LICENSE /tmp/README.md /tmp/zig.tar.xz
 """
 
-exports = [
-  '/usr/local/bin/zig',
-  '/usr/lib/zig/'
-]
+exports = ['/usr/local/bin/zig', '/usr/lib/zig/']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/ziglang/zig'
+type = 'github-release'
+url = 'https://github.com/ziglang/zig'

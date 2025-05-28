@@ -4,7 +4,7 @@ from = "base"
 # https://electrum.org/
 version = "4.1.5"
 
-devDependencies = [ "apteryx", "python3-pip", "wget" ]
+devDependencies = ["apteryx", "python3-pip", "wget"]
 
 build = """
 # get public key for ThomasV

@@ -3,20 +3,14 @@ from = 'base'
 
 version = '7.2.2'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'zx@{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/zx',
-  '/usr/local/lib/node_modules/zx/',
-]
-
+exports = ['/usr/local/bin/zx', '/usr/local/lib/node_modules/zx/']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'zx'
+type = 'npm'
+packageName = 'zx'

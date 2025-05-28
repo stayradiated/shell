@@ -1,11 +1,9 @@
 name = "llm"
 from = "base"
 
-version = '0.25a0'
+version = '0.26'
 
-devDependencies = [
-  "uv"
-]
+devDependencies = ["uv"]
 
 build = """
 uv tool install llm=='{{VERSION}}'
@@ -15,11 +13,8 @@ ln -s /usr/local/uv/bin/llm /usr/local/bin/llm
 llm install llm-anthropic
 """
 
-exports = [
-  "/usr/local/uv/",
-  "/usr/local/bin/llm",
-]
+exports = ["/usr/local/uv/", "/usr/local/bin/llm"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/simonw/llm'
+type = 'github-release'
+url = 'https://github.com/simonw/llm'

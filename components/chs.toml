@@ -3,11 +3,7 @@ from = 'base'
 
 version = 'v3.0.0'
 
-devDependencies = [
-  'clone',
-  'python3-pip',
-  'build-essential',
-]
+devDependencies = ['clone', 'python3-pip', 'build-essential']
 
 build = """
 clone --shallow --https --tag '{{VERSION}}' 'https://github.com/nickzuber/chs'
@@ -30,6 +26,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/nickzuber/chs'
-
+type = 'github-release'
+url = 'https://github.com/nickzuber/chs'

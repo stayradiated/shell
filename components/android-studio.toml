@@ -3,14 +3,9 @@ from = 'base'
 
 version = '192.6392135'
 
-dependencies = [
-  'android-sdk',
-  'java',
-]
+dependencies = ['android-sdk', 'java']
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -21,6 +16,4 @@ rm -rf android-studio.tgz
 mv android-studio /usr/local/android-studio
 """
 
-exports = [
-  "/usr/local/android-studio/"
-]
+exports = ["/usr/local/android-studio/"]

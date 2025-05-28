@@ -3,9 +3,7 @@ from = 'base'
 
 version = '0.1.11458'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
   wget \
@@ -18,11 +16,9 @@ build = """
   mv circleci-cli_{{VERSION}}_linux_amd64/circleci /usr/local/bin/circleci
 """
 
-exports = [
-  '/usr/local/bin/circleci'
-]
+exports = ['/usr/local/bin/circleci']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/CircleCI-Public/circleci-cli'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/CircleCI-Public/circleci-cli'
+removePrefix = 'v'

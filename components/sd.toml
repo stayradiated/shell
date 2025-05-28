@@ -3,9 +3,7 @@ from = 'base'
 
 version = 'v1.0.0'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -20,10 +18,8 @@ chmod +x /usr/local/bin/sd
 rm -rf /tmp/sd-* /tmp/sd.tar.gz
 """
 
-exports = [
-  '/usr/local/bin/sd'
-]
+exports = ['/usr/local/bin/sd']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/chmln/sd'
+type = 'github-release'
+url = 'https://github.com/chmln/sd'

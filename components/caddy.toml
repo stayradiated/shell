@@ -1,11 +1,9 @@
 name = 'caddy'
 from = 'base'
 
-version = '2.9.1'
+version = '2.10.0'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -18,12 +16,10 @@ mv caddy /usr/local/bin/caddy
 rm /tmp/caddy.tgz
 """
 
-exports = [
-  '/usr/local/bin/caddy'
-]
+exports = ['/usr/local/bin/caddy']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/caddyserver/caddy'
-  matchTag = '^v\d+\.\d+\.\d+$'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/caddyserver/caddy'
+matchTag = '^v\d+\.\d+\.\d+$'
+removePrefix = 'v'

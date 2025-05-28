@@ -3,16 +3,14 @@ from = "base"
 
 version = '1.6.4-1build1'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx xinput='{{VERSION}}'
 """
 
-exports = [
-  "/usr/bin/xinput",
-]
+exports = ["/usr/bin/xinput"]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'xinput'
+type = 'apt'
+name = 'xinput'

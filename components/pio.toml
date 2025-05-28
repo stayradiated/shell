@@ -3,9 +3,7 @@ from = "base"
 
 version = "0.4.0"
 
-devDependencies = [
-  "wget"
-]
+devDependencies = ["wget"]
 
 build = """
 wget -O /usr/local/bin/pio \
@@ -13,10 +11,8 @@ wget -O /usr/local/bin/pio \
 chmod +x /usr/local/bin/pio
 """
 
-exports = [
-  "/usr/local/bin/pio"
-]
+exports = ["/usr/local/bin/pio"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/siiptuo/pio'
+type = 'github-release'
+url = 'https://github.com/siiptuo/pio'

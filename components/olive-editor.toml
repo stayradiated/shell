@@ -4,15 +4,11 @@ from = 'base'
 # https://www.olivevideoeditor.org/download.php
 version = 'e7982239'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget "https://www.olivevideoeditor.org/dl/Olive-{{VERSION}}-Linux-x86_64.AppImage"
 mv Olive-*.AppImage /usr/local/bin/olive-editor
 """
 
-exports = [
-  '/usr/local/bin/olive-editor'
-]
+exports = ['/usr/local/bin/olive-editor']

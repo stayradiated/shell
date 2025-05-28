@@ -3,7 +3,7 @@ from = "base"
 
 version = '2.12.0-4build2'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx man-db='{{VERSION}}'
@@ -112,7 +112,7 @@ exports = [
   "/usr/share/man/man5/manpath.5.gz",
   "/usr/share/man/man8/accessdb.8.gz",
   "/usr/share/man/man8/catman.8.gz",
-  "/usr/share/man/man8/mandb.8.gz"
+  "/usr/share/man/man8/mandb.8.gz",
 ]
 
 [diff]
@@ -153,5 +153,5 @@ exclude = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'man-db'
+type = 'apt'
+name = 'man-db'

@@ -3,7 +3,7 @@ from = 'base'
 
 version = '3.3.0-4build1'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx htop='{{VERSION}}'
@@ -20,8 +20,8 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'htop'
+type = 'apt'
+name = 'htop'
 
 [diff]
 exclude = [
@@ -33,5 +33,5 @@ exclude = [
   "/usr/share/pixmaps/**",
   "/var/cache/**",
   "/var/lib/**",
-  "/var/log/**"
+  "/var/log/**",
 ]

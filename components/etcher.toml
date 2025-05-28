@@ -3,10 +3,7 @@ from = 'base'
 
 version = '1.5.120'
 
-devDependencies = [
-  'wget',
-  'unzip',
-]
+devDependencies = ['wget', 'unzip']
 
 build = """
 wget \
@@ -19,11 +16,9 @@ rm /tmp/etcher.zip
 
 # NOTE: requires fuse to be installed
 
-exports = [
-  "/usr/local/bin/etcher"
-]
+exports = ["/usr/local/bin/etcher"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/balena-io/etcher'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/balena-io/etcher'
+removePrefix = 'v'

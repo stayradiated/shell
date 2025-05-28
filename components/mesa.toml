@@ -3,9 +3,7 @@ from = 'base'
 
 version = '9.0.0-2'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx \
@@ -140,7 +138,7 @@ exports = [
   "/usr/share/libdrm/",
   "/usr/share/mesa-demos/",
   "/usr/share/pkgconfig/xkeyboard-config.pc",
-  "/usr/share/X11/"
+  "/usr/share/X11/",
 ]
 
 [diff]
@@ -161,5 +159,5 @@ exclude = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'mesa-utils'
+type = 'apt'
+name = 'mesa-utils'

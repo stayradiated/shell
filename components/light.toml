@@ -26,5 +26,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-commit'
-  url = 'https://github.com/stayradiated/light'
+type = 'github-commit'
+url = 'https://github.com/stayradiated/light'

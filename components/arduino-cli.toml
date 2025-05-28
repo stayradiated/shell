@@ -3,9 +3,7 @@ from = 'base'
 
 version = '0.13.0'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -19,11 +17,8 @@ arduino-cli core update-index
 arduino-cli core install arduino:avr
 """
 
-exports = [
-  '/usr/local/bin/arduino-cli',
-  '/root/.arduino15/',
-]
+exports = ['/usr/local/bin/arduino-cli', '/root/.arduino15/']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/arduino/arduino-cli'
+type = 'github-release'
+url = 'https://github.com/arduino/arduino-cli'

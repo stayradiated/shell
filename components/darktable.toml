@@ -5,8 +5,8 @@ from = "base"
 # → ubuntu → "Grab binary package files directly"
 version = "4.6.1-1.1+74.1"
 
-devDependencies = [ "wget", "apteryx" ]
-dependencies = [ "libheif" ]
+devDependencies = ["wget", "apteryx"]
+dependencies = ["libheif"]
 
 # binary url from
 # https://software.opensuse.org/download.html?project=graphics:darktable&package=darktable
@@ -298,11 +298,11 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/nss/",
   "/usr/lib/x86_64-linux-gnu/pulseaudio/",
   "/usr/lib/x86_64-linux-gnu/vdpau/",
-  "/usr/share/darktable/"
+  "/usr/share/darktable/",
 ]
 
 [diff]
-exclude=[
+exclude = [
   "/etc/ODBCDataSources",
   "/etc/X11/Xreset",
   "/etc/X11/Xreset.d/",
@@ -413,7 +413,7 @@ exclude=[
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
   "/var/lib/systemd/**",
-  "/var/log/**"
+  "/var/log/**",
 ]
 
 # [checkUpdates]

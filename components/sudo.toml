@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.9.15p5-3ubuntu5'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx sudo='{{VERSION}}'
@@ -34,8 +32,8 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'sudo'
+type = 'apt'
+name = 'sudo'
 
 [diff]
 exclude = [
@@ -48,5 +46,5 @@ exclude = [
   "/var/lib/sudo/",
   "/var/lib/systemd/deb-systemd-helper-masked/",
   "/var/log/apt/**",
-  "/var/log/dpkg.log"
+  "/var/log/dpkg.log",
 ]

@@ -3,9 +3,7 @@ from = 'base'
 
 version = '12.10ubuntu1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx build-essential='{{VERSION}}'
@@ -480,11 +478,11 @@ exports = [
   "/usr/share/lto-disabled-list/",
   "/usr/share/perl/",
   "/usr/share/perl5/Dpkg.pm",
-  "/usr/share/perl5/Dpkg/"
+  "/usr/share/perl5/Dpkg/",
 ]
 
 [diff]
-exclude= [
+exclude = [
   "/etc/dpkg/shlibs.default",
   "/etc/dpkg/shlibs.override",
   "/etc/ld.so.cache",
@@ -495,9 +493,9 @@ exclude= [
   "/var/cache/ldconfig/aux-cache",
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
-  "/var/log/**"
+  "/var/log/**",
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'build-essential'
+type = 'apt'
+name = 'build-essential'

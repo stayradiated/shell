@@ -3,19 +3,14 @@ from = 'base'
 
 version = '4.3-4.1build2'
 
-devDependencies = [
-  "apteryx"
-]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx make='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/make',
-  "/usr/share/man/man1/make.1.gz"
-]
+exports = ['/usr/bin/make', "/usr/share/man/man1/make.1.gz"]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'make'
+type = 'apt'
+name = 'make'

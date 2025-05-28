@@ -3,9 +3,7 @@ from = 'base'
 
 version = '2.8.0'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g '@stayradiated/shoebox@{{VERSION}}'
@@ -13,9 +11,9 @@ npm install -g '@stayradiated/shoebox@{{VERSION}}'
 
 exports = [
   '/usr/local/bin/shoebox',
-  '/usr/local/lib/node_modules/@stayradiated/shoebox/'
+  '/usr/local/lib/node_modules/@stayradiated/shoebox/',
 ]
 
 [checkUpdates]
-  type = 'npm'
-  packageName = '@stayradiated/shoebox'
+type = 'npm'
+packageName = '@stayradiated/shoebox'

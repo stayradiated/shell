@@ -147,6 +147,8 @@ dependencies = [
   'kolide',
   'claude-code',
   'lazycommit',
+  'fx',
+  'lazyjj',
 
   # data tools
   # 'sc-im',
@@ -157,4 +159,3 @@ dependencies = [
 ]
 
 command = '/home/admin/.xinitrc'
-

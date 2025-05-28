@@ -4,10 +4,7 @@ from = 'base'
 # https://zoom.us/support/download
 version = '5.4.54779.1115'
 
-devDependencies = [
-  'apteryx',
-  'wget',
-]
+devDependencies = ['apteryx', 'wget']
 
 build = """
 wget \
@@ -16,8 +13,4 @@ wget \
 apteryx /tmp/zoom.deb
 """
 
-exports = [
-  '/opt/zoom/',
-  '/usr/bin/zoom',
-  '/usr/lib/x86_64-linux-gnu/',
-]
+exports = ['/opt/zoom/', '/usr/bin/zoom', '/usr/lib/x86_64-linux-gnu/']

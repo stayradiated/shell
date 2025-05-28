@@ -3,21 +3,15 @@ from = 'base'
 
 version = '1.6.0'
 
-devDependencies = [
-  'python3-pip',
-  'pipx',
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install beets=='{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/beet',
-  '/usr/local/pipx/',
-]
+exports = ['/usr/local/bin/beet', '/usr/local/pipx/']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/beetbox/beets'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/beetbox/beets'
+removePrefix = 'v'

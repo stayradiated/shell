@@ -3,19 +3,14 @@ from = 'base'
 
 version = '5.4.4-1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx lua5.4='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/lua*',
-  '/usr/share/man/man1/lua8gz'
-]
+exports = ['/usr/bin/lua*', '/usr/share/man/man1/lua8gz']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'lua5.4'
+type = 'apt'
+name = 'lua5.4'

@@ -3,12 +3,7 @@ from = 'base'
 
 version = '0.9.10'
 
-devDependencies = [
-  'apteryx',
-  'build-essential',
-  'clone',
-  'make'
-]
+devDependencies = ['apteryx', 'build-essential', 'clone', 'make']
 
 build = """
 apteryx \
@@ -96,5 +91,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/baskerville/bspwm'
+type = 'github-tag'
+url = 'https://github.com/baskerville/bspwm'

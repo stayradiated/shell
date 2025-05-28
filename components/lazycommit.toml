@@ -3,7 +3,7 @@ from = 'base'
 
 version = '1.0.3'
 
-devDependencies = [ 'wget' ]
+devDependencies = ['wget']
 
 build = """
 wget --no-hsts \
@@ -17,12 +17,10 @@ mv /tmp/lazycommit/lazycommit /usr/local/bin
 rm -r /tmp/lazycommit /tmp/lazycommit.tgz
 """
 
-exports = [
-  '/usr/local/bin/lazycommit'
-]
+exports = ['/usr/local/bin/lazycommit']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/stayradiated/lazycommit'
-  matchPrerelease = false
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/stayradiated/lazycommit'
+matchPrerelease = false
+removePrefix = 'v'

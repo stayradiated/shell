@@ -3,9 +3,7 @@ from = 'base'
 
 version = '2020.12.14'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -15,10 +13,8 @@ wget \
 chmod a+rx /usr/local/bin/youtube-dl
 """
 
-exports = [
-  '/usr/local/bin/youtube-dl'
-]
+exports = ['/usr/local/bin/youtube-dl']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/ytdl-org/youtube-dl'
+type = 'github-release'
+url = 'https://github.com/ytdl-org/youtube-dl'

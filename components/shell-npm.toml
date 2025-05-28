@@ -1,13 +1,9 @@
 name = 'shell-npm'
 from = 'shell-admin'
 
-dependencies = [
-  'node'
-]
+dependencies = ['node']
 
-devDependencies = [
-  'make'
-]
+devDependencies = ['make']
 
 build = """
 cd dotfiles
@@ -17,10 +13,6 @@ mkdir -p /home/admin/.cache/npm
 npm config set prefix /home/admin/.cache/npm
 """
 
-exports = [
-  '/home/admin/.npmrc'
-]
+exports = ['/home/admin/.npmrc']
 
-exportEnv = [
-  ['PATH', "${PATH}:/home/admin/.cache/npm/bin"]
-]
+exportEnv = [['PATH', "${PATH}:/home/admin/.cache/npm/bin"]]

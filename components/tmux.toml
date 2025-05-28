@@ -3,12 +3,7 @@ from = 'base'
 
 version = '3.5a'
 
-devDependencies = [
-  'apteryx',
-  'build-essential',
-  'make',
-  'wget',
-]
+devDependencies = ['apteryx', 'build-essential', 'make', 'wget']
 
 build = """
 packages="libncurses5-dev libevent-dev bison"
@@ -109,12 +104,12 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/pkgconfig/panelw.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/tic.pc",
   "/usr/lib/x86_64-linux-gnu/pkgconfig/tinfo.pc",
-  "/usr/local/bin/tmux"
+  "/usr/local/bin/tmux",
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/tmux/tmux'
+type = 'github-release'
+url = 'https://github.com/tmux/tmux'
 
 [diff]
 exclude = [
@@ -132,5 +127,5 @@ exclude = [
   "/var/cache/ldconfig/aux-cache",
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
-  "/var/log/**"
+  "/var/log/**",
 ]

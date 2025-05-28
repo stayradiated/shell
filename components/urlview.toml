@@ -3,17 +3,14 @@ from = "base"
 
 version = '1c-1'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx urlview='{{VERSION}}'
 """
 
-exports = [
-  '/etc/urlview/',
-  '/usr/bin/urlview',
-]
+exports = ['/etc/urlview/', '/usr/bin/urlview']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'urlview'
+type = 'apt'
+name = 'urlview'

@@ -4,10 +4,7 @@ from = "base"
 # https://git.sr.ht/~sircmpwn/scdoc/refs
 version = "1.11.2"
 
-devDependencies = [
-  "build-essential",
-  "clone",
-]
+devDependencies = ["build-essential", "clone"]
 
 build = """
 clone --https --tag='{{VERSION}}' https://git.sr.ht/~sircmpwn/scdoc
@@ -17,6 +14,4 @@ make install
 rm -rf ~/src
 """
 
-exports = [
-  '/usr/local/bin/scdoc'
-]
+exports = ['/usr/local/bin/scdoc']

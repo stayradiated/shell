@@ -3,9 +3,7 @@ from = 'base'
 
 version = '7.16-*'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx sc='{{VERSION}}'
@@ -21,5 +19,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'sc'
+type = 'apt'
+name = 'sc'

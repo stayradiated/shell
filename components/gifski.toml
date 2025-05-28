@@ -3,11 +3,7 @@ from = 'base'
 
 version = '1.33.0'
 
-devDependencies = [
-  'apteryx',
-  'wget',
-  'xz',
-]
+devDependencies = ['apteryx', 'wget', 'xz']
 
 build = """
 wget \
@@ -17,11 +13,8 @@ apteryx ./gifski.deb
 rm -rf debian
 """
 
-exports = [
-  '/usr/bin/gifski'
-]
+exports = ['/usr/bin/gifski']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/ImageOptim/gifski'
-
+type = 'github-release'
+url = 'https://github.com/ImageOptim/gifski'

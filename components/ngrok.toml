@@ -4,9 +4,7 @@ from = 'base'
 # https://dashboard.ngrok.com/get-started/setup
 version = 'bNyj1mQVY4c'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -17,6 +15,4 @@ rm /tmp/ngrok.tgz
 mv ngrok /usr/local/bin/ngrok
 """
 
-exports = [
-  '/usr/local/bin/ngrok'
-]
+exports = ['/usr/local/bin/ngrok']

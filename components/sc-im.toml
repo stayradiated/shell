@@ -3,11 +3,7 @@ from = 'base'
 
 version = 'v0.8.2'
 
-devDependencies = [
-  'clone',
-  'build-essential',
-  'apteryx'
-]
+devDependencies = ['clone', 'build-essential', 'apteryx']
 
 build = """
 clone --https --tag='{{VERSION}}' https://github.com/andmarti1424/sc-im
@@ -29,5 +25,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/andmarti1424/sc-im'
+type = 'github-tag'
+url = 'https://github.com/andmarti1424/sc-im'

@@ -5,10 +5,7 @@ from = 'base'
 
 version = '31.0.3'
 
-devDependencies = [
-  'wget',
-  'unzip',
-]
+devDependencies = ['wget', 'unzip']
 
 build = """
 wget \
@@ -21,6 +18,4 @@ mv platform-tools/adb /usr/local/bin/adb
 rm -rf platform-tools
 """
 
-exports = [
-  '/usr/local/bin/adb',
-]
+exports = ['/usr/local/bin/adb']

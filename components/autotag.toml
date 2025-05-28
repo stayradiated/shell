@@ -3,7 +3,7 @@ from = 'base'
 
 version = 'v1.4.1'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget -O /tmp/autotag.tgz \
@@ -13,10 +13,8 @@ mv autotag /usr/local/bin/autotag
 rm /tmp/autotag.tgz
 """
 
-exports = [
-  "/usr/local/bin/autotag"
-]
+exports = ["/usr/local/bin/autotag"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/pantheon-systems/autotag'
+type = 'github-release'
+url = 'https://github.com/pantheon-systems/autotag'

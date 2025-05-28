@@ -1,20 +1,13 @@
 name = 'shell-beets'
 from = 'shell-admin'
 
-dependencies = [
-  'beets',
-  'eyed3',
-]
+dependencies = ['beets', 'eyed3']
 
-devDependencies = [
-  'make'
-]
+devDependencies = ['make']
 
 build = """
 cd dotfiles
 make beets
 """
 
-exports = [
-  '/home/admin/.config/beets/config.yaml'
-]
+exports = ['/home/admin/.config/beets/config.yaml']

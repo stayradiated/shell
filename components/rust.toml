@@ -1,11 +1,9 @@
 name = 'rust'
 from = 'base'
 
-version = '1.86.0'
+version = '1.87.0'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget -O rust.sh 'https://sh.rustup.rs'
@@ -13,15 +11,10 @@ sh rust.sh -y --default-toolchain '{{VERSION}}'
 rm rust.sh
 """
 
-exports = [
-  '/root/.cargo/',
-  '/root/.rustup/'
-]
+exports = ['/root/.cargo/', '/root/.rustup/']
 
-exportEnv = [
-  ['PATH', '/root/.cargo/bin:$PATH']
-]
+exportEnv = [['PATH', '/root/.cargo/bin:$PATH']]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/rust-lang/rust'
+type = 'github-release'
+url = 'https://github.com/rust-lang/rust'

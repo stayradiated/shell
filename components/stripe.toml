@@ -3,10 +3,7 @@ from = "base"
 
 version = "1.10.3"
 
-devDependencies = [
-  "wget",
-  "apteryx",
-]
+devDependencies = ["wget", "apteryx"]
 
 build = """
 wget -O /tmp/stripe.tgz \
@@ -19,11 +16,9 @@ mv ./stripe /usr/local/bin/stripe
 rm /tmp/stripe.tgz
 """
 
-exports = [
-  "/usr/local/bin/stripe",
-]
+exports = ["/usr/local/bin/stripe"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/stripe/stripe-cli'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/stripe/stripe-cli'
+removePrefix = 'v'

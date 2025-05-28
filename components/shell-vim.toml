@@ -1,15 +1,9 @@
 name = 'shell-vim'
 from = 'shell-admin'
 
-dependencies = [
-  'neovim',
-  'node',
-]
+dependencies = ['neovim', 'node']
 
-devDependencies = [
-  'make',
-  'git',
-]
+devDependencies = ['make', 'git']
 
 build = """
 cd dotfiles

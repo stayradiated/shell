@@ -3,7 +3,7 @@ from = 'base'
 
 version = '0.69-1'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx moreutils='{{VERSION}}'
@@ -74,8 +74,8 @@ exports = [
   '/usr/share/man/man1/vidir.1.gz',
   '/usr/share/man/man1/vipe.1.gz',
   '/usr/share/man/man1/zrun.1.gz',
-  ]
+]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'moreutils'
+type = 'apt'
+name = 'moreutils'

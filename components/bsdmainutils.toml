@@ -3,7 +3,7 @@ from = "base"
 
 version = '12.1.8'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx bsdmainutils='{{VERSION}}'
@@ -38,5 +38,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'bsdmainutils'
+type = 'apt'
+name = 'bsdmainutils'

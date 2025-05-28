@@ -1,9 +1,9 @@
 name = "jujutsu"
 from = "base"
 
-version = '0.28.2'
+version = '0.29.0'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v{{VERSION}}/jj-v{{VERSION}}-x86_64-unknown-linux-musl.tar.gz'
@@ -13,10 +13,9 @@ rm /tmp/jj.tgz
 mv 'jj' /usr/local/bin/jj
 """
 
-exports = [ "/usr/local/bin/jj" ]
+exports = ["/usr/local/bin/jj"]
 
 [checkUpdates]
 type = "github-release"
 url = "https://github.com/martinvonz/jj"
 removePrefix = "v"
-

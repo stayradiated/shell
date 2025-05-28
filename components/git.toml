@@ -4,9 +4,7 @@ from = "base"
 # https://launchpad.net/~git-core/+archive/ubuntu/ppa
 version = '1:2.48.1-0ppa1~ubuntu24.04.1'
 
-devDependencies = [
-  "apteryx"
-]
+devDependencies = ["apteryx"]
 
 build = """
 add-apt-repository ppa:git-core/ppa

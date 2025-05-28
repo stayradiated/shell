@@ -3,12 +3,7 @@ from = 'base'
 
 version = '0.6.2'
 
-devDependencies = [
-  'build-essential',
-  'apteryx',
-  'clone',
-  'make'
-]
+devDependencies = ['build-essential', 'apteryx', 'clone', 'make']
 
 build = """
 apteryx \
@@ -22,11 +17,8 @@ make install
 rm -rf /root/src
 """
 
-exports = [
-  '/usr/local/bin/sxhkd',
-  '/usr/local/share/man/man1/sxhkd.1',
-]
+exports = ['/usr/local/bin/sxhkd', '/usr/local/share/man/man1/sxhkd.1']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/baskerville/sxhkd'
+type = 'github-tag'
+url = 'https://github.com/baskerville/sxhkd'

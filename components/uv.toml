@@ -1,8 +1,8 @@
 name = "uv"
 from = "base"
-version = '0.6.14'
+version = '0.7.8'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/{{VERSION}}/uv-x86_64-unknown-linux-gnu.tar.gz'
@@ -16,22 +16,35 @@ mkdir -p /usr/local/uv/tools /usr/local/uv/bin /usr/local/uv/python
 """
 
 exportEnv = [
-  ["UV_LINK_MODE", "copy"],
-  ["UV_COMPILE_BYTECODE", "1"],
-  ["UV_PYTHON_DOWNLOADS", "manual"],
-  ["UV_TOOL_DIR", "/usr/local/uv/tools"],
-  ["UV_TOOL_BIN_DIR", "/usr/local/uv/bin"],
-  ["UV_PYTHON_INSTALL_DIR", "/usr/local/uv/python"],
+  [
+    "UV_LINK_MODE",
+    "copy",
+  ],
+  [
+    "UV_COMPILE_BYTECODE",
+    "1",
+  ],
+  [
+    "UV_PYTHON_DOWNLOADS",
+    "manual",
+  ],
+  [
+    "UV_TOOL_DIR",
+    "/usr/local/uv/tools",
+  ],
+  [
+    "UV_TOOL_BIN_DIR",
+    "/usr/local/uv/bin",
+  ],
+  [
+    "UV_PYTHON_INSTALL_DIR",
+    "/usr/local/uv/python",
+  ],
 ]
 
-exports = [
-  "/usr/local/bin/uv",
-  "/usr/local/bin/uvx",
-  "/usr/local/uv/"
-]
+exports = ["/usr/local/bin/uv", "/usr/local/bin/uvx", "/usr/local/uv/"]
 
 [checkUpdates]
 type = "github-release"
 url = "https://github.com/astral-sh/uv"
 removePrefix = "v"
-

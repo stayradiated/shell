@@ -3,17 +3,14 @@ from = 'base'
 
 version = '1.12-4.2ubuntu4'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx redshift='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/redshift',
-  '/usr/lib/x86_64-linux-gnu/',
-]
+exports = ['/usr/bin/redshift', '/usr/lib/x86_64-linux-gnu/']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'redshift'
+type = 'apt'
+name = 'redshift'

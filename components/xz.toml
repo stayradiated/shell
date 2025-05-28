@@ -3,19 +3,14 @@ from = 'base'
 
 version = '5.6.1+really5.4.5-1ubuntu0.2'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx xz-utils='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/xz',
-  '/usr/share/man/man1/xz.1.gz'
-]
+exports = ['/usr/bin/xz', '/usr/share/man/man1/xz.1.gz']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'xz-utils'
+type = 'apt'
+name = 'xz-utils'

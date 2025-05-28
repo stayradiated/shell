@@ -3,9 +3,7 @@ from = 'base'
 
 version = 'v10.2.0'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -20,11 +18,8 @@ mv fd/fd.1 /usr/local/share/man/man1/fd.1
 rm -r fd
 """
 
-exports = [
-  '/usr/local/bin/fd',
-  '/usr/local/share/man/man1/fd.1'
-]
+exports = ['/usr/local/bin/fd', '/usr/local/share/man/man1/fd.1']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/sharkdp/fd'
+type = 'github-release'
+url = 'https://github.com/sharkdp/fd'

@@ -1,11 +1,9 @@
 name = 'ncu'
 from = 'base'
 
-version = '17.1.18'
+version = '18.0.1'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'npm-check-updates@{{VERSION}}'
@@ -13,9 +11,9 @@ npm install -g 'npm-check-updates@{{VERSION}}'
 
 exports = [
   '/usr/local/bin/ncu',
-  '/usr/local/lib/node_modules/npm-check-updates'
+  '/usr/local/lib/node_modules/npm-check-updates',
 ]
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'npm-check-updates'
+type = 'npm'
+packageName = 'npm-check-updates'

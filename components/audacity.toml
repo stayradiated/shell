@@ -3,7 +3,7 @@ from = 'base'
 
 version = '3.4.2+dfsg-1build4'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx audacity='{{VERSION}}'
@@ -263,7 +263,7 @@ exports = [
 ]
 
 [diff]
-exclude= [
+exclude = [
   "/etc/X11/**",
   "/etc/alternatives/x-cursor-theme",
   "/etc/dconf/",
@@ -327,5 +327,5 @@ exclude= [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'audacity'
+type = 'apt'
+name = 'audacity'

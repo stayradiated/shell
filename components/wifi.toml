@@ -3,10 +3,7 @@ from = 'base'
 
 version = 'v2025.03.17-1251'
 
-devDependencies = [
-  "wget",
-  "unzip"
-]
+devDependencies = ["wget", "unzip"]
 
 build = """
 wget --no-hsts -O wifi.zip \
@@ -17,10 +14,8 @@ chmod +x /usr/local/bin/wifi
 rm wifi.zip
 """
 
-exports = [
-  "/usr/local/bin/wifi"
-]
+exports = ["/usr/local/bin/wifi"]
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/stayradiated/wifi'
+type = 'github-tag'
+url = 'https://github.com/stayradiated/wifi'

@@ -3,7 +3,7 @@ fromImage = 'phusion/baseimage:noble-1.0.0' # 24.04
 
 baseExportDir = '/exports/'
 
-# todo: upgrade this version to `noble-1.0.0`
+# todo: upgrade this version to `noble-1.0.2`
 # we are already using noble, I just forgot to update the version
 version = 'jammy-1.0.4'
 
@@ -17,6 +17,6 @@ locale-gen $LANG
 yes | unminimize
 """
 
-[checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/phusion/baseimage-docker'
+# [checkUpdates]
+#   type = 'github-release'
+#   url = 'https://github.com/phusion/baseimage-docker'

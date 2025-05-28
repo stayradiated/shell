@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.0.7'
 
-devDependencies = [
-  'clone'
-]
+devDependencies = ['clone']
 
 build = """
 clone --https --tag='{{VERSION}}' https://github.com/kaelzhang/shell-safe-rm
@@ -14,10 +12,8 @@ cp ./bin/rm.sh /usr/local/bin/safe-rm
 rm -rf /root/src/
 """
 
-exports = [
-  '/usr/local/bin/safe-rm'
-]
+exports = ['/usr/local/bin/safe-rm']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/kaelzhang/shell-safe-rm'
+type = 'github-tag'
+url = 'https://github.com/kaelzhang/shell-safe-rm'

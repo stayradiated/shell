@@ -3,9 +3,7 @@ from = 'base'
 
 version = '0.25.0'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -18,11 +16,9 @@ mv 'bat-v{{VERSION}}-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat
 rm -rf 'bat-v{{VERSION}}-x86_64-unknown-linux-gnu'
 """
 
-exports = [
-  '/usr/local/bin/bat'
-]
+exports = ['/usr/local/bin/bat']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/sharkdp/bat'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/sharkdp/bat'
+removePrefix = 'v'

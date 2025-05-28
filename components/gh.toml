@@ -1,11 +1,9 @@
 name = 'gh'
 from = 'base'
 
-version = '2.69.0'
+version = '2.73.0'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -18,11 +16,9 @@ mv 'gh_{{VERSION}}_linux_amd64/bin/gh' /usr/local/bin/gh
 rm -r 'gh_{{VERSION}}_linux_amd64'
 """
 
-exports = [
-  '/usr/local/bin/gh'
-]
+exports = ['/usr/local/bin/gh']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/cli/cli'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/cli/cli'
+removePrefix = 'v'

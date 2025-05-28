@@ -3,7 +3,7 @@ from = "base"
 
 version = '3.22.1-1ubuntu1.24.04.2'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx cmake='{{VERSION}}'
@@ -134,5 +134,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'cmake'
+type = 'apt'
+name = 'cmake'

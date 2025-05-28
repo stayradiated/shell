@@ -3,13 +3,9 @@ from = 'base'
 
 version = '1.5.1'
 
-dependencies = [
-  'ffmpeg'
-]
+dependencies = ['ffmpeg']
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 add-apt-repository ppa:peek-developers/stable
@@ -2182,5 +2178,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/phw/peek'
+type = 'github-release'
+url = 'https://github.com/phw/peek'

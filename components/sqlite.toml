@@ -4,12 +4,7 @@ from = 'base'
 # https://sqlite.org/download.html
 version = '3330000'
 
-devDependencies = [
-  'build-essential',
-  'wget',
-  
-  'make',
-]
+devDependencies = ['build-essential', 'wget', 'make']
 
 build = """
 # convert 3.42.0 into 3420000
@@ -39,12 +34,9 @@ make install
 rm -rf '/sqlite-autoconf-{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/libsqlite3',
-  '/usr/lib/libsqlite3.*',
-]
+exports = ['/usr/bin/libsqlite3', '/usr/lib/libsqlite3.*']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/sqlite/sqlite'
-  removePrefix = 'version-'
+type = 'github-tag'
+url = 'https://github.com/sqlite/sqlite'
+removePrefix = 'version-'

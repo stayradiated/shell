@@ -3,14 +3,9 @@ from = 'base'
 
 version = '6200805'
 
-dependencies = [
-  'java',
-]
+dependencies = ['java']
 
-devDependencies = [
-  'wget',
-  'unzip',
-]
+devDependencies = ['wget', 'unzip']
 
 build = """
 ANDROID_HOME=/usr/local/android
@@ -37,11 +32,15 @@ sdkmanager --sdk_root="${ANDROID_HOME}" \
    "tools"
  """
 
-exports = [
-  '/usr/local/android'
-]
+exports = ['/usr/local/android']
 
 exportEnv = [
-  ['ANDROID_HOME', '/usr/local/android'],
-  ['PATH', '${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}'],
+  [
+    'ANDROID_HOME',
+    '/usr/local/android',
+  ],
+  [
+    'PATH',
+    '${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}',
+  ],
 ]

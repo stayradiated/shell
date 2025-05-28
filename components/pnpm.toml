@@ -1,11 +1,9 @@
 name = 'pnpm'
 from = 'base'
 
-version = '10.8.1'
+version = '10.11.0'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'pnpm@{{VERSION}}'
@@ -18,5 +16,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'pnpm'
+type = 'npm'
+packageName = 'pnpm'

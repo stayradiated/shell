@@ -3,12 +3,7 @@ from = 'base'
 
 version = '0.5.7'
 
-devDependencies = [
-  'apteryx',
-  'build-essential',
-  'clone',
-  'make'
-]
+devDependencies = ['apteryx', 'build-essential', 'clone', 'make']
 
 build = """
 apteryx \
@@ -29,10 +24,8 @@ make install
 rm -rf /root/src
 """
 
-exports = [
-  '/usr/local/bin/xdo',
-]
+exports = ['/usr/local/bin/xdo']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/baskerville/xdo'
+type = 'github-tag'
+url = 'https://github.com/baskerville/xdo'

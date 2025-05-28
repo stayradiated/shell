@@ -3,7 +3,7 @@ from = 'base'
 
 version = '0.13-3'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx xclip='{{VERSION}}'
@@ -26,5 +26,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'xclip'
+type = 'apt'
+name = 'xclip'

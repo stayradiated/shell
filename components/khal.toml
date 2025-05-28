@@ -3,21 +3,15 @@ from = 'base'
 
 version = '0.10.2'
 
-devDependencies = [
-  'python3-pip',
-  'pipx'
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install khal=='{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/pipx/',
-  '/usr/local/bin/khal',
-]
+exports = ['/usr/local/pipx/', '/usr/local/bin/khal']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/pimutils/khal'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/pimutils/khal'
+removePrefix = 'v'

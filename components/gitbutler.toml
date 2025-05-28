@@ -4,7 +4,7 @@ from = 'base'
 # https://app.gitbutler.com/downloads/
 version = '0.14.2-1544'
 
-devDependencies = [ 'apteryx', 'wget' ]
+devDependencies = ['apteryx', 'wget']
 
 build = """
 UNSUFFIXED_VERSION=$(echo '{{VERSION}}' | sed 's/-.*//')
@@ -231,5 +231,5 @@ exclude = [
   "/var/lib/systemd/deb-systemd-user-helper-enabled/session-migration.service.dsh-also",
   "/var/lib/ucf/hashfile.0",
   "/var/lib/ucf/hashfile.1",
-  "/var/log/**"
+  "/var/log/**",
 ]

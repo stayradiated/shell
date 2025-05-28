@@ -3,9 +3,7 @@ from = "base"
 
 version = 'v4.3'
 
-devDependencies = [
-  "wget"
-]
+devDependencies = ["wget"]
 
 build = """
 wget -O /usr/local/bin/greenclip \
@@ -13,10 +11,8 @@ wget -O /usr/local/bin/greenclip \
 chmod +x /usr/local/bin/greenclip
 """
 
-exports = [
-  "/usr/local/bin/greenclip"
-]
+exports = ["/usr/local/bin/greenclip"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/erebe/greenclip'
+type = 'github-release'
+url = 'https://github.com/erebe/greenclip'

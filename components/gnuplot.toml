@@ -3,7 +3,7 @@ from = "base"
 
 version = "5.2.8+*"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx gnuplot='{{VERSION}}'
@@ -615,5 +615,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'gnuplot'
+type = 'apt'
+name = 'gnuplot'

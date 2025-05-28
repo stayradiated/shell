@@ -6,12 +6,7 @@ from = 'base'
 
 version = '2.1.19'
 
-devDependencies = [
-  'build-essential',
-  'wget',
-  'make',
-]
-
+devDependencies = ['build-essential', 'wget', 'make']
 
 build = """
 wget -O anki.tar 'https://apps.ankiweb.net/downloads/current/anki-{{VERSION}}-linux-amd64.tar.bz2'
@@ -23,6 +18,4 @@ make
 mv ./bin/anki /usr/local/bin/anki
 """
 
-exports = [
-  '/usr/local/bin/anki'
-]
+exports = ['/usr/local/bin/anki']

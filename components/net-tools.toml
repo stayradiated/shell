@@ -1,9 +1,9 @@
 name = "net-tools"
 from = "base"
 
-version = '2.10-0.1ubuntu4'
+version = '2.10-0.1ubuntu4.4'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx net-tools='{{VERSION}}'
@@ -36,5 +36,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'net-tools'
+type = 'apt'
+name = 'net-tools'

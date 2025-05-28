@@ -3,9 +3,7 @@ from = 'base'
 
 version = '2.10.30-*'
 
-dependencies = [
-  'apteryx'
-]
+dependencies = ['apteryx']
 
 build = """
 apteryx gimp='{{VERSION}}'
@@ -965,5 +963,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'gimp'
+type = 'apt'
+name = 'gimp'

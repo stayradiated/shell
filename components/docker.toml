@@ -1,12 +1,9 @@
 name = 'docker'
 from = 'base'
 
-version = '28.0.4'
+version = '28.2.1'
 
-devDependencies = [
-  'apteryx',
-  'wget',
-]
+devDependencies = ['apteryx', 'wget']
 
 build = """
 
@@ -24,13 +21,10 @@ apt-get update
 apteryx docker-ce-cli='5:{{VERSION}}*'
 """
 
-exports = [
-  '/usr/bin/docker',
-  '/usr/share/zsh/vendor-completions/_docker',
-]
+exports = ['/usr/bin/docker', '/usr/share/zsh/vendor-completions/_docker']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/moby/moby'
-  removePrefix = 'v'
-  matchPrerelease = false
+type = 'github-release'
+url = 'https://github.com/moby/moby'
+removePrefix = 'v'
+matchPrerelease = false

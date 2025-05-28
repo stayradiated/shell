@@ -3,9 +3,7 @@ from = "base"
 
 version = '0.6'
 
-devDependencies = [
-  "uv"
-]
+devDependencies = ["uv"]
 
 build = """
 uv tool install strip-tags=='{{VERSION}}'
@@ -13,11 +11,8 @@ uv tool install strip-tags=='{{VERSION}}'
 ln -s /usr/local/uv/bin/strip-tags /usr/local/bin/strip-tags
 """
 
-exports = [
-  "/usr/local/uv/",
-  "/usr/local/bin/strip-tags",
-]
+exports = ["/usr/local/uv/", "/usr/local/bin/strip-tags"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/simonw/strip-tags'
+type = 'github-release'
+url = 'https://github.com/simonw/strip-tags'

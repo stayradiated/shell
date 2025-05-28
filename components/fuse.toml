@@ -3,7 +3,7 @@ from = "base"
 
 version = "2.9.9-5ubuntu3"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx fuse='{{VERSION}}'
@@ -17,7 +17,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libfuse.so.2.9.9",
   "/usr/lib/x86_64-linux-gnu/libulockmgr.so.1",
   "/usr/lib/x86_64-linux-gnu/libulockmgr.so.1.0.1",
-  "/usr/sbin/mount.fuse"
+  "/usr/sbin/mount.fuse",
 ]
 
 [diff]
@@ -28,9 +28,9 @@ exclude = [
   "/usr/share/man/**",
   "/var/cache/**",
   "/var/lib/**",
-  "/var/log/**"
+  "/var/log/**",
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'fuse'
+type = 'apt'
+name = 'fuse'

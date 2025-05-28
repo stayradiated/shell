@@ -3,19 +3,14 @@ from = 'base'
 
 version = '7.4.0'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'np@{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/np',
-  '/usr/local/lib/node_modules/np/',
-]
+exports = ['/usr/local/bin/np', '/usr/local/lib/node_modules/np/']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'np'
+type = 'npm'
+packageName = 'np'

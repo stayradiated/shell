@@ -4,9 +4,7 @@ from = 'base'
 # https://github.com/yt-dlp/yt-dlp/releases
 version = '2024.11.18'
 
-devDependencies = [
-  'uv'
-]
+devDependencies = ['uv']
 
 build = """
 uv tool install yt-dlp=='{{VERSION}}'
@@ -14,7 +12,4 @@ uv tool install yt-dlp=='{{VERSION}}'
 ln -s /usr/local/uv/bin/yt-dlp /usr/local/bin/yt-dlp
 """
 
-exports = [
-  "/usr/local/uv/",
-  "/usr/local/bin/yt-dlp",
-]
+exports = ["/usr/local/uv/", "/usr/local/bin/yt-dlp"]

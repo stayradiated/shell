@@ -3,10 +3,7 @@ from = 'base'
 
 version = 'v1.39.0'
 
-devDependencies = [
-  'wget',
-  'unzip'
-]
+devDependencies = ['wget', 'unzip']
 
 build = """
 wget \
@@ -17,10 +14,8 @@ unzip /tmp/deno.zip
 rm /tmp/deno.zip
 """
 
-exports = [
-  '/usr/local/bin/deno'
-]
+exports = ['/usr/local/bin/deno']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/denoland/deno'
+type = 'github-release'
+url = 'https://github.com/denoland/deno'

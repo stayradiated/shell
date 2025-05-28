@@ -1,16 +1,11 @@
 name = 'dotfiles'
 from = 'base'
 
-version = 'v1.109.9'
+version = 'v1.110.2'
 
-devDependencies = [
-  'clone',
-  'git-crypt'
-]
+devDependencies = ['clone', 'git-crypt']
 
-mount = [
-  ['./secret/dotfiles-key', '/tmp/dotfiles-key']
-]
+mount = [['./secret/dotfiles-key', '/tmp/dotfiles-key']]
 
 build = """
 clone --https --tag='{{VERSION}}' https://github.com/stayradiated/dotfiles
@@ -23,11 +18,9 @@ mv /root/src/github.com/stayradiated/dotfiles /root/dotfiles
 rm -rf src
 """
 
-exports = [
-  '/root/dotfiles/'
-]
+exports = ['/root/dotfiles/']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/stayradiated/dotfiles'
-  matchTag = '^v'
+type = 'github-tag'
+url = 'https://github.com/stayradiated/dotfiles'
+matchTag = '^v'

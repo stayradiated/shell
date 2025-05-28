@@ -7,7 +7,4 @@ echo '*/5 * * * * admin chronic mbsync --config ~/src/mail/stayradiated.com.conf
 echo 'service cron start' >> /etc/rc.local
 """
 
-exports = [
-  '/etc/crontab',
-  '/etc/rc.local'
-]
+exports = ['/etc/crontab', '/etc/rc.local']

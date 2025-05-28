@@ -3,10 +3,7 @@ from = "base"
 
 version = "4.5"
 
-devDependencies = [
-  'python3-pip',
-  'pipx'
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install buku=='{{VERSION}}'
@@ -19,6 +16,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/jarun/buku'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/jarun/buku'
+removePrefix = 'v'

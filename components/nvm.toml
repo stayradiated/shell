@@ -3,9 +3,7 @@ from = 'base'
 
 version = 'v0.37.0'
 
-devDependencies = [
-  'clone'
-]
+devDependencies = ['clone']
 
 build = """
 clone --https --tag='{{VERSION}}' https://github.com/nvm-sh/nvm
@@ -14,14 +12,10 @@ mv /root/src/github.com/nvm-sh/nvm /usr/local/share/nvm
 rm -rf /root/src
 """
 
-exports = [
-  '/usr/local/share/nvm/'
-]
+exports = ['/usr/local/share/nvm/']
 
-exportEnv = [
-  ['NVM_DIR', '/usr/local/share/nvm']
-]
+exportEnv = [['NVM_DIR', '/usr/local/share/nvm']]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/nvm-sh/nvm'
+type = 'github-release'
+url = 'https://github.com/nvm-sh/nvm'

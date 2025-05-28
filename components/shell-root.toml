@@ -1,15 +1,9 @@
 name = 'shell-root'
 from = 'base'
 
-devDependencies = [
-  'apteryx',
-  'dotfiles',
-  'zsh',
-]
+devDependencies = ['apteryx', 'dotfiles', 'zsh']
 
-mount = [
-  ['./secret/admin-passwd', '/tmp/admin-passwd']
-]
+mount = [['./secret/admin-passwd', '/tmp/admin-passwd']]
 
 build = """
 echo "* - nofile 100000" >> /etc/security/limits.conf

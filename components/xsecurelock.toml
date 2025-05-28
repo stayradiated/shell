@@ -3,11 +3,7 @@ from = 'base'
 
 version = 'v1.9.0'
 
-devDependencies = [
-  'apteryx',
-  'build-essential',
-  'clone',
-]
+devDependencies = ['apteryx', 'build-essential', 'clone']
 
 build = """
 apteryx \
@@ -56,5 +52,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/google/xsecurelock'
+type = 'github-release'
+url = 'https://github.com/google/xsecurelock'

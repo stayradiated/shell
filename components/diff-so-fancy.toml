@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.4.3'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'diff-so-fancy@{{VERSION}}'
@@ -16,7 +14,6 @@ exports = [
   '/usr/local/lib/node_modules/diff-so-fancy/',
 ]
 
-
 [checkUpdates]
-  type = 'npm'
-  packageName = 'diff-so-fancy'
+type = 'npm'
+packageName = 'diff-so-fancy'

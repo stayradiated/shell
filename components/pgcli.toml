@@ -3,10 +3,7 @@ from = 'base'
 
 version = '4.3.0'
 
-dependencies = [
-  'apteryx',
-  'uv',
-]
+dependencies = ['apteryx', 'uv']
 
 build = """
 apteryx libpq-dev
@@ -23,6 +20,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/dbcli/pgcli'
-  removePrefix = 'v'
+type = 'github-tag'
+url = 'https://github.com/dbcli/pgcli'
+removePrefix = 'v'

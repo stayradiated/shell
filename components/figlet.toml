@@ -3,7 +3,7 @@ from = "base"
 
 version = "2.2.5-*"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx figlet='{{VERSION}}'
@@ -20,5 +20,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'figlet'
+type = 'apt'
+name = 'figlet'

@@ -3,3 +3,4 @@
 !/secret/README.md
 
 *.log
+node_modules

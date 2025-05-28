@@ -3,7 +3,7 @@ from = "base"
 
 version = "0.5.3+*"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx w3m='{{VERSION}}'
@@ -22,5 +22,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'w3m'
+type = 'apt'
+name = 'w3m'

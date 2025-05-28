@@ -3,9 +3,7 @@ from = "base"
 
 version = "3.0.0"
 
-devDependencies = [
-  "wget"
-]
+devDependencies = ["wget"]
 
 build = """
 wget -O dbxcli \
@@ -14,12 +12,9 @@ chmod +x dbxcli
 mv dbxcli /usr/local/bin/dbxcli
 """
 
-exports = [
-  "/usr/local/bin/dbxcli"
-]
+exports = ["/usr/local/bin/dbxcli"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/dropbox/dbxcli'
-  removePrefix = 'v'
-
+type = 'github-release'
+url = 'https://github.com/dropbox/dbxcli'
+removePrefix = 'v'

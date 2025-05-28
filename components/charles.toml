@@ -4,9 +4,7 @@ from = 'base'
 # https://www.charlesproxy.com/
 version = '4.6.4'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -23,7 +21,4 @@ mv ./charles/lib/* /usr/share/java/charles/
 rm -r ./charles
 """
 
-exports = [
-  '/usr/local/bin/charles',
-  '/usr/share/java/charles/',
-]
+exports = ['/usr/local/bin/charles', '/usr/share/java/charles/']

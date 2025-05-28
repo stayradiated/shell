@@ -3,7 +3,7 @@ from = 'base'
 
 version = '1.12.2-*'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx dbus-x11='{{VERSION}}'
@@ -46,5 +46,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'dbus-x11'
+type = 'apt'
+name = 'dbus-x11'

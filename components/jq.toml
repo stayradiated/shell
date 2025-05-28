@@ -3,7 +3,7 @@ from = 'base'
 
 version = '1.7.1'
 
-devDependencies = [ 'wget' ]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -12,12 +12,10 @@ wget \
 chmod +x /usr/local/bin/jq
 """
 
-exports = [
-  '/usr/local/bin/jq'
-]
+exports = ['/usr/local/bin/jq']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/stedolan/jq'
-  removePrefix = 'jq-'
-  matchPrerelease = false
+type = 'github-release'
+url = 'https://github.com/stedolan/jq'
+removePrefix = 'jq-'
+matchPrerelease = false

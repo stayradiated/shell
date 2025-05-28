@@ -3,19 +3,15 @@ from = 'base'
 
 version = 'v0.1.4'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 -O /usr/local/bin/hey
 chmod +x /usr/local/bin/hey
 """
 
-exports = [
-  '/usr/local/bin/hey'
-]
+exports = ['/usr/local/bin/hey']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/rakyll/hey'
+type = 'github-release'
+url = 'https://github.com/rakyll/hey'

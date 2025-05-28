@@ -3,10 +3,7 @@ from = 'base'
 
 version = '07cc81d9eedd7ff75966316a7a0091ffd7bab188'
 
-devDependencies = [
-  'go',
-  'clone'
-]
+devDependencies = ['go', 'clone']
 
 build = """
 clone --https --ref='{{VERSION}}' https://github.com/special/1pw
@@ -17,10 +14,8 @@ mv 1pw /usr/local/bin/1pw
 rm -rf /root/src
 """
 
-exports = [
-  '/usr/local/bin/1pw'
-]
+exports = ['/usr/local/bin/1pw']
 
 [checkUpdates]
-  type = 'github-commit'
-  url = 'https://github.com/special/1pw'
+type = 'github-commit'
+url = 'https://github.com/special/1pw'

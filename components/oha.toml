@@ -3,7 +3,7 @@ from = "base"
 
 version = '1.8.0'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget \
@@ -14,11 +14,9 @@ chmod +x /tmp/oha
 mv /tmp/oha /usr/local/bin/oha
 """
 
-exports = [
-  '/usr/local/bin/oha'
-]
+exports = ['/usr/local/bin/oha']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/hatoo/oha'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/hatoo/oha'
+removePrefix = 'v'

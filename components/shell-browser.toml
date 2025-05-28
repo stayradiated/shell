@@ -1,26 +1,16 @@
 name = 'shell-browser'
 from = 'shell-admin'
 
-dependencies = [
-  'google-chrome',
-  'firefox',
-]
+dependencies = ['google-chrome', 'firefox']
 
-devDependencies = [
-  'make',
-  'xdg-utils',
-]
+devDependencies = ['make', 'xdg-utils']
 
-build =  """
+build = """
 cd dotfiles
 make firefox
 """
 
-exports = [
-  '/home/admin/.config/mimeapps.list',
-]
+exports = ['/home/admin/.config/mimeapps.list']
 
 # TODO: fix shoebox
-exportEnv = [
-  ['PATH', "${PATH}:/opt/google/chrome"]
-]
+exportEnv = [['PATH', "${PATH}:/opt/google/chrome"]]

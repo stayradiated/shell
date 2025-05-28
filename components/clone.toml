@@ -3,13 +3,9 @@ from = "base"
 
 version = "v1.5.0"
 
-dependencies = [
-  "git"
-]
+dependencies = ["git"]
 
-devDependencies = [
-  "go"
-]
+devDependencies = ["go"]
 
 build = """
 mkdir -p /root/src/github.com/stayradiated
@@ -26,10 +22,8 @@ cd /root
 rm -rf src bin
 """
 
-exports = [
-  "/usr/local/bin/clone"
-]
+exports = ["/usr/local/bin/clone"]
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/stayradiated/clone'
+type = 'github-tag'
+url = 'https://github.com/stayradiated/clone'

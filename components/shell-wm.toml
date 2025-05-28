@@ -1,15 +1,9 @@
 name = 'shell-wm'
 from = 'shell-admin'
 
-dependencies = [
-  'bspwm',
-  'sxhkd',
-]
+dependencies = ['bspwm', 'sxhkd']
 
-devDependencies = [
-  'make',
-  'git'
-]
+devDependencies = ['make', 'git']
 
 build = """
 cd dotfiles

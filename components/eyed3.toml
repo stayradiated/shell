@@ -3,21 +3,14 @@ from = 'base'
 
 version = 'v0.9.6'
 
-devDependencies = [
-  'python3-pip',
-  'pipx',
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install eyeD3=='{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/eyeD3',
-  '/usr/local/pipx/',
-]
+exports = ['/usr/local/bin/eyeD3', '/usr/local/pipx/']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/nicfit/eyeD3'
-
+type = 'github-release'
+url = 'https://github.com/nicfit/eyeD3'

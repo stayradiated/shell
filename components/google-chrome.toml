@@ -3,12 +3,9 @@ from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
 # look for google-chrome-beta
-version = '136.0.7103.25'
+version = '137.0.7151.40'
 
-devDependencies = [
-  'wget',
-  'apteryx',
-]
+devDependencies = ['wget', 'apteryx']
 
 build = """
 curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
@@ -380,17 +377,15 @@ exports = [
   "/usr/share/pkgconfig/shared-mime-info.pc",
   "/usr/share/pkgconfig/xkeyboard-config.pc",
   "/usr/share/themes/",
-  "/usr/share/X11/"
+  "/usr/share/X11/",
 ]
 
-exportEnv = [
-  ['PATH', "${PATH}:/opt/google/chrome"]
-]
+exportEnv = [['PATH', "${PATH}:/opt/google/chrome"]]
 
 [checkUpdates]
-  type = 'json'
-  url = 'https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/beta/versions'
-  path = ['versions', '0', 'version']
+type = 'json'
+url = 'https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/beta/versions'
+path = ['versions', '0', 'version']
 
 [diff]
 exclude = [
@@ -437,5 +432,5 @@ exclude = [
   "/var/cache/ldconfig/aux-cache",
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
-  "/var/log/**"
+  "/var/log/**",
 ]

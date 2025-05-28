@@ -3,10 +3,7 @@ from = 'base'
 
 version = "v3.8"
 
-devDependencies = [
-  'apteryx',
-  'python3-pip',
-]
+devDependencies = ['apteryx', 'python3-pip']
 
 build = """
 apt-key adv \
@@ -100,5 +97,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/weechat/weechat'
+type = 'github-release'
+url = 'https://github.com/weechat/weechat'

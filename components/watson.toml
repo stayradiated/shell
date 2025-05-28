@@ -3,21 +3,15 @@ from = 'base'
 
 version = '2.1.0'
 
-devDependencies = [
-  'python3-pip',
-  'pipx',
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install td-watson=={{VERSION}}
 rm -rf /root/.cache/pip
 """
 
-exports = [
-  '/usr/local/pipx/',
-  '/usr/local/bin/watson',
-]
+exports = ['/usr/local/pipx/', '/usr/local/bin/watson']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/TailorDev/Watson'
+type = 'github-release'
+url = 'https://github.com/TailorDev/Watson'

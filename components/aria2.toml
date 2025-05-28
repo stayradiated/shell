@@ -3,18 +3,14 @@ from = 'base'
 
 version = '1.35.0-*'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx aria2='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/aria2c',
-  '/usr/lib/x86_64-linux-gnu/',
-]
+exports = ['/usr/bin/aria2c', '/usr/lib/x86_64-linux-gnu/']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'aria2'
-
+type = 'apt'
+name = 'aria2'

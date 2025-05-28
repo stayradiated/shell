@@ -3,10 +3,7 @@ from = 'base'
 
 version = '1.60'
 
-devDependencies = [
-  'unzip',
-  'wget',
-]
+devDependencies = ['unzip', 'wget']
 
 build = """
 wget \
@@ -21,7 +18,4 @@ echo 'exec wine64-stable /usr/local/lib/rexpaint/REXPaint.exe' >> $bin_file
 chmod +x $bin_file
 """
 
-exports = [
-  '/usr/local/bin/rexpaint',
-  '/usr/local/lib/rexpaint',
-]
+exports = ['/usr/local/bin/rexpaint', '/usr/local/lib/rexpaint']

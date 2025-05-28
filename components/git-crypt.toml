@@ -3,12 +3,7 @@ from = 'base'
 
 version = '0.7.0'
 
-devDependencies = [
-  'build-essential',
-  'apteryx',
-  'clone',
-  'make',
-]
+devDependencies = ['build-essential', 'apteryx', 'clone', 'make']
 
 build = """
 apteryx libssl-dev
@@ -22,10 +17,8 @@ make install
 mv git-crypt /usr/local/bin/git-crypt
 """
 
-exports = [
-  '/usr/local/bin/git-crypt',
-]
+exports = ['/usr/local/bin/git-crypt']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/AGWA/git-crypt'
+type = 'github-release'
+url = 'https://github.com/AGWA/git-crypt'

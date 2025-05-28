@@ -1,9 +1,9 @@
 name = 'lazygit'
 from = 'base'
 
-version = '0.49.0'
+version = '0.51.1'
 
-devDependencies = [ 'wget' ]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -17,12 +17,10 @@ mv /tmp/lazygit/lazygit /usr/local/bin
 rm -r /tmp/lazygit /tmp/lazygit.tgz
 """
 
-exports = [
-  '/usr/local/bin/lazygit'
-]
+exports = ['/usr/local/bin/lazygit']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/jesseduffield/lazygit'
-  matchPrerelease = false
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/jesseduffield/lazygit'
+matchPrerelease = false
+removePrefix = 'v'

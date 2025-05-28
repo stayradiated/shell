@@ -1,21 +1,17 @@
 name = 'n'
 from = 'base'
 
-version = '10.1.0'
+version = '10.2.0'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget "https://raw.githubusercontent.com/tj/n/v{{VERSION}}/bin/n" -O /usr/local/bin/n
 chmod +x /usr/local/bin/n
 """
 
-exports = [
-  '/usr/local/bin/n'
-]
+exports = ['/usr/local/bin/n']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'n'
+type = 'npm'
+packageName = 'n'

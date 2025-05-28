@@ -1,7 +1,7 @@
 name = "bun"
 from = "base"
 
-version = '1.2.9'
+version = '1.2.14'
 
 devDependencies = ["wget", "unzip"]
 
@@ -18,11 +18,9 @@ mv /tmp/bun/bun-linux-x64/bun /usr/local/bin/
 rm -r /tmp/bun /tmp/bun.zip
 """
 
-exports = [
-  '/usr/local/bin/bun'
-]
+exports = ['/usr/local/bin/bun']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/oven-sh/bun'
-  removePrefix = 'bun-v'
+type = 'github-release'
+url = 'https://github.com/oven-sh/bun'
+removePrefix = 'bun-v'

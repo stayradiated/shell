@@ -1,11 +1,9 @@
 name = "sqlite-utils"
 from = "base"
 
-version = '3.38'
+version = '4.0a0'
 
-devDependencies = [
-  'uv'
-]
+devDependencies = ['uv']
 
 build = """
 uv tool install sqlite-utils=='{{VERSION}}'
@@ -13,11 +11,8 @@ uv tool install sqlite-utils=='{{VERSION}}'
 ln -s /usr/local/uv/bin/sqlite-utils /usr/local/bin/sqlite-utils
 """
 
-exports = [
-  '/usr/local/uv/',
-  '/usr/local/bin/sqlite-utils',
-]
+exports = ['/usr/local/uv/', '/usr/local/bin/sqlite-utils']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/simonw/sqlite-utils'
+type = 'github-release'
+url = 'https://github.com/simonw/sqlite-utils'

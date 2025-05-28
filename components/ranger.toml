@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.9.4'
 
-devDependencies = [
-  'uv'
-]
+devDependencies = ['uv']
 
 build = """
 uv tool install ranger-fm=='{{VERSION}}'
@@ -13,12 +11,9 @@ uv tool install ranger-fm=='{{VERSION}}'
 ln -s /usr/local/uv/bin/ranger /usr/local/bin/ranger
 """
 
-exports = [
-  '/usr/local/uv/',
-  '/usr/local/bin/ranger',
-]
+exports = ['/usr/local/uv/', '/usr/local/bin/ranger']
 
 [checkUpdates]
-  type = 'github-tag'
-  url = 'https://github.com/ranger/ranger'
-  removePrefix = 'v'
+type = 'github-tag'
+url = 'https://github.com/ranger/ranger'
+removePrefix = 'v'

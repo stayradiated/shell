@@ -1,9 +1,9 @@
 name = "libglib"
 from = "base"
 
-version = '2.80.0-6ubuntu3.2'
+version = '2.80.0-6ubuntu3.4'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx libglib2.0-bin='{{VERSION}}'
@@ -22,5 +22,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'libglib2.0-bin'
+type = 'apt'
+name = 'libglib2.0-bin'

@@ -3,7 +3,7 @@ from = "base"
 
 version = '1.8.2'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget --no-hsts -O /tmp/curlie.tgz 'https://github.com/rs/curlie/releases/download/v{{VERSION}}/curlie_{{VERSION}}_linux_amd64.tar.gz'
@@ -16,7 +16,7 @@ mv /tmp/curlie/curlie /usr/local/bin/curlie
 rm -r /tmp/curlie
 """
 
-exports = [ "/usr/local/bin/curlie" ]
+exports = ["/usr/local/bin/curlie"]
 
 [checkUpdates]
 type = "github-release"

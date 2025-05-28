@@ -3,9 +3,7 @@ from = 'base'
 
 version = '3:20240117-1build1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx iputils-ping='{{VERSION}}'
@@ -22,5 +20,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'iputils-ping'
+type = 'apt'
+name = 'iputils-ping'

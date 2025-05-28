@@ -3,9 +3,7 @@ from = 'base'
 
 version = '2:1.0.11-1.1build1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx libxv1='{{VERSION}}'
@@ -24,12 +22,12 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0",
   "/usr/lib/x86_64-linux-gnu/libXv.so.1",
   "/usr/lib/x86_64-linux-gnu/libXv.so.1.0.0",
-  "/usr/share/X11/"
+  "/usr/share/X11/",
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'libxv1'
+type = 'apt'
+name = 'libxv1'
 
 [diff]
 exclude = [
@@ -42,5 +40,5 @@ exclude = [
   "/var/lib/apt/lists/**",
   "/var/lib/dpkg/**",
   "/var/log/apt/**",
-  "/var/log/dpkg.log"
+  "/var/log/dpkg.log",
 ]

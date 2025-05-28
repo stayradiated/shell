@@ -3,7 +3,7 @@ from = "base"
 
 version = '0.1.13-2'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx apulse='{{VERSION}}'
@@ -22,5 +22,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'apulse'
+type = 'apt'
+name = 'apulse'

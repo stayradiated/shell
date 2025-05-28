@@ -3,13 +3,9 @@ from = 'base'
 
 version = '1.8.16'
 
-dependencies = [
-  'lua',
-]
+dependencies = ['lua']
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -17,10 +13,8 @@ wget \
   'https://raw.githubusercontent.com/skywind3000/z.lua/{{VERSION}}/z.lua'
 """
 
-exports = [
-  '/usr/local/bin/z.lua'
-]
+exports = ['/usr/local/bin/z.lua']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/skywind3000/z.lua'
+type = 'github-release'
+url = 'https://github.com/skywind3000/z.lua'

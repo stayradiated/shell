@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1:0.39.0-*'
 
-dependencies = [
-  'apteryx'
-]
+dependencies = ['apteryx']
 
 build = """
 apteryx xserver-xorg-input-wacom='{{VERSION}}'
@@ -381,5 +379,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'xserver-xorg-input-wacom'
+type = 'apt'
+name = 'xserver-xorg-input-wacom'

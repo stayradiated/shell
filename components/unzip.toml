@@ -3,19 +3,14 @@ from = 'base'
 
 version = '6.0-28ubuntu4.1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx unzip='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/unzip',
-  '/usr/share/man/man1/unzip.1.gz'
-]
+exports = ['/usr/bin/unzip', '/usr/share/man/man1/unzip.1.gz']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'unzip'
+type = 'apt'
+name = 'unzip'

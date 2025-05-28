@@ -1,9 +1,9 @@
 name = 'yq'
 from = 'base'
 
-version = 'v4.45.1'
+version = 'v4.45.4'
 
-devDependencies = [ 'wget' ]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -12,11 +12,9 @@ wget \
 chmod +x /usr/local/bin/yq
 """
 
-exports = [
-  '/usr/local/bin/yq'
-]
+exports = ['/usr/local/bin/yq']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/mikefarah/yq'
-  matchPrerelease = false
+type = 'github-release'
+url = 'https://github.com/mikefarah/yq'
+matchPrerelease = false

@@ -2,12 +2,9 @@ name = 'obsidian'
 from = 'base'
 
 # https://obsidian.md/download
-version = '1.8.9'
+version = '1.8.10'
 
-devDependencies = [
-  'wget',
-  'apteryx',
-]
+devDependencies = ['wget', 'apteryx']
 
 build = """
 wget -O /tmp/obsidian.deb \
@@ -158,9 +155,9 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/obsidianmd/obsidian-releases'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/obsidianmd/obsidian-releases'
+removePrefix = 'v'
 
 [diff]
 exclude = [

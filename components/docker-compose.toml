@@ -1,11 +1,9 @@
 name = 'docker-compose'
 from = 'base'
 
-version = 'v2.35.0'
+version = 'v2.36.2'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 mkdir -p /usr/local/lib/docker/cli-plugins
@@ -19,10 +17,8 @@ wget \
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 """
 
-exports = [
-  '/usr/local/lib/docker/cli-plugins/docker-compose'
-]
+exports = ['/usr/local/lib/docker/cli-plugins/docker-compose']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/docker/compose'
+type = 'github-release'
+url = 'https://github.com/docker/compose'

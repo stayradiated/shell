@@ -3,17 +3,14 @@ from = 'base'
 
 version = '3:3.6.1-1'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx gthumb='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/gthumb',
-  '/usr/lib/x86_64-linux-gnu/',
-]
- 
+exports = ['/usr/bin/gthumb', '/usr/lib/x86_64-linux-gnu/']
+
 [checkUpdates]
-  type = 'apt'
-  name = 'gthumb'
+type = 'apt'
+name = 'gthumb'

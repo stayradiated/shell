@@ -1,21 +1,13 @@
 name = 'shell-tmux'
 from = 'shell-admin'
 
-dependencies = [
-  'tmux'
-]
+dependencies = ['tmux']
 
-devDependencies = [
-  'make',
-  'git'
-]
+devDependencies = ['make', 'git']
 
 build = """
 cd dotfiles
 make tmux
 """
 
-exports = [
-  '/home/admin/.tmux.conf',
-  '/home/admin/.tmux/'
-]
+exports = ['/home/admin/.tmux.conf', '/home/admin/.tmux/']

@@ -3,9 +3,7 @@ from = 'base'
 
 version = '14.1.1'
 
-devDependencies = [
-  'wget',
-]
+devDependencies = ['wget']
 
 build = """
 wget \
@@ -20,11 +18,8 @@ mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1
 rm -r ripgrep
 """
 
-exports = [
-  '/usr/local/bin/rg',
-  '/usr/local/share/man/man1/rg.1',
-]
+exports = ['/usr/local/bin/rg', '/usr/local/share/man/man1/rg.1']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/BurntSushi/ripgrep'
+type = 'github-release'
+url = 'https://github.com/BurntSushi/ripgrep'

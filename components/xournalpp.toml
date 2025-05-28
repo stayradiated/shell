@@ -3,7 +3,7 @@ from = "base"
 
 version = "1.0.20-*"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 add-apt-repository ppa:apandada1/xournalpp-stable

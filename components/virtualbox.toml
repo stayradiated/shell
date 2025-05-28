@@ -3,10 +3,7 @@ from = 'base'
 
 version = '6.1.6-137129'
 
-devDependencies = [
-  'apteryx',
-  'wget',
-]
+devDependencies = ['apteryx', 'wget']
 
 build = """
 # major.minor.patch

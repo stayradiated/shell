@@ -3,10 +3,7 @@ from = 'base'
 
 version = 'v0.15.1'
 
-devDependencies = [
-  'clone',
-  'rust',
-]
+devDependencies = ['clone', 'rust']
 
 build = """
 packages="cmake g++ pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev python3"
@@ -76,8 +73,8 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/alacritty/alacritty'
+type = 'github-release'
+url = 'https://github.com/alacritty/alacritty'
 
 [diff]
 exclude = [
@@ -249,5 +246,5 @@ exclude = [
   "/var/lib/git",
   "/var/log/alternatives.log",
   "/var/log/apt/**",
-  "/var/log/dpkg.log"
+  "/var/log/dpkg.log",
 ]

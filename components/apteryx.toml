@@ -1,10 +1,6 @@
 name = 'apteryx'
 from = 'base'
 
-mount = [
-  ['./scripts/apteryx', '/usr/local/bin/apteryx']
-]
+mount = [['./scripts/apteryx', '/usr/local/bin/apteryx']]
 
-exports = [
-  '/usr/local/bin/apteryx'
-]
+exports = ['/usr/local/bin/apteryx']

@@ -1,7 +1,7 @@
 name = "gosee"
 from = "base"
 
-version = '07e656a9643e820b274f9a544912134f7e028a2e'
+version = '3e760bf719f761e9355f58f2a377761b09ff69c6'
 
 devDependencies = ["clone", "go"]
 
@@ -12,11 +12,8 @@ go build -o /usr/local/bin/gosee
 rm -r /root/src
 """
 
-exports = [
-  "/usr/local/bin/gosee"
-]
+exports = ["/usr/local/bin/gosee"]
 
 [checkUpdates]
-  type = "github-commit"
-  url = "https://github.com/jmbaur/gosee"
-
+type = "github-commit"
+url = "https://github.com/jmbaur/gosee"

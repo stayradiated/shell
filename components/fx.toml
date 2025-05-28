@@ -1,0 +1,19 @@
+name = 'fx'
+from = 'base'
+
+version = '36.0.3'
+
+devDependencies = ['wget']
+
+build = """
+wget \
+  -O /usr/local/bin/fx \
+  'https://github.com/antonmedv/fx/releases/download/{{VERSION}}/fx_linux_amd64'
+chmod +x /usr/local/bin/fx
+"""
+
+exports = ['/usr/local/bin/fx']
+
+[checkUpdates]
+type = 'github-release'
+url = 'https://github.com/antonmedv/fx'

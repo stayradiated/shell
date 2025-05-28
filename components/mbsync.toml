@@ -4,12 +4,7 @@ from = 'base'
 # https://sourceforge.net/projects/isync/files/isync/
 version = '1.4.4'
 
-devDependencies = [
-  'wget',
-  
-  'apteryx',
-  'build-essential',
-]
+devDependencies = ['wget', 'apteryx', 'build-essential']
 
 build = """
 # required for SSL
@@ -30,6 +25,4 @@ mv src/mbsync /usr/local/bin/mbsync
 rm -r "/tmp/isync-{{VERSION}}"
 """
 
-exports = [
-  '/usr/local/bin/mbsync'
-]
+exports = ['/usr/local/bin/mbsync']

@@ -4,10 +4,7 @@ from = 'base'
 # https://www.johnvansickle.com/ffmpeg/
 version = '7.0.2'
 
-devDependencies = [
-  'wget',
-  'xz',
-]
+devDependencies = ['wget', 'xz']
 
 build = """
 wget \
@@ -29,10 +26,7 @@ mv ffmpeg/ffprobe /usr/local/bin/ffprobe
 rm -r ffmpeg
 """
 
-exports = [
-  '/usr/local/bin/ffmpeg',
-  '/usr/local/bin/ffprobe',
-]
+exports = ['/usr/local/bin/ffmpeg', '/usr/local/bin/ffprobe']
 
 # [checkUpdates]
 #   type = 'github-tag'

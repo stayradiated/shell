@@ -4,18 +4,14 @@ from = 'base'
 # https://www.videolan.org/vlc/
 version = '3.0.8-*'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx vlc='{{VERSION}}'
 """
 
-exports = [
-  '/usr/bin/vlc'
-]
+exports = ['/usr/bin/vlc']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'vlc'
+type = 'apt'
+name = 'vlc'

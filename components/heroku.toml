@@ -1,21 +1,16 @@
 name = 'heroku'
 from = 'base'
 
-version = '10.6.0'
+version = '10.8.0'
 
-devDependencies = [
-  'node',
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'heroku@{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/heroku',
-  '/usr/local/lib/node_modules/heroku'
-]
+exports = ['/usr/local/bin/heroku', '/usr/local/lib/node_modules/heroku']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'heroku'
+type = 'npm'
+packageName = 'heroku'

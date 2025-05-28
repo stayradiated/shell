@@ -3,11 +3,7 @@ from = 'base'
 
 version = '2.15.0-1.1ubuntu2'
 
-devDependencies = [
-  'clone',
-  'apteryx',
-  'wget',
-]
+devDependencies = ['clone', 'apteryx', 'wget']
 
 build = """
 apteryx \
@@ -36,7 +32,6 @@ mv SFPro/TrueType /usr/share/fonts/SFPro
 cd /etc/fonts/conf.d
 ls -alh
 rm 10* 70-no-bitmaps-except-emoji.conf
-ln -s ../conf.avail/70-yes-bitmaps.conf .
 dpkg-reconfigure fontconfig
 fc-cache -fv
 """
@@ -75,5 +70,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'fontconfig'
+type = 'apt'
+name = 'fontconfig'

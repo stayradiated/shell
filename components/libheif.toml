@@ -3,11 +3,7 @@ from = 'base'
 
 version = 'v1.17.6'
 
-devDependencies = [
-  'build-essential',
-  'cmake',
-  'clone',
-]
+devDependencies = ['build-essential', 'cmake', 'clone']
 
 build = """
 clone --https --shallow --tag {{VERSION}} github.com/strukturag/libheif
@@ -27,9 +23,9 @@ exports = [
   "/usr/local/bin/heif-convert",
   "/usr/local/bin/heif-enc",
   "/usr/local/bin/heif-info",
-  "/usr/local/include/libheif/"
+  "/usr/local/include/libheif/",
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/strukturag/libheif'
+type = 'github-release'
+url = 'https://github.com/strukturag/libheif'

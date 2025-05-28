@@ -3,13 +3,13 @@ from = "base"
 
 version = '1.2.9-1ubuntu5'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx alsa-utils='{{VERSION}}'
 """
 
-exports = [ 
+exports = [
   "/etc/depmod.d/",
   "/etc/init.d/alsa-utils",
   "/etc/init.d/kmod",
@@ -86,12 +86,12 @@ exports = [
   "/usr/share/lintian/overrides/libatopology2t64",
   "/usr/share/sounds/",
   "/var/cache/ldconfig/aux-cache",
-  "/var/lib/alsa"
+  "/var/lib/alsa",
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'alsa-utils'
+type = 'apt'
+name = 'alsa-utils'
 
 [diff]
 exclude = [
@@ -101,5 +101,5 @@ exclude = [
   "/var/lib/apt/lists/**",
   "/var/lib/dpkg/**",
   "/var/log/apt/**",
-  "/var/log/dpkg.log"
+  "/var/log/dpkg.log",
 ]

@@ -1,11 +1,9 @@
 name = 'claude-code'
 from = 'base'
 
-version = '0.2.69'
+version = '1.0.3'
 
-devDependencies = [
-  'node',
-]
+devDependencies = ['node']
 
 build = """
 npm install -g '@anthropic-ai/claude-code@{{VERSION}}'
@@ -13,9 +11,9 @@ npm install -g '@anthropic-ai/claude-code@{{VERSION}}'
 
 exports = [
   '/usr/local/bin/claude',
-  '/usr/local/lib/node_modules/@anthropic-ai/claude-code'
+  '/usr/local/lib/node_modules/@anthropic-ai/claude-code',
 ]
 
 [checkUpdates]
-  type = 'npm'
-  packageName = '@anthropic-ai/claude-code'
+type = 'npm'
+packageName = '@anthropic-ai/claude-code'

@@ -3,7 +3,7 @@ from = "base"
 
 version = "1:11.1-*"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx pulseaudio='{{VERSION}}'
@@ -30,5 +30,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'pulseaudio'
+type = 'apt'
+name = 'pulseaudio'

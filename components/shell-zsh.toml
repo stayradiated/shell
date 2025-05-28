@@ -1,16 +1,9 @@
 name = 'shell-zsh'
 from = 'shell-admin'
 
-dependencies = [
-  'fzf',
-  'zsh',
-]
+dependencies = ['fzf', 'zsh']
 
-devDependencies = [
-  'antibody',
-  'git',
-  'make',
-]
+devDependencies = ['antibody', 'git', 'make']
 
 build = """
 cd dotfiles

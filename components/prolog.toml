@@ -3,9 +3,7 @@ from = 'base'
 
 version = '7.6.4+*'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apt-add-repository ppa:swi-prolog/stable

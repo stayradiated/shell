@@ -1,19 +1,13 @@
 name = 'shell-ranger'
 from = 'shell-admin'
 
-dependencies = [
-  'ranger'
-]
+dependencies = ['ranger']
 
-devDependencies = [
-  'make'
-]
+devDependencies = ['make']
 
 build = """
 cd dotfiles
 make ranger
 """
 
-exports = [
-  '/home/admin/.config/ranger/'
-]
+exports = ['/home/admin/.config/ranger/']

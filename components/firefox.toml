@@ -2,9 +2,9 @@ name = 'firefox'
 from = 'base'
 
 # https://www.mozilla.org/en-US/firefox/releases/
-version = '137.0.1'
+version = '139.0'
 
-devDependencies = [ 'apteryx', 'wget', 'xz' ]
+devDependencies = ['apteryx', 'wget', 'xz']
 
 build = """
 wget \
@@ -45,6 +45,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'json'
-  url = 'https://product-details.mozilla.org/1.0/firefox_versions.json'
-  path = ['LATEST_FIREFOX_VERSION']
+type = 'json'
+url = 'https://product-details.mozilla.org/1.0/firefox_versions.json'
+path = ['LATEST_FIREFOX_VERSION']

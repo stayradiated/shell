@@ -3,7 +3,7 @@ from = 'base'
 
 version = '12.1.0'
 
-devDependencies = [ 'wget', 'apteryx' ]
+devDependencies = ['wget', 'apteryx']
 
 build = """
 wget -O flameshot.deb \
@@ -188,11 +188,11 @@ exports = [
   "/usr/share/fontconfig/",
   "/usr/share/gettext/",
   "/usr/share/man/man1/flameshot.1.gz",
-  "/usr/share/metainfo/org.flameshot.Flameshot.metainfo.xml"
+  "/usr/share/metainfo/org.flameshot.Flameshot.metainfo.xml",
 ]
 
 [diff]
-exclude= [
+exclude = [
   "/etc/X11/**",
   "/etc/fonts/",
   "/etc/glvnd/",
@@ -249,6 +249,6 @@ exclude= [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/flameshot-org/flameshot'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/flameshot-org/flameshot'
+removePrefix = 'v'

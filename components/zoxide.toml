@@ -1,9 +1,9 @@
 name = "zoxide"
 from = "base"
 
-version = '0.9.7'
+version = '0.9.8'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget \
@@ -32,6 +32,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/ajeetdsouza/zoxide'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/ajeetdsouza/zoxide'
+removePrefix = 'v'

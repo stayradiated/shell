@@ -1,12 +1,9 @@
 name = 'neovim'
 from = 'base'
 
-version = 'v0.11.0'
+version = 'v0.11.1'
 
-devDependencies = [
-  'wget',
-  'uv',
-]
+devDependencies = ['wget', 'uv']
 
 build = """
 wget \
@@ -37,13 +34,9 @@ exports = [
 ]
 
 [diff]
-exclude = [
-  "/root/.cache/",
-  "/root/.wget-hsts/",
-  "/tmp/uv-*.lock",
-]
+exclude = ["/root/.cache/", "/root/.wget-hsts/", "/tmp/uv-*.lock"]
 
 [checkUpdates]
-  type = "github-release"
-  url = "https://github.com/neovim/neovim"
-  matchTag = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+type = "github-release"
+url = "https://github.com/neovim/neovim"
+matchTag = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"

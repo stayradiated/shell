@@ -3,18 +3,14 @@ from = 'base'
 
 version = '11.0.8+*'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx openjdk-11-jre='{{VERSION}}'
 """
 
-exports = [
-  '/usr/lib/jvm/'
-]
+exports = ['/usr/lib/jvm/']
 
 [checkUpdates]
-  type = 'apt'
-  name = 'openjdk-11-jre'
+type = 'apt'
+name = 'openjdk-11-jre'

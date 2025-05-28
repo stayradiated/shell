@@ -3,13 +3,9 @@ from = "base"
 
 version = '2.0.4'
 
-dependencies = [
-  'fuse'
-]
+dependencies = ['fuse']
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget -O \
@@ -19,11 +15,9 @@ wget -O \
 chmod +x /usr/local/bin/lunatask
 """
 
-exports = [
-  "/usr/local/bin/lunatask"
-]
+exports = ["/usr/local/bin/lunatask"]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/lunatask/lunatask'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/lunatask/lunatask'
+removePrefix = 'v'

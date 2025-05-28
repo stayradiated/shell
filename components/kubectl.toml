@@ -5,9 +5,7 @@ from = 'base'
 
 version = 'v1.29.1'
 
-devDependencies = [
-  'wget'
-]
+devDependencies = ['wget']
 
 build = """
 wget -O kubectl \
@@ -24,10 +22,8 @@ mv kubectl /usr/local/bin/kubectl
 rm kubectl.sha256
 """
 
-exports = [
-  '/usr/local/bin/kubectl',
-]
+exports = ['/usr/local/bin/kubectl']
 
 [checkUpdates]
-  type = 'text'
-  url = 'https://cdn.dl.k8s.io/release/stable.txt'
+type = 'text'
+url = 'https://cdn.dl.k8s.io/release/stable.txt'

@@ -3,18 +3,14 @@ from = 'base'
 
 version = '0.6.0'
 
-dependencies = [
-  'node'
-]
+dependencies = ['node']
 
 build = """
 npm install -g 'castnow@{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/lib/node/',
-]
+exports = ['/usr/local/lib/node/']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'castnow'
+type = 'npm'
+packageName = 'castnow'

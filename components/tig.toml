@@ -3,12 +3,7 @@ from = 'base'
 
 version = 'tig-2.5.10'
 
-devDependencies = [
-  'build-essential',
-  'apteryx',
-  'clone',
-  'make',
-]
+devDependencies = ['build-essential', 'apteryx', 'clone', 'make']
 
 build = """
 apteryx \
@@ -30,11 +25,8 @@ make install prefix=/usr/local
 rm -rf /root/src
 """
 
-exports = [
-  '/usr/local/bin/tig',
-  '/usr/local/etc/tigrc',
-]
+exports = ['/usr/local/bin/tig', '/usr/local/etc/tigrc']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/jonas/tig'
+type = 'github-release'
+url = 'https://github.com/jonas/tig'

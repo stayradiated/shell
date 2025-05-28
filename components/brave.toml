@@ -1,11 +1,9 @@
 name = 'brave'
 from = 'base'
 
-version = '1.78.79'
+version = '1.80.93'
 
-devDependencies = [
-  'apteryx',
-]
+devDependencies = ['apteryx']
 
 build = """
 curl -fsSLo \
@@ -171,12 +169,10 @@ exports = [
   "/usr/share/doc-base/shared-mime-info.shared-mime-info",
   "/usr/share/fontconfig/",
   "/usr/share/gettext/",
-  "/usr/share/gtk-3.0/"
+  "/usr/share/gtk-3.0/",
 ]
 
-exportEnv = [
-  ['PATH', "${PATH}:/opt/brave.com/brave"]
-]
+exportEnv = [['PATH', "${PATH}:/opt/brave.com/brave"]]
 
 [diff]
 exclude = [
@@ -275,12 +271,12 @@ exclude = [
   "/var/cache/**",
   "/var/lib/apt/**",
   "/var/lib/dpkg/**",
-  "/var/log/**"
+  "/var/log/**",
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/brave/brave-browser'
-  removePrefix = 'v'
-  matchName = '^Beta'
-  matchPrerelease = false
+type = 'github-release'
+url = 'https://github.com/brave/brave-browser'
+removePrefix = 'v'
+matchName = '^Beta'
+matchPrerelease = false

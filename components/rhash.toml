@@ -3,7 +3,7 @@ from = "base"
 
 version = '1.4.2-1ubuntu1'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx rhash='{{VERSION}}'
@@ -45,5 +45,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'rhash'
+type = 'apt'
+name = 'rhash'

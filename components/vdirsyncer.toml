@@ -3,10 +3,7 @@ from = 'base'
 
 version = '0.16.8'
 
-devDependencies = [
-  'python3-pip',
-  'pipx'
-]
+devDependencies = ['python3-pip', 'pipx']
 
 build = """
 pipx install vdirsyncer=='{{VERSION}}'
@@ -14,11 +11,8 @@ pipx inject vdirsyncer vdirsyncer[gcalendar]
 pipx inject vdirsyncer requests-oauthlib
 """
 
-exports = [
-  '/usr/local/pipx/',
-  '/usr/local/bin/vdirsyncer',
-]
+exports = ['/usr/local/pipx/', '/usr/local/bin/vdirsyncer']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/pimutils/vdirsyncer'
+type = 'github-release'
+url = 'https://github.com/pimutils/vdirsyncer'

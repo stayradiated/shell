@@ -3,19 +3,14 @@ from = 'base'
 
 version = '1.22.22'
 
-devDependencies = [
-  'node'
-]
+devDependencies = ['node']
 
 build = """
 npm install -g 'yarn@{{VERSION}}'
 """
 
-exports = [
-  '/usr/local/bin/yarn',
-  '/usr/local/lib/node_modules/yarn/',
-]
+exports = ['/usr/local/bin/yarn', '/usr/local/lib/node_modules/yarn/']
 
 [checkUpdates]
-  type = 'npm'
-  packageName = 'yarn'
+type = 'npm'
+packageName = 'yarn'

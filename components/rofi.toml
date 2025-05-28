@@ -1,27 +1,15 @@
 name = 'rofi'
 from = 'base'
 
-version = '1.7.8'
+version = '1.7.9'
 
-devDependencies = [
-  'apteryx',
-  'clone',
-  'build-essential',
-  'wget',
-]
+devDependencies = ['apteryx', 'clone', 'build-essential', 'wget']
 
 # install guide
 # https://github.com/davatorium/rofi/blob/next/INSTALL.md
 
 build = """
-wget \
-  -O /tmp/rofi.tgz \
-  "https://github.com/davatorium/rofi/releases/download/{{VERSION}}/rofi-{{VERSION}}.tar.gz"
-
-tar xzvf /tmp/rofi.tgz
-rm /tmp/rofi.tgz
-
-PKG_LIST="\
+DEV_PKG_LIST="\
   autoconf \
   automake \
   bison \
@@ -45,19 +33,32 @@ PKG_LIST="\
   libxkbcommon-dev \
   libxkbcommon-x11-dev \
   pkg-config \
+"
+
+PKG_LIST="\
+  ${DEV_PKG_LIST} \
   qalc \
 "
 
 apteryx $PKG_LIST
 
-cd "/rofi-{{VERSION}}"
+# v1.7.9 shipped as v1.7.9.1
+filename="rofi-{{VERSION}}.1.tar.gz"
+wget \
+  -O /tmp/rofi.tgz \
+  "https://github.com/davatorium/rofi/releases/download/{{VERSION}}/${filename}"
+
+# extract the archive as /tmp/rofi/...
+mkdir -p /tmp/rofi
+tar -xzvf /tmp/rofi.tgz -C /tmp/rofi --strip-components=1
+rm /tmp/rofi.tgz
+
+cd /tmp/rofi
 mkdir build
 cd build
 ../configure
 make
 make install
-
-#RUN
 
 # install rofi-calc plugin
 clone --https --shallow https://github.com/svenstaro/rofi-calc
@@ -70,8 +71,6 @@ cd build/
 make
 make install
 
-#RUN
-
 # install rofi-emoji plugin
 clone --ref 78a98f28c69c69ec3bfc08392290e96b9d19e03c --https --shallow https://github.com/Mange/rofi-emoji
 
@@ -83,10 +82,9 @@ cd build/
 make
 make install
 
-apt-get remove --purge -y $PKG_LIST
-rm -r /root/src "/rofi-{{VERSION}}"
+apt-get remove --purge -y $DEV_PKG_LIST
+rm -r /root/src /tmp/rofi
 """
-
 
 exports = [
   "/usr/bin/qalc",
@@ -103,9 +101,9 @@ exports = [
   "/usr/share/doc/libqalculate*/",
   "/usr/share/doc/qalc/",
   "/usr/share/man/man1/qalc.1.gz",
-  "/usr/share/qalculate/"
+  "/usr/share/qalculate/",
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/davatorium/rofi'
+type = 'github-release'
+url = 'https://github.com/davatorium/rofi'

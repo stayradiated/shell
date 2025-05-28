@@ -3,10 +3,7 @@ from = 'base'
 
 version = '0.1.15'
 
-devDependencies = [
-  'unzip',
-  'wget',
-]
+devDependencies = ['unzip', 'wget']
 
 build = """
 wget \
@@ -17,10 +14,8 @@ chmod +x chit
 mv chit /usr/local/bin/chit
 """
 
-exports = [
-  '/usr/local/bin/chit'
-]
+exports = ['/usr/local/bin/chit']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/peterheesterman/chit'
+type = 'github-release'
+url = 'https://github.com/peterheesterman/chit'

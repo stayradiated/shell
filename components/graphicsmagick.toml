@@ -3,7 +3,7 @@ from = "base"
 
 version = "1.4+really1.3.38-1"
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx graphicsmagick='{{VERSION}}'
@@ -242,5 +242,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'graphicsmagick'
+type = 'apt'
+name = 'graphicsmagick'

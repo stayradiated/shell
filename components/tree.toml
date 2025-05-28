@@ -3,9 +3,7 @@ from = 'base'
 
 version = '2.1.1-2ubuntu3'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx tree='{{VERSION}}'
@@ -14,9 +12,9 @@ apteryx tree='{{VERSION}}'
 exports = [
   '/usr/bin/tree',
   '/usr/share/doc/tree/',
-  '/usr/share/man/man1/tree.1.gz'
+  '/usr/share/man/man1/tree.1.gz',
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'tree'
+type = 'apt'
+name = 'tree'

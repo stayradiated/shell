@@ -1,10 +1,6 @@
 name = 'shell-yarn'
 from = 'shell-admin'
 
-dependencies = [
-  'yarn'
-]
+dependencies = ['yarn']
 
-exportEnv = [
-  ['PATH', '/home/admin/.yarn/bin:${PATH}']
-]
+exportEnv = [['PATH', '/home/admin/.yarn/bin:${PATH}']]

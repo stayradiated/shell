@@ -19,12 +19,9 @@ tar -xz \
 rm /tmp/miller.tar.gz
 """
 
-exports = [
-  '/usr/bin/mlr',
-]
+exports = ['/usr/bin/mlr']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/johnkerl/miller'
-  removePrefix = 'v'
-
+type = 'github-release'
+url = 'https://github.com/johnkerl/miller'
+removePrefix = 'v'

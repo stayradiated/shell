@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.2'
 
-devDependencies = [
-  'apteryx',
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx xcape='{{VERSION}}-*'
@@ -66,6 +64,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/alols/xcape'
-  removePrefix = 'v'
+type = 'github-release'
+url = 'https://github.com/alols/xcape'
+removePrefix = 'v'

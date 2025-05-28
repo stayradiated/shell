@@ -3,13 +3,9 @@ from = 'base'
 
 version = '3.0-4'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
-dependencies = [
-  'pulseaudio'
-]
+dependencies = ['pulseaudio']
 
 build = """
 apteryx pavucontrol='{{VERSION}}'
@@ -33,5 +29,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'pavucontrol'
+type = 'apt'
+name = 'pavucontrol'

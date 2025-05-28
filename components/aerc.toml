@@ -4,16 +4,9 @@ from = "base"
 # https://git.sr.ht/~sircmpwn/aerc/refs
 version = "0.5.2"
 
-dependencies = [
-  'socksify'
-]
+dependencies = ['socksify']
 
-devDependencies = [
-  "build-essential",
-  "clone",
-  "go",
-  "scdoc",
-]
+devDependencies = ["build-essential", "clone", "go", "scdoc"]
 
 build = """
 clone --https --tag='{{VERSION}}' https://git.sr.ht/~sircmpwn/aerc

@@ -5,9 +5,7 @@ user = 'admin'
 workdir = '/home/admin'
 baseExportDir = '/home/admin/exports/'
 
-env = [
-  ['PATH', '/home/admin/dotfiles/bin:${PATH}']
-]
+env = [['PATH', '/home/admin/dotfiles/bin:${PATH}']]
 
 build = """
 mkdir -p /home/admin/exports
@@ -15,6 +13,12 @@ mkdir -p /home/admin/.local/tmp
 """
 
 exportEnv = [
-  ['PATH', "${PATH}:/home/admin/.local/bin"],
-  ['XDG_RUNTIME_DIR', "/home/admin/.local/tmp"]
+  [
+    'PATH',
+    "${PATH}:/home/admin/.local/bin",
+  ],
+  [
+    'XDG_RUNTIME_DIR',
+    "/home/admin/.local/tmp",
+  ],
 ]

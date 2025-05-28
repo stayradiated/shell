@@ -3,7 +3,7 @@ from = 'base'
 
 version = '7.7+6build2'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx \
@@ -25,5 +25,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'x11-utils'
+type = 'apt'
+name = 'x11-utils'

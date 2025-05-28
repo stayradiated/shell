@@ -3,9 +3,7 @@ from = 'base'
 
 version = '3.2.4'
 
-devDependencies = [
-  'uv'
-]
+devDependencies = ['uv']
 
 build = """
 uv tool install httpie=='{{VERSION}}'
@@ -13,12 +11,9 @@ uv tool install httpie=='{{VERSION}}'
 ln -s /usr/local/uv/bin/http /usr/local/bin/http
 """
 
-exports = [
-  '/usr/local/uv/',
-  '/usr/local/bin/http',
-]
+exports = ['/usr/local/uv/', '/usr/local/bin/http']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/jakubroztocil/httpie'
-  matchPrerelease = false
+type = 'github-release'
+url = 'https://github.com/jakubroztocil/httpie'
+matchPrerelease = false

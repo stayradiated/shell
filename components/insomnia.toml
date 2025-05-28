@@ -13,14 +13,10 @@ wget \
 apteryx /tmp/insomnia.deb
 """
 
-exports = [
-  '/usr/bin/insomnia',
-  '/opt/Insomnia/',
-  '/usr/lib/x86_64-linux-gnu/',
-]
+exports = ['/usr/bin/insomnia', '/opt/Insomnia/', '/usr/lib/x86_64-linux-gnu/']
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/Kong/insomnia'
-  matchTag = '^core@'
-  removePrefix = 'core@'
+type = 'github-release'
+url = 'https://github.com/Kong/insomnia'
+matchTag = '^core@'
+removePrefix = 'core@'

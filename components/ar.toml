@@ -3,7 +3,7 @@ from = "base"
 
 version = '2.42-4ubuntu2.5'
 
-devDependencies = [ "apteryx" ]
+devDependencies = ["apteryx"]
 
 build = """
 apteryx binutils='{{VERSION}}'
@@ -17,5 +17,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'binutils'
+type = 'apt'
+name = 'binutils'

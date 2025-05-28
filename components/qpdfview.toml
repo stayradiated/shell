@@ -3,7 +3,7 @@ from = 'base'
 
 version = '0.5.0+ds-4build4'
 
-devDependencies = [ 'apteryx' ]
+devDependencies = ['apteryx']
 
 build = """
 apteryx qpdfview='{{VERSION}}'
@@ -12,9 +12,9 @@ apteryx qpdfview='{{VERSION}}'
 exports = [
   '/usr/bin/qpdfview',
   '/usr/lib/qpdfview/',
-  '/usr/lib/x86_64-linux-gnu/'
+  '/usr/lib/x86_64-linux-gnu/',
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'qpdfview'
+type = 'apt'
+name = 'qpdfview'

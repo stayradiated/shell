@@ -3,15 +3,11 @@ from = 'base'
 
 version = '0.12.1'
 
-devDependencies = [
-  'ar',
-  'wget',
-  'unzip',
-]
+devDependencies = ['ar', 'wget', 'unzip']
 
 mount = [
   # secret is extracted from the .deb provided by the Kolide slack app
-  ['./secret/kolide-secret', '/etc/kolide-k2/secret']
+  ['./secret/kolide-secret', '/etc/kolide-k2/secret'],
 ]
 
 build = """
@@ -54,7 +50,7 @@ echo 'hostname k2device.kolide.com' >> launcher.flags
 exports = [
   '/etc/kolide-k2/',
   '/usr/local/kolide-k2/',
-  '/var/kolide-k2/k2device.kolide.com/'
+  '/var/kolide-k2/k2device.kolide.com/',
 ]
 
 # [checkUpdates]

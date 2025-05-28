@@ -3,9 +3,7 @@ from = 'base'
 
 version = '1.0.8-5.1build0.1'
 
-devDependencies = [
-  'apteryx'
-]
+devDependencies = ['apteryx']
 
 build = """
 apteryx bzip2='{{VERSION}}'
@@ -40,5 +38,5 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'apt'
-  name = 'bzip2'
+type = 'apt'
+name = 'bzip2'

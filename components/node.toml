@@ -2,7 +2,7 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = 'v23.11.0'
+version = 'v24.1.0'
 
 dependencies = ['n']
 
@@ -23,6 +23,6 @@ exports = [
 ]
 
 [checkUpdates]
-  type = 'json'
-  url = 'https://nodejs.org/download/release/index.json'
-  path = ['0', 'version']
+type = 'json'
+url = 'https://nodejs.org/download/release/index.json'
+path = ['0', 'version']
