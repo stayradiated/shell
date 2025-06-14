@@ -1,12 +1,11 @@
 
 
 # BASE
-FROM phusion/baseimage:noble-1.0.0 AS base
+FROM phusion/baseimage:noble-1.0.2 AS base
 RUN set -e \
-  ; echo jammy-1.0.4 \
+  ; echo noble-1.0.2 \
   ; export LANG=en_NZ.UTF-8 \
-  ; locale-gen $LANG \
-  ; yes | unminimize
+  ; locale-gen $LANG
 
 # APTERYX
 FROM base AS apteryx
