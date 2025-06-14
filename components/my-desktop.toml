@@ -149,6 +149,7 @@ dependencies = [
   'lazycommit',
   'fx',
   'lazyjj',
+  'fly',
 
   # data tools
   # 'sc-im',

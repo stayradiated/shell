@@ -526,6 +526,18 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# FLY
+FROM base AS fly
+RUN set -e \
+  ; curl -L -o flyctl.tar.gz 'https://github.com/superfly/flyctl/releases/download/v0.3.138/flyctl_0.3.138_Linux_x86_64.tar.gz' \
+  ; tar -xzvf flyctl.tar.gz \
+  ; rm flyctl.tar.gz \
+  ; mv flyctl /usr/local/bin/fly \
+  ; chmod +x /usr/local/bin/fly
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/fly /exports/usr/local/bin/
+
 # LAZYJJ
 FROM base AS lazyjj
 COPY --from=wget /exports/ /
@@ -2161,6 +2173,7 @@ COPY --from=claude-code /exports/ /
 COPY --from=lazycommit /exports/ /
 COPY --from=fx /exports/ /
 COPY --from=lazyjj /exports/ /
+COPY --from=fly /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

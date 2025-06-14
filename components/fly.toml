@@ -1,0 +1,25 @@
+name = 'fly'
+from = 'base'
+
+version = '0.3.138'
+
+build = """
+curl -L \
+  -o flyctl.tar.gz \
+  'https://github.com/superfly/flyctl/releases/download/v{{VERSION}}/flyctl_{{VERSION}}_Linux_x86_64.tar.gz'
+
+tar -xzvf flyctl.tar.gz
+rm flyctl.tar.gz
+
+mv flyctl /usr/local/bin/fly
+chmod +x /usr/local/bin/fly
+"""
+
+exports = [
+  '/usr/local/bin/fly',
+]
+
+[checkUpdates]
+type = 'github-release'
+url = 'https://github.com/superfly/fly'
+removePrefix = 'v'
