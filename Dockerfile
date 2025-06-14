@@ -5,7 +5,8 @@ FROM phusion/baseimage:noble-1.0.2 AS base
 RUN set -e \
   ; echo noble-1.0.2 \
   ; export LANG=en_NZ.UTF-8 \
-  ; locale-gen $LANG
+  ; locale-gen $LANG \
+  ; yes | unminimize
 
 # APTERYX
 FROM base AS apteryx

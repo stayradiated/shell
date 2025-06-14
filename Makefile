@@ -10,4 +10,4 @@ generate-benji:
 	shoebox generate my-benji > Dockerfile
 
 build-benji:
-	../shoebox/bin/shoebox build my-benji --tag stayradiated/benji:latest --build-dir . --verbose
+	docker build --squash -t stayradiated/benji:latest .
