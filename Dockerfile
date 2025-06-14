@@ -6,6 +6,9 @@ RUN set -e \
   ; echo noble-1.0.2 \
   ; export LANG=en_NZ.UTF-8 \
   ; locale-gen $LANG \
+  ; export DEBIAN_FRONTEND=noninteractive \
+  ; echo 'openssh-server openssh-server/permit-root-login select false' | debconf-set-selections \
+  ; echo 'openssh-server openssh-server/password-authentication select true' | debconf-set-selections \
   ; yes | unminimize
 
 # APTERYX
