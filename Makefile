@@ -6,3 +6,8 @@ build:
 generate:
 	shoebox generate my-desktop > Dockerfile
 
+generate-benji: 
+	shoebox generate my-benji > Dockerfile
+
+build-benji:
+	../shoebox/bin/shoebox build my-benji --tag stayradiated/benji:latest --build-dir . --verbose
