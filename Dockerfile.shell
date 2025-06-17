@@ -949,8 +949,8 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/bat /exports/usr/local/bin/
 
-# MY-BENJI
-FROM shell-admin AS my-benji
+# MY-SHELL
+FROM shell-admin AS my-shell
 COPY --from=bat /exports/ /
 COPY --from=build-essential /exports/ /
 COPY --from=claude-code /exports/ /
