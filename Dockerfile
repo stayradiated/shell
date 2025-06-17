@@ -341,6 +341,17 @@ RUN set -e \
   ; mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ \
   ; mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
 
+# RUST
+FROM base AS rust
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O rust.sh 'https://sh.rustup.rs' \
+  ; sh rust.sh -y --default-toolchain '1.87.0' \
+  ; rm rust.sh
+RUN set -e \
+  ; mkdir -p /exports/root/ \
+  ; mv /root/.cargo /root/.rustup /exports/root/
+
 # PING
 FROM base AS ping
 COPY --from=apteryx /exports/ /
@@ -425,6 +436,16 @@ RUN set -e \
   ; mv /usr/libexec/sudo /exports/usr/libexec/ \
   ; mv /usr/sbin/sudo_logsrvd /usr/sbin/sudo_sendlog /usr/sbin/visudo /exports/usr/sbin/ \
   ; mv /usr/share/apport/package-hooks/source_sudo.py /exports/usr/share/apport/package-hooks/
+
+# SHOEBOX
+FROM base AS shoebox
+COPY --from=node /exports/ /
+RUN set -e \
+  ; npm install -g '@stayradiated/shoebox@2.8.0'
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@stayradiated/ \
+  ; mv /usr/local/bin/shoebox /exports/usr/local/bin/ \
+  ; mv /usr/local/lib/node_modules/@stayradiated/shoebox /exports/usr/local/lib/node_modules/@stayradiated/
 
 # SHELL-ZSH
 FROM shell-admin AS shell-zsh
@@ -618,6 +639,19 @@ RUN set -e \
   ; mv /usr/local/bin/rg /exports/usr/local/bin/ \
   ; mv /usr/local/share/man/man1/rg.1 /exports/usr/local/share/man/man1/
 
+# RIP
+FROM base AS rip
+COPY --from=build-essential /exports/ /
+COPY --from=rust /exports/ /
+ENV \
+  PATH=/root/.cargo/bin:$PATH
+RUN set -e \
+  ; cargo install --version 0.13.1 rm-improved \
+  ; mv /root/.cargo/bin/rip /usr/local/bin/rip
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/rip /exports/usr/local/bin/
+
 # PRETTYPING
 FROM base AS prettyping
 COPY --from=wget /exports/ /
@@ -641,6 +675,27 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
   ; mv /usr/local/lib/node_modules/pnpm /exports/usr/local/lib/node_modules/
+
+# PGCLI
+FROM base AS pgcli
+COPY --from=apteryx /exports/ /
+COPY --from=uv /exports/ /
+ENV \
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
+RUN set -e \
+  ; apteryx libpq-dev \
+  ; uv tool install pgcli=='4.3.0' \
+  ; ln -s /usr/local/uv/bin/pgcli /usr/local/bin/pgcli
+RUN set -e \
+  ; mkdir -p /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/ \
+  ; mv /usr/lib/x86_64-linux-gnu/libpq.* /exports/usr/lib/x86_64-linux-gnu/ \
+  ; mv /usr/local/bin/apteryx /usr/local/bin/pgcli /usr/local/bin/uv /usr/local/bin/uvx /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/
 
 # NCU
 FROM base AS ncu
@@ -684,6 +739,32 @@ RUN set -e \
   ; mv /usr/local/uv /exports/usr/local/ \
   ; mv /usr/local/bin/llm /exports/usr/local/bin/
 
+# LAZYJJ
+FROM base AS lazyjj
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/lazyjj.tgz 'https://github.com/Cretezy/lazyjj/releases/download/v0.5.0/lazyjj-v0.5.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; mkdir -p /tmp/lazyjj \
+  ; tar xzvf /tmp/lazyjj.tgz -C /tmp/lazyjj \
+  ; mv /tmp/lazyjj/lazyjj /usr/local/bin \
+  ; rm -r /tmp/lazyjj /tmp/lazyjj.tgz
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/lazyjj /exports/usr/local/bin/
+
+# LAZYGIT
+FROM base AS lazygit
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.51.1/lazygit_0.51.1_Linux_x86_64.tar.gz' \
+  ; mkdir -p /tmp/lazygit \
+  ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
+  ; mv /tmp/lazygit/lazygit /usr/local/bin \
+  ; rm -r /tmp/lazygit /tmp/lazygit.tgz
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/lazygit /exports/usr/local/bin/
+
 # LAZYCOMMIT
 FROM base AS lazycommit
 COPY --from=wget /exports/ /
@@ -709,6 +790,34 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/jj /exports/usr/local/bin/
 
+# JQ
+FROM base AS jq
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /usr/local/bin/jq 'https://github.com/stedolan/jq/releases/download/jq-1.7.1/jq-linux64' \
+  ; chmod +x /usr/local/bin/jq
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/jq /exports/usr/local/bin/
+
+# HTTPIE
+FROM base AS httpie
+COPY --from=uv /exports/ /
+ENV \
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
+RUN set -e \
+  ; uv tool install httpie=='3.2.4' \
+  ; ln -s /usr/local/uv/bin/http /usr/local/bin/http
+RUN set -e \
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/http /exports/usr/local/bin/
+
 # HTOP
 FROM base AS htop
 COPY --from=apteryx /exports/ /
@@ -720,6 +829,19 @@ RUN set -e \
   ; mv /usr/lib/x86_64-linux-gnu/libnl-3.so.200 /usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0 /usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200 /usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0 /exports/usr/lib/x86_64-linux-gnu/ \
   ; mv /usr/share/doc/htop /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/htop.1.gz /exports/usr/share/man/man1/
+
+# GH
+FROM base AS gh
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.73.0/gh_2.73.0_linux_amd64.tar.gz' \
+  ; tar xzvf /tmp/gh.tgz \
+  ; rm /tmp/gh.tgz \
+  ; mv 'gh_2.73.0_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.73.0_linux_amd64'
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/gh /exports/usr/local/bin/
 
 # FILES-TO-PROMPT
 FROM base AS files-to-prompt
@@ -738,6 +860,19 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
   ; mv /usr/local/uv /exports/usr/local/ \
   ; mv /usr/local/bin/files-to-prompt /exports/usr/local/bin/
+
+# FILE
+FROM base AS file
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx file='1:5.45-3build1'
+RUN set -e \
+  ; mkdir -p /exports/etc/ /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/misc/ \
+  ; mv /etc/magic /etc/magic.mime /exports/etc/ \
+  ; mv /usr/bin/file /exports/usr/bin/ \
+  ; mv /usr/lib/file /exports/usr/lib/ \
+  ; mv /usr/lib/x86_64-linux-gnu/libmagic.so.* /exports/usr/lib/x86_64-linux-gnu/ \
+  ; mv /usr/share/misc/magic /usr/share/misc/magic.mgc /exports/usr/share/misc/
 
 # FD
 FROM base AS fd
@@ -823,18 +958,26 @@ COPY --from=clone /exports/ /
 COPY --from=docker /exports/ /
 COPY --from=exa /exports/ /
 COPY --from=fd /exports/ /
+COPY --from=file /exports/ /
 COPY --from=files-to-prompt /exports/ /
 COPY --from=fzf /exports/ /
+COPY --from=gh /exports/ /
 COPY --from=htop /exports/ /
+COPY --from=httpie /exports/ /
+COPY --from=jq /exports/ /
 COPY --from=jujutsu /exports/ /
 COPY --from=lazycommit /exports/ /
+COPY --from=lazygit /exports/ /
+COPY --from=lazyjj /exports/ /
 COPY --from=llm /exports/ /
 COPY --from=make /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
 COPY --from=node /exports/ /
+COPY --from=pgcli /exports/ /
 COPY --from=pnpm /exports/ /
 COPY --from=prettyping /exports/ /
+COPY --from=rip /exports/ /
 COPY --from=ripgrep /exports/ /
 COPY --from=safe-rm /exports/ /
 COPY --from=sd /exports/ /
@@ -851,9 +994,11 @@ COPY --from=shell-vim --chown=admin /home/admin/exports/ /
 COPY --from=shell-vim /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
+COPY --from=shoebox /exports/ /
 COPY --from=sudo /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=ttok /exports/ /
+COPY --from=unzip /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=zoxide /exports/ /
 ENV \
