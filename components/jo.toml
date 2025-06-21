@@ -1,7 +1,7 @@
 name = "jo"
 from = "base"
 
-version = 'd7b01392cc1a6bc381741cdbc062b06403bbdb91'
+version = '15d20a9ca21354bce636cad5de319ca316275c4b'
 
 devDependencies = ["clone", "apteryx", "build-essential"]
 

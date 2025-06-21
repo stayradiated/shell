@@ -97,7 +97,7 @@ dependencies = [
   'sqlite-utils',
 
   # Runn
-  'heroku',
+  # 'heroku',
   'brave',
   # 'peek',
 
@@ -144,12 +144,12 @@ dependencies = [
   # 'ghostty',
   'obsidian',
 
-  'kolide',
   'claude-code',
   'lazycommit',
   'fx',
   'lazyjj',
   'fly',
+  'dotenv-linter',
 
   # data tools
   # 'sc-im',

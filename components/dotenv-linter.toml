@@ -1,0 +1,23 @@
+name = "dotenv-linter"
+from = "base"
+
+version = "3.3.0"
+devDependencies = [ "wget" ]
+
+build = """
+wget --no-hsts -O /tmp/dotenv-linter.tgz \
+  'https://github.com/dotenv-linter/dotenv-linter/releases/download/v{{VERSION}}/dotenv-linter-linux-x86_64.tar.gz'
+
+tar xzvf /tmp/dotenv-linter.tgz
+rm /tmp/dotenv-linter.tgz
+
+mv dotenv-linter /usr/local/bin/dotenv-linter
+"""
+
+exports = [ "/usr/local/bin/dotenv-linter" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/dotenv-linter/dotenv-linter"
+removePrefix = "v"
+

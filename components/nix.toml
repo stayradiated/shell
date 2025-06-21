@@ -1,0 +1,31 @@
+name = 'nix'
+from = 'base'
+
+# https://github.com/DeterminateSystems/nix-installer/releases
+version = 'v3.6.6'
+
+devDependencies = ['wget']
+
+build = """
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix/tag/{{VERSION}} | \
+  sh -s -- install linux --no-confirm --no-modify-profile --init=none
+"""
+
+exports = [
+  # "/etc/group",
+  # "/etc/group-",
+  # "/etc/gshadow",
+  # "/etc/gshadow-",
+  "/etc/nix/",
+  # "/etc/passwd",
+  # "/etc/passwd-",
+  # "/etc/shadow",
+  # "/etc/shadow-",
+  "/nix/",
+  "/root/.nix-defexpr/",
+  "/root/.nix-profile"
+]
+
+[checkUpdates]
+type = 'github-release'
+url = 'https://github.com/DeterminateSystems/nix-installer'

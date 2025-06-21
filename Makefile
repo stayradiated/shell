@@ -1,6 +1,6 @@
 # Configuration
 DOCKER_USERNAME := stayradiated
-DOCKER_BUILD_ARGS := --squash --progress plain
+DOCKER_BUILD_ARGS := --squash
 SHOEBOX := shoebox
 
 # Targets

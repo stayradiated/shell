@@ -1,7 +1,7 @@
 name = 'fly'
 from = 'base'
 
-version = '0.3.138'
+version = '0.3.158'
 
 build = """
 curl -L \
@@ -21,5 +21,5 @@ exports = [
 
 [checkUpdates]
 type = 'github-release'
-url = 'https://github.com/superfly/fly'
+url = 'https://github.com/superfly/flyctl'
 removePrefix = 'v'
