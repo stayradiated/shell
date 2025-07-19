@@ -1,7 +1,7 @@
 name = 'fzf'
 from = 'base'
 
-version = 'v0.64.0'
+version = 'v0.65.0'
 
 devDependencies = ['clone']
 

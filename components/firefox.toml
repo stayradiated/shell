@@ -2,7 +2,7 @@ name = 'firefox'
 from = 'base'
 
 # https://www.mozilla.org/en-US/firefox/releases/
-version = '140.0.4'
+version = '141.0'
 
 devDependencies = ['apteryx', 'wget', 'xz']
 

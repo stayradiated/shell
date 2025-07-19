@@ -1,7 +1,7 @@
 name = 'yq'
 from = 'base'
 
-version = 'v4.46.1'
+version = 'v4.47.1'
 
 devDependencies = ['wget']
 

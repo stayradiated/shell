@@ -1,0 +1,25 @@
+name = 'just'
+from = 'base'
+
+version = '1.42.4'
+
+devDependencies = ["wget"]
+
+build = """
+wget --no-hsts \
+  -O /tmp/just.tgz \
+  https://github.com/casey/just/releases/download/{{VERSION}}/just-{{VERSION}}-x86_64-unknown-linux-musl.tar.gz
+
+tar -xzvf /tmp/just.tgz -C /usr/local/bin just
+
+rm /tmp/just.tgz
+"""
+
+exports = [
+  "/usr/local/bin/just",
+]
+
+[checkUpdates]
+type = 'github-release'
+url = 'https://github.com/casey/just'
+removePrefix = 'v'

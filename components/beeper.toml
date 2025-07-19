@@ -11,24 +11,13 @@ version = '4.1.1'
 devDependencies = ["wget"]
 
 build = """
-# Download and extract AppImage
 wget --no-hsts \
-  -O /tmp/beeper.appimage \
+  -O /opt/Beeper.AppImage \
   https://beeper-desktop.download.beeper.com/builds/Beeper-{{VERSION}}.AppImage
-chmod +x /tmp/beeper.appimage
-/tmp/beeper.appimage --appimage-extract
-rm /tmp/beeper.appimage
 
-# Install the application
-mkdir -p /opt/beeper
-cp -r squashfs-root/* /opt/beeper/
-rm -rf squashfs-root
-
-# Create symlink for command-line access
-ln -s /opt/beeper/AppRun /usr/local/bin/beeper
+chmod +x /opt/Beeper.AppImage
 """
 
 exports = [
-  "/opt/beeper",
-  "/usr/local/bin/beeper"
+  "/opt/Beeper.AppImage",
 ]

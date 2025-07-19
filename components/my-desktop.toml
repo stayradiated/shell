@@ -151,6 +151,7 @@ dependencies = [
   'fly',
   'dotenv-linter',
 
+  'just',
   'beeper',
 
   # data tools
