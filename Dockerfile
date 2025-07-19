@@ -29,7 +29,7 @@ RUN set -e \
   ; mv /usr/share/doc/wget /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/wget.1.gz /exports/usr/share/man/man1/
 
-# DOTENV-LINTER
-FROM base AS dotenv-linter
+# BEEPER
+FROM base AS beeper
 COPY --from=wget /exports/ /
 RUN set -e \

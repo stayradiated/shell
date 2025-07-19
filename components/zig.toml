@@ -11,8 +11,6 @@ wget \
   -O /tmp/zig.tar.xz \
   "https://ziglang.org/download/{{VERSION}}/zig-linux-x86_64-{{VERSION}}.tar.xz"
 
-#RUN
-
 tar -v -x --strip-components=1 -C /tmp -f /tmp/zig.tar.xz
 mv /tmp/zig /usr/local/bin/zig
 mv /tmp/lib /usr/lib/zig

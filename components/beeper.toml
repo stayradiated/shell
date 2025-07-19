@@ -1,0 +1,34 @@
+name = 'beeper'
+from = 'base'
+
+# https://www.beeper.com/download
+# need to manually resolve the linux download link
+#
+#     curl https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop
+
+version = '4.1.1'
+
+devDependencies = ["wget"]
+
+build = """
+# Download and extract AppImage
+wget --no-hsts \
+  -O /tmp/beeper.appimage \
+  https://beeper-desktop.download.beeper.com/builds/Beeper-{{VERSION}}.AppImage
+chmod +x /tmp/beeper.appimage
+/tmp/beeper.appimage --appimage-extract
+rm /tmp/beeper.appimage
+
+# Install the application
+mkdir -p /opt/beeper
+cp -r squashfs-root/* /opt/beeper/
+rm -rf squashfs-root
+
+# Create symlink for command-line access
+ln -s /opt/beeper/AppRun /usr/local/bin/beeper
+"""
+
+exports = [
+  "/opt/beeper",
+  "/usr/local/bin/beeper"
+]

@@ -151,6 +151,8 @@ dependencies = [
   'fly',
   'dotenv-linter',
 
+  'beeper',
+
   # data tools
   # 'sc-im',
 

@@ -158,7 +158,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.112.4' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.112.7' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -213,7 +213,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.7.22/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.8.0/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -518,6 +518,23 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# BEEPER
+FROM base AS beeper
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget --no-hsts -O /tmp/beeper.appimage https://beeper-desktop.download.beeper.com/builds/Beeper-4.1.1.AppImage \
+  ; chmod +x /tmp/beeper.appimage \
+  ; /tmp/beeper.appimage --appimage-extract \
+  ; rm /tmp/beeper.appimage \
+  ; mkdir -p /opt/beeper \
+  ; cp -r squashfs-root/* /opt/beeper/ \
+  ; rm -rf squashfs-root \
+  ; ln -s /opt/beeper/AppRun /usr/local/bin/beeper
+RUN set -e \
+  ; mkdir -p /exports/opt/ /exports/usr/local/bin/ \
+  ; mv /opt/beeper /exports/opt/ \
+  ; mv /usr/local/bin/beeper /exports/usr/local/bin/
+
 # DOTENV-LINTER
 FROM base AS dotenv-linter
 COPY --from=wget /exports/ /
@@ -582,7 +599,7 @@ RUN set -e \
 FROM base AS claude-code
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g '@anthropic-ai/claude-code@1.0.53'
+  ; npm install -g '@anthropic-ai/claude-code@1.0.56'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@anthropic-ai/ \
   ; mv /usr/local/bin/claude /exports/usr/local/bin/ \
@@ -1829,11 +1846,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.75.1/gh_2.75.1_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.76.0/gh_2.76.0_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.75.1_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.75.1_linux_amd64'
+  ; mv 'gh_2.76.0_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.76.0_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -2125,6 +2142,7 @@ COPY --from=fx /exports/ /
 COPY --from=lazyjj /exports/ /
 COPY --from=fly /exports/ /
 COPY --from=dotenv-linter /exports/ /
+COPY --from=beeper /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
