@@ -18,18 +18,7 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/apteryx /exports/usr/local/bin/
 
-# WGET
-FROM base AS wget
+# MOSH
+FROM base AS mosh
 COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; apteryx wget='1.21.4-1ubuntu4.1'
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ \
-  ; mv /usr/bin/wget /exports/usr/bin/ \
-  ; mv /usr/share/doc/wget /exports/usr/share/doc/ \
-  ; mv /usr/share/man/man1/wget.1.gz /exports/usr/share/man/man1/
-
-# BEEPER
-FROM base AS beeper
-COPY --from=wget /exports/ /
 RUN set -e \

@@ -153,6 +153,7 @@ dependencies = [
 
   'just',
   'beeper',
+  'mosh',
 
   # data tools
   # 'sc-im',
