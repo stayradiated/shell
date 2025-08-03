@@ -410,15 +410,18 @@ RUN set -e \
   ; mv /usr/local/uv /exports/usr/local/ \
   ; mv /usr/local/bin/ranger /exports/usr/local/bin/
 
-# DIFF-SO-FANCY
-FROM base AS diff-so-fancy
-COPY --from=node /exports/ /
+# DELTA
+FROM base AS delta
+COPY --from=wget /exports/ /
 RUN set -e \
-  ; npm install -g 'diff-so-fancy@1.4.3'
+  ; wget --no-hsts -O /tmp/delta.tgz 'https://github.com/dandavison/delta/releases/download/0.18.2/delta-0.18.2-x86_64-unknown-linux-gnu.tar.gz' \
+  ; tar xzvf /tmp/delta.tgz \
+  ; rm /tmp/delta.tgz \
+  ; mv 'delta-0.18.2-x86_64-unknown-linux-gnu/delta' /usr/local/bin/delta \
+  ; rm -r 'delta-0.18.2-x86_64-unknown-linux-gnu'
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
-  ; mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/delta /exports/usr/local/bin/
 
 # FIREFOX
 FROM base AS firefox
@@ -517,6 +520,16 @@ RUN set -e \
   ; mv /usr/bin/ping /usr/bin/ping4 /usr/bin/ping6 /exports/usr/bin/ \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
+
+# MOSH
+FROM base AS mosh
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx mosh='1.4.0-1ubuntu3'
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ \
+  ; mv /usr/bin/mosh /usr/bin/mosh-client /usr/bin/mosh-server /exports/usr/bin/ \
+  ; mv /usr/lib/x86_64-linux-gnu/libprotobuf.so.32 /usr/lib/x86_64-linux-gnu/libprotobuf.so.32.0.12 /usr/lib/x86_64-linux-gnu/libutempter.so.0 /usr/lib/x86_64-linux-gnu/libutempter.so.1.2.1 /exports/usr/lib/x86_64-linux-gnu/
 
 # BEEPER
 FROM base AS beeper
@@ -1362,7 +1375,7 @@ FROM shell-admin AS shell-git
 COPY --from=make /exports/ /
 COPY --from=git /exports/ /
 COPY --from=git-crypt /exports/ /
-COPY --from=diff-so-fancy /exports/ /
+COPY --from=delta /exports/ /
 RUN set -e \
   ; cd dotfiles \
   ; make git
@@ -1371,12 +1384,11 @@ RUN set -e \
   ; mv /home/admin/.gitconfig /home/admin/exports/home/admin/
 USER root
 RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
   ; mv /usr/lib/git-core /exports/usr/lib/ \
   ; mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/bin/diff-so-fancy /usr/local/bin/git-crypt /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/ \
+  ; mv /usr/local/bin/delta /usr/local/bin/git-crypt /exports/usr/local/bin/ \
   ; mv /usr/share/git-core /usr/share/perl /exports/usr/share/ \
   ; mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/ \
   ; mv /var/lib/git /exports/var/lib/
@@ -2148,6 +2160,7 @@ COPY --from=fly /exports/ /
 COPY --from=dotenv-linter /exports/ /
 COPY --from=just /exports/ /
 COPY --from=beeper /exports/ /
+COPY --from=mosh /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

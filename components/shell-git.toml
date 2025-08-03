@@ -1,7 +1,7 @@
 name = 'shell-git'
 from = 'shell-admin'
 
-dependencies = ['git', 'git-crypt', 'diff-so-fancy']
+dependencies = ['git', 'git-crypt', 'delta']
 
 devDependencies = ['make']
 
