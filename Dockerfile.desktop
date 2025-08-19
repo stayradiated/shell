@@ -158,7 +158,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.115.4' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.120.8' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -589,16 +589,6 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/lazyjj /exports/usr/local/bin/
 
-# FX
-FROM base AS fx
-COPY --from=wget /exports/ /
-RUN set -e \
-  ; wget -O /usr/local/bin/fx 'https://github.com/antonmedv/fx/releases/download/38.0.0/fx_linux_amd64' \
-  ; chmod +x /usr/local/bin/fx
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/fx /exports/usr/local/bin/
-
 # LAZYCOMMIT
 FROM base AS lazycommit
 COPY --from=wget /exports/ /
@@ -676,20 +666,6 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/cloudflared /exports/usr/local/bin/
 
-# CURLIE
-FROM base AS curlie
-COPY --from=wget /exports/ /
-RUN set -e \
-  ; wget --no-hsts -O /tmp/curlie.tgz 'https://github.com/rs/curlie/releases/download/v1.8.2/curlie_1.8.2_linux_amd64.tar.gz' \
-  ; mkdir -p /tmp/curlie \
-  ; tar xzvf /tmp/curlie.tgz -C /tmp/curlie/ \
-  ; rm /tmp/curlie.tgz \
-  ; mv /tmp/curlie/curlie /usr/local/bin/curlie \
-  ; rm -r /tmp/curlie
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/curlie /exports/usr/local/bin/
-
 # FFMPEG
 FROM base AS ffmpeg
 COPY --from=wget /exports/ /
@@ -708,17 +684,6 @@ RUN set -e \
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/ffmpeg /usr/local/bin/ffprobe /exports/usr/local/bin/
-
-# OHA
-FROM base AS oha
-COPY --from=wget /exports/ /
-RUN set -e \
-  ; wget "https://github.com/hatoo/oha/releases/download/v1.9.0/oha-linux-amd64" -O /tmp/oha \
-  ; chmod +x /tmp/oha \
-  ; mv /tmp/oha /usr/local/bin/oha
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/oha /exports/usr/local/bin/
 
 # JUJUTSU
 FROM base AS jujutsu
@@ -745,19 +710,6 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/sg /usr/local/bin/ast-grep /exports/usr/local/bin/
 
-# GIFSKI
-FROM base AS gifski
-COPY --from=apteryx /exports/ /
-COPY --from=wget /exports/ /
-COPY --from=xz /exports/ /
-RUN set -e \
-  ; wget -O gifski.deb "https://github.com/ImageOptim/gifski/releases/download/1.33.0/gifski_1.33.0-1_amd64.deb" \
-  ; apteryx ./gifski.deb \
-  ; rm -rf debian
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ \
-  ; mv /usr/bin/gifski /exports/usr/bin/
-
 # LAZYGIT
 FROM base AS lazygit
 COPY --from=wget /exports/ /
@@ -783,25 +735,6 @@ RUN set -e \
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/sleek /exports/usr/local/bin/
-
-# JO
-FROM base AS jo
-COPY --from=clone /exports/ /
-COPY --from=apteryx /exports/ /
-COPY --from=build-essential /exports/ /
-RUN set -e \
-  ; PKG_LIST="autoconf automake pkgconf" \
-  ; apteryx $PKG_LIST \
-  ; clone --https --ref='15d20a9ca21354bce636cad5de319ca316275c4b' --shallow 'https://github.com/jpmens/jo' \
-  ; cd /root/src/github.com/jpmens/jo \
-  ; autoreconf -i \
-  ; ./configure \
-  ; make install \
-  ; apt-get remove --purge -y $PKG_LIST \
-  ; rm -r /root/src
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/jo /exports/usr/local/bin/
 
 # XCOLOR
 FROM base AS xcolor
@@ -2139,28 +2072,24 @@ COPY --from=gosee /exports/ /
 COPY --from=fonts /exports/ /
 COPY --from=yq /exports/ /
 COPY --from=xcolor /exports/ /
-COPY --from=jo /exports/ /
 COPY --from=sleek /exports/ /
 COPY --from=lazygit /exports/ /
-COPY --from=gifski /exports/ /
 COPY --from=ast-grep /exports/ /
 COPY --from=jujutsu /exports/ /
-COPY --from=oha /exports/ /
 COPY --from=ffmpeg /exports/ /
-COPY --from=curlie /exports/ /
 COPY --from=cloudflared /exports/ /
 COPY --from=files-to-prompt /exports/ /
 COPY --from=miller /exports/ /
 COPY --from=obsidian /exports/ /
 COPY --from=claude-code /exports/ /
 COPY --from=lazycommit /exports/ /
-COPY --from=fx /exports/ /
 COPY --from=lazyjj /exports/ /
 COPY --from=fly /exports/ /
 COPY --from=dotenv-linter /exports/ /
 COPY --from=just /exports/ /
 COPY --from=beeper /exports/ /
 COPY --from=mosh /exports/ /
+COPY --from=delta /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
