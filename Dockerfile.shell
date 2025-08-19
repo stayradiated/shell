@@ -34,7 +34,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN set -e \
   ; add-apt-repository ppa:git-core/ppa \
-  ; apteryx git='1:2.49.0-2~ppa1~ubuntu24.04.1'
+  ; apteryx git='1:2.51.0-0ppa2~ubuntu24.04.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
@@ -48,7 +48,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.24.3.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.24.5.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -158,7 +158,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.110.2' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.120.8' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -199,7 +199,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.7.8/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.8.3/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -215,7 +215,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v24.1.0 \
+  ; n v24.4.1 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -228,7 +228,7 @@ RUN set -e \
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='v0.62.0' https://github.com/junegunn/fzf \
+  ; clone --https --tag='v0.65.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -269,7 +269,7 @@ ENV \
   UV_TOOL_BIN_DIR=/usr/local/uv/bin \
   UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.11.1/nvim-linux-x86_64.appimage' \
+  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.appimage' \
   ; chmod +x /tmp/nvim.appimage \
   ; /tmp/nvim.appimage --appimage-extract \
   ; rm /tmp/nvim.appimage \
@@ -331,22 +331,25 @@ RUN set -e \
   ; mv /usr/local/uv /exports/usr/local/ \
   ; mv /usr/local/bin/ranger /exports/usr/local/bin/
 
-# DIFF-SO-FANCY
-FROM base AS diff-so-fancy
-COPY --from=node /exports/ /
+# DELTA
+FROM base AS delta
+COPY --from=wget /exports/ /
 RUN set -e \
-  ; npm install -g 'diff-so-fancy@1.4.3'
+  ; wget --no-hsts -O /tmp/delta.tgz 'https://github.com/dandavison/delta/releases/download/0.18.2/delta-0.18.2-x86_64-unknown-linux-gnu.tar.gz' \
+  ; tar xzvf /tmp/delta.tgz \
+  ; rm /tmp/delta.tgz \
+  ; mv 'delta-0.18.2-x86_64-unknown-linux-gnu/delta' /usr/local/bin/delta \
+  ; rm -r 'delta-0.18.2-x86_64-unknown-linux-gnu'
 RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
-  ; mv /usr/local/bin/diff-so-fancy /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/delta /exports/usr/local/bin/
 
 # RUST
 FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.87.0' \
+  ; sh rust.sh -y --default-toolchain '1.88.0' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
@@ -356,7 +359,7 @@ RUN set -e \
 FROM base AS ping
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx iputils-ping='3:20240117-1build1'
+  ; apteryx iputils-ping='3:20240117-1ubuntu0.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/doc/ /exports/usr/share/man/man8/ \
   ; mv /usr/bin/ping /usr/bin/ping4 /usr/bin/ping6 /exports/usr/bin/ \
@@ -423,7 +426,7 @@ RUN set -e \
 FROM base AS sudo
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx sudo='1.9.15p5-3ubuntu5'
+  ; apteryx sudo='1.9.15p5-3ubuntu5.24.04.1'
 RUN set -e \
   ; mkdir -p /exports/etc/pam.d/ /exports/etc/ /exports/run/ /exports/usr/bin/ /exports/usr/include/ /exports/usr/lib/systemd/system/ /exports/usr/lib/tmpfiles.d/ /exports/usr/libexec/ /exports/usr/sbin/ /exports/usr/share/apport/package-hooks/ \
   ; mv /etc/pam.d/sudo /etc/pam.d/sudo-i /exports/etc/pam.d/ \
@@ -436,6 +439,24 @@ RUN set -e \
   ; mv /usr/libexec/sudo /exports/usr/libexec/ \
   ; mv /usr/sbin/sudo_logsrvd /usr/sbin/sudo_sendlog /usr/sbin/visudo /exports/usr/sbin/ \
   ; mv /usr/share/apport/package-hooks/source_sudo.py /exports/usr/share/apport/package-hooks/
+
+# SQLITE-UTILS
+FROM base AS sqlite-utils
+COPY --from=uv /exports/ /
+ENV \
+  UV_LINK_MODE=copy \
+  UV_COMPILE_BYTECODE=1 \
+  UV_PYTHON_DOWNLOADS=manual \
+  UV_TOOL_DIR=/usr/local/uv/tools \
+  UV_TOOL_BIN_DIR=/usr/local/uv/bin \
+  UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
+RUN set -e \
+  ; uv tool install sqlite-utils=='4.0a0' \
+  ; ln -s /usr/local/uv/bin/sqlite-utils /usr/local/bin/sqlite-utils
+RUN set -e \
+  ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
+  ; mv /usr/local/uv /exports/usr/local/ \
+  ; mv /usr/local/bin/sqlite-utils /exports/usr/local/bin/
 
 # SHOEBOX
 FROM base AS shoebox
@@ -577,7 +598,7 @@ FROM shell-admin AS shell-git
 COPY --from=make /exports/ /
 COPY --from=git /exports/ /
 COPY --from=git-crypt /exports/ /
-COPY --from=diff-so-fancy /exports/ /
+COPY --from=delta /exports/ /
 RUN set -e \
   ; cd dotfiles \
   ; make git
@@ -586,12 +607,11 @@ RUN set -e \
   ; mv /home/admin/.gitconfig /home/admin/exports/home/admin/
 USER root
 RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/local/bin/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
   ; mv /usr/lib/git-core /exports/usr/lib/ \
   ; mv /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.* /usr/lib/x86_64-linux-gnu/libgdbm_compat.so.* /usr/lib/x86_64-linux-gnu/libgdbm.so.* /usr/lib/x86_64-linux-gnu/libperl.so.* /usr/lib/x86_64-linux-gnu/perl /exports/usr/lib/x86_64-linux-gnu/ \
-  ; mv /usr/local/bin/diff-so-fancy /usr/local/bin/git-crypt /exports/usr/local/bin/ \
-  ; mv /usr/local/lib/node_modules/diff-so-fancy /exports/usr/local/lib/node_modules/ \
+  ; mv /usr/local/bin/delta /usr/local/bin/git-crypt /exports/usr/local/bin/ \
   ; mv /usr/share/git-core /usr/share/perl /exports/usr/share/ \
   ; mv /usr/share/perl5/Error.pm /usr/share/perl5/Error /usr/share/perl5/Git.pm /usr/share/perl5/Git /exports/usr/share/perl5/ \
   ; mv /var/lib/git /exports/var/lib/
@@ -670,7 +690,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@10.11.0'
+  ; npm install -g 'pnpm@10.13.1'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -697,11 +717,21 @@ RUN set -e \
   ; mv /usr/local/bin/apteryx /usr/local/bin/pgcli /usr/local/bin/uv /usr/local/bin/uvx /exports/usr/local/bin/ \
   ; mv /usr/local/uv /exports/usr/local/
 
+# NET-TOOLS
+FROM base AS net-tools
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx net-tools='2.10-0.1ubuntu4.4'
+RUN set -e \
+  ; mkdir -p /exports/usr/sbin/ /exports/usr/share/man/man8/ \
+  ; mv /usr/sbin/ifconfig /exports/usr/sbin/ \
+  ; mv /usr/share/man/man8/ifconfig.8.gz /exports/usr/share/man/man8/
+
 # NCU
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'npm-check-updates@18.0.1'
+  ; npm install -g 'npm-check-updates@18.0.2'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/ncu /exports/usr/local/bin/ \
@@ -756,7 +786,7 @@ RUN set -e \
 FROM base AS lazygit
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.51.1/lazygit_0.51.1_Linux_x86_64.tar.gz' \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.53.0/lazygit_0.53.0_Linux_x86_64.tar.gz' \
   ; mkdir -p /tmp/lazygit \
   ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
   ; mv /tmp/lazygit/lazygit /usr/local/bin \
@@ -778,11 +808,22 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/lazycommit /exports/usr/local/bin/
 
+# JUST
+FROM base AS just
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget --no-hsts -O /tmp/just.tgz https://github.com/casey/just/releases/download/1.42.4/just-1.42.4-x86_64-unknown-linux-musl.tar.gz \
+  ; tar -xzvf /tmp/just.tgz -C /usr/local/bin just \
+  ; rm /tmp/just.tgz
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/just /exports/usr/local/bin/
+
 # JUJUTSU
 FROM base AS jujutsu
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.29.0/jj-v0.29.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.31.0/jj-v0.31.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar xzvf /tmp/jj.tgz \
   ; rm /tmp/jj.tgz \
   ; mv 'jj' /usr/local/bin/jj
@@ -794,7 +835,7 @@ RUN set -e \
 FROM base AS jq
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/jq 'https://github.com/stedolan/jq/releases/download/jq-1.7.1/jq-linux64' \
+  ; wget -O /usr/local/bin/jq 'https://github.com/stedolan/jq/releases/download/jq-1.8.1/jq-linux64' \
   ; chmod +x /usr/local/bin/jq
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -834,11 +875,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.73.0/gh_2.73.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.76.1/gh_2.76.1_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.73.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.73.0_linux_amd64'
+  ; mv 'gh_2.76.1_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.76.1_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -910,6 +951,17 @@ RUN set -e \
   ; mv /usr/share/man/man1/exa_colors.5 /usr/share/man/man1/exa.1 /exports/usr/share/man/man1/ \
   ; mv /usr/share/zsh/vendor-completions/exa.zsh /exports/usr/share/zsh/vendor-completions/
 
+# DOCKER-COMPOSE
+FROM base AS docker-compose
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; mkdir -p /usr/local/lib/docker/cli-plugins \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.38.2/docker-compose-linux-x86_64' \
+  ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+RUN set -e \
+  ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
+  ; mv /usr/local/lib/docker/cli-plugins/docker-compose /exports/usr/local/lib/docker/cli-plugins/
+
 # DOCKER
 FROM base AS docker
 COPY --from=apteryx /exports/ /
@@ -920,21 +972,41 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:28.2.1*'
+  ; apteryx docker-ce-cli='5:28.3.3*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
   ; mv /usr/share/zsh/vendor-completions/_docker /exports/usr/share/zsh/vendor-completions/
 
+# CONTAINER-DIFF
+FROM base AS container-diff
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O container-diff 'https://storage.googleapis.com/container-diff/v0.17.0/container-diff-linux-amd64' \
+  ; chmod +x container-diff \
+  ; mv container-diff /usr/local/bin/container-diff
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/container-diff /exports/usr/local/bin/
+
 # CLAUDE-CODE
 FROM base AS claude-code
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g '@anthropic-ai/claude-code@1.0.3'
+  ; npm install -g '@anthropic-ai/claude-code@1.0.62'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@anthropic-ai/ \
   ; mv /usr/local/bin/claude /exports/usr/local/bin/ \
   ; mv /usr/local/lib/node_modules/@anthropic-ai/claude-code /exports/usr/local/lib/node_modules/@anthropic-ai/
+
+# BSDMAINUTILS
+FROM base AS bsdmainutils
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx bsdmainutils='12.1.8'
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ \
+  ; mv /usr/bin/column /exports/usr/bin/
 
 # BAT
 FROM base AS bat
@@ -949,13 +1021,30 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/bat /exports/usr/local/bin/
 
+# AUTOTAG
+FROM base AS autotag
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget -O /tmp/autotag.tgz "https://github.com/pantheon-systems/autotag/releases/download/v1.4.1/autotag_linux_amd64.tar.gz" \
+  ; tar xzvf /tmp/autotag.tgz autotag \
+  ; mv autotag /usr/local/bin/autotag \
+  ; rm /tmp/autotag.tgz
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/autotag /exports/usr/local/bin/
+
 # MY-SHELL
 FROM shell-admin AS my-shell
+COPY --from=autotag /exports/ /
 COPY --from=bat /exports/ /
+COPY --from=bsdmainutils /exports/ /
 COPY --from=build-essential /exports/ /
 COPY --from=claude-code /exports/ /
 COPY --from=clone /exports/ /
+COPY --from=container-diff /exports/ /
+COPY --from=delta /exports/ /
 COPY --from=docker /exports/ /
+COPY --from=docker-compose /exports/ /
 COPY --from=exa /exports/ /
 COPY --from=fd /exports/ /
 COPY --from=file /exports/ /
@@ -966,6 +1055,7 @@ COPY --from=htop /exports/ /
 COPY --from=httpie /exports/ /
 COPY --from=jq /exports/ /
 COPY --from=jujutsu /exports/ /
+COPY --from=just /exports/ /
 COPY --from=lazycommit /exports/ /
 COPY --from=lazygit /exports/ /
 COPY --from=lazyjj /exports/ /
@@ -973,6 +1063,7 @@ COPY --from=llm /exports/ /
 COPY --from=make /exports/ /
 COPY --from=moreutils /exports/ /
 COPY --from=ncu /exports/ /
+COPY --from=net-tools /exports/ /
 COPY --from=node /exports/ /
 COPY --from=pgcli /exports/ /
 COPY --from=pnpm /exports/ /
@@ -995,6 +1086,7 @@ COPY --from=shell-vim /exports/ /
 COPY --from=shell-zsh --chown=admin /home/admin/exports/ /
 COPY --from=shell-zsh /exports/ /
 COPY --from=shoebox /exports/ /
+COPY --from=sqlite-utils /exports/ /
 COPY --from=sudo /exports/ /
 COPY --from=tree /exports/ /
 COPY --from=ttok /exports/ /

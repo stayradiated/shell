@@ -34,7 +34,7 @@ FROM base AS git
 COPY --from=apteryx /exports/ /
 RUN set -e \
   ; add-apt-repository ppa:git-core/ppa \
-  ; apteryx git='1:2.50.1-0ppa1~ubuntu24.04.1'
+  ; apteryx git='1:2.51.0-0ppa2~ubuntu24.04.1'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/lib/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/share/ /exports/usr/share/perl5/ /exports/var/lib/ \
   ; mv /usr/bin/git /exports/usr/bin/ \
