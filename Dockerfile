@@ -29,7 +29,8 @@ RUN set -e \
   ; mv /usr/share/doc/wget /exports/usr/share/doc/ \
   ; mv /usr/share/man/man1/wget.1.gz /exports/usr/share/man/man1/
 
-# DELTA
-FROM base AS delta
+# FLAMESHOT
+FROM base AS flameshot
 COPY --from=wget /exports/ /
+COPY --from=apteryx /exports/ /
 RUN set -e \

@@ -1,7 +1,7 @@
 name = "mosh"
 from = "base"
 
-version = "1.4.0-1ubuntu3"
+version = '1.4.0-1ubuntu3'
 
 devDependencies = ["apteryx"]
 

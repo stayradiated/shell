@@ -3,8 +3,6 @@ fromImage = 'phusion/baseimage:noble-1.0.2' # 24.04
 
 baseExportDir = '/exports/'
 
-# todo: upgrade this version to `noble-1.0.2`
-# we are already using noble, I just forgot to update the version
 version = 'noble-1.0.2'
 
 build = """

@@ -3,12 +3,14 @@ from = "base"
 
 version = '0.5.0'
 
-devDependencies = ['build-essential', 'rust']
+devDependencies = ['build-essential', 'rust', 'cargo-binstall']
 
 build = """
-cargo install --version {{VERSION}} sleek
+cargo binstall --no-track --disable-telemetry \
+  --version='{{VERSION}}' sleek
 
 mv /root/.cargo/bin/sleek /usr/local/bin/sleek
+rm -r /root/.cargo
 """
 
 exports = ["/usr/local/bin/sleek"]

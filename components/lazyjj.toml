@@ -3,18 +3,14 @@ from = 'base'
 
 version = '0.5.0'
 
-devDependencies = ['wget']
+devDependencies = ['rust', 'cargo-binstall']
 
 build = """
-wget \
-  -O /tmp/lazyjj.tgz \
-  'https://github.com/Cretezy/lazyjj/releases/download/v{{VERSION}}/lazyjj-v{{VERSION}}-x86_64-unknown-linux-musl.tar.gz'
+cargo binstall --no-track --disable-telemetry \
+  --version='{{VERSION}}' lazyjj
 
-mkdir -p /tmp/lazyjj
-tar xzvf /tmp/lazyjj.tgz -C /tmp/lazyjj
-
-mv /tmp/lazyjj/lazyjj /usr/local/bin
-rm -r /tmp/lazyjj /tmp/lazyjj.tgz
+rm /root/.cargo/binstall.toml
+mv /root/.cargo/bin/lazyjj /usr/local/bin/lazyjj
 """
 
 exports = ['/usr/local/bin/lazyjj']

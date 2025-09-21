@@ -1,0 +1,24 @@
+name = "cargo-binstall"
+from = "base"
+
+version = "v1.15.5"
+
+devDependencies = [ "wget" ]
+
+build = """
+wget --no-hsts -O /tmp/cargo-binstall.tgz \
+  'https://github.com/cargo-bins/cargo-binstall/releases/download/{{VERSION}}/cargo-binstall-x86_64-unknown-linux-musl.tgz'
+
+tar xzvf /tmp/cargo-binstall.tgz
+rm /tmp/cargo-binstall.tgz
+
+mv 'cargo-binstall' /usr/local/bin/cargo-binstall
+"""
+
+exports = [ "/usr/local/bin/cargo-binstall" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/cargo-bins/cargo-binstall"
+removePrefix = "v"
+
