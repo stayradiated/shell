@@ -1,7 +1,7 @@
 name = 'flameshot'
 from = 'base'
 
-version = '13.1.0'
+version = '13.3.0'
 
 devDependencies = ['wget', 'apteryx']
 

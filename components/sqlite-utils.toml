@@ -1,7 +1,7 @@
 name = "sqlite-utils"
 from = "base"
 
-version = '4.0a0'
+version = '4.0a1'
 
 devDependencies = ['uv']
 

@@ -1,7 +1,7 @@
 name = 'just'
 from = 'base'
 
-version = '1.42.4'
+version = '1.43.1'
 
 devDependencies = ["wget"]
 

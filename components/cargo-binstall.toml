@@ -1,7 +1,8 @@
 name = "cargo-binstall"
 from = "base"
 
-version = "v1.15.5"
+# https://github.com/cargo-bins/cargo-binstall/releases
+version = 'v1.16.2'
 
 devDependencies = [ "wget" ]
 
@@ -20,5 +21,3 @@ exports = [ "/usr/local/bin/cargo-binstall" ]
 [checkUpdates]
 type = "github-release"
 url = "https://github.com/cargo-bins/cargo-binstall"
-removePrefix = "v"
-

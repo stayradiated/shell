@@ -3,7 +3,7 @@ from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
 # look for google-chrome-beta
-version = '141.0.7390.30'
+version = '143.0.7499.40'
 
 devDependencies = ['wget', 'apteryx']
 

@@ -147,7 +147,7 @@ dependencies = [
   'claude-code',
   'lazycommit',
   # 'fx',
-  'lazyjj',
+  # 'lazyjj',
   'fly',
   'dotenv-linter',
 

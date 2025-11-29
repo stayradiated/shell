@@ -1,7 +1,7 @@
 name = "jujutsu"
 from = "base"
 
-version = '0.33.0'
+version = '0.35.0'
 
 devDependencies = ["wget"]
 

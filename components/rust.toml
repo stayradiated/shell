@@ -1,7 +1,7 @@
 name = 'rust'
 from = 'base'
 
-version = '1.90.0'
+version = '1.91.1'
 
 devDependencies = ['wget']
 

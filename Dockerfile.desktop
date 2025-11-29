@@ -48,7 +48,7 @@ RUN set -e \
 FROM base AS go
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.25.1.linux-amd64.tar.gz" \
+  ; wget -O /tmp/go.tgz "https://dl.google.com/go/go1.25.4.linux-amd64.tar.gz" \
   ; tar xzvf /tmp/go.tgz \
   ; mv go /usr/local/go \
   ; rm -rf /tmp/go.tgz
@@ -125,7 +125,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN set -e \
   ; apteryx libssl-dev \
-  ; clone --https --tag='0.7.0' https://github.com/AGWA/git-crypt \
+  ; clone --https --tag='0.8.0' https://github.com/AGWA/git-crypt \
   ; cd /root/src/github.com/AGWA/git-crypt \
   ; CXXFLAGS='-static -DOPENSSL_API_COMPAT=0x30000000L' make \
   ; make install \
@@ -158,7 +158,7 @@ COPY --from=clone /exports/ /
 COPY --from=git-crypt /exports/ /
 COPY ./secret/dotfiles-key /tmp/dotfiles-key
 RUN set -e \
-  ; clone --https --tag='v1.122.0' https://github.com/stayradiated/dotfiles \
+  ; clone --https --tag='v1.122.20' https://github.com/stayradiated/dotfiles \
   ; cd /root/src/github.com/stayradiated/dotfiles \
   ; git-crypt unlock /tmp/dotfiles-key \
   ; rm /tmp/dotfiles-key \
@@ -200,7 +200,7 @@ FROM base AS node
 COPY --from=n /exports/ /
 RUN set -e \
   ; n lts \
-  ; n v24.8.0 \
+  ; n v24.11.1 \
   ; npm install -g npm
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/include/ /exports/usr/local/lib/ /exports/usr/local/ \
@@ -213,7 +213,7 @@ RUN set -e \
 FROM base AS uv
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.8.19/uv-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O /tmp/uv.tgz 'https://github.com/astral-sh/uv/releases/download/0.9.13/uv-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf /tmp/uv.tgz -C /tmp \
   ; rm /tmp/uv.tgz \
   ; mv /tmp/uv-x86_64-unknown-linux-gnu/uv /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/ \
@@ -234,11 +234,21 @@ RUN set -e \
   ; mv /usr/bin/xz /exports/usr/bin/ \
   ; mv /usr/share/man/man1/xz.1.gz /exports/usr/share/man/man1/
 
+# UNZIP
+FROM base AS unzip
+COPY --from=apteryx /exports/ /
+RUN set -e \
+  ; apteryx unzip='6.0-28ubuntu4.1'
+RUN set -e \
+  ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
+  ; mv /usr/bin/unzip /exports/usr/bin/ \
+  ; mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
+
 # CARGO-BINSTALL
 FROM base AS cargo-binstall
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /tmp/cargo-binstall.tgz 'https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.5/cargo-binstall-x86_64-unknown-linux-musl.tgz' \
+  ; wget --no-hsts -O /tmp/cargo-binstall.tgz 'https://github.com/cargo-bins/cargo-binstall/releases/download/v1.16.2/cargo-binstall-x86_64-unknown-linux-musl.tgz' \
   ; tar xzvf /tmp/cargo-binstall.tgz \
   ; rm /tmp/cargo-binstall.tgz \
   ; mv 'cargo-binstall' /usr/local/bin/cargo-binstall
@@ -251,27 +261,17 @@ FROM base AS rust
 COPY --from=wget /exports/ /
 RUN set -e \
   ; wget -O rust.sh 'https://sh.rustup.rs' \
-  ; sh rust.sh -y --default-toolchain '1.90.0' \
+  ; sh rust.sh -y --default-toolchain '1.91.1' \
   ; rm rust.sh
 RUN set -e \
   ; mkdir -p /exports/root/ \
   ; mv /root/.cargo /root/.rustup /exports/root/
 
-# UNZIP
-FROM base AS unzip
-COPY --from=apteryx /exports/ /
-RUN set -e \
-  ; apteryx unzip='6.0-28ubuntu4.1'
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/share/man/man1/ \
-  ; mv /usr/bin/unzip /exports/usr/bin/ \
-  ; mv /usr/share/man/man1/unzip.1.gz /exports/usr/share/man/man1/
-
 # FZF
 FROM base AS fzf
 COPY --from=clone /exports/ /
 RUN set -e \
-  ; clone --https --tag='v0.65.2' https://github.com/junegunn/fzf \
+  ; clone --https --tag='v0.67.0' https://github.com/junegunn/fzf \
   ; mv /root/src/github.com/junegunn/fzf /usr/local/share/fzf \
   ; rm -rf /root/src \
   ; /usr/local/share/fzf/install --bin
@@ -317,8 +317,8 @@ COPY --from=apteryx /exports/ /
 COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN set -e \
-  ; apteryx libxcb-util-dev libxcb-keysyms1-dev \
-  ; clone --https --tag='0.6.2' https://github.com/baskerville/sxhkd \
+  ; apteryx libxcb-util-dev libxcb-keysyms1-dev libxcb-xkb-dev \
+  ; clone --https --tag='0.6.3' https://github.com/baskerville/sxhkd \
   ; cd /root/src/github.com/baskerville/sxhkd \
   ; make all \
   ; make install \
@@ -336,7 +336,7 @@ COPY --from=clone /exports/ /
 COPY --from=make /exports/ /
 RUN set -e \
   ; apteryx libxcb-ewmh-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xinerama0-dev \
-  ; clone --https --tag='0.9.10' https://github.com/baskerville/bspwm \
+  ; clone --https --tag='0.9.12' https://github.com/baskerville/bspwm \
   ; cd /root/src/github.com/baskerville/bspwm \
   ; make all \
   ; make install \
@@ -360,7 +360,7 @@ ENV \
   UV_TOOL_BIN_DIR=/usr/local/uv/bin \
   UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.11.4/nvim-linux-x86_64.appimage' \
+  ; wget -O /tmp/nvim.appimage 'https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.appimage' \
   ; chmod +x /tmp/nvim.appimage \
   ; /tmp/nvim.appimage --appimage-extract \
   ; rm /tmp/nvim.appimage \
@@ -386,7 +386,7 @@ COPY --from=wget /exports/ /
 RUN set -e \
   ; packages="libncurses5-dev libevent-dev bison" \
   ; apteryx $packages \
-  ; wget --no-hsts -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz' \
+  ; wget --no-hsts -O /tmp/tmux.tgz 'https://github.com/tmux/tmux/releases/download/3.6/tmux-3.6.tar.gz' \
   ; mkdir -p /tmp/tmux \
   ; tar -xz --strip-components=1 -C /tmp/tmux -f /tmp/tmux.tgz \
   ; rm /tmp/tmux.tgz \
@@ -441,7 +441,7 @@ COPY --from=apteryx /exports/ /
 COPY --from=wget /exports/ /
 COPY --from=xz /exports/ /
 RUN set -e \
-  ; wget -O /tmp/firefox.tar.xz https://download-installer.cdn.mozilla.net/pub/firefox/releases/143.0.1/linux-x86_64/en-US/firefox-143.0.1.tar.xz \
+  ; wget -O /tmp/firefox.tar.xz https://download-installer.cdn.mozilla.net/pub/firefox/releases/145.0.2/linux-x86_64/en-US/firefox-145.0.2.tar.xz \
   ; cd /opt \
   ; tar xJvf /tmp/firefox.tar.xz \
   ; rm /tmp/firefox.tar.xz \
@@ -477,7 +477,7 @@ RUN set -e \
   ; curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   ; sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   ; apt-get update \
-  ; apteryx google-chrome-beta='141.0.7390.30-*'
+  ; apteryx google-chrome-beta='143.0.7499.40-*'
 RUN set -e \
   ; mkdir -p /exports/etc/ /exports/etc/default/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/ /exports/usr/share/applications/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/doc/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/lintian/overrides/ /exports/usr/share/man/man1/ /exports/usr/share/man/man5/ /exports/usr/share/man/man7/ /exports/usr/share/pkgconfig/ /exports/var/lib/ucf/ \
   ; mv /etc/dconf /etc/fonts /etc/gtk-3.0 /etc/sensors.d /etc/sensors3.conf /etc/vulkan /exports/etc/ \
@@ -557,7 +557,7 @@ RUN set -e \
 FROM base AS just
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /tmp/just.tgz https://github.com/casey/just/releases/download/1.42.4/just-1.42.4-x86_64-unknown-linux-musl.tar.gz \
+  ; wget --no-hsts -O /tmp/just.tgz https://github.com/casey/just/releases/download/1.43.1/just-1.43.1-x86_64-unknown-linux-musl.tar.gz \
   ; tar -xzvf /tmp/just.tgz -C /usr/local/bin just \
   ; rm /tmp/just.tgz
 RUN set -e \
@@ -568,7 +568,7 @@ RUN set -e \
 FROM base AS dotenv-linter
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /tmp/dotenv-linter.tgz 'https://github.com/dotenv-linter/dotenv-linter/releases/download/v3.3.0/dotenv-linter-linux-x86_64.tar.gz' \
+  ; wget --no-hsts -O /tmp/dotenv-linter.tgz 'https://github.com/dotenv-linter/dotenv-linter/releases/download/v4.0.0/dotenv-linter-linux-x86_64.tar.gz' \
   ; tar xzvf /tmp/dotenv-linter.tgz \
   ; rm /tmp/dotenv-linter.tgz \
   ; mv dotenv-linter /usr/local/bin/dotenv-linter
@@ -579,7 +579,7 @@ RUN set -e \
 # FLY
 FROM base AS fly
 RUN set -e \
-  ; curl -L -o flyctl.tar.gz 'https://github.com/superfly/flyctl/releases/download/v0.3.181/flyctl_0.3.181_Linux_x86_64.tar.gz' \
+  ; curl -L -o flyctl.tar.gz 'https://github.com/superfly/flyctl/releases/download/v0.3.227/flyctl_0.3.227_Linux_x86_64.tar.gz' \
   ; tar -xzvf flyctl.tar.gz \
   ; rm flyctl.tar.gz \
   ; mv flyctl /usr/local/bin/fly \
@@ -587,20 +587,6 @@ RUN set -e \
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/fly /exports/usr/local/bin/
-
-# LAZYJJ
-FROM base AS lazyjj
-COPY --from=rust /exports/ /
-COPY --from=cargo-binstall /exports/ /
-ENV \
-  PATH=/root/.cargo/bin:$PATH
-RUN set -e \
-  ; cargo binstall --no-track --disable-telemetry --version='0.5.0' lazyjj \
-  ; rm /root/.cargo/binstall.toml \
-  ; mv /root/.cargo/bin/lazyjj /usr/local/bin/lazyjj
-RUN set -e \
-  ; mkdir -p /exports/usr/local/bin/ \
-  ; mv /usr/local/bin/lazyjj /exports/usr/local/bin/
 
 # LAZYCOMMIT
 FROM base AS lazycommit
@@ -619,7 +605,7 @@ RUN set -e \
 FROM base AS claude-code
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g '@anthropic-ai/claude-code@1.0.120'
+  ; npm install -g '@anthropic-ai/claude-code@2.0.55'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/@anthropic-ai/ \
   ; mv /usr/local/bin/claude /exports/usr/local/bin/ \
@@ -630,7 +616,7 @@ FROM base AS obsidian
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.9.12/obsidian_1.9.12_amd64.deb" \
+  ; wget -O /tmp/obsidian.deb "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.10.6/obsidian_1.10.6_amd64.deb" \
   ; apteryx /tmp/obsidian.deb
 RUN set -e \
   ; mkdir -p /exports/etc/alternatives/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ \
@@ -673,7 +659,7 @@ RUN set -e \
 FROM base AS cloudflared
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2025.9.0/cloudflared-linux-amd64' \
+  ; wget --no-hsts -O /usr/local/bin/cloudflared 'https://github.com/cloudflare/cloudflared/releases/download/2025.11.1/cloudflared-linux-amd64' \
   ; chmod +x /usr/local/bin/cloudflared
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -702,7 +688,7 @@ RUN set -e \
 FROM base AS jujutsu
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.33.0/jj-v0.33.0-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/jj.tgz 'https://github.com/martinvonz/jj/releases/download/v0.35.0/jj-v0.35.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar xzvf /tmp/jj.tgz \
   ; rm /tmp/jj.tgz \
   ; mv 'jj' /usr/local/bin/jj
@@ -715,7 +701,7 @@ FROM base AS ast-grep
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.39.5/app-x86_64-unknown-linux-gnu.zip' \
+  ; wget -O /tmp/ast-grep.zip 'https://github.com/ast-grep/ast-grep/releases/download/0.40.0/app-x86_64-unknown-linux-gnu.zip' \
   ; unzip /tmp/ast-grep.zip \
   ; rm /tmp/ast-grep.zip \
   ; mv ast-grep sg /usr/local/bin/
@@ -727,7 +713,7 @@ RUN set -e \
 FROM base AS lazygit
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.55.1/lazygit_0.55.1_Linux_x86_64.tar.gz' \
+  ; wget -O /tmp/lazygit.tgz 'https://github.com/jesseduffield/lazygit/releases/download/v0.56.0/lazygit_0.56.0_Linux_x86_64.tar.gz' \
   ; mkdir -p /tmp/lazygit \
   ; tar xzvf /tmp/lazygit.tgz -C /tmp/lazygit \
   ; mv /tmp/lazygit/lazygit /usr/local/bin \
@@ -772,7 +758,7 @@ RUN set -e \
 FROM base AS yq
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.47.2/yq_linux_amd64' \
+  ; wget -O /usr/local/bin/yq 'https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_linux_amd64' \
   ; chmod +x /usr/local/bin/yq
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
@@ -822,7 +808,7 @@ ENV \
   GOPATH=/root \
   GO111MODULE=auto
 RUN set -e \
-  ; clone --https --shallow --ref=29ef08d82a9bc4179515c1a0db09e65070020d9d https://github.com/jmbaur/gosee \
+  ; clone --https --shallow --ref=9424db2ae665327a0b2d0638230f77324b2d6021 https://github.com/jmbaur/gosee \
   ; cd /root/src/github.com/jmbaur/gosee \
   ; go build -o /usr/local/bin/gosee \
   ; rm -r /root/src
@@ -848,7 +834,7 @@ FROM base AS bun
 COPY --from=wget /exports/ /
 COPY --from=unzip /exports/ /
 RUN set -e \
-  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.2.22/bun-linux-x64.zip \
+  ; wget -O /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.3/bun-linux-x64.zip \
   ; mkdir /tmp/bun \
   ; cd /tmp/bun \
   ; unzip /tmp/bun.zip \
@@ -949,7 +935,7 @@ RUN set -e \
   ; curl -fsSLo /usr/share/keyrings/brave-browser-beta-archive-keyring.gpg https://brave-browser-apt-beta.s3.brave.com/brave-browser-beta-archive-keyring.gpg \
   ; echo "deb [signed-by=/usr/share/keyrings/brave-browser-beta-archive-keyring.gpg] https://brave-browser-apt-beta.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-beta.list \
   ; apt update \
-  ; apteryx brave-browser-beta='1.83.101*'
+  ; apteryx brave-browser-beta='1.85.107*'
 RUN set -e \
   ; mkdir -p /exports/opt/ /exports/usr/bin/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/local/share/ /exports/usr/share/applications/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/ \
   ; mv /opt/brave.com /exports/opt/ \
@@ -973,7 +959,7 @@ ENV \
   UV_TOOL_BIN_DIR=/usr/local/uv/bin \
   UV_PYTHON_INSTALL_DIR=/usr/local/uv/python
 RUN set -e \
-  ; uv tool install sqlite-utils=='4.0a0' \
+  ; uv tool install sqlite-utils=='4.0a1' \
   ; ln -s /usr/local/uv/bin/sqlite-utils /usr/local/bin/sqlite-utils
 RUN set -e \
   ; mkdir -p /exports/usr/local/ /exports/usr/local/bin/ \
@@ -1084,7 +1070,7 @@ RUN set -e \
   ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
   ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
   ; apt update \
-  ; version=$(echo "8.11.10-32" | sed 's/-/~/') \
+  ; version=$(echo "8.11.22-25" | sed 's/-/~/') \
   ; apteryx 1password="${version}.BETA"
 RUN set -e \
   ; mkdir -p /exports/etc/alternatives/ /exports/etc/ /exports/etc/systemd/user/sockets.target.wants/ /exports/etc/X11/ /exports/etc/X11/Xsession.d/ /exports/opt/ /exports/usr/bin/ /exports/usr/lib/gnupg/ /exports/usr/lib/systemd/user/ /exports/usr/lib/x86_64-linux-gnu/ /exports/usr/lib/x86_64-linux-gnu/gio/modules/ /exports/usr/libexec/ /exports/usr/local/share/ /exports/usr/sbin/ /exports/usr/share/apport/package-hooks/ /exports/usr/share/bug/ /exports/usr/share/dbus-1/services/ /exports/usr/share/doc-base/ /exports/usr/share/ /exports/usr/share/glib-2.0/schemas/ /exports/usr/share/icons/ /exports/usr/share/icons/hicolor/ /exports/usr/share/icons/hicolor/48x48/ /exports/usr/share/icons/hicolor/48x48/apps/ /exports/usr/share/icons/hicolor/scalable/ /exports/usr/share/info/ /exports/usr/share/keyrings/ /exports/usr/share/polkit-1/actions/ /exports/usr/share/xml/ /exports/var/cache/ /exports/var/lib/systemd/deb-systemd-user-helper-enabled/ /exports/var/lib/systemd/deb-systemd-user-helper-enabled/sockets.target.wants/ \
@@ -1145,7 +1131,7 @@ RUN set -e \
 FROM base AS pnpm
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'pnpm@10.17.0'
+  ; npm install -g 'pnpm@10.24.0'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/pnpm /usr/local/bin/pnpx /exports/usr/local/bin/ \
@@ -1471,7 +1457,7 @@ FROM base AS flameshot
 COPY --from=wget /exports/ /
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; wget -O flameshot.deb https://github.com/flameshot-org/flameshot/releases/download/v13.1.0/flameshot-13.1.0-1.ubuntu-22.04.amd64.deb \
+  ; wget -O flameshot.deb https://github.com/flameshot-org/flameshot/releases/download/v13.3.0/flameshot-13.3.0-1.ubuntu-22.04.amd64.deb \
   ; apteryx ./flameshot.deb \
   ; rm flameshot.deb
 RUN set -e \
@@ -1544,7 +1530,7 @@ RUN set -e \
   ; packages="cmake g++ pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev python3" \
   ; apt-get -q update \
   ; apt-get install -y --no-install-recommends --auto-remove $packages \
-  ; clone --https --tag='v0.16.0-rc2' https://github.com/alacritty/alacritty \
+  ; clone --https --tag='v0.16.1' https://github.com/alacritty/alacritty \
   ; cd /root/src/github.com/alacritty/alacritty \
   ; cargo build --release --no-default-features --features=x11 \
   ; mv target/release/alacritty /usr/local/bin/alacritty \
@@ -1653,10 +1639,10 @@ RUN set -e \
 FROM base AS ripgrep
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-x86_64-unknown-linux-musl.tar.gz' \
+  ; wget -O /tmp/ripgrep.tgz 'https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-unknown-linux-musl.tar.gz' \
   ; tar -xzvf /tmp/ripgrep.tgz \
   ; rm /tmp/ripgrep.tgz \
-  ; mv ripgrep-14.1.1-x86_64-unknown-linux-musl ripgrep \
+  ; mv ripgrep-15.1.0-x86_64-unknown-linux-musl ripgrep \
   ; mv ripgrep/rg /usr/local/bin/rg \
   ; mkdir -p /usr/local/share/man/man1 \
   ; mv ripgrep/doc/rg.1 /usr/local/share/man/man1/rg.1 \
@@ -1705,7 +1691,7 @@ RUN set -e \
 FROM base AS ncu
 COPY --from=node /exports/ /
 RUN set -e \
-  ; npm install -g 'npm-check-updates@18.3.0'
+  ; npm install -g 'npm-check-updates@19.1.2'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ /exports/usr/local/lib/node_modules/ \
   ; mv /usr/local/bin/ncu /exports/usr/local/bin/ \
@@ -1809,11 +1795,11 @@ RUN set -e \
 FROM base AS gh
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.79.0/gh_2.79.0_linux_amd64.tar.gz' \
+  ; wget -O /tmp/gh.tgz 'https://github.com/cli/cli/releases/download/v2.83.1/gh_2.83.1_linux_amd64.tar.gz' \
   ; tar xzvf /tmp/gh.tgz \
   ; rm /tmp/gh.tgz \
-  ; mv 'gh_2.79.0_linux_amd64/bin/gh' /usr/local/bin/gh \
-  ; rm -r 'gh_2.79.0_linux_amd64'
+  ; mv 'gh_2.83.1_linux_amd64/bin/gh' /usr/local/bin/gh \
+  ; rm -r 'gh_2.83.1_linux_amd64'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/gh /exports/usr/local/bin/
@@ -1853,7 +1839,7 @@ FROM base AS docker-compose
 COPY --from=wget /exports/ /
 RUN set -e \
   ; mkdir -p /usr/local/lib/docker/cli-plugins \
-  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-x86_64' \
+  ; wget -O /usr/local/lib/docker/cli-plugins/docker-compose 'https://github.com/docker/compose/releases/download/v5.0.0-rc.2/docker-compose-linux-x86_64' \
   ; chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 RUN set -e \
   ; mkdir -p /exports/usr/local/lib/docker/cli-plugins/ \
@@ -1869,7 +1855,7 @@ RUN set -e \
   ; chmod a+r /etc/apt/keyrings/docker.gpg \
   ; echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   ; apt-get update \
-  ; apteryx docker-ce-cli='5:28.4.0*'
+  ; apteryx docker-ce-cli='5:29.1.1*'
 RUN set -e \
   ; mkdir -p /exports/usr/bin/ /exports/usr/share/zsh/vendor-completions/ \
   ; mv /usr/bin/docker /exports/usr/bin/ \
@@ -1899,11 +1885,11 @@ RUN set -e \
 FROM base AS bat
 COPY --from=wget /exports/ /
 RUN set -e \
-  ; wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.25.0/bat-v0.25.0-x86_64-unknown-linux-gnu.tar.gz' \
+  ; wget -O bat.tgz 'https://github.com/sharkdp/bat/releases/download/v0.26.0/bat-v0.26.0-x86_64-unknown-linux-gnu.tar.gz' \
   ; tar -xzvf bat.tgz \
   ; rm bat.tgz \
-  ; mv 'bat-v0.25.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat \
-  ; rm -rf 'bat-v0.25.0-x86_64-unknown-linux-gnu'
+  ; mv 'bat-v0.26.0-x86_64-unknown-linux-gnu/bat' /usr/local/bin/bat \
+  ; rm -rf 'bat-v0.26.0-x86_64-unknown-linux-gnu'
 RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/bat /exports/usr/local/bin/
@@ -2097,7 +2083,6 @@ COPY --from=miller /exports/ /
 COPY --from=obsidian /exports/ /
 COPY --from=claude-code /exports/ /
 COPY --from=lazycommit /exports/ /
-COPY --from=lazyjj /exports/ /
 COPY --from=fly /exports/ /
 COPY --from=dotenv-linter /exports/ /
 COPY --from=just /exports/ /

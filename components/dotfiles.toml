@@ -1,7 +1,7 @@
 name = 'dotfiles'
 from = 'base'
 
-version = 'v1.122.0'
+version = 'v1.122.20'
 
 devDependencies = ['clone', 'git-crypt']
 
