@@ -2,7 +2,7 @@ name = "cargo-binstall"
 from = "base"
 
 # https://github.com/cargo-bins/cargo-binstall/releases
-version = 'v1.16.2'
+version = 'v1.16.6'
 
 devDependencies = [ "wget" ]
 

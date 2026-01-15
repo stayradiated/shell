@@ -1,6 +1,6 @@
 name = "uv"
 from = "base"
-version = '0.9.13'
+version = '0.9.25'
 
 devDependencies = ["wget"]
 

@@ -2,14 +2,16 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = 'v24.11.1'
+version = 'v25.3.0'
 
-dependencies = ['n']
+dependencies = ['apteryx', 'n']
 
 build = """
-n lts
+# node v25+ requires libatomic
+apteryx libatomic1
 
 n {{VERSION}}
+n lts
 npm install -g npm
 """
 

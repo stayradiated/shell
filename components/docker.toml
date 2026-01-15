@@ -1,7 +1,7 @@
 name = 'docker'
 from = 'base'
 
-version = '29.1.1'
+version = 'docker-v29.1.4'
 
 devDependencies = ['apteryx', 'wget']
 
@@ -18,7 +18,7 @@ echo \
 
 apt-get update
 
-apteryx docker-ce-cli='5:{{VERSION}}*'
+apteryx docker-ce-cli=5:29.1.4-1~ubuntu.24.04~noble
 """
 
 exports = ['/usr/bin/docker', '/usr/share/zsh/vendor-completions/_docker']

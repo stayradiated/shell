@@ -1,7 +1,7 @@
 name = 'tmux'
 from = 'base'
 
-version = '3.6'
+version = '3.6a'
 
 devDependencies = ['apteryx', 'build-essential', 'make', 'wget']
 

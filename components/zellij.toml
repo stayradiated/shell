@@ -1,0 +1,21 @@
+name = "zellij"
+from = "base"
+
+version = '0.43.1'
+devDependencies = [ "wget" ]
+
+build = """
+wget -O /tmp/zellij.tgz 'https://github.com/zellij-org/zellij/releases/download/v{{VERSION}}/zellij-x86_64-unknown-linux-musl.tar.gz'
+tar xzvf /tmp/zellij.tgz
+rm /tmp/zellij.tgz
+
+mv zellij /usr/local/bin/zellij
+"""
+
+exports = [ "/usr/local/bin/zellij" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/zellij-org/zellij"
+removePrefix = "v"
+

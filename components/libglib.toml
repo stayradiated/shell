@@ -1,7 +1,7 @@
 name = "libglib"
 from = "base"
 
-version = '2.80.0-6ubuntu3.4'
+version = '2.80.0-6ubuntu3.6'
 
 devDependencies = ["apteryx"]
 
