@@ -1,0 +1,24 @@
+name = 'polypane'
+from = 'base'
+
+# https://github.com/firstversionist/polypane/releases
+version = '27.1.0'
+
+devDependencies = ['wget']
+
+build = """
+wget --no-hsts \
+  -O /opt/polypane.AppImage \
+  'https://github.com/firstversionist/polypane/releases/download/v{{VERSION}}/polypane-{{VERSION}}.AppImage'
+
+chmod +x /opt/polypane.AppImage
+"""
+
+exports = [
+  "/opt/polypane.AppImage",
+]
+
+[checkUpdates]
+type = 'github-release'
+url = 'https://github.com/firstversionist/polypane'
+removePrefix = 'v'

@@ -10,6 +10,8 @@ cargo binstall --no-track --disable-telemetry \
   --version='{{VERSION}}' sleek
 
 mv /root/.cargo/bin/sleek /usr/local/bin/sleek
+sudo chmod +x /usr/local/bin/sleek
+
 rm -r /root/.cargo
 """
 

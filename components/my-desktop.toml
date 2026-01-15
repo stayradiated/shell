@@ -156,6 +156,7 @@ dependencies = [
   # 'mosh',
   'delta',
   'zellij',
+  'polypane',
 
   # data tools
   # 'sc-im',

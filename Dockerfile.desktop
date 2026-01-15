@@ -535,6 +535,16 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# POLYPANE
+FROM base AS polypane
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget --no-hsts -O /opt/polypane.AppImage 'https://github.com/firstversionist/polypane/releases/download/v27.1.0/polypane-27.1.0.AppImage' \
+  ; chmod +x /opt/polypane.AppImage
+RUN set -e \
+  ; mkdir -p /exports/opt/ \
+  ; mv /opt/polypane.AppImage /exports/opt/
+
 # ZELLIJ
 FROM base AS zellij
 COPY --from=wget /exports/ /
@@ -2093,6 +2103,7 @@ COPY --from=just /exports/ /
 COPY --from=beeper /exports/ /
 COPY --from=delta /exports/ /
 COPY --from=zellij /exports/ /
+COPY --from=polypane /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \
