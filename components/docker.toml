@@ -1,7 +1,7 @@
 name = 'docker'
 from = 'base'
 
-version = 'docker-v29.1.4'
+version = 'docker-v29.2.1'
 
 devDependencies = ['apteryx', 'wget']
 

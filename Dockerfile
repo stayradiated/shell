@@ -18,19 +18,16 @@ RUN set -e \
   ; mkdir -p /exports/usr/local/bin/ \
   ; mv /usr/local/bin/apteryx /exports/usr/local/bin/
 
-# WGET
-FROM base AS wget
+# ONE-PASSWORD
+FROM base AS one-password
 COPY --from=apteryx /exports/ /
 RUN set -e \
-  ; apteryx wget='1.21.4-1ubuntu4.1'
-RUN set -e \
-  ; mkdir -p /exports/usr/bin/ /exports/usr/share/doc/ /exports/usr/share/man/man1/ \
-  ; mv /usr/bin/wget /exports/usr/bin/ \
-  ; mv /usr/share/doc/wget /exports/usr/share/doc/ \
-  ; mv /usr/share/man/man1/wget.1.gz /exports/usr/share/man/man1/
-
-# FLAMESHOT
-FROM base AS flameshot
-COPY --from=wget /exports/ /
-COPY --from=apteryx /exports/ /
-RUN set -e \
+  ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg \
+  ; echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 beta main' | tee /etc/apt/sources.list.d/1password.list \
+  ; mkdir -p /etc/debsig/policies/AC2D62742012EA22/ \
+  ; curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol | tee /etc/debsig/policies/AC2D62742012EA22/1password.pol \
+  ; mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22 \
+  ; curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg \
+  ; apt update \
+  ; version=$(echo "8.12.2-22" | sed 's/-/~/') \
+  ; apteryx 1password="${version}.BETA"

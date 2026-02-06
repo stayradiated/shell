@@ -3,7 +3,7 @@ from = 'base'
 
 # https://www.ubuntuupdates.org/ppa/google_chrome
 # look for google-chrome-beta
-version = '145.0.7632.5'
+version = '145.0.7632.45'
 
 devDependencies = ['wget', 'apteryx']
 
@@ -65,11 +65,11 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libdconf.so.1.0.0",
   "/usr/lib/x86_64-linux-gnu/libdeflate.so.0",
   "/usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1",
-  "/usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.0.0",
+  "/usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.1.125.0",
   "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1",
-  "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.0.0",
+  "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.125.0",
   "/usr/lib/x86_64-linux-gnu/libdrm.so.2",
-  "/usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0",
+  "/usr/lib/x86_64-linux-gnu/libdrm.so.2.125.0",
   "/usr/lib/x86_64-linux-gnu/libepoxy.so.0",
   "/usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0",
   "/usr/lib/x86_64-linux-gnu/libfontconfig.so.1",
@@ -82,7 +82,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.1",
   "/usr/lib/x86_64-linux-gnu/libfribidi.so.0",
   "/usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0",
-  "/usr/lib/x86_64-linux-gnu/libgallium-25.0.7-0ubuntu0.24.04.2.so",
+  "/usr/lib/x86_64-linux-gnu/libgallium-25.2.8-0ubuntu0.24.04.1.so",
   "/usr/lib/x86_64-linux-gnu/libgbm.so.1",
   "/usr/lib/x86_64-linux-gnu/libgbm.so.1.0.0",
   "/usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0",
@@ -145,8 +145,6 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.22.0",
   "/usr/lib/x86_64-linux-gnu/libwayland-egl.so.1",
   "/usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.22.0",
-  "/usr/lib/x86_64-linux-gnu/libwayland-server.so.0",
-  "/usr/lib/x86_64-linux-gnu/libwayland-server.so.0.22.0",
   "/usr/lib/x86_64-linux-gnu/libwebp.so.7",
   "/usr/lib/x86_64-linux-gnu/libwebp.so.7.1.8",
   "/usr/lib/x86_64-linux-gnu/libX11-xcb.so.1",
@@ -278,7 +276,6 @@ exports = [
   "/usr/share/doc/libwayland-client0/",
   "/usr/share/doc/libwayland-cursor0/",
   "/usr/share/doc/libwayland-egl1/",
-  "/usr/share/doc/libwayland-server0/",
   "/usr/share/doc/libwebp7/",
   "/usr/share/doc/libx11-6/",
   "/usr/share/doc/libx11-data/",
