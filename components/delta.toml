@@ -3,7 +3,7 @@ from = "base"
 
 version = "0.18.2"
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget --no-hsts \
@@ -17,10 +17,9 @@ mv 'delta-{{VERSION}}-x86_64-unknown-linux-gnu/delta' /usr/local/bin/delta
 rm -r 'delta-{{VERSION}}-x86_64-unknown-linux-gnu'
 """
 
-exports = [ "/usr/local/bin/delta" ]
+exports = ["/usr/local/bin/delta"]
 
 [checkUpdates]
 type = "github-release"
 url = "https://github.com/dandavison/delta"
 removePrefix = "v"
-

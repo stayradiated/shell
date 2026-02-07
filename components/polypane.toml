@@ -14,9 +14,7 @@ wget --no-hsts \
 chmod +x /opt/polypane.AppImage
 """
 
-exports = [
-  "/opt/polypane.AppImage",
-]
+exports = ["/opt/polypane.AppImage"]
 
 [checkUpdates]
 type = 'github-release'

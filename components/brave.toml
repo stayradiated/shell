@@ -192,7 +192,7 @@ exports = [
   "/usr/share/doc-base/shared-mime-info.shared-mime-info",
   "/usr/share/fontconfig/",
   "/usr/share/gettext/",
-  "/usr/share/gtk-3.0/"
+  "/usr/share/gtk-3.0/",
 ]
 
 exportEnv = [['PATH', "${PATH}:/opt/brave.com/brave"]]

@@ -4,7 +4,7 @@ from = "base"
 # https://github.com/cargo-bins/cargo-binstall/releases
 version = 'v1.17.4'
 
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget --no-hsts -O /tmp/cargo-binstall.tgz \
@@ -16,7 +16,7 @@ rm /tmp/cargo-binstall.tgz
 mv 'cargo-binstall' /usr/local/bin/cargo-binstall
 """
 
-exports = [ "/usr/local/bin/cargo-binstall" ]
+exports = ["/usr/local/bin/cargo-binstall"]
 
 [checkUpdates]
 type = "github-release"

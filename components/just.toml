@@ -15,9 +15,7 @@ tar -xzvf /tmp/just.tgz -C /usr/local/bin just
 rm /tmp/just.tgz
 """
 
-exports = [
-  "/usr/local/bin/just",
-]
+exports = ["/usr/local/bin/just"]
 
 [checkUpdates]
 type = 'github-release'

@@ -23,7 +23,7 @@ exports = [
   # "/etc/shadow-",
   "/nix/",
   "/root/.nix-defexpr/",
-  "/root/.nix-profile"
+  "/root/.nix-profile",
 ]
 
 [checkUpdates]

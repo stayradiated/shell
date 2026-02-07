@@ -419,7 +419,7 @@ exports = [
   "/usr/share/X11/",
   "/var/lib/ucf/hashfile.0",
   "/var/lib/ucf/hashfile.1",
-  "/var/lib/ucf/hashfile.2"
+  "/var/lib/ucf/hashfile.2",
 ]
 
 exportEnv = [['PATH', "${PATH}:/opt/google/chrome"]]

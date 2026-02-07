@@ -2,7 +2,7 @@ name = "dotenv-linter"
 from = "base"
 
 version = '4.0.0'
-devDependencies = [ "wget" ]
+devDependencies = ["wget"]
 
 build = """
 wget --no-hsts -O /tmp/dotenv-linter.tgz \
@@ -14,10 +14,9 @@ rm /tmp/dotenv-linter.tgz
 mv dotenv-linter /usr/local/bin/dotenv-linter
 """
 
-exports = [ "/usr/local/bin/dotenv-linter" ]
+exports = ["/usr/local/bin/dotenv-linter"]
 
 [checkUpdates]
 type = "github-release"
 url = "https://github.com/dotenv-linter/dotenv-linter"
 removePrefix = "v"
-

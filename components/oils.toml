@@ -1,0 +1,32 @@
+name = 'oils'
+from = 'base'
+
+# https://oils.pub/release/latest/
+version = '0.37.0'
+
+devDependencies = ['build-essential', 'wget']
+
+build = """
+wget \
+  --no-hsts \
+  -O oils.tar.gz \
+  'https://oils.pub/download/oils-for-unix-{{VERSION}}.tar.gz'
+
+tar -xzf oils.tar.gz
+rm oils.tar.gz
+
+cd oils-for-unix-{{VERSION}}
+
+./configure
+./_build/oils.sh
+./install
+
+cd -
+rm -rf oils-for-unix-{{VERSION}}
+"""
+
+exports = [
+  '/usr/local/bin/oils-for-unix',
+  '/usr/local/bin/osh',
+  '/usr/local/bin/ysh',
+]

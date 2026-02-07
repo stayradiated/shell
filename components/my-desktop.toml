@@ -157,6 +157,7 @@ dependencies = [
   'delta',
   'zellij',
   'polypane',
+  'oils',
 
   # data tools
   # 'sc-im',

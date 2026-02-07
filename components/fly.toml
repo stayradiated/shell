@@ -15,9 +15,7 @@ mv flyctl /usr/local/bin/fly
 chmod +x /usr/local/bin/fly
 """
 
-exports = [
-  '/usr/local/bin/fly',
-]
+exports = ['/usr/local/bin/fly']
 
 [checkUpdates]
 type = 'github-release'

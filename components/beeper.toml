@@ -18,6 +18,4 @@ wget --no-hsts \
 chmod +x /opt/Beeper.AppImage
 """
 
-exports = [
-  "/opt/Beeper.AppImage",
-]
+exports = ["/opt/Beeper.AppImage"]

@@ -535,6 +535,24 @@ RUN set -e \
   ; mv /usr/share/doc/iputils-ping /exports/usr/share/doc/ \
   ; mv /usr/share/man/man8/ping.8.gz /usr/share/man/man8/ping4.8.gz /usr/share/man/man8/ping6.8.gz /exports/usr/share/man/man8/
 
+# OILS
+FROM base AS oils
+COPY --from=build-essential /exports/ /
+COPY --from=wget /exports/ /
+RUN set -e \
+  ; wget --no-hsts -O oils.tar.gz 'https://oils.pub/download/oils-for-unix-0.37.0.tar.gz' \
+  ; tar -xzf oils.tar.gz \
+  ; rm oils.tar.gz \
+  ; cd oils-for-unix-0.37.0 \
+  ; ./configure \
+  ; ./_build/oils.sh \
+  ; ./install \
+  ; cd - \
+  ; rm -rf oils-for-unix-0.37.0
+RUN set -e \
+  ; mkdir -p /exports/usr/local/bin/ \
+  ; mv /usr/local/bin/oils-for-unix /usr/local/bin/osh /usr/local/bin/ysh /exports/usr/local/bin/
+
 # POLYPANE
 FROM base AS polypane
 COPY --from=wget /exports/ /
@@ -2105,6 +2123,7 @@ COPY --from=beeper /exports/ /
 COPY --from=delta /exports/ /
 COPY --from=zellij /exports/ /
 COPY --from=polypane /exports/ /
+COPY --from=oils /exports/ /
 ENV \
   PATH=/usr/local/go/bin:${PATH} \
   GOPATH=/root \

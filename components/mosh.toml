@@ -16,7 +16,7 @@ exports = [
   "/usr/lib/x86_64-linux-gnu/libprotobuf.so.32",
   "/usr/lib/x86_64-linux-gnu/libprotobuf.so.32.0.12",
   "/usr/lib/x86_64-linux-gnu/libutempter.so.0",
-  "/usr/lib/x86_64-linux-gnu/libutempter.so.1.2.1"
+  "/usr/lib/x86_64-linux-gnu/libutempter.so.1.2.1",
 ]
 
 [diff]
@@ -45,7 +45,7 @@ exclude = [
   "/var/lib/apt/lists/**",
   "/var/lib/dpkg/**",
   "/var/log/apt/**",
-  "/var/log/dpkg.log"
+  "/var/log/dpkg.log",
 ]
 
 [checkUpdates]

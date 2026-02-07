@@ -19,5 +19,5 @@ yes | unminimize
 """
 
 [checkUpdates]
-  type = 'github-release'
-  url = 'https://github.com/phusion/baseimage-docker'
+type = 'github-release'
+url = 'https://github.com/phusion/baseimage-docker'
