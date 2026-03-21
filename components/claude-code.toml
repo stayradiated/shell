@@ -1,7 +1,7 @@
 name = 'claude-code'
 from = 'base'
 
-version = '2.1.33'
+version = '2.1.81'
 
 devDependencies = ['node']
 

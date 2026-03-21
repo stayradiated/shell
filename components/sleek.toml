@@ -18,6 +18,6 @@ rm -r /root/.cargo
 exports = ["/usr/local/bin/sleek"]
 
 [checkUpdates]
-type = 'github-tag'
+type = 'github-release'
 url = 'https://github.com/nrempel/sleek'
 removePrefix = 'v'

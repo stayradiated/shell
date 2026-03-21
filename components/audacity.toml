@@ -329,3 +329,4 @@ exclude = [
 [checkUpdates]
 type = 'apt'
 name = 'audacity'
+ignoreVersions = ['3.7.3+dfsg-1~bpo24.04.1']

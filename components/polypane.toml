@@ -2,7 +2,7 @@ name = 'polypane'
 from = 'base'
 
 # https://github.com/firstversionist/polypane/releases
-version = '27.1.0'
+version = '28.0.3'
 
 devDependencies = ['wget']
 

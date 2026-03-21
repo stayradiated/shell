@@ -1,0 +1,19 @@
+name = 'obsidian-headless'
+from = 'base'
+
+version = '0.0.8'
+
+devDependencies = ['node']
+
+build = """
+npm install -g 'obsidian-headless@{{VERSION}}'
+"""
+
+exports = [
+  '/usr/local/bin/ob',
+  '/usr/local/lib/node_modules/obsidian-headless',
+]
+
+[checkUpdates]
+type = 'npm'
+packageName = 'obisidian-headless'

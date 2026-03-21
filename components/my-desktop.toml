@@ -143,6 +143,7 @@ dependencies = [
   'miller',
   # 'ghostty',
   'obsidian',
+  'obsidian-headless',
 
   'claude-code',
   'lazycommit',
@@ -158,6 +159,8 @@ dependencies = [
   'zellij',
   'polypane',
   'oils',
+
+  'difftastic',
 
   # data tools
   # 'sc-im',

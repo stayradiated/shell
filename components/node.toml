@@ -2,7 +2,7 @@ name = 'node'
 from = 'base'
 
 # https://nodejs.org/en/
-version = 'v25.6.0'
+version = 'v25.8.1'
 
 dependencies = ['apteryx', 'n']
 

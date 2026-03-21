@@ -1,7 +1,7 @@
 name = 'brave'
 from = 'base'
 
-version = '1.87.181'
+version = '1.89.118'
 
 devDependencies = ['apteryx']
 

@@ -1,0 +1,20 @@
+name = "difftastic"
+from = "base"
+
+version = "0.68.0"
+
+devDependencies = [ "wget" ]
+build = """
+wget -O /tmp/difftastic.tgz 'https://github.com/Wilfred/difftastic/releases/download/{{VERSION}}/difft-x86_64-unknown-linux-gnu.tar.gz'
+tar xzvf /tmp/difftastic.tgz
+rm /tmp/difftastic.tgz
+
+mv 'difft' /usr/local/bin/difft
+"""
+
+exports = [ "/usr/local/bin/difft" ]
+
+[checkUpdates]
+type = "github-release"
+url = "https://github.com/Wilfred/difftastic"
+removePrefix = "v"
