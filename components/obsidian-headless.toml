@@ -16,4 +16,4 @@ exports = [
 
 [checkUpdates]
 type = 'npm'
-packageName = 'obisidian-headless'
+packageName = 'obsidian-headless'
