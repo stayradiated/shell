@@ -55,6 +55,9 @@ generate-shell:
 build-desktop: generate-desktop
 	docker build $(DOCKER_BUILD_ARGS) -f Dockerfile.desktop -t $(DOCKER_USERNAME)/desktop:latest .
 	@echo "Built $(DOCKER_USERNAME)/desktop:latest"
+	@echo "Removing unused dangling images…"
+	docker build $(DOCKER_BUILD_ARGS) --progress rawjson -f Dockerfile.desktop -t $(DOCKER_USERNAME)/desktop:latest . | docker-prune-dangling
+
 
 build-shell: generate-shell
 	docker build $(DOCKER_BUILD_ARGS) -f Dockerfile.shell -t $(DOCKER_USERNAME)/shell:latest .
